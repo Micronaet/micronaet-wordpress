@@ -20,6 +20,28 @@
                 <field name="name" position="before">
                     <field name="wordpress" />
                 </field>
+
+                <field name="host" position="attributes">
+                    <attribute name="required">0</attribute>
+                    <attribute name="attrs">{'required': [('wordpress', '=', False)], 'invisible': [('wordpress', '=', True)]}</attribute>
+                </field>
+                <field name="port" position="attributes">
+                    <attribute name="required">0</attribute>
+                    <attribute name="attrs">{'required': [('wordpress', '=', False)], 'invisible': [('wordpress', '=', True)]}</attribute>
+                </field>
+                
+                <field name="database" position="attributes">
+                    <attribute name="required">0</attribute>
+                    <attribute name="attrs">{'required': [('wordpress', '=', False)], 'invisible': [('wordpress', '=', True)]}</attribute>
+                </field>
+                <field name="username" position="attributes">
+                    <attribute name="required">0</attribute>
+                    <attribute name="attrs">{'required': [('wordpress', '=', False)], 'invisible': [('wordpress', '=', True)]}</attribute>
+                </field>
+                <field name="password" position="attributes">
+                    <attribute name="required">0</attribute>
+                    <attribute name="attrs">{'required': [('wordpress', '=', False)], 'invisible': [('wordpress', '=', True)]}</attribute>
+                </field>
                 
                 <!--<button name="publish_all_connector" position="before">
                     <button name="wordpress_import_category" string="Load category" type="object" attrs="{'invisible': [('wordpress','=',False)]}"/>
@@ -27,13 +49,15 @@
                     <button name="auto_select_product_button" string="Select stock product" type="object" attrs="{'invisible': [('wordpress','=',False)]}"/>
                 </button>-->
 
-                <field name="password" position="after"> 
+                <field name="password" position="after">                     
                     <group colspan="4" col="4" attrs="{'invisible': [('wordpress','=',False)]}">
-                        <field name="wp_url" />
-                        <field name="wp_key" />
-                        <field name="wp_secret" />
-                        <field name="wp_api" />                        
-                        <field name="wp_version" />
+                        <separator string="Wordpress block:" colspan="4"/>
+                        <field name="wp_url" attrs="{'required': [('wordpress', '=', True)]}"/>
+                        <field name="wp_key" attrs="{'required': [('wordpress', '=', True)]}"/>
+                        <field name="wp_secret" attrs="{'required': [('wordpress', '=', True)]}"/>
+                        <field name="wp_api" attrs="{'required': [('wordpress', '=', True)]}"/>
+                        <field name="wp_version" attrs="{'required': [('wordpress', '=', True)]}"/>
+                        <newline/>
                     </group>
                 </field>
             </field>
