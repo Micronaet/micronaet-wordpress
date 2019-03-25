@@ -21,25 +21,29 @@
 #
 ###############################################################################
 
-import os
-import sys
-import logging
-import openerp
-import openerp.netsvc as netsvc
-import openerp.addons.decimal_precision as dp
-from openerp.osv import fields, osv, expression, orm
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from openerp import SUPERUSER_ID, api
-from openerp import tools
-from openerp.tools.translate import _
-from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
-    float_compare)
-
-
-_logger = logging.getLogger(__name__)
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+{
+    'name': 'WordPress® Base setup',
+    'version': '0.1',
+    'category': 'Connector',
+    'description': '''    
+        WordPress connector via WooCommerce wrapper setup    
+        ''',
+    'author': 'Micronaet S.r.l. - Nicola Riolini',
+    'website': 'http://www.micronaet.it',
+    'license': 'AGPL-3',
+    'depends': [
+        'base',
+        'connector_web_base',
+        ],
+    'init_xml': [],
+    'demo': [],
+    'data': [
+        'security/wp_group.xml',
+        #'security/ir.model.access.csv',    
+        
+        'wp_view.xml',
+        ],
+    'active': False,
+    'installable': True,
+    'auto_install': False,
+    }

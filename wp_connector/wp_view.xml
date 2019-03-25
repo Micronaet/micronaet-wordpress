@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!--connector_web_base.view_connector_server_tree-->
+        <record model="ir.ui.view" id="view_wordpress_connector_tree">
+            <field name="name">connector.server.tree</field>
+            <field name="model">connector.server</field>
+            <field name="inherit_id" ref="connector_web_base.view_connector_server_tree"/>
+            <field name="arch" type="xml">
+                <field name="name" position="before">
+                    <field name="wordpress" />
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_wordpress_connector_form">
+            <field name="name">connector.server.form</field>
+            <field name="model">connector.server</field>
+            <field name="inherit_id" ref="connector_web_base.view_connector_server_form"/>
+            <field name="arch" type="xml">
+                <field name="name" position="before">
+                    <field name="wordpress" />
+                </field>
+                
+                <!--<button name="publish_all_connector" position="before">
+                    <button name="wordpress_import_category" string="Load category" type="object" attrs="{'invisible': [('wordpress','=',False)]}"/>
+                    <button name="wordpress_rsync_photo" string="Upload all photo" type="object" attrs="{'invisible': [('wordpress','=',False)]}"/>
+                    <button name="auto_select_product_button" string="Select stock product" type="object" attrs="{'invisible': [('wordpress','=',False)]}"/>
+                </button>-->
+
+                <field name="password" position="after"> 
+                    <group colspan="4" col="4" attrs="{'invisible': [('wordpress','=',False)]}">
+                        <field name="wp_url" />
+                        <field name="wp_key" />
+                        <field name="wp_secret" />
+                        <field name="wp_api" />                        
+                        <field name="wp_version" />
+                    </group>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</openerp>
+
