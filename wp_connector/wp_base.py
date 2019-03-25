@@ -82,4 +82,118 @@ class ConnectorServer(orm.Model):
         'wp_version': lambda *x: 'wc/v3',        
         }
 
+class ProductProduct(orm.Model):
+    """ Model name: ProductProduct
+    """
+
+    _inherit = 'product.product'
+    
+    _columns = {
+        'wp_id': fields.integer('Worpress ID'),
+        }
+
+class ProductProductWebServer(orm.Model):
+    """ Model name: ProductProductWebServer
+    """
+
+    _inherit = 'product.product.web.server'
+    
+    def publish_now(self, cr, uid, ids, context=None):
+        ''' Publish now button
+            Used also for more than one elements (not only button click)
+            Note all product must be published on the same web server!            
+        '''    
+        if context is None:    
+            context = {}
+
+        first_proxy = self.browse(cr, uid, ids, context=context)[0]        
+        if not first_proxy.connector_id.wordpress:
+            _logger.warning('Not a wordpress proxy, call other')
+            super(ProductProductWebServer, self).publish_now(
+                cr, uid, ids, context=context)
+
+        # ---------------------------------------------------------------------
+        #                         WORDPRESS Publish:
+        # ---------------------------------------------------------------------
+        _logger.warning('Publish all on wordpress:')
+        product_pool = self.pool.get('product.product')
+        server_pool = self.pool.get('connector.server')
+
+        wcapi = server_pool.get_wp_connector(cr, uid, context=context)
+        
+        # Context used here:
+        db_context = context.copy()
+        db_context['lang'] = self._lang_db
+
+        # Read first element only for setup parameters:        
+        connector = first_proxy.connector_id
+        db_context['album_id'] = first_proxy.connector_id.album_id.id
+        context['album_id'] = first_proxy.connector_id.album_id.id
+
+        # ---------------------------------------------------------------------
+        # Publish image:
+        # ---------------------------------------------------------------------
+        # TODO (save link)
+        
+        # ---------------------------------------------------------------------
+        # Publish product (lang management)
+        # ---------------------------------------------------------------------
+        for item in self.browse(cr, uid, ids, context=db_context):
+            product = item.product_id
+            default_code = product.default_code
+            name = item.force_name or product.name
+            description = item.force_description or product.large_description
+            short = name
+            price = item.force_price or product.lst_price
+
+            wp_id = product.wp_id
+            # fabric
+            # type_of_material
+
+                        
+            data = {
+                'name': name,
+                'type': 'simple',
+                'regular_price': price,
+                'description': description,
+                'short_description': name,
+                'sku': default_code,
+                #"categories": [{"id": 9,},{"id": 14}],
+                #"images": [
+                #    {"src": product_image_link_1,},
+                #    {"src": product_image_link_2,},
+                #    {"src": product_image_link_3,},
+                #    ]
+                }
+            
+            # TODO manage error and wp_id (could be created but not saved!
+            if wp_id:
+                reply = wcapi.put('products/%s' % wp_id, data).json()
+            else:
+                reply = wcapi.post('products', data).json()
+                wp_id = reply['id']
+                
+                # Update product WP ID:
+                product_pool.write(cr, uid, [product.id], {
+                    'wp_id': wp_id,
+                    }, context=context)
+                
+            
+    
+        """for lang in self._langs:  
+            #if lang == self._lang_db:
+            #    continue # no default lang, that create object!
+                
+            db_context['lang'] = lang
+            for item in self.browse(cr, uid, ids, context=db_context):
+                product = item.product_id
+                default_code = product.default_code
+
+                #    'name': item.force_name or product.name,
+                #    'description_sale': 
+                #        item.force_description or product.large_description,
+                #    'fabric': product.fabric,
+                #    'type_of_material': product.type_of_material,
+        """
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

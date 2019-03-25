@@ -34,6 +34,7 @@
     'depends': [
         'base',
         'connector_web_base',
+        'connector_web_product',
         ],
     'init_xml': [],
     'demo': [],

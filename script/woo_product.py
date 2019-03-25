@@ -59,8 +59,7 @@ data = {
     "name": "Product Movida 3 immagini",
     "type": "simple",
     "regular_price": "21.99",
-    "description": "Test prod
-    uct via ODOO - Python",
+    "description": "Test product via ODOO - Python",
     "short_description": "Short description",
     #"categories": [{"id": 9,},{"id": 14}],
     "images": [
