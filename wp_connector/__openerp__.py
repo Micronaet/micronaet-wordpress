@@ -35,6 +35,7 @@
         'base',
         'connector_web_base',
         'connector_web_product',
+        'product_image_base', # for image management
         ],
     'init_xml': [],
     'demo': [],

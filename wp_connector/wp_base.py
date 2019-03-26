@@ -49,22 +49,19 @@ class ConnectorServer(orm.Model):
     """    
     _inherit = 'connector.server'
 
-    def get_wp_connector(self, cr, uid, context=None):
+    def get_wp_connector(self, cr, uid, ids, context=None):
         ''' Connect with Word Press API management
-        '''
-        assert len(ids) == 1, 'Works only with one record a time'
-        
+        '''        
         connector = self.browse(cr, uid, ids, context=context)[0]
         if not connector.wordpress:
             _logger.info('Not Wordpress connector')
-        
+
         return woocommerce.API(
             url=connector.wp_url,
             consumer_key=connector.wp_key,
             consumer_secret=connector.wp_secret,
-            wp_api=True,
-            version="wc/v3"
-            )
+            wp_api=connector.wp_api,
+            version=connector.wp_version)
 
     _columns = {
         'wordpress': fields.boolean('Wordpress', help='Wordpress web server'),
@@ -75,6 +72,10 @@ class ConnectorServer(orm.Model):
         
         'wp_api': fields.boolean('WP API'),
         'wp_version': fields.char('WP Version', size=10),
+
+        'album_ids': fields.many2many(
+            'product.image.album', 
+            'connector_album_rel', 'server_id', 'album_id', 'Album'),
         }
     
     _defaults = {
@@ -90,6 +91,17 @@ class ProductProduct(orm.Model):
     
     _columns = {
         'wp_id': fields.integer('Worpress ID'),
+        'wp_lang_id': fields.integer('Worpress translate ID'),
+        }
+
+class ProductImageFile(orm.Model):
+    """ Model name: ProductImageFile
+    """
+
+    _inherit = 'product.image.file'
+
+    _columns = {
+        'dropbox_link': fields.char('Dropbox link', size=100),
         }
 
 class ProductProductWebServer(orm.Model):
@@ -98,6 +110,29 @@ class ProductProductWebServer(orm.Model):
 
     _inherit = 'product.product.web.server'
     
+    def open_image_list_product(self, cr, uid, ids, context=None):
+        '''
+        '''
+        model_pool = self.pool.get('ir.model.data')
+        view_id = model_pool.get_object_reference(
+            cr, uid, 
+            'wp_connector', 'view_product_product_web_server_form')[1]
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Image detail'),
+            'view_type': 'form',
+            'view_mode': 'form,form',
+            'res_id': ids[0],
+            'res_model': 'product.product.web.server',
+            'view_id': view_id, # False
+            'views': [(view_id, 'form'), (False, 'tree')],
+            'domain': [],
+            'context': context,
+            'target': 'new',
+            'nodestroy': False,
+            }
+
     def publish_now(self, cr, uid, ids, context=None):
         ''' Publish now button
             Used also for more than one elements (not only button click)
@@ -119,7 +154,8 @@ class ProductProductWebServer(orm.Model):
         product_pool = self.pool.get('product.product')
         server_pool = self.pool.get('connector.server')
 
-        wcapi = server_pool.get_wp_connector(cr, uid, context=context)
+        wcapi = server_pool.get_wp_connector(
+            cr, uid, [first_proxy.connector_id.id], context=context)
         
         # Context used here:
         db_context = context.copy()
@@ -138,62 +174,133 @@ class ProductProductWebServer(orm.Model):
         # ---------------------------------------------------------------------
         # Publish product (lang management)
         # ---------------------------------------------------------------------
-        for item in self.browse(cr, uid, ids, context=db_context):
-            product = item.product_id
-            default_code = product.default_code
-            name = item.force_name or product.name
-            description = item.force_description or product.large_description
-            short = name
-            price = item.force_price or product.lst_price
-
-            wp_id = product.wp_id
-            # fabric
-            # type_of_material
-
-                        
-            data = {
-                'name': name,
-                'type': 'simple',
-                'regular_price': price,
-                'description': description,
-                'short_description': name,
-                'sku': default_code,
-                #"categories": [{"id": 9,},{"id": 14}],
-                #"images": [
-                #    {"src": product_image_link_1,},
-                #    {"src": product_image_link_2,},
-                #    {"src": product_image_link_3,},
-                #    ]
-                }
-            
-            # TODO manage error and wp_id (could be created but not saved!
-            if wp_id:
-                reply = wcapi.put('products/%s' % wp_id, data).json()
-            else:
-                reply = wcapi.post('products', data).json()
-                wp_id = reply['id']
-                
-                # Update product WP ID:
-                product_pool.write(cr, uid, [product.id], {
-                    'wp_id': wp_id,
-                    }, context=context)
-                
-            
-    
-        """for lang in self._langs:  
-            #if lang == self._lang_db:
-            #    continue # no default lang, that create object!
-                
+        # First lang = original, second traslate
+        for lang in ('it_IT', 'en_US'): #self._langs:  
             db_context['lang'] = lang
+                
             for item in self.browse(cr, uid, ids, context=db_context):
                 product = item.product_id
-                default_code = product.default_code
+                default_code = product.default_code or u''
+                name = item.force_name or product.name or u''
+                description = item.force_description or \
+                    product.large_description or u''
+                short = name
+                price = u'%s' % (item.force_price or product.lst_price)
+                weight = u'%s' % product.weight
+                status = 'publish' if item.published else 'private'
+                stock_quantity =\
+                    int(product.mx_net_mrp_qty - product.mx_mrp_b_locked)
+                if stock_quantity < 0:
+                    stock_quantity = 0
+                # fabric
+                # type_of_material
 
-                #    'name': item.force_name or product.name,
-                #    'description_sale': 
-                #        item.force_description or product.large_description,
-                #    'fabric': product.fabric,
-                #    'type_of_material': product.type_of_material,
-        """
+                wp_id = product.wp_id
+                wp_lang_id = product.wp_lang_id
+                
+                # -------------------------------------------------------------
+                # Images block:
+                # -------------------------------------------------------------
+                images = []                    
+                for image in item.wp_dropbox_images_ids:
+                    if image.dropbox_link:
+                        images.append({
+                            'src': image.dropbox_link,
+                            })
+
+                # -------------------------------------------------------------
+                # Category block:
+                # -------------------------------------------------------------
+                # TODO 
+                categories = [] #[{"id": 9,},{"id": 14}]
+                
+                data = {
+                    'name': name,
+                    'type': u'simple',
+                    'regular_price': price,
+                    'description': description,
+                    'short_description': name,
+                    'sku': default_code,
+                    'weight': weight,
+                    'stock_quantity': stock_quantity,
+                    'status': status,
+                    'catalog_visibility': 'visible', #catalog  search  hidden
+                    'dimensions': {
+                       'width': '%s' % product.width, 
+                       'length': '%s' % product.length,
+                       'height': '%s' % product.height,
+                       }, 
+                    
+                    'categories': categories,
+                    'images': images,
+                    }
+
+                if lang != 'it_IT':
+                    data['translation_of'] = wp_id
+                    data['lang'] = 'en'
+                    data['sku'] = '%s_en' % data['sku']
+                    
+                    # To update or write:
+                    item_id = wp_lang_id
+                    field = 'wp_lang_id'
+                else:
+                    item_id = wp_id
+                    field = 'wp_id'
+                                    
+                # TODO manage error and wp_id (could be created but not saved!
+                if item_id:
+                    try:
+                        reply = wcapi.put('products/%s' % item_id, data).json()
+                        _logger.warning('Product %s lang %s updated!' % (
+                            item_id, lang))
+                    except:
+                        # TODO Check this error!!!!!!
+                        _logger.error('Not updated product %s lang %s!' % (
+                            item_id, lang))
+                        
+                else:
+                    reply = wcapi.post('products', data).json()
+                    try:
+                        return_id = reply['id']
+                        _logger.warning('Product %s lang %s created!' % (
+                            return_id, lang))
+                    except:
+                        raise osv.except_osv(
+                            _('Errore'), 
+                            _('Non connesso al server WP: %s' % reply),
+                            )
+                    
+                    # Update product WP ID:
+                    product_pool.write(cr, uid, [product.id], {
+                        field: return_id,
+                        }, context=context)
+
+    # -------------------------------------------------------------------------
+    # Function fields:
+    # -------------------------------------------------------------------------
+    def _get_album_images(self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate 
+        '''     
+        assert len(ids) == 1, 'Works only with one record a time'  
+
+        this_image = self.browse(cr, uid, ids, context=context)[0]
+        res = {}
+        server_album_ids = [
+            item.id for item in this_image.connector_id.album_ids]
+        
+        res[ids[0]] = [
+            image.id for image in this_image.product_id.image_ids \
+                if image.album_id.id in server_album_ids]             
+        return res        
+
+    _columns = {
+        'wp_dropbox_images_ids': fields.function(
+            _get_album_images, method=True, obj='product.image.file',
+            type='one2many', string='Album images', 
+            store=False),                        
+        'wordpress': fields.related(
+            'connector_id', 'wordpress', 
+            type='boolean', string='Wordpress'),    
+        }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

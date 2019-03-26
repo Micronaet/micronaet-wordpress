@@ -42,6 +42,10 @@
                     <attribute name="required">0</attribute>
                     <attribute name="attrs">{'required': [('wordpress', '=', False)], 'invisible': [('wordpress', '=', True)]}</attribute>
                 </field>
+                <field name="album_id" position="attributes">
+                    <attribute name="required">0</attribute>
+                    <attribute name="attrs">{'required': [('wordpress', '=', False)], 'invisible': [('wordpress', '=', True)]}</attribute>
+                </field>
                 
                 <!--<button name="publish_all_connector" position="before">
                     <button name="wordpress_import_category" string="Load category" type="object" attrs="{'invisible': [('wordpress','=',False)]}"/>
@@ -50,19 +54,60 @@
                 </button>-->
 
                 <field name="password" position="after">                     
-                    <group colspan="4" col="4" attrs="{'invisible': [('wordpress','=',False)]}">
+                    <group colspan="4" col="4" attrs="{'invisible': [('wordpress','=',False)]}">                    
                         <separator string="Wordpress block:" colspan="4"/>
                         <field name="wp_url" attrs="{'required': [('wordpress', '=', True)]}"/>
                         <field name="wp_key" attrs="{'required': [('wordpress', '=', True)]}"/>
+                        
                         <field name="wp_secret" attrs="{'required': [('wordpress', '=', True)]}"/>
                         <field name="wp_api" attrs="{'required': [('wordpress', '=', True)]}"/>
+                        
                         <field name="wp_version" attrs="{'required': [('wordpress', '=', True)]}"/>
-                        <newline/>
+                        <field name="album_ids" widget="many2many_tags"/>
                     </group>
                 </field>
             </field>
         </record>
 
+        <record model="ir.ui.view" id="view_product_product_web_server_form">
+            <field name="name">product.product.web.server.form</field>
+            <field name="model">product.product.web.server</field>
+            <field name="priority" eval="40" />
+            <field name="arch" type="xml">
+                <form string="String" version="7.0">        
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="connector_id" readonly="1"/>
+                            <field name="product_id" readonly="1" />
+                            <field name="published" />
+                            <field name="public_categ_id" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]"/>
+                            
+                            <separator string="Images:" colspan="4"/>
+                            <field name="wp_dropbox_images_ids" editable="bottom" colspan="4" nolabel="1">
+                                <tree string="Image album" colors="red:status=='product';grey:status=='removed';blue:status=='modify';green:status=='ok';brown:status=='format';black:variant==True" editable="bottom">
+                                     <field name="album_id" readonly="1" />
+                                     <field name="filename" readonly="1" />
+                                     <field name="variant" readonly="1" />
+                                     <field name="variant_code" readonly="1" />
+                                     <field name="status" readonly="1" />
+                                     <field name="dropbox_link" readonly="1" />
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>        
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_product_web_server_publish_image_tree">
+            <field name="name">product.product.publish.image.tree</field>
+            <field name="model">product.product.web.server</field>
+            <field name="inherit_id" ref="connector_web_product.view_product_web_server_publish_tree"/>
+            <field name="arch" type="xml">
+                <button name="publish_now" position="before">
+                    <field name="wordpress" invisible="1" />
+                    <button name="open_image_list_product" string="Image" type="object" attrs="{'invisible': [('wordpress','=',False)]}" icon="terp-purchase"/>
+                </button>
+            </field>
+        </record>    
     </data>
 </openerp>
-
