@@ -50,6 +50,15 @@ class ConnectorServer(orm.Model):
     def extract_wordpress_published_report(self, cr, uid, ids, context=None):
         ''' Extract list of published elements:
         '''
+        def get_image_list(self, product, album_ids, context=None):
+            ''' Fields function for calculate 
+            '''     
+            res = ''
+            for image in product.image_ids:
+                if image.album_id.id in album_ids:
+                    res += u'[%s: %s]' % (image.album_id.code, image.filename)
+            return res        
+        
         stock_status = True
 
         # Pool used:
@@ -59,15 +68,10 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         #                         Excel report:
         # ---------------------------------------------------------------------
-        # Partner:
+        connector = self.browse(cr, uid, ids, context=context)[0]
+        album_ids = [item.id for item in connector.album_ids]
+        
         ws_name = 'Prodotti'
-        row = 0
-        header = [
-            'Codice', 'Nome', 'Descrizione', 'Cat. Stat.', 'Magazzino', 
-            'Immagini'
-            ]
-        width = [15, 35, 50, 20, 5, 20]
-
         excel_pool.create_worksheet(ws_name)
 
         # Load formats:
@@ -76,16 +80,118 @@ class ConnectorServer(orm.Model):
         f_text = excel_pool.get_format('text')
         f_number = excel_pool.get_format('number')
 
-        # Setup columns
-        excel_pool.column_width(ws_name, width)
+        # ---------------------------------------------------------------------
+        # Published product:
+        # ---------------------------------------------------------------------
+        # Width
+        excel_pool.column_width(ws_name, [
+            15, 35, 50, 20, 
+            15, 20,
+            20, 20,
+            ])
             
         # Print header
+        row = 0
         excel_pool.write_xls_line(
-            ws_name, row, header, default_format=f_header)
+            ws_name, row, [
+            'Codice', 'Nome', 'Descrizione', 'Cat. Stat.', 
+            'Peso', 'Dimensioni',
+            'Magazzino', 
+            'Immagini'
+            ], default_format=f_header)
 
-        product_ids = product_pool.search(cr, uid, [], context=context)
+        product_ids = product_pool.search(cr, uid, [
+            ('statistic_category', '=', 'P01'),
+            ], context=context)
+        product_ids = product_ids[:50] # XXX Remove
         _logger.warning('Selected product: %s' % len(product_ids))
-        import pdb; pdb.set_trace()
+
+        not_selected = []
+        for product in sorted(product_pool.browse(
+                cr, uid, product_ids, context=context),
+                key = lambda p: (p.default_code, p.name),
+                ):
+            
+            # -----------------------------------------------------------------
+            # Parameters:
+            # -----------------------------------------------------------------
+            # Text:
+            description = product.large_description or ''
+                
+            # Images:    
+            image = get_image_list(self, product, album_ids, context=context)
+                    
+            # Stock:        
+            stock = int(product.mx_net_mrp_qty)
+            locked = int(product.mx_mrp_b_locked)
+            net = stock - locked
+            if net <= 0:
+                not_selected.append((product, 'no stock'))
+                continue
+                
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    product.default_code or '',
+                    product.name,
+                    description,                    
+                    product.statistic_category or '',
+                    product.weight,
+                    '%s x %s x %s' % (
+                        product.width, product.length, product.height),
+                    '%s (M.: %s - B. %s)' % (net, stock, locked),
+                    image,
+                    ], default_format=f_text)
+
+        # ---------------------------------------------------------------------
+        # Not selected product:
+        # ---------------------------------------------------------------------
+        ws_name = 'Scartati'
+        excel_pool.create_worksheet(ws_name)
+
+        # Width
+        excel_pool.column_width(ws_name, [
+            15, 30, 30,
+            ])
+
+        # Print header
+        row = 0
+        excel_pool.write_xls_line(
+            ws_name, row, [
+            'Codice', 'Nome', 'Motivo',
+            ], default_format=f_header)
+
+        for product, reason in not_selected:
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    product.default_code or '',
+                    product.name,
+                    reason,
+                    ], default_format=f_text)
+
+        # ---------------------------------------------------------------------
+        # Removed product:
+        # ---------------------------------------------------------------------
+        ws_name = 'Non inclusi'
+        excel_pool.create_worksheet(ws_name)
+
+        # Width
+        excel_pool.column_width(ws_name, [
+            15, 30, 30,
+            ])
+
+        product_ids = product_pool.search(cr, uid, [
+            ('statistic_category', '!=', 'P01'),
+            ], context=context)
+        _logger.warning('Not selected product: %s' % len(product_ids))
+
+        # Print header
+        row = 0
+        excel_pool.write_xls_line(
+            ws_name, row, [
+            'Codice', 'Nome', 'Categ. stat.',
+            ], default_format=f_header)
         for product in sorted(product_pool.browse(
                 cr, uid, product_ids, context=context),
                 key = lambda p: (p.default_code, p.name),
@@ -96,12 +202,8 @@ class ConnectorServer(orm.Model):
                 ws_name, row, [
                     product.default_code or '',
                     product.name,
-                    '',
                     product.statistic_category or '',
-                    0.0,
-                    '',                    
                     ], default_format=f_text)
 
         return excel_pool.return_attachment(cr, uid, 'web_product')
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
