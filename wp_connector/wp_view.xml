@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <openerp>
-    <data>
+    <data>    
         <!--connector_web_base.view_connector_server_tree-->
         <record model="ir.ui.view" id="view_wordpress_connector_tree">
             <field name="name">connector.server.tree</field>
@@ -17,6 +17,10 @@
             <field name="model">connector.server</field>
             <field name="inherit_id" ref="connector_web_base.view_connector_server_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//header/button" position="after">
+                    <button name="extract_wordpress_published_report" string="List published" type="object" confirm="Extract all information published, could take time, confirm?" class="oe_highlight" icon="gtk-print" attrs="{'invisible': [('wordpress','=',False)]}"/>
+                </xpath>
+
                 <field name="name" position="before">
                     <field name="wordpress" />
                 </field>

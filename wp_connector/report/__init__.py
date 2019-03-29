@@ -21,32 +21,7 @@
 #
 ###############################################################################
 
-{
-    'name': 'WordPress® Base setup',
-    'version': '0.1',
-    'category': 'Connector',
-    'description': '''    
-        WordPress connector via WooCommerce wrapper setup    
-        ''',
-    'author': 'Micronaet S.r.l. - Nicola Riolini',
-    'website': 'http://www.micronaet.it',
-    'license': 'AGPL-3',
-    'depends': [
-        'base',
-        'connector_web_base',
-        'connector_web_product',
-        'product_image_base', # for image management
-        'excel_export', 
-        ],
-    'init_xml': [],
-    'demo': [],
-    'data': [
-        'security/wp_group.xml',
-        #'security/ir.model.access.csv',    
-        
-        'wp_view.xml',
-        ],
-    'active': False,
-    'installable': True,
-    'auto_install': False,
-    }
+from . import extract_status_xlsx
+
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
