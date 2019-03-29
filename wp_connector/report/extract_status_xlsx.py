@@ -88,6 +88,7 @@ class ConnectorServer(orm.Model):
             15, 
             30, 70, 
             30, 70,
+            15,
             10, 10, 20, 
             20, 40,
             ])
@@ -99,14 +100,15 @@ class ConnectorServer(orm.Model):
             'Codice', 
             'Nome', 'Descrizione', 
             'Name', 'Description',
+            'Prezzo',
             'Cat. Stat.', 'Peso', 'Dimensioni',
-            'Magazzino', 'Immagini'
+            'Magazzino', 'Immagini'            
             ], default_format=f_header)
 
         product_ids = product_pool.search(cr, uid, [
             ('statistic_category', '=', 'P01'),
             ], context=context)
-        product_ids = product_ids[:100] # XXX Remove
+        #product_ids = product_ids[:100] # XXX Remove
         _logger.warning('Selected product: %s' % len(product_ids))
 
         # Italian report:
@@ -139,7 +141,8 @@ class ConnectorServer(orm.Model):
                     product.name,
                     product.large_description or '',  
                     '', 
-                    '',                  
+                    '',            
+                    product.lst_price,
                     product.statistic_category or '',
                     product.weight,
                     '%s x %s x %s' % (
