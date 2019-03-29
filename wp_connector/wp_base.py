@@ -201,7 +201,7 @@ class ProductProductWebServer(orm.Model):
                 # -------------------------------------------------------------
                 # Images block:
                 # -------------------------------------------------------------
-                images = []                    
+                images = [] 
                 for image in item.wp_dropbox_images_ids:
                     if image.dropbox_link:
                         images.append({

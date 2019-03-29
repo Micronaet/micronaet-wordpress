@@ -85,27 +85,32 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Width
         excel_pool.column_width(ws_name, [
-            15, 35, 50, 20, 
-            15, 20,
-            20, 20,
+            15, 
+            30, 70, 
+            30, 70,
+            10, 10, 20, 
+            20, 40,
             ])
             
         # Print header
         row = 0
         excel_pool.write_xls_line(
             ws_name, row, [
-            'Codice', 'Nome', 'Descrizione', 'Cat. Stat.', 
-            'Peso', 'Dimensioni',
-            'Magazzino', 
-            'Immagini'
+            'Codice', 
+            'Nome', 'Descrizione', 
+            'Name', 'Description',
+            'Cat. Stat.', 'Peso', 'Dimensioni',
+            'Magazzino', 'Immagini'
             ], default_format=f_header)
 
         product_ids = product_pool.search(cr, uid, [
             ('statistic_category', '=', 'P01'),
             ], context=context)
-        #product_ids = product_ids[:50] # XXX Remove
+        product_ids = product_ids[:100] # XXX Remove
         _logger.warning('Selected product: %s' % len(product_ids))
 
+        # Italian report:
+        selected = {}
         not_selected = []
         for product in sorted(product_pool.browse(
                 cr, uid, product_ids, context=context),
@@ -115,9 +120,6 @@ class ConnectorServer(orm.Model):
             # -----------------------------------------------------------------
             # Parameters:
             # -----------------------------------------------------------------
-            # Text:
-            description = product.large_description or ''
-                
             # Images:    
             image = get_image_list(self, product, album_ids, context=context)
                     
@@ -130,11 +132,14 @@ class ConnectorServer(orm.Model):
                 continue
                 
             row += 1
+            selected[product.id] = row # To update english lang
             excel_pool.write_xls_line(
                 ws_name, row, [
                     product.default_code or '',
                     product.name,
-                    description,                    
+                    product.large_description or '',  
+                    '', 
+                    '',                  
                     product.statistic_category or '',
                     product.weight,
                     '%s x %s x %s' % (
@@ -143,6 +148,25 @@ class ConnectorServer(orm.Model):
                     image,
                     ], default_format=f_text)
 
+
+        # English report (integration):
+        product_ids = product_pool.search(cr, uid, [
+            ('id', 'in', selected.keys()),
+            ], context=context)
+        _logger.warning('Update English text: %s' % len(product_ids))
+
+        ctx = context.copy()
+        ctx['lang'] = 'en_US'
+        for product in product_pool.browse(
+                cr, uid, product_ids, context=ctx):
+                
+            row = selected[product.id]
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    product.name,
+                    product.large_description or '',  
+                    ], default_format=f_text, col=3)
+        
         # ---------------------------------------------------------------------
         # Not selected product:
         # ---------------------------------------------------------------------
