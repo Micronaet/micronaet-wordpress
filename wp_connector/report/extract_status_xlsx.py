@@ -103,7 +103,7 @@ class ConnectorServer(orm.Model):
         product_ids = product_pool.search(cr, uid, [
             ('statistic_category', '=', 'P01'),
             ], context=context)
-        product_ids = product_ids[:50] # XXX Remove
+        #product_ids = product_ids[:50] # XXX Remove
         _logger.warning('Selected product: %s' % len(product_ids))
 
         not_selected = []
@@ -139,7 +139,7 @@ class ConnectorServer(orm.Model):
                     product.weight,
                     '%s x %s x %s' % (
                         product.width, product.length, product.height),
-                    '%s (M.: %s - B. %s)' % (net, stock, locked),
+                    '%s (M. %s - B. %s)' % (net, stock, locked),
                     image,
                     ], default_format=f_text)
 
@@ -150,9 +150,7 @@ class ConnectorServer(orm.Model):
         excel_pool.create_worksheet(ws_name)
 
         # Width
-        excel_pool.column_width(ws_name, [
-            15, 30, 30,
-            ])
+        excel_pool.column_width(ws_name, [15, 40, 30])
 
         # Print header
         row = 0
@@ -177,9 +175,7 @@ class ConnectorServer(orm.Model):
         excel_pool.create_worksheet(ws_name)
 
         # Width
-        excel_pool.column_width(ws_name, [
-            15, 30, 30,
-            ])
+        excel_pool.column_width(ws_name, [15, 40, 30])
 
         product_ids = product_pool.search(cr, uid, [
             ('statistic_category', '!=', 'P01'),
