@@ -1,0 +1,297 @@
+
+ATTENZIONE
+
+Questa documentazione include informazioni importanti (apitoken) che potrebbero compromettere la sicurezza del vostro accesso.
+L'apitoken è al pari del vostro username/password. Si consiglia fortemente di non condividere questi dati al di fuori della propria azienda e dal reparto IT di competenza.
+Versione: 1.01
+Ultimo aggiornamento: 17/04/2018
+API token utente: 3bd65a19c578c8d32f758416b533da3e
+Introduzione
+
+Di seguito le specifiche per la comunicazione software-to-software che vi permetterà di interfacciare i vostri sistemi web e/o gestionali per la prenotazione delle spedizioni.
+
+Ogni richiesta richiede un apitoken, il vostro è 3bd65a19c578c8d32f758416b533da3e ed è unico per la vostra utenza. Non condividetelo.
+Aggiornamenti
+
+17/04/2018 - Aggiunto l'attributo header->test alle richieste di creazione spedizione
+Errori
+
+In caso di errore, tutte le risposte conterranno l'elemento "error" e, nel caso di errori di compilazione specifici ad un campo, la sezione "error_form" contentente l'elenco dei campi errati con la loro motivazione.
+
+Qualsiasi risposta contenente l'elemento "error" è da considerarsi fallita.
+RISPOSTA
+
+{
+    "error": "Nazione IT non abilitata per il servizio DHLAIR",
+    "error_form": {
+        "dest_nazione": "Zona IT non abilitata"
+    }
+}
+
+Preventivo
+Metodo: POST
+URL: https://spedizioni.topfly.net/api/shippings/preview
+
+Permette validare la corretta compilazione della spedizione e di ottenere un preventivo dei costi.
+RICHIESTA
+
+La richiesta è divisa in due sezioni:
+header: intestazione della spedizione
+
+    codice_servizio: il servizio richiesto, vedasi tabella "servizi" dei tracciati
+    dest_*: sono i dati del destinatario.
+    valore_merce: il valore della spedizione, necessario per extra UE
+    imp_assicurato: il valore assicurato, richiede l'opzione "ASSICURAZIONE", va quindi aggiunto, in header, la voce service_option_ASSICURAZIONE con valore true.
+    imp_contrassegno: il valore assicurato, richiede l'opzione "CONTRASSEGNO", va quindi aggiunto, in header, la voce service_option_CONTRASSEGNO con valore true.
+    note_spedizioniere: note per lo spedizioniere 
+
+colli: array dei colli, ogni elemento è composto dai seguenti elementi
+
+    tipo: tipologia di collo: "merce" o "documenti"
+    pesodic: il peso da voi dichiarato
+    desc: descrizione del collo
+    p: profondita
+    l: larghezza
+    h: altezza 
+
+RISPOSTA
+
+La risposta conterrà una struttura con le informazioni della spedizione.
+Gli elementi di maggior interesse, in questo caso, è imp_totale che contiene il prezzo preventivato.
+RICHIESTA
+
+POST https://spedizioni.topfly.net/api/shippings/preview?apitoken=3bd65a19c578c8d32f758416b533da3e 
+Content-Type: application/json
+
+{
+	"header": {
+        "codice_servizio": "DHLAIR",
+        "dest_destinatario": "TEST SRL",
+        "dest_via": "Via di prova, 11",
+        "dest_comune": "BRESCIA",
+        "dest_cap": "25100",
+        "dest_provincia": "BS",
+        "dest_nazione": "IT",
+        "dest_tel": "3331122333",
+        "dest_email": "test@testme.it",
+        "dest_riferimento": "Mr.Gianni",
+        "valore_merce": 0,
+        "imp_assicurato": 0,
+        "imp_contrassegno": 10,
+        "note_spedizioniere": "Tappi di plastica",
+        "service_option_CONTRASSEGNO": true
+	},
+	"colli": [{
+			"tipo": "merce",
+			"pesodic": 4.5,
+			"desc": "una scatola",
+			"p": 20,
+			"l": 20,
+			"h": 20
+		},{
+			"tipo": "documenti",
+			"pesodic": 2.5,
+			"desc": "una busta pesante",
+			"p": 25,
+			"l": 30,
+			"h": 2
+		}
+	]
+}
+
+RISPOSTA
+
+{
+	"shipping": {
+		"id": null,
+		"dest_destinatario": "TEST SRL",
+		"dest_via": "Via di prova, 11",
+		"dest_comune": "BRESCIA",
+		"dest_cap": "25100",
+		"dest_provincia": "BS",
+		"dest_nazione": "IT",
+		"dest_tel": "3331122333",
+		"dest_email": "test@testme.it",
+		"dest_riferimento": "Mr.Gianni",
+		"colli": 2,
+		"peso": 7,
+		"valore_merce": 0,
+		"imp_assicurato": 0,
+		"imp_contrassegno": 10,
+		"imp_base": 8.5,
+		"imp_spese": 6,
+		"imp_suppl_carburante": 0.72,
+		"imp_totale": 15.22,
+		"codice_servizio": "DHLITALIA",
+		"codice_articolo": "DHLITALIAZONANAZ",
+		"lettera_di_vettura": null,
+		"revocata": 0,
+		"prenotata": 0,
+		"consegnata": 0,
+		"stampata": 0,
+		"domestica": 0,
+		"fase": 0,
+		"note_spedizioniere": "Tappi di plastica",
+		"note_fattura": "",
+		"dati_colli": {
+			"collo": [{
+					"tipo": "merce",
+					"desc": "una scatola",
+					"p": 20,
+					"l": 20,
+					"h": 20,
+					"pesodic": 4.5,
+					"pesotas": 4.5
+				}, {
+					"tipo": "documenti",
+					"desc": "una busta pesante",
+					"p": 25,
+					"l": 30,
+					"h": 2,
+					"pesodic": 2.5,
+					"pesotas": 2.5
+				}
+			]
+		}
+	}
+}
+
+Creazione
+Metodo: POST
+URL: https://spedizioni.topfly.net/api/shippings/create
+
+Permette di creare una spedizione.
+RICHIESTA
+
+La richiesta è identica al preventivo, l'unica differenza è l'url.
+
+E' inoltre possibile aggiungere nell'header l'attributo "test" che, se presente e valorizzato con qualsiasi valore non vuoto, il webservice non salvera' la spedizione e verra' ritornato l'id fittizio 999999999.
+Per le spedizioni definitive si prega di NON mettere l'attributo test!
+RISPOSTA
+
+La risposta segue la stessa struttura del preventivo, l'unica differenza è che in questo caso il valore id verrà valorizzato e sarà necessario salvarlo per poter eseguire ulteriori operazioni relative la spedizione generata.
+RICHIESTA
+
+POST https://spedizioni.topfly.net/api/shippings/create?apitoken=3bd65a19c578c8d32f758416b533da3e 
+Content-Type: application/json
+
+{
+    "header": {
+        "test": true,
+        "codice_servizio": "DHLAIR",
+        "dest_destinatario": "TEST SRL",
+        "dest_via": "Via di prova, 11",
+        "dest_comune": "BRESCIA",
+        "dest_cap": "25100",
+        "dest_provincia": "BS",
+        "dest_nazione": "IT",
+        "dest_tel": "3331122333",
+        "dest_email": "test@testme.it",
+        "dest_riferimento": "Mr.Gianni",
+        "valore_merce": 0,
+        "imp_assicurato": 0,
+        "imp_contrassegno": 10,
+        "note_spedizioniere": "Tappi di plastica",
+        "service_option_CONTRASSEGNO": true
+    },
+    "colli": [{
+            "tipo": "merce",
+            "pesodic": 4.5,
+            "desc": "una scatola",
+            "p": 20,
+            "l": 20,
+            "h": 20
+        },{
+            "tipo": "documenti",
+            "pesodic": 2.5,
+            "desc": "una busta pesante",
+            "p": 25,
+            "l": 30,
+            "h": 2
+        }
+    ]
+}
+
+RISPOSTA
+
+{
+    "id": 999999999,
+    "result": true,
+    "new": true,
+    "shipping": {
+        "id": 999999999,
+        "dest_destinatario": "TEST SRL",
+        "dest_via": "Via di prova, 11",
+        "dest_comune": "BRESCIA",
+        "dest_cap": "25100",
+        "dest_provincia": "BS",
+        "dest_nazione": "IT",
+        "dest_tel": "3331122333",
+        "dest_email": "test@testme.it",
+        "dest_riferimento": "Mr.Gianni",
+        "colli": 2,
+        "peso": 7,
+        "valore_merce": 0,
+        "imp_assicurato": 0,
+        "imp_contrassegno": 10,
+        "imp_base": 8.5,
+        "imp_spese": 6,
+        "imp_suppl_carburante": 0.72,
+        "imp_totale": 15.22,
+        "codice_servizio": "DHLITALIA",
+        "codice_articolo": "DHLITALIAZONANAZ",
+        "lettera_di_vettura": null,
+        "revocata": 0,
+        "prenotata": 0,
+        "consegnata": 0,
+        "stampata": 0,
+        "domestica": 0,
+        "fase": 0,
+        "note_spedizioniere": "Tappi di plastica",
+        "note_fattura": "",
+        "dati_colli": {
+        "collo": [{
+                "tipo": "merce",
+                "desc": "una scatola",
+                "p": 20,
+                "l": 20,
+                "h": 20,
+                "pesodic": 4.5,
+                "pesotas": 4.5
+            }, {
+                "tipo": "documenti",
+                "desc": "una busta pesante",
+                "p": 25,
+                "l": 30,
+                "h": 2,
+                "pesodic": 2.5,
+                "pesotas": 2.5
+            }
+        ]
+        }
+	}
+}
+
+Lettera di vettura (PDF)
+Metodo: GET
+URL: https://spedizioni.topfly.net/api/shippings/ID/label/pdf
+
+Ritorna il pdf contenente la lettera di vettura della spedizione con tale ID.
+RICHIESTA
+
+GET https://spedizioni.topfly.net/api/shippings/6978/label/pdf?apitoken=3bd65a19c578c8d32f758416b533da3e
+
+Revoca
+Metodo: DELETE
+URL: https://spedizioni.topfly.net/api/shippings/ID
+
+Spedizioni non ancora ritirate (fase < 5) possono essere revocate.
+RICHIESTA
+
+DELETE https://spedizioni.topfly.net/api/shippings/6978?apitoken=3bd65a19c578c8d32f758416b533da3e
+
+RISPOSTA
+
+{
+    "result": true
+}
