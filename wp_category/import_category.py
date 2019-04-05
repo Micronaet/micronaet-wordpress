@@ -79,7 +79,7 @@ class ProductPublicCategory(orm.Model):
         category_pool = self.pool.get('product.public.category')
         
         # ---------------------------------------------------------------------
-        # Read WP category:
+        #                        CREATE CATEGORY OPERATION:
         # ---------------------------------------------------------------------
         data = {
             'create': [],
@@ -99,64 +99,106 @@ class ProductPublicCategory(orm.Model):
         category_ids = category_pool.search(cr, uid, [
             ('parent_id', '=', False),
             ('connector_id', '=', server_id),
-            ], context=context)    
-        import pdb; pdb.set_trace()
+            ], context=context)
+
         for category in category_pool.browse(
                 cr, uid, category_ids, context=context):    
             wp_id = category.wp_id            
             odoo_id = category.id
             name = category.name
             
-            wp_data = {
+            record_data = {
                 'name': name,
                 'parent': 0,
                 'menu_order': category.sequence,
                 'display': 'default',
-                #'description': '',
-                #'count': 36,
-                #"id": 9,
-                #"slug": "clothing",
-                #"image": {
-                #  "id": 730,
-                #  "date_created": "2017-03-23T00:01:07",
-                #  "date_created_gmt": "2017-03-23T03:01:07",
-                #  "date_modified": "2017-03-23T00:01:07",
-                #  "date_modified_gmt": "2017-03-23T03:01:07",
-                #  "src": "https://example.com/wp-content/uploads/2017/03/T_2_front.jpg",
-                #  "name": "",
-                #  "alt": ""
-                #},
-                #"_links": {
-                #  "self": [
-                #    {
-                #      "href": "https://example.com/wp-json/wc/v3/products/categories/9"
-                #    }
-                #  ],
-                #  "collection": [
-                #    {
-                #      "href": "https://example.com/wp-json/wc/v3/products/categories"
-                #    }
-                #  ]
                 }
 
             # Check if present :
             if wp_id in wp_db: # Update
-                wp_data['id'] = wp_id
-                data['update'].append(wp_data)
+                record_data['id'] = wp_id
+                data['update'].append(record_data)
                 try:
                     del(wp_db[wp_id])
                 except:
                     pass # yet deleted (from Front end?)
     
             else: # Create:
-                data['create'].append(wp_data)
+                data['create'].append(record_data)
                 odoo_db[name] = odoo_id
-                    
-        data['delete'] = wp_ids.keys()
+
+        res = wcapi.post("products/categories/batch", data).json()
+        for record in res.get('create', ()):
+            wp_id = record['id']
+            if not wp_id:
+                # TODO manage error:
+                _logger.error('Not Updated wp_id for %s' % wp_id)
+                continue
+
+            name = record['name']
+            odoo_id = odoo_db.get(name, False)
+            if not odoo_id:
+                _logger.error('Not Updated wp_id for %s' % name)
+                continue
+
+            category_pool.write(cr, uid, odoo_id, {
+                'wp_id': record['id'],
+                }, context=context)
+            odoo_db[name] = odoo_id
+            _logger.info('Updated wp_id for %s' % name)
+
+        data = {
+            'create': [],
+            'update': [],
+            }
+        # ---------------------------------------------------------------------
+        # Read ODOO category child:
+        # ---------------------------------------------------------------------
+        category_ids = category_pool.search(cr, uid, [
+            ('parent_id', '!=', False),
+            ('connector_id', '=', server_id),
+            ], context=context)
+
+        for category in category_pool.browse(
+                cr, uid, category_ids, context=context):    
+            wp_id = category.wp_id            
+            odoo_id = category.id
+            name = category.name
+            
+            record_data = {
+                'name': name,
+                'parent': category.parent_id.wp_id,
+                'menu_order': category.sequence,
+                'display': 'default',
+                }
+
+            # Check if present :
+            if wp_id in wp_db: # Update
+                record_data['id'] = wp_id
+                data['update'].append(record_data)
+                try:
+                    del(wp_db[wp_id])
+                except:
+                    pass # yet deleted (from Front end?)
+    
+            else: # Create:
+                data['create'].append(record_data)
+                odoo_db[name] = odoo_id
+
+        # ---------------------------------------------------------------------
+        #                     UPDATE / DELETE CATEGORY OPERATION:
+        # ---------------------------------------------------------------------
+        data['delete'] = wp_db.keys()
         res = wcapi.post("products/categories/batch", data).json()
         
         # Update category with WP ID:
-        for record in res['create']:
+        for record in res.get('create', ()):
+            wp_id = record['id']
+            if not wp_id:
+                # TODO manage error:
+                _logger.error('Not Updated wp_id for %s' % wp_id)
+                continue
+                
             name = record['name']
             odoo_id = odoo_db.get(name, False)
             if not odoo_id:
@@ -167,7 +209,7 @@ class ProductPublicCategory(orm.Model):
                 'wp_id': record['id'],
                 }, context=context)
             _logger.info('Updated wp_id for %s' % name)
-      
+        return True
         # TODO      
         # Check updated
         # Check deleted
