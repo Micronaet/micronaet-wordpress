@@ -1,7 +1,18 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-
+        <record model="ir.ui.view" id="view_wordpress_connector_form">
+            <field name="name">connector.server.form</field>
+            <field name="model">connector.server</field>
+            <field name="inherit_id" ref="connector_web_base.view_connector_server_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header/button" position="after">
+                    <button name="publish_category_now" string="Publish category" type="object" 
+                        confirm="Depend on server configuration, import or export category, confirm?" 
+                        class="oe_highlight" icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
+                </xpath>
+            </field>
+        </record>    
     </data>
 </openerp>
 

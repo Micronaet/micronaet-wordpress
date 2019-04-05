@@ -33,11 +33,13 @@
     'license': 'AGPL-3',
     'depends': [
         'base',
+        'connector_web_product_category',
+        'wp_connector', 
         ],
     'init_xml': [],
     'demo': [],
     'data': [
-        #'security/ir.model.access.csv',    
+        #'security/ir.model.access.csv',
         'category_view.xml',
         ],
     'active': False,

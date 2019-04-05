@@ -76,11 +76,16 @@ class ConnectorServer(orm.Model):
         'album_ids': fields.many2many(
             'product.image.album', 
             'connector_album_rel', 'server_id', 'album_id', 'Album'),
+        'wp_category': fields.selection([
+            ('out', 'ODOO Original WP replicated'),
+            ('in', 'WP Original ODOO replicated'),
+            ], 'Category management', required=True),
         }
     
     _defaults = {
         'wp_api': lambda *x: True,
         'wp_version': lambda *x: 'wc/v3',        
+        'wp_category': lambda *x: 'out',
         }
 
 class ProductProduct(orm.Model):

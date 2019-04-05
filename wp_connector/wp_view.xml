@@ -67,6 +67,8 @@
                         <field name="wp_api" attrs="{'required': [('wordpress', '=', True)]}"/>
                         
                         <field name="wp_version" attrs="{'required': [('wordpress', '=', True)]}"/>
+                        
+                        <field name="wp_category" />
                         <field name="album_ids" widget="many2many_tags"/>
                     </group>
                 </field>
