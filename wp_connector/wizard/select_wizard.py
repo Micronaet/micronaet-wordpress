@@ -55,11 +55,12 @@ class WordpressSelectProductWizard(orm.TransientModel):
         product_pool = self.pool.get('product.product')
         connector_pool = self.pool.get('product.product.web.server')
         category_pool = self.pool.get('product.public.category')
+        model_pool = self.pool.get('ir.model.data')
         
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
 
         # Get wizard parameters:
-        product_ids = set(context.get('active_ids') or ())
+        active_ids = set(context.get('active_ids') or ())
         
         connector_id = wiz_browse.webserver_id.id
         code_start = wiz_browse.code_start
@@ -71,41 +72,94 @@ class WordpressSelectProductWizard(orm.TransientModel):
         # Generate Domain:
         # ---------------------------------------------------------------------
         domain = []
-        if code_start and not product_ids:
+        if code_start:
             domain.append(('default_code', '=ilike', '%s%%' % code_start))
 
         if statistic_category:
             domain.append(('statistic_category', '=', statistic_category))
         
-        product_ids = product_ids | set(
-            product_pool.search(cr, uid, domain, context=context))
+        # Last check:
+        if active_ids and not domain:            
+            # Keep only selected:
+            product_ids = active_ids
+        else:
+            # Mix selected and choosen:
+            product_ids = product_ids | set(
+                product_pool.search(cr, uid, domain, context=context))
         
+        # ---------------------------------------------------------------------
         # Select product yet linked to connector
-        connector_ids = set(connector_pool.search(cr, uid, [
+        # ---------------------------------------------------------------------
+        product_present_ids = connector_pool.search(cr, uid, [
             ('connector_id', '=', connector_id),
             ('product_id', 'in', tuple(product_ids)),
-            ], context=context))
+            ], context=context)
+
+        connector_ids = set(
+            item.product_id.id for item in connector_pool.browse(
+                cr, uid, product_present_ids, context=context))
         
         # ---------------------------------------------------------------------
         # Create new record:
         # ---------------------------------------------------------------------        
-        import pdb; pdb.set_trace()
-        for product_id in (product_ids - connector_ids):
-            connector_pool.create(cr, uid, {
+        return_ids = []
+        create_set = (product_ids - connector_ids)
+        for product_id in create_set:
+            data = {
                 'connector_id': connector_id,
                 'published': True,
-                'product_id': product_id,
-                'wordpress_categ_ids': [(6, 0, category_ids)],
-                }, context=context)
+                'product_id': product_id,                
+                }
+            if category_ids:
+                data['wordpress_categ_ids'] = [(6, 0, category_ids)]
+                _logger.info('Update category for new selection')
+            else:
+                _logger.warning('No update category for new selection')
+                    
+            return_ids.append(
+                connector_pool.create(cr, uid, data, context=context))
                         
         # ---------------------------------------------------------------------
         # Update present record:
         # ---------------------------------------------------------------------
-        update_ids = tuple((product_ids & connector_ids))
+        update_set = product_ids & connector_ids
+        update_ids = list(update_set)
+
         # Update category # XXX for now!      
-        connector_pool.write(cr, uid, update_ids, {
-            'wordpress_categ_ids': (6, 0, category_ids),            
-            }, context=context)
+        web_ids = connector_pool.search(cr, uid, [
+            ('product_id', 'in', tuple(product_ids)),
+            ], context=context)
+            
+        if web_ids and category_ids:
+            connector_pool.write(cr, uid, web_ids, {
+                'wordpress_categ_ids': [(6, 0, category_ids)],
+                }, context=context)
+            return_ids.extend(update_ids) # Add also update product
+            _logger.info('Update category for yet present')
+        else:
+            _logger.warning('No update category for yet present')
+        
+        tree_view_id = model_pool.get_object_reference(
+            cr, uid, 
+            'wp_connector', 'view_product_product_web_server_wp_tree')[1]
+        form_view_id = model_pool.get_object_reference(
+            cr, uid, 
+            'wp_connector', 'view_product_product_web_server_wp_form')[1]
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Selected'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            #'res_id': 1,
+            'res_model': 'product.product.web.server',
+            'view_id': tree_view_id,
+            'views': [(tree_view_id, 'tree'), (form_view_id, 'form')],
+            'domain': [('product_id', 'in', tuple(product_ids))],
+            'context': context,
+            'target': 'current', # 'new'
+            'nodestroy': False,
+            }
             
     _columns = {
         'webserver_id': fields.many2one(
@@ -115,6 +169,6 @@ class WordpressSelectProductWizard(orm.TransientModel):
         'wordpress_categ_ids': fields.many2many(
             'product.public.category', 'product_wp_wizard_rel', 
             'wizard_id', 'category_id', 
-            'Wordpress category'),
+            'Wordpress category', required=True),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
