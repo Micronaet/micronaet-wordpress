@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <!-- wordpress.select.product.wizard -->
+       <record id="product_publish_website_wizard_wp_view" model="ir.ui.view">
+            <field name="name">Publish website</field>
+            <field name="model">wordpress.select.product.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Wizard" version="7.0">
+                   <header>
+                       <button string="Cancel" special="cancel" />
+                       <button name="action_publish" string="Publish" type="object" icon="gtk-jump-to" class="oe_highlight" />
+                   </header>                   
+                   <group colspan="4" col="4">
+                        <separator string="Filter:" colspan="4"/>
+                        <field name="code_start" />
+                        <field name="statistic_category" />
+
+                        <separator string="Setup:" colspan="4"/>
+                        <field name="webserver_id" domain="[('wordpress', '=', True)]"/>
+                        <field name="wordpress_categ_ids" widget="many2many_tags"/>
+                   </group>
+                </form>
+            </field>
+      </record>
+      <record model="ir.actions.act_window" id="action_product_publish_website_wizard_form">
+          <field name="name">Wordpress select wizard</field>
+          <field name="res_model">wordpress.select.product.wizard</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="target">new</field>
+          <field name="view_id" ref="product_publish_website_wizard_wp_view"/>
+      </record> 
+      <act_window
+          id="act_product_publish_website_wordpress_wizard"
+          name="Wordpress selection"
+          res_model="wordpress.select.product.wizard"
+          src_model="product.product"
+          view_mode="form"
+          view_type="form"
+          target="new"
+          key2="client_action_multi"
+          />
+
+        <menuitem 
+            parent="menu_connector_worppress_configuration" 
+            id="menu_connector_worppress_product_selection" 
+            action="action_product_publish_website_wizard_form"
+            sequence="10"
+            />
+          
+    </data>
+</openerp>

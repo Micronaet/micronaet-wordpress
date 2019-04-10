@@ -45,6 +45,7 @@
         #'security/ir.model.access.csv',    
         
         'wp_view.xml',
+        'wizard/select_view.xml',
         ],
     'active': False,
     'installable': True,
