@@ -61,11 +61,15 @@ class ConnectorServer(orm.Model):
             consumer_key=connector.wp_key,
             consumer_secret=connector.wp_secret,
             wp_api=connector.wp_api,
-            version=connector.wp_version)
+            version=connector.wp_version,
+            timeout=10, # TODO parametrize
+            )
 
     _columns = {
         'wordpress': fields.boolean('Wordpress', help='Wordpress web server'),
 
+        'wp_all_category': fields.boolean('All category', 
+            help='Public all product with category and parent also'),
         'wp_url': fields.char('WP URL', size=180),
         'wp_key': fields.char('WP consumer key', size=180),
         'wp_secret': fields.char('WP consumer secret', size=180),
@@ -86,6 +90,7 @@ class ConnectorServer(orm.Model):
         'wp_api': lambda *x: True,
         'wp_version': lambda *x: 'wc/v3',        
         'wp_category': lambda *x: 'out',
+        'wp_all_category': lambda *x: True,
         }
 
 class ProductProduct(orm.Model):
@@ -170,6 +175,8 @@ class ProductProductWebServer(orm.Model):
         connector = first_proxy.connector_id
         db_context['album_id'] = first_proxy.connector_id.album_id.id
         context['album_id'] = first_proxy.connector_id.album_id.id
+        
+        wp_all_category = connector.wp_all_category
 
         # ---------------------------------------------------------------------
         # Publish image:
@@ -184,7 +191,7 @@ class ProductProductWebServer(orm.Model):
             db_context['lang'] = lang
                 
             for item in self.browse(cr, uid, ids, context=db_context):
-                product = item.product_id
+                product = item.product_id                
                 default_code = product.default_code or u''
                 name = item.force_name or product.name or u''
                 description = item.force_description or \
@@ -216,9 +223,14 @@ class ProductProductWebServer(orm.Model):
                 # -------------------------------------------------------------
                 # Category block:
                 # -------------------------------------------------------------
-                # TODO 
-                categories = [] #[{"id": 9,},{"id": 14}]
-                
+                categories = []
+                for category in item.wordpress_categ_ids:
+                    if not category.wp_id:
+                        continue
+                    categories.append({'id': category.wp_id })
+                    if wp_all_category and category.parent_id:
+                        categories.append({'id': category.parent_id.wp_id })
+
                 data = {
                     'name': name,
                     'type': u'simple',
@@ -235,11 +247,10 @@ class ProductProductWebServer(orm.Model):
                        'length': '%s' % product.length,
                        'height': '%s' % product.height,
                        }, 
-                    
                     'categories': categories,
                     'images': images,
                     }
-
+                
                 if lang != 'it_IT':
                     data['translation_of'] = wp_id
                     data['lang'] = 'en'
@@ -251,8 +262,9 @@ class ProductProductWebServer(orm.Model):
                 else:
                     item_id = wp_id
                     field = 'wp_id'
-                                    
+
                 # TODO manage error and wp_id (could be created but not saved!
+                #  MANAGE {u'message': u'SKU non valido o duplicato', u'code': u'product_invalid_sku', u'data': {u'status': 400, u'resource_id': 70}}")
                 if item_id:
                     try:
                         reply = wcapi.put('products/%s' % item_id, data).json()
@@ -299,6 +311,10 @@ class ProductProductWebServer(orm.Model):
         return res        
 
     _columns = {
+        'wordpress_categ_ids': fields.many2many(
+            'product.public.category', 'product_wp_rel', 
+            'product_id', 'category_id', 
+            'Wordpress category'),
         'wp_dropbox_images_ids': fields.function(
             _get_album_images, method=True, obj='product.image.file',
             type='one2many', string='Album images', 
@@ -307,5 +323,4 @@ class ProductProductWebServer(orm.Model):
             'connector_id', 'wordpress', 
             type='boolean', string='Wordpress'),    
         }
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

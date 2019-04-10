@@ -65,11 +65,13 @@
                         
                         <field name="wp_secret" attrs="{'required': [('wordpress', '=', True)]}"/>
                         <field name="wp_api" attrs="{'required': [('wordpress', '=', True)]}"/>
-                        
+
                         <field name="wp_version" attrs="{'required': [('wordpress', '=', True)]}"/>
-                        
-                        <field name="wp_category" />
                         <field name="album_ids" widget="many2many_tags"/>
+
+                        <field name="wp_category" />
+                        <field name="wp_all_category" />
+
                     </group>
                 </field>
             </field>
@@ -114,6 +116,83 @@
                     <button name="open_image_list_product" string="Image" type="object" attrs="{'invisible': [('wordpress','=',False)]}" icon="terp-purchase"/>
                 </button>
             </field>
-        </record>    
+        </record>
+
+        <!--CUSTOM: product.product.web.server-->        
+        <record model="ir.ui.view" id="view_product_product_web_server_wp_tree">
+            <field name="name">product.product.web.server.tree</field>
+            <field name="model">product.product.web.server</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <tree string="Product" color="red:published==False">
+                    <field name="published"/>
+                    <field name="product_id" readonly="1" invisible="context.get('embedded_view', False)"/>
+                    <field name="connector_id" />
+                    <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]"/>
+                    <field name="force_name"/>
+                    <field name="force_description"/>
+                    <field name="force_q_x_pack"/>
+                    <field name="force_ean13"/>
+                    <field name="force_price"/>
+                    <field name="force_min_stock"/>
+                    <button name="publish_now" string="Publish now" type="object"/>
+                </tree>           
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_product_product_web_server_wp_form">
+            <field name="name">product.product.web.server.form</field>
+            <field name="model">product.product.web.server</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <form string="Product" version="7.0">
+                    <header>
+                        <button name="publish_now" string="Publish now" type="object" />
+                    </header>
+                    <group colspan="4" col="4">
+                        <field name="published"/>
+                        <field name="connector_id" />                        
+                        <field name="product_id" readonly="1" invisible="context.get('embedded_view', False)"/>
+
+                        <field name="wordpress_categ_ids" domain="[('connector_id','=',connector_id),('enabled','=',True)]" widget="many2many_tags"/>
+
+                        <field name="force_name"/>
+                        <field name="force_description"/>
+                        <field name="force_q_x_pack"/>
+                        <field name="force_ean13"/>
+                        <field name="force_price"/>
+                        <field name="force_min_stock"/>
+                    </group>    
+                </form>           
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_product_product_web_server_form">
+            <field name="name">Product published</field>
+            <field name="res_model">product.product.web.server</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_product_product_web_server_wp_tree"/>
+            <field name="context">{'form_view_ref': 'wp_connector.view_product_product_web_server_wp_form'}</field>
+            <field name="domain">[('connector_id.wordpress', '=', True)]</field>
+        </record>
+        <menuitem 
+            parent="connector_web_base.menu_webserver_root" 
+            id="menu_connector_worppress_root" 
+            name="Manage Wordpress"
+            sequence="20"
+            />
+            <menuitem 
+                parent="menu_connector_worppress_root" 
+                id="menu_connector_worppress_product" 
+                action="action_product_product_web_server_form"
+                sequence="10"
+                />
+            <menuitem 
+                parent="menu_connector_worppress_root" 
+                id="menu_connector_worppress_configuration" 
+                name="Configuration"
+                sequence="99"
+                />
+            
+          
     </data>
 </openerp>

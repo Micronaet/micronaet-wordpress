@@ -74,28 +74,28 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         #                         WORDPRESS Publish:
         # ---------------------------------------------------------------------
-        product_pool = self.pool.get('product.product')
         server_pool = self.pool.get('connector.server')
         category_pool = self.pool.get('product.public.category')
         
         # ---------------------------------------------------------------------
         #                        CREATE CATEGORY OPERATION:
         # ---------------------------------------------------------------------
-        data = {
-            'create': [],
-            'update': [],
-            #'delete': [],
-            }
+        data = {'create': [], 'update': []}
 
-        wcapi = server_pool.get_wp_connector(cr, uid, server_id, context=context)
+        # Read WP Category present:
+        wcapi = server_pool.get_wp_connector(
+            cr, uid, server_id, context=context)
+
         wp_db = {}
-        for record in wcapi.get("products/categories").json():
+        wp_name = {} # TODO manage!
+        for record in wcapi.get('products/categories').json():
             wp_db[record['id']] = record['name']
-        
+            wp_name[(False, record['name'])] = record['id']
+
         # ---------------------------------------------------------------------
         # Read ODOO category parent:
         # ---------------------------------------------------------------------
-        odoo_db = {}
+        odoo_parent = {}
         category_ids = category_pool.search(cr, uid, [
             ('parent_id', '=', False),
             ('connector_id', '=', server_id),
@@ -125,9 +125,9 @@ class ProductPublicCategory(orm.Model):
     
             else: # Create:
                 data['create'].append(record_data)
-                odoo_db[name] = odoo_id
+                odoo_parent[name] = odoo_id
 
-        res = wcapi.post("products/categories/batch", data).json()
+        res = wcapi.post('products/categories/batch', data).json()
         for record in res.get('create', ()):
             wp_id = record['id']
             if not wp_id:
@@ -136,7 +136,7 @@ class ProductPublicCategory(orm.Model):
                 continue
 
             name = record['name']
-            odoo_id = odoo_db.get(name, False)
+            odoo_id = odoo_parent.get(name, False)
             if not odoo_id:
                 _logger.error('Not Updated wp_id for %s' % name)
                 continue
@@ -144,16 +144,14 @@ class ProductPublicCategory(orm.Model):
             category_pool.write(cr, uid, odoo_id, {
                 'wp_id': record['id'],
                 }, context=context)
-            odoo_db[name] = odoo_id
+            odoo_parent[name] = odoo_id
             _logger.info('Updated wp_id for %s' % name)
 
-        data = {
-            'create': [],
-            'update': [],
-            }
         # ---------------------------------------------------------------------
         # Read ODOO category child:
         # ---------------------------------------------------------------------
+        odoo_child = {}
+        data = {'create': [], 'update': []}
         category_ids = category_pool.search(cr, uid, [
             ('parent_id', '!=', False),
             ('connector_id', '=', server_id),
@@ -183,13 +181,20 @@ class ProductPublicCategory(orm.Model):
     
             else: # Create:
                 data['create'].append(record_data)
-                odoo_db[name] = odoo_id
+                odoo_child[name] = odoo_id
 
         # ---------------------------------------------------------------------
         #                     UPDATE / DELETE CATEGORY OPERATION:
         # ---------------------------------------------------------------------
         data['delete'] = wp_db.keys()
-        res = wcapi.post("products/categories/batch", data).json()
+        try:
+            res = wcapi.post('products/categories/batch', data).json()
+        except:
+            raise osv.except_osv(
+                _('Error'), 
+                _('Wordpress server not answer, timeout!'),
+                )
+                
         
         # Update category with WP ID:
         for record in res.get('create', ()):
@@ -200,7 +205,7 @@ class ProductPublicCategory(orm.Model):
                 continue
                 
             name = record['name']
-            odoo_id = odoo_db.get(name, False)
+            odoo_id = odoo_child.get(name, False)
             if not odoo_id:
                 _logger.error('Not Updated wp_id for %s' % name)
                 continue
