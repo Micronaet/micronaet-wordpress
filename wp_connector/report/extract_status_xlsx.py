@@ -64,7 +64,8 @@ class ConnectorServer(orm.Model):
         # Pool used:
         excel_pool = self.pool.get('excel.writer')
         product_pool = self.pool.get('product.product')
-        
+        connector_pool = self.pool.get('product.product.web.server')
+
         # ---------------------------------------------------------------------
         #                         Excel report:
         # ---------------------------------------------------------------------
@@ -105,10 +106,14 @@ class ConnectorServer(orm.Model):
             'Magazzino', 'Immagini'            
             ], default_format=f_header)
 
-        product_ids = product_pool.search(cr, uid, [
-            ('statistic_category', '=', 'P01'),
+        connector_ids = connector_pool.search(cr, uid, [
+            ('connector_id', '=', connector.id),
             ], context=context)
-        #product_ids = product_ids[:100] # XXX Remove
+        product_ids = [item.product_id.id for item in connector_pool.browse(
+            cr, uid, connector_ids, context=context)]    
+        #product_ids = product_pool.search(cr, uid, [
+        #    ('statistic_category', '=', 'P01'),
+        #    ], context=context)
         _logger.warning('Selected product: %s' % len(product_ids))
 
         # Italian report:
