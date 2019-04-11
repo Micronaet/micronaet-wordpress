@@ -62,7 +62,7 @@ class ConnectorServer(orm.Model):
             consumer_secret=connector.wp_secret,
             wp_api=connector.wp_api,
             version=connector.wp_version,
-            timeout=10, # TODO parametrize
+            timeout=40, # TODO parametrize
             )
 
     _columns = {
@@ -134,15 +134,32 @@ class ProductProductWebServer(orm.Model):
 
     _inherit = 'product.product.web.server'
     
+    # -------------------------------------------------------------------------
     # Utility:
+    # -------------------------------------------------------------------------
     def get_existence_for_product(self, product):
         ''' Return real existence for web site
         '''
         stock_quantity = int(product.mx_net_mrp_qty - product.mx_mrp_b_locked)
         if stock_quantity < 0:
             return 0
-        return stock_quantity    
+        return stock_quantity
+           
+    def get_category_block_for_publish(self, item):
+        ''' Get category block for data record WP
+        '''     
+        categories = []
+        for category in item.wordpress_categ_ids:
+            if not category.wp_id:
+                continue
+            categories.append({'id': category.wp_id })
+            if category.connector_id.wp_all_category and category.parent_id:
+                categories.append({'id': category.parent_id.wp_id})
+        return categories        
         
+    # -------------------------------------------------------------------------
+    # Button event:
+    # -------------------------------------------------------------------------
     def open_image_list_product(self, cr, uid, ids, context=None):
         '''
         '''
@@ -201,8 +218,6 @@ class ProductProductWebServer(orm.Model):
         connector = first_proxy.connector_id
         db_context['album_id'] = first_proxy.connector_id.album_id.id
         context['album_id'] = first_proxy.connector_id.album_id.id
-        
-        wp_all_category = connector.wp_all_category
 
         # ---------------------------------------------------------------------
         # Publish image:
@@ -212,12 +227,12 @@ class ProductProductWebServer(orm.Model):
         # ---------------------------------------------------------------------
         # Publish product (lang management)
         # ---------------------------------------------------------------------
-        import pdb; pdb.set_trace()
+        translation_of = {}
+
         # First lang = original, second traslate
+        # XXX Note: default lang must be the first!
         for lang in ('it_IT', 'en_US'): #self._langs:  
             db_context['lang'] = lang
-            translation_of = False
-            
             for item in self.browse(cr, uid, ids, context=db_context):
                 product = item.product_id                
                 default_code = product.default_code or u''
@@ -233,13 +248,9 @@ class ProductProductWebServer(orm.Model):
                 lang_wp_ids = {}
                 for product_lang in item.lang_wp_ids:
                     lang_wp_ids[product_lang.lang] = product_lang.wp_id
-                    # Default lang reference for translated product:
-                    if lang == default_lang:
-                        translation_of = product_lang.wp_id
                 
                 stock_quantity = self.get_existence_for_product(product)
-                # fabric
-                # type_of_material
+                # fabric, type_of_material
 
                 # Wordpress ID in lang to update:
                 wp_id = lang_wp_ids.get(lang, False) 
@@ -257,13 +268,7 @@ class ProductProductWebServer(orm.Model):
                 # -------------------------------------------------------------
                 # Category block:
                 # -------------------------------------------------------------
-                categories = []
-                for category in item.wordpress_categ_ids:
-                    if not category.wp_id:
-                        continue
-                    categories.append({'id': category.wp_id })
-                    if wp_all_category and category.parent_id:
-                        categories.append({'id': category.parent_id.wp_id })
+                categories = self.get_category_block_for_publish(item)
 
                 data = {
                     'name': name,
@@ -284,9 +289,9 @@ class ProductProductWebServer(orm.Model):
                     'categories': categories,
                     'images': images,
                     }
-                
+
                 if lang != default_lang:
-                    data['translation_of'] = translation_of
+                    data['translation_of'] = translation_of.get(default_code)
                     wp_lang = lang[:2] #'en'
                     data['lang'] = wp_lang
                     data['sku'] = '%s.%s' % (data['sku'], wp_lang.upper())
@@ -300,19 +305,19 @@ class ProductProductWebServer(orm.Model):
                         # TODO Check this error!!!!!!
                         _logger.error('Not updated product %s lang %s!' % (
                             wp_id, lang))
-                        
                 else:
+                    # Create (will update wp_id from now)
                     reply = wcapi.post('products', data).json()
                     try:
                         if reply.get('code', False) == 'product_invalid_sku':
-                            returned_id = reply['data']['resource_id']
+                            wp_id = reply['data']['resource_id']
                             _logger.error('Product %s lang %s duplicated!' % (
-                                returned_id, lang))
+                                wp_id, lang))
                             
                         else:    
-                            returned_id = reply['id']
-                        _logger.warning('Product %s lang %s created!' % (
-                            returned_id, lang))
+                            wp_id = reply['id']
+                            _logger.warning('Product %s lang %s created!' % (
+                                wp_id, lang))
                     except:
                         raise osv.except_osv(
                             _('Errore'), 
@@ -323,8 +328,14 @@ class ProductProductWebServer(orm.Model):
                     lang_pool.create(cr, uid, {
                         'web_id': item.id,
                         'lang': lang,
-                        'wp_id': returned_id,
+                        'wp_id': wp_id,
                         }, context=context)
+
+                # Save translation of ID (for language product)        
+                if lang == default_lang: 
+                    translation_of[default_code] = wp_id
+        
+        return True
 
     # -------------------------------------------------------------------------
     # Function fields:
@@ -332,17 +343,15 @@ class ProductProductWebServer(orm.Model):
     def _get_album_images(self, cr, uid, ids, fields, args, context=None):
         ''' Fields function for calculate 
         '''     
-        assert len(ids) == 1, 'Works only with one record a time'  
-
-        this_image = self.browse(cr, uid, ids, context=context)[0]
         res = {}
-        server_album_ids = [
-            item.id for item in this_image.connector_id.album_ids]
-        
-        res[ids[0]] = [
-            image.id for image in this_image.product_id.image_ids \
-                if image.album_id.id in server_album_ids]             
-        return res        
+        for current in self.browse(cr, uid, ids, context=context):
+            server_album_ids = [
+                item.id for item in current.connector_id.album_ids]
+            
+            res[current.id] = [
+                image.id for image in current.product_id.image_ids \
+                    if image.album_id.id in server_album_ids]             
+        return res
 
     _columns = {
         'wordpress_categ_ids': fields.many2many(

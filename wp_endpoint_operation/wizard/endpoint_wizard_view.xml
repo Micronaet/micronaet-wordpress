@@ -13,7 +13,7 @@
                    <group colspan="4" col="2">
                         <field name="connector_id" widget="selection"/>
                         <separator string="Common operations:" colspan="2"/>
-                        <button name="action_publish_all" string="Publish all" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" />
+                        <button name="action_publish_all" string="Publish all" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" confirm="Will publish all selected product, long operation, confirm?"/>
                         <button name="action_put_category" string="Upload category" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" />
                         <button name="action_get_category" string="Download category" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" />
                         <button name="action_existence" string="Update product existence" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" />
