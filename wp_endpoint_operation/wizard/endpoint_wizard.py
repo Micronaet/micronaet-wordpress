@@ -61,6 +61,64 @@ class ConnectorServer(orm.Model):
     # -------------------------------------------------------------------------
     # Procedure endpoint:
     # -------------------------------------------------------------------------
+    def wp_get_all_wp_id_published(self, cr, uid, ids, context=None):
+        ''' Get all WP ID present in WP site
+        '''
+        # TODO Mark for the 2 company used!!!!!!!!!!!!
+        # Pool used:
+        item_pool = self.pool.get('product.product.web.server')
+        
+        # Open connector:
+        wcapi = self.get_wp_connector(cr, uid, ids, context=context)
+        reply = wcapi.put('products').json()
+        return [record['id'] for record in reply]
+
+    def wp_vein_status(self, cr, uid, ids, context=None):
+        ''' A - B
+            Return; A not in B, A and B, B not in A
+            
+        '''
+        wp_published_ids = self.wp_get_all_wp_id_published(
+            cr, uid, ids, context=context)
+            
+        item_pool = self.pool.get('product.product.web.server')
+        item_ids = self.wp_get_all_selected(cr, uid, ids, context=context)    
+        wp_odoo_ids = []
+        for item in item_pool.browse(cr, uid, item_ids, context=context):
+            for published in item.lang_wp_ids:
+                wp_odoo_ids.append(published.wp_id)
+        
+        # Set part for results:        
+        A = set(wp_odoo_ids)
+        B = set(wp_published_ids)
+        return (
+            A - B,
+            A & B,
+            B - A,
+            )
+
+    def wp_unpublish_not_present_product(self, cr, uid, ids, context=None):
+        ''' Unpublish WP product not in ODOO
+        '''
+        A, AB, B = self.wp_vein_status(cr, uid, ids, context=context)
+        unpublish_ids = B
+
+        for wp_id in unpublish_ids:
+            reply = wcapi.put('products/%s' % wp_id, {
+                'status': 'private',
+                }).json()
+            _logger.warning('Unpublished ID: %s [%s]!' % wp_id)
+
+    def wp_delete_not_present_product(self, cr, uid, ids, context=None):
+        ''' Unpublish WP product not in ODOO
+        '''
+        A, AB, B = self.wp_vein_status(cr, uid, ids, context=context)
+        remove_ids = B
+
+        for wp_id in remove_ids:
+            reply = wcapi.put('products/%s?force=true' % wp_id).json()
+            _logger.warning('Removed ID: %s [%s]!' % wp_id)
+
     def wp_publish_now_all(self, cr, uid, ids, context=None):
         ''' Update all product:
         '''
@@ -68,16 +126,14 @@ class ConnectorServer(orm.Model):
         item_ids = self.wp_get_all_selected(cr, uid, ids, context=context)
         return item_pool.publish_now(cr, uid, item_ids, context=context)
             
-    def wp_update_product_existence(cr, uid, ids, context=None):
+    def wp_update_product_existence(self, cr, uid, ids, context=None):
         ''' Update existence in WP via connector
         '''
         # Pool used:
         item_pool = self.pool.get('product.product.web.server')
         
         # Open connector:
-        connector_id = ids[0]
-        wcapi = self.get_wp_connector(
-            cr, uid, connector_id, context=context)
+        wcapi = self.get_wp_connector(cr, uid, ids, context=context)
 
         # ---------------------------------------------------------------------
         # Update product selected:
@@ -94,15 +150,14 @@ class ConnectorServer(orm.Model):
                 _logger.warning('Stock q. updated ID: %s!' % wp_id)
         return True
 
-    def wp_update_product_category(cr, uid, ids, context=None):
+    def wp_update_product_category(self, cr, uid, ids, context=None):
         ''' Update category in WP via connector
         '''
         # Pool used:
         item_pool = self.pool.get('product.product.web.server')
         
         # Open connector:
-        connector_id = ids[0]
-        wcapi = self.get_wp_connector(cr, uid, connector_id, context=context)
+        wcapi = self.get_wp_connector(cr, uid, ids, context=context)
 
         # ---------------------------------------------------------------------
         # Update product selected:
@@ -143,8 +198,9 @@ class WpEndpointOperationWizard(orm.TransientModel):
         '''
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
         connector_pool = self.pool.get('connector.server')
+        connector_id = wiz_browse.connector_id.id
         return connector_pool.wp_update_product_category(
-            cr, uid, ids, context=context)
+            cr, uid, [connector_id], context=context)
 
     def action_get_category(self, cr, uid, ids, context=None):
         ''' Load all category
@@ -159,7 +215,7 @@ class WpEndpointOperationWizard(orm.TransientModel):
         connector_id = wiz_browse.connector_id.id
 
         return connector_pool.wp_update_product_existence(
-            cr, uid, connector_id, context=context)
+            cr, uid, [connector_id], context=context)
 
     def action_image(self, cr, uid, ids, context=None):
         '''
@@ -170,6 +226,26 @@ class WpEndpointOperationWizard(orm.TransientModel):
         '''
         '''
         return True
+
+    def action_unpublish_not_present(self, cr, uid, ids, context=None):
+        '''
+        '''
+        wiz_browse = self.browse(cr, uid, ids, context=context)[0]
+        connector_pool = self.pool.get('connector.server')
+        connector_id = wiz_browse.connector_id.id
+
+        return connector_pool.wp_unpublish_not_present_product(
+            cr, uid, ids, context=context)
+
+    def action_remove_not_present(self, cr, uid, ids, context=None):
+        '''
+        '''
+        wiz_browse = self.browse(cr, uid, ids, context=context)[0]
+        connector_pool = self.pool.get('connector.server')
+        connector_id = wiz_browse.connector_id.id
+
+        return connector_pool.wp_remove_not_present_product(
+            cr, uid, ids, context=context)
 
     _columns = {
         'connector_id': fields.many2one(

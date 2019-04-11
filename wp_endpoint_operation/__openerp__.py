@@ -36,6 +36,7 @@
         'base',
         'wp_connector',
         'wp_category',
+        'stock', # for picking movement
         ],
     'init_xml': [],
     'demo': [],

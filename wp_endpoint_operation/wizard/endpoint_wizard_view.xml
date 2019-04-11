@@ -19,6 +19,9 @@
                         <button name="action_existence" string="Update product existence" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" />
                         <button name="action_image" string="Upload image" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" />
                         <button name="action_product_category" string="Update product category" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" />
+
+                        <button name="action_unpublish_not_present" string="Unpublish not present" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" confirm="Will unpublish all product not more present, confirm?"/>
+                        <button name="action_remove_not_present" string="Unpublish not present" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" confirm="Will remove all product not more present, confirm?"/>
                    </group>
                 </form>
             </field>
