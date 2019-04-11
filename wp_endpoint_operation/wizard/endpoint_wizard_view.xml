@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <!-- wp.endpoint.operation.wizard -->
+       <record id="wp_endpoint_operation_wizard_view" model="ir.ui.view">
+            <field name="name">Endpoint operations</field>
+            <field name="model">wp.endpoint.operation.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Wizard" version="7.0">
+                   <header>
+                       <button string="Cancel" special="cancel" />
+                   </header>                   
+                   <group colspan="4" col="2">
+                        <field name="connector_id" widget="selection"/>
+                        <separator string="Common operations:" colspan="2"/>
+                        <button name="action_publish_all" string="Publish all" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" />
+                        <button name="action_put_category" string="Upload category" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" />
+                        <button name="action_get_category" string="Download category" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" />
+                        <button name="action_existence" string="Update product existence" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" />
+                        <button name="action_image" string="Upload image" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" />
+                        <button name="action_product_category" string="Update product category" type="object" icon="gtk-jump-to" class="oe_highlight" colspan="2" />
+                   </group>
+                </form>
+            </field>
+      </record>
+      <record model="ir.actions.act_window" id="action_wp_endpoint_operation_wizard_view">
+          <field name="name">WP Common operation</field>
+          <field name="res_model">wp.endpoint.operation.wizard</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="target">new</field>
+          <field name="view_id" ref="wp_endpoint_operation_wizard_view"/>
+      </record>
+      <menuitem 
+          parent="wp_connector.menu_connector_worppress_configuration" 
+          id="menu_action_wp_endpoint_operation_wizard_view" 
+          action="action_wp_endpoint_operation_wizard_view"
+          sequence="10"
+          />
+      
+    </data>
+</openerp>
