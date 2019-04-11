@@ -161,6 +161,14 @@
                         <field name="force_ean13"/>
                         <field name="force_price"/>
                         <field name="force_min_stock"/>
+                        
+                        <separator string="Wordpress line:" colspan="4"/>
+                        <field name="lang_wp_ids" colspan="4" readonly="1" nolabel="1">
+                            <tree string="WP ID:" editable="botttom">
+                                <field name="name" />
+                                <field name="wp_id" />                               
+                            </tree>
+                        </field>
                     </group>    
                 </form>           
             </field>
