@@ -114,12 +114,34 @@ class ProductImageFile(orm.Model):
         'dropbox_link': fields.char('Dropbox link', size=100),
         }
 
+class ProductProductWebServerLang(orm.Model):
+    """ Model name: ProductProductWebServer ID for lang
+    """
+
+    _name = 'product.product.web.server.lang'
+    _description = 'Product published with lang'
+    
+    _columns = {
+        'web_id': fields.many2one('product.product.web.server', 'Link'),
+        'lang': fields.char('Lang code', size=10, required=True),
+        'wp_id': fields.integer('WP ID', required=True),
+        }
+
 class ProductProductWebServer(orm.Model):
     """ Model name: ProductProductWebServer
     """
 
     _inherit = 'product.product.web.server'
     
+    # Utility:
+    def get_existence_for_product(self, product):
+        ''' Return real existence for web site
+        '''
+        stock_quantity = int(product.mx_net_mrp_qty - product.mx_mrp_b_locked)
+        if stock_quantity < 0:
+            return 0
+        return stock_quantity    
+        
     def open_image_list_product(self, cr, uid, ids, context=None):
         '''
         '''
@@ -148,6 +170,8 @@ class ProductProductWebServer(orm.Model):
             Used also for more than one elements (not only button click)
             Note all product must be published on the same web server!            
         '''    
+        default_lang = 'it_IT'
+        
         if context is None:    
             context = {}
 
@@ -189,6 +213,7 @@ class ProductProductWebServer(orm.Model):
         # First lang = original, second traslate
         for lang in ('it_IT', 'en_US'): #self._langs:  
             db_context['lang'] = lang
+            translation_of = False
                 
             for item in self.browse(cr, uid, ids, context=db_context):
                 product = item.product_id                
@@ -200,16 +225,22 @@ class ProductProductWebServer(orm.Model):
                 price = u'%s' % (item.force_price or product.lst_price)
                 weight = u'%s' % product.weight
                 status = 'publish' if item.published else 'private'
-                stock_quantity =\
-                    int(product.mx_net_mrp_qty - product.mx_mrp_b_locked)
-                if stock_quantity < 0:
-                    stock_quantity = 0
+                
+                # Read Wordpress ID in lang:
+                lang_wp_ids = {}
+                for lang in product.lang_wb_ids:                
+                    lang_wp_ids[lang.name] = lang.wp_id
+                    # Default lang reference for translated product:
+                    if lang == default_lang:
+                        translation_of = lang.wp_id
+                
+                stock_quantity = self.get_existence_for_product(product)
                 # fabric
                 # type_of_material
 
-                wp_id = product.wp_id
-                wp_lang_id = product.wp_lang_id
-                
+                # Wordpress ID in lang to update:
+                wp_id = product.get(lang, False) 
+
                 # -------------------------------------------------------------
                 # Images block:
                 # -------------------------------------------------------------
@@ -251,34 +282,28 @@ class ProductProductWebServer(orm.Model):
                     'images': images,
                     }
                 
-                if lang != 'it_IT':
-                    data['translation_of'] = wp_id
-                    data['lang'] = 'en'
-                    data['sku'] = '%s_en' % data['sku']
-                    
-                    # To update or write:
-                    item_id = wp_lang_id
-                    field = 'wp_lang_id'
-                else:
-                    item_id = wp_id
-                    field = 'wp_id'
+                if lang != default_lang:
+                    data['translation_of'] = translation_of
+                    wp_lang = lang[:2] #'en'
+                    data['lang'] = wp_lang
+                    data['sku'] = '%s_%s' % (data['sku'], wp_lang)
 
                 # TODO manage error and wp_id (could be created but not saved!
                 #  MANAGE {u'message': u'SKU non valido o duplicato', u'code': u'product_invalid_sku', u'data': {u'status': 400, u'resource_id': 70}}")
-                if item_id:
+                if wp_id:
                     try:
-                        reply = wcapi.put('products/%s' % item_id, data).json()
+                        reply = wcapi.put('products/%s' % wp_id, data).json()
                         _logger.warning('Product %s lang %s updated!' % (
-                            item_id, lang))
+                            wp_id, lang))
                     except:
                         # TODO Check this error!!!!!!
                         _logger.error('Not updated product %s lang %s!' % (
-                            item_id, lang))
+                            wp_id, lang))
                         
                 else:
                     reply = wcapi.post('products', data).json()
                     try:
-                        return_id = reply['id']
+                        returned_id = reply['id']
                         _logger.warning('Product %s lang %s created!' % (
                             return_id, lang))
                     except:
@@ -288,8 +313,10 @@ class ProductProductWebServer(orm.Model):
                             )
                     
                     # Update product WP ID:
-                    product_pool.write(cr, uid, [product.id], {
-                        field: return_id,
+                    item_pool.create(cr, uid, {
+                        'web_id': item.id,
+                        'name': lang,
+                        'wp_id': returned_id,
                         }, context=context)
 
     # -------------------------------------------------------------------------
@@ -322,5 +349,7 @@ class ProductProductWebServer(orm.Model):
         'wordpress': fields.related(
             'connector_id', 'wordpress', 
             type='boolean', string='Wordpress'),    
+        'lang_wp_ids': fields.one2many(
+            'product.product.web.server.lang', 'web_id', 'WD ID'),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

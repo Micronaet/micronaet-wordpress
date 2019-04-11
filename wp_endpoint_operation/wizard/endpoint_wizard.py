@@ -41,6 +41,39 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+class ConnectorServer(orm.Model):
+    """ Model name: ConnectorServer
+    """    
+    _inherit = 'connector.server'
+
+    # -------------------------------------------------------------------------
+    # Procedure:
+    # -------------------------------------------------------------------------
+    def wp_update_product_existence(cr, uid, ids, context=None):
+        ''' Update existence in WP via connector
+        '''
+        connector_id = ids[0]
+        # Pool used:
+        item_pool = self.pool.get('product.product.web.server')
+        
+        # Open connector:
+        wcapi = self.get_wp_connector(
+            cr, uid, connector_id, context=context)
+
+        # ---------------------------------------------------------------------
+        # Update product selected:
+        # ---------------------------------------------------------------------
+        item_ids = item_pool.search(cr, uid, [
+            ('connector_id', '=', connector_id),
+            ], context=context)
+        
+        for item in item_pool.browse(cr, uid, item_ids, context=context):
+            product = item.product_id 
+            stock_quantity = item_pool.get_existence_for_product(product)
+            
+                
+                    
+        return True
 
 class WpEndpointOperationWizard(orm.TransientModel):
     ''' Wizard for endpoint operations
@@ -53,9 +86,6 @@ class WpEndpointOperationWizard(orm.TransientModel):
     def action_publish_all(self, cr, uid, ids, context=None):
         ''' Event for button done
         '''
-        if context is None: 
-            context = {}        
-        
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
         connector_id = wiz_browse.connector_id.id
 
@@ -72,9 +102,12 @@ class WpEndpointOperationWizard(orm.TransientModel):
         return True
 
     def action_existence(self, cr, uid, ids, context=None):
+        ''' Publish only existence
         '''
-        '''
-        return True
+        wiz_browse = self.browse(cr, uid, ids, context=context)[0]
+        connector_id = wiz_browse.connector_id.id
+        return wp_update_product_existence(
+            cr, uid, connector_id, context=context)
 
     def action_image(self, cr, uid, ids, context=None):
         '''
