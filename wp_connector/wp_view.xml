@@ -164,8 +164,8 @@
                         
                         <separator string="Wordpress line:" colspan="4"/>
                         <field name="lang_wp_ids" colspan="4" readonly="1" nolabel="1">
-                            <tree string="WP ID:" editable="botttom">
-                                <field name="name" />
+                            <tree string="WP ID:" editable="bottom">
+                                <field name="lang" />
                                 <field name="wp_id" />                               
                             </tree>
                         </field>

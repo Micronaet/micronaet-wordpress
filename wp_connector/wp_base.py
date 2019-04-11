@@ -120,6 +120,7 @@ class ProductProductWebServerLang(orm.Model):
 
     _name = 'product.product.web.server.lang'
     _description = 'Product published with lang'
+    _rec_name = 'lang'    
     
     _columns = {
         'web_id': fields.many2one('product.product.web.server', 'Link'),
@@ -187,6 +188,7 @@ class ProductProductWebServer(orm.Model):
         _logger.warning('Publish all on wordpress:')
         product_pool = self.pool.get('product.product')
         server_pool = self.pool.get('connector.server')
+        lang_pool = self.pool.get('product.product.web.server.lang')
 
         wcapi = server_pool.get_wp_connector(
             cr, uid, [first_proxy.connector_id.id], context=context)
@@ -210,11 +212,12 @@ class ProductProductWebServer(orm.Model):
         # ---------------------------------------------------------------------
         # Publish product (lang management)
         # ---------------------------------------------------------------------
+        import pdb; pdb.set_trace()
         # First lang = original, second traslate
         for lang in ('it_IT', 'en_US'): #self._langs:  
             db_context['lang'] = lang
             translation_of = False
-                
+            
             for item in self.browse(cr, uid, ids, context=db_context):
                 product = item.product_id                
                 default_code = product.default_code or u''
@@ -228,18 +231,18 @@ class ProductProductWebServer(orm.Model):
                 
                 # Read Wordpress ID in lang:
                 lang_wp_ids = {}
-                for lang in product.lang_wb_ids:                
-                    lang_wp_ids[lang.name] = lang.wp_id
+                for product_lang in item.lang_wp_ids:
+                    lang_wp_ids[product_lang.lang] = product_lang.wp_id
                     # Default lang reference for translated product:
                     if lang == default_lang:
-                        translation_of = lang.wp_id
+                        translation_of = product_lang.wp_id
                 
                 stock_quantity = self.get_existence_for_product(product)
                 # fabric
                 # type_of_material
 
                 # Wordpress ID in lang to update:
-                wp_id = product.get(lang, False) 
+                wp_id = lang_wp_ids.get(lang, False) 
 
                 # -------------------------------------------------------------
                 # Images block:
@@ -286,10 +289,8 @@ class ProductProductWebServer(orm.Model):
                     data['translation_of'] = translation_of
                     wp_lang = lang[:2] #'en'
                     data['lang'] = wp_lang
-                    data['sku'] = '%s_%s' % (data['sku'], wp_lang)
+                    data['sku'] = '%s.%s' % (data['sku'], wp_lang.upper())
 
-                # TODO manage error and wp_id (could be created but not saved!
-                #  MANAGE {u'message': u'SKU non valido o duplicato', u'code': u'product_invalid_sku', u'data': {u'status': 400, u'resource_id': 70}}")
                 if wp_id:
                     try:
                         reply = wcapi.put('products/%s' % wp_id, data).json()
@@ -303,9 +304,15 @@ class ProductProductWebServer(orm.Model):
                 else:
                     reply = wcapi.post('products', data).json()
                     try:
-                        returned_id = reply['id']
+                        if reply.get('code', False) == 'product_invalid_sku':
+                            returned_id = reply['data']['resource_id']
+                            _logger.error('Product %s lang %s duplicated!' % (
+                                returned_id, lang))
+                            
+                        else:    
+                            returned_id = reply['id']
                         _logger.warning('Product %s lang %s created!' % (
-                            return_id, lang))
+                            returned_id, lang))
                     except:
                         raise osv.except_osv(
                             _('Errore'), 
@@ -313,9 +320,9 @@ class ProductProductWebServer(orm.Model):
                             )
                     
                     # Update product WP ID:
-                    item_pool.create(cr, uid, {
+                    lang_pool.create(cr, uid, {
                         'web_id': item.id,
-                        'name': lang,
+                        'lang': lang,
                         'wp_id': returned_id,
                         }, context=context)
 

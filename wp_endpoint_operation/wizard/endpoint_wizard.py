@@ -38,7 +38,6 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DATETIME_FORMATS_MAP, 
     float_compare)
 
-
 _logger = logging.getLogger(__name__)
 
 class ConnectorServer(orm.Model):
@@ -70,8 +69,6 @@ class ConnectorServer(orm.Model):
         for item in item_pool.browse(cr, uid, item_ids, context=context):
             product = item.product_id 
             stock_quantity = item_pool.get_existence_for_product(product)
-            
-                
                     
         return True
 
@@ -129,5 +126,3 @@ class WpEndpointOperationWizard(orm.TransientModel):
         }    
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-
-
