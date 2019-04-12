@@ -160,6 +160,17 @@ class ProductProductWebServer(orm.Model):
     # -------------------------------------------------------------------------
     # Button event:
     # -------------------------------------------------------------------------
+    def clean_reference(self, cr, uid, ids, context=None):
+        ''' Delete all link
+        '''
+        assert len(ids) == 1, 'Works only with one record a time'
+        
+        lang_pool = self.pool.get('product.product.web.server.lang')
+        lang_ids = lang_pool.search(cr, uid, [
+            ('web_id', '=', ids[0]),
+            ], context=context)
+        return lang_pool.unlink(cr, uid, lang_ids, context=context)    
+        
     def open_image_list_product(self, cr, uid, ids, context=None):
         '''
         '''
@@ -270,32 +281,38 @@ class ProductProductWebServer(orm.Model):
                 # -------------------------------------------------------------
                 categories = self.get_category_block_for_publish(item)
 
+                wp_lang = lang[:2]# only it, en
                 data = {
                     'name': name,
-                    'type': u'simple',
-                    'regular_price': price,
                     'description': description,
                     'short_description': name,
                     'sku': default_code,
-                    'weight': weight,
-                    'stock_quantity': stock_quantity,
-                    'status': status,
-                    'catalog_visibility': 'visible', #catalog  search  hidden
-                    'dimensions': {
-                       'width': '%s' % product.width, 
-                       'length': '%s' % product.length,
-                       'height': '%s' % product.height,
-                       }, 
+                    'lang': wp_lang,
+                    # It doesn't update:
                     'categories': categories,
-                    'images': images,
                     }
 
-                if lang != default_lang:
-                    data['translation_of'] = translation_of.get(default_code)
-                    wp_lang = lang[:2] #'en'
-                    data['lang'] = wp_lang
-                    data['sku'] = '%s.%s' % (data['sku'], wp_lang.upper())
-
+                if lang == default_lang:
+                    data.update({
+                        'type': u'simple',
+                        'sku': default_code,
+                        'regular_price': price,
+                        'weight': weight,
+                        'stock_quantity': stock_quantity,
+                        'status': status,
+                        'catalog_visibility': 'visible', #catalog  search  hidden
+                        'dimensions': {
+                           'width': '%s' % product.width, 
+                           'length': '%s' % product.length,
+                           'height': '%s' % product.height,
+                           }, 
+                        'images': images,
+                        })
+                else:
+                    data.update({
+                        'translation_of': translation_of.get(default_code),
+                        })
+                print data
                 if wp_id:
                     try:
                         reply = wcapi.put('products/%s' % wp_id, data).json()
@@ -303,8 +320,8 @@ class ProductProductWebServer(orm.Model):
                             wp_id, lang))
                     except:
                         # TODO Check this error!!!!!!
-                        _logger.error('Not updated product %s lang %s!' % (
-                            wp_id, lang))
+                        _logger.error('Not updated ID %s lang %s [%s]!' % (
+                            wp_id, lang, reply))
                 else:
                     # Create (will update wp_id from now)
                     reply = wcapi.post('products', data).json()

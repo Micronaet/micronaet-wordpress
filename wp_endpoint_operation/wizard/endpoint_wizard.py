@@ -70,7 +70,7 @@ class ConnectorServer(orm.Model):
         
         # Open connector:
         wcapi = self.get_wp_connector(cr, uid, ids, context=context)
-        reply = wcapi.put('products').json()
+        reply = wcapi.get('products').json()
         return [record['id'] for record in reply]
 
     def wp_vein_status(self, cr, uid, ids, context=None):
@@ -103,21 +103,29 @@ class ConnectorServer(orm.Model):
         A, AB, B = self.wp_vein_status(cr, uid, ids, context=context)
         unpublish_ids = B
 
+        # Open connector:
+        wcapi = self.get_wp_connector(cr, uid, ids, context=context)
+
         for wp_id in unpublish_ids:
             reply = wcapi.put('products/%s' % wp_id, {
                 'status': 'private',
                 }).json()
-            _logger.warning('Unpublished ID: %s [%s]!' % wp_id)
+            _logger.warning('Unpublished ID: %s!' % wp_id)
 
-    def wp_delete_not_present_product(self, cr, uid, ids, context=None):
+    def wp_remove_not_present_product(self, cr, uid, ids, context=None):
         ''' Unpublish WP product not in ODOO
         '''
         A, AB, B = self.wp_vein_status(cr, uid, ids, context=context)
         remove_ids = B
 
+        # Open connector:
+        wcapi = self.get_wp_connector(cr, uid, ids, context=context)
+
         for wp_id in remove_ids:
-            reply = wcapi.put('products/%s?force=true' % wp_id).json()
-            _logger.warning('Removed ID: %s [%s]!' % wp_id)
+            #reply = wcapi.delete('products/%s?force=true' % wp_id).json()
+            reply = wcapi.delete('products/%s' % wp_id).json()
+            print reply
+            _logger.warning('Removed ID: %s!' % wp_id)
 
     def wp_publish_now_all(self, cr, uid, ids, context=None):
         ''' Update all product:
@@ -223,9 +231,14 @@ class WpEndpointOperationWizard(orm.TransientModel):
         return True
 
     def action_product_category(self, cr, uid, ids, context=None):
+        ''' 
         '''
-        '''
-        return True
+        wiz_browse = self.browse(cr, uid, ids, context=context)[0]
+        connector_pool = self.pool.get('connector.server')
+        connector_id = wiz_browse.connector_id.id
+
+        return connector_pool.wp_update_product_category(
+            cr, uid, [connector_id], context=context)        
 
     def action_unpublish_not_present(self, cr, uid, ids, context=None):
         '''
@@ -235,7 +248,7 @@ class WpEndpointOperationWizard(orm.TransientModel):
         connector_id = wiz_browse.connector_id.id
 
         return connector_pool.wp_unpublish_not_present_product(
-            cr, uid, ids, context=context)
+            cr, uid, [connector_id], context=context)
 
     def action_remove_not_present(self, cr, uid, ids, context=None):
         '''
@@ -245,7 +258,7 @@ class WpEndpointOperationWizard(orm.TransientModel):
         connector_id = wiz_browse.connector_id.id
 
         return connector_pool.wp_remove_not_present_product(
-            cr, uid, ids, context=context)
+            cr, uid, [connector_id], context=context)
 
     _columns = {
         'connector_id': fields.many2one(

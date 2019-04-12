@@ -84,7 +84,7 @@ class WordpressSelectProductWizard(orm.TransientModel):
             product_ids = active_ids
         else:
             # Mix selected and choosen:
-            product_ids = product_ids | set(
+            product_ids = active_ids | set(
                 product_pool.search(cr, uid, domain, context=context))
         
         # ---------------------------------------------------------------------

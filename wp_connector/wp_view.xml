@@ -162,7 +162,8 @@
                         <field name="force_price"/>
                         <field name="force_min_stock"/>
                         
-                        <separator string="Wordpress line:" colspan="4"/>
+                        <separator string="Wordpress line:" colspan="3"/>
+                        <button name="clean_reference" string="Clean reference" colspan="1" type="object" confirm="Do you want delete reference with Wordpress linked product?"/>
                         <field name="lang_wp_ids" colspan="4" readonly="1" nolabel="1">
                             <tree string="WP ID:" editable="bottom">
                                 <field name="lang" />
