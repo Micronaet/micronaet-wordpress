@@ -88,10 +88,40 @@ class ProductPublicCategory(orm.Model):
         wcapi = server_pool.get_wp_connector(
             cr, uid, server_id, context=context)
 
+        # ---------------------------------------------------------------------        
+        # Read all category:
+        # ---------------------------------------------------------------------        
+        theres_data = True
+        parameter = {
+            'per_page': 10,
+            'page': 0,
+            }
+        current_wp_category = []
+        while theres_data:
+            try:
+                test_error = res['data']['status'] == 400
+                raise osv.except_osv(
+                    _('Category error:'), 
+                    _('Error getting category list: %s' % (res, ) ),
+                    )
+            except:
+                pass # no error
+                
+            parameter['page'] += 1
+            res = wcapi.get(
+                'products/categories', params=parameter).json()
+                
+            if res:
+                current_wp_category.extend(res)
+            else:
+                theres_data = False
+
+            
+        # ---------------------------------------------------------------------        
+        # Loading used dict DB
+        # ---------------------------------------------------------------------        
         wp_db = {}
         wp_name = {} # TODO manage!
-
-        current_wp_category = wcapi.get('products/categories').json()
         for record in current_wp_category:
             wp_db[record['id']] = record['name']
             wp_name[(record['parent'] or False, record['name'])] = record['id']
