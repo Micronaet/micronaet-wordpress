@@ -44,6 +44,17 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+class ResPartner(orm.Model):
+    """ Model name: Res partner
+    """
+
+    _inherit = 'res.partner'
+    
+    _columns = {
+        'wordpress':fields.boolean(
+            'Wordpress', help='Created from wordpress order'),
+        }
+
 class SaleOrder(orm.Model):
     """ Model name: Sale Order
     """
@@ -74,7 +85,10 @@ class ConnectorServer(orm.Model):
             context = {}
 
         # Pool used:
-        order_pool = self.pool.get('wordpress.sale.order') # TODO sale.order?
+        order_pool = self.pool.get('sale.order')
+        partner_pool = self.pool.get('res.partner')
+        country_pool = self.pool.get('res.country')
+        state_pool = self.pool.get('res.country.state')
         
         _logger.warning('Read order on wordpress:')
 
@@ -144,6 +158,7 @@ class ConnectorServer(orm.Model):
         "customer_ip_address": "",
         "customer_user_agent": "",
         "customer_note": "",
+        
         "billing": {
           "first_name": "John",
           "last_name": "Doe",
@@ -157,6 +172,7 @@ class ConnectorServer(orm.Model):
           "email": "john.doe@example.com",
           "phone": "(555) 555-5555"
         },
+
         "shipping": {
           "first_name": "John",
           "last_name": "Doe",
@@ -168,6 +184,7 @@ class ConnectorServer(orm.Model):
           "postcode": "94103",
           "country": "US"
         },
+
         "payment_method": "bacs",
         "payment_method_title": "Direct Bank Transfer",
         "transaction_id": "",
@@ -292,6 +309,7 @@ class ConnectorServer(orm.Model):
                 key=lambda x: x['date_created']):
             wp_id = record['id']
             name = record['number']
+            date_order = record['date_created']
             
             order_ids = order_pool.search(cr, uid, [
                 ('connector_id', '=', connector_id),
@@ -308,13 +326,98 @@ class ConnectorServer(orm.Model):
                 #    'sequence': record['menu_order'], 
                 #    }, context=context)                    
                 #_logger.info('Update %s' % name)    
-            else:                   
-                # TODO 
-                #odoo_id = order_pool.create(cr, uid, {
-                #    'wp_id': wp_id,
-                #    'name': name,
-                #    }, context=context)
+            else:
+                # -------------------------------------------------------------
+                # Partner creation:
+                # -------------------------------------------------------------
+                record_partner = record['billing']
+                state_code = record_partner['country']
+                country_code = record_partner['state']
+
+                # -------------------------------------------------------------
+                # State:
+                # -------------------------------------------------------------
+                state_ids = state_pool.search(cr, uid, [
+                    ('code', '=', state_code),
+                    ], context=context)
+                if state_ids:
+                    state_id = state_ids[0]    
+                else:
+                    # TODO create state?
+                    state_id = False    
+
+                # -------------------------------------------------------------
+                # Country:
+                # -------------------------------------------------------------
+                country_ids = country_pool.search(cr, uid, [
+                    ('code', '=', country_code),
+                    ], context=context)
+                if country_ids:
+                    country_id = country_ids[0]    
+                else:
+                    # TODO create state?
+                    country_id = False    
+                
+                partner_ids = partner_pool.search(cr, uid, [
+                    ('email', '=', record_partner['email']),
+                    ], context=context)
+                partner_data = {
+                    'name': '%s %s %s' % (
+                        record_partner['company'],
+                        record_partner['first_name'],
+                        record_partner['last_name'],                                                
+                        ),
+                    'street': record_partner['address_1'],
+                    'street2': record_partner['address_2'],
+                    'city': record_partner['city'],
+                    'zip': record_partner['postcode'],
+                    'email': record_partner['email'],
+                    'phone': record_partner['phone'],
+                    'city_id': city_id,
+                    'country_id': country_id,  
+                    
+                    }    
+                if partner_ids:
+                    partner_id = partner_ids[0]
+                    #`TODO update?
+                else:                
+                    partner_data['wordpress'] = True                    
+                    partner_id = partner_pool.create(
+                        cr, uid, partner_data, context=context)
+
+                # -------------------------------------------------------------
+                # Destination:                
+                # -------------------------------------------------------------
+                destination_partner_id = False
+                            
+                order_header = {
+                    'connector_id': connector_id,
+                    'wp_id': wp_id,
+                    'client_order_ref': name,
+                    'partner_id': partner_id,
+                    'destination_partner_id': destination_partner_id,
+                    'date_order': date_order,
+                    }    
+
+                # -------------------------------------------------------------
+                # Update onchange partner data:
+                # -------------------------------------------------------------
+                onchange = order_pool.onchange_partner_id(
+                    cr, uid, False, partner_id, context=context).get(
+                        'value', {})
+                order_header.update(onchange)    
+
+                # -------------------------------------------------------------
+                # Order creation:
+                # -------------------------------------------------------------
+                order_id = order_pool.create(
+                    cr, uid, order_header, context=context)
+                # TODO Workflow trigger:    
                 _logger.info('Create %s' % name)    
-            # line_items    
+                
+                # -------------------------------------------------------------
+                # Line creation:
+                # -------------------------------------------------------------
+                # line_items    
         return True
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
