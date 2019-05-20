@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wordpress_connector_order_button_form">
+            <field name="name">connector.server.load.order.form</field>
+            <field name="model">connector.server</field>
+            <field name="inherit_id" ref="connector_web_base.view_connector_server_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header/button" position="after">
+                    <button name="get_sale_order_now" string="Load order" type="object" 
+                        confirm="Load order procedure, confirm?" 
+                        class="oe_highlight" icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
+                </xpath>
+            </field>
+        </record>    
+    </data>
+</openerp>

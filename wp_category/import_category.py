@@ -68,7 +68,6 @@ class ProductPublicCategory(orm.Model):
         if context is None:    
             context = {}
 
-        server_id = ids[0]
         _logger.warning('Publish category all on wordpress:')
         
         # ---------------------------------------------------------------------
@@ -86,7 +85,7 @@ class ProductPublicCategory(orm.Model):
 
         # Read WP Category present:
         wcapi = server_pool.get_wp_connector(
-            cr, uid, server_id, context=context)
+            cr, uid, connector_id, context=context)
 
         # ---------------------------------------------------------------------        
         # Read all category:
@@ -98,6 +97,10 @@ class ProductPublicCategory(orm.Model):
             }
         current_wp_category = []
         while theres_data:
+            parameter['page'] += 1
+            res = wcapi.get(
+                'products/categories', params=parameter).json()
+
             try:
                 test_error = res['data']['status'] == 400
                 raise osv.except_osv(
@@ -105,11 +108,7 @@ class ProductPublicCategory(orm.Model):
                     _('Error getting category list: %s' % (res, ) ),
                     )
             except:
-                pass # no error
-                
-            parameter['page'] += 1
-            res = wcapi.get(
-                'products/categories', params=parameter).json()
+                pass # no error               
                 
             if res:
                 current_wp_category.extend(res)
@@ -180,8 +179,8 @@ class ProductPublicCategory(orm.Model):
         _logger.warning('Mode OUT Wordpress category export')
         odoo_parent = {}
         category_ids = category_pool.search(cr, uid, [
+            ('connector_id', '=', connector_id),
             ('parent_id', '=', False),
-            ('connector_id', '=', server_id),
             ], context=context)
 
         for category in category_pool.browse(
@@ -244,8 +243,8 @@ class ProductPublicCategory(orm.Model):
         odoo_child = {}
         data = {'create': [], 'update': []}
         category_ids = category_pool.search(cr, uid, [
-            ('parent_id', '!=', False),
             ('connector_id', '=', server_id),
+            ('parent_id', '!=', False),
             ], context=context)
 
         for category in category_pool.browse(
