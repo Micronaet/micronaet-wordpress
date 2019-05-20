@@ -327,9 +327,8 @@ class ConnectorServer(orm.Model):
                 #    }, context=context)                    
                 #_logger.info('Update %s' % name)    
             else:
-                # -------------------------------------------------------------
-                # Partner creation:
-                # -------------------------------------------------------------
+                import pdb; pdb.set_trace()
+                # Read data:
                 record_partner = record['billing']
                 state_code = record_partner['country']
                 country_code = record_partner['state']
@@ -358,6 +357,9 @@ class ConnectorServer(orm.Model):
                     # TODO create state?
                     country_id = False    
                 
+                # -------------------------------------------------------------
+                # Partner creation:
+                # -------------------------------------------------------------
                 partner_ids = partner_pool.search(cr, uid, [
                     ('email', '=', record_partner['email']),
                     ], context=context)
