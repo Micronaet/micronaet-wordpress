@@ -127,6 +127,7 @@ class WordpressSelectProductWizard(orm.TransientModel):
 
         # Update category # XXX for now!      
         web_ids = connector_pool.search(cr, uid, [
+            ('connector_id', '=', connector_id),
             ('product_id', 'in', tuple(product_ids)),
             ], context=context)
             
