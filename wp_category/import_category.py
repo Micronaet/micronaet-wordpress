@@ -88,10 +88,10 @@ class ProductPublicCategory(orm.Model):
 
         wp_db = {}
         wp_name = {} # TODO manage!
+        import pdb; pdb.set_trace()
         for record in wcapi.get('products/categories').json():
             wp_db[record['id']] = record['name']
             wp_name[(False, record['name'])] = record['id']
-        import pdb; pdb.set_trace()
         # ---------------------------------------------------------------------
         # Read ODOO category parent:
         # ---------------------------------------------------------------------
