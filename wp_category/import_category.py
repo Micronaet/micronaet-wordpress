@@ -91,9 +91,10 @@ class ProductPublicCategory(orm.Model):
         import pdb; pdb.set_trace()
         for record in wcapi.get('products/categories').json():
             wp_db[record['id']] = record['name']
-            wp_name[(False, record['name'])] = record['id']
+            wp_name[(record['parent'] or False, record['name'])] = record['id']
+            
         # ---------------------------------------------------------------------
-        # Read ODOO category parent:
+        # Read ODOO PARENT category:
         # ---------------------------------------------------------------------
         odoo_parent = {}
         category_ids = category_pool.search(cr, uid, [
@@ -114,8 +115,10 @@ class ProductPublicCategory(orm.Model):
                 'display': 'default',
                 }
 
-            # Check if present :
-            if wp_id in wp_db: # Update
+            # Check if present :            
+            key = (False, name)
+            
+            if wp_id in wp_db or key in wp_name: # Update (ID or Name present)
                 record_data['id'] = wp_id
                 data['update'].append(record_data)
                 try:
@@ -162,16 +165,19 @@ class ProductPublicCategory(orm.Model):
             wp_id = category.wp_id            
             odoo_id = category.id
             name = category.name
+            parent_wp_id = category.parent_id.wp_id
             
             record_data = {
                 'name': name,
-                'parent': category.parent_id.wp_id,
+                'parent': parent_wp_id,
                 'menu_order': category.sequence,
                 'display': 'default',
                 }
 
             # Check if present :
-            if wp_id in wp_db: # Update
+            key = (parent_wp_id, name)
+
+            if wp_id in wp_db or key in wp_name: # Update
                 record_data['id'] = wp_id
                 data['update'].append(record_data)
                 try:
