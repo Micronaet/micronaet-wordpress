@@ -226,12 +226,12 @@ class WpEndpointOperationWizard(orm.TransientModel):
             cr, uid, [connector_id], context=context)
 
     def action_image(self, cr, uid, ids, context=None):
-        '''
+        ''' Update image
         '''
         return True
 
     def action_product_category(self, cr, uid, ids, context=None):
-        ''' 
+        ''' Update product - category 
         '''
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
         connector_pool = self.pool.get('connector.server')
@@ -241,7 +241,7 @@ class WpEndpointOperationWizard(orm.TransientModel):
             cr, uid, [connector_id], context=context)        
 
     def action_unpublish_not_present(self, cr, uid, ids, context=None):
-        '''
+        ''' All no more present product in ODOO will be unpublished in WP
         '''
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
         connector_pool = self.pool.get('connector.server')
@@ -251,7 +251,7 @@ class WpEndpointOperationWizard(orm.TransientModel):
             cr, uid, [connector_id], context=context)
 
     def action_remove_not_present(self, cr, uid, ids, context=None):
-        '''
+        ''' All no more present product in ODOO will be removed in WP
         '''
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
         connector_pool = self.pool.get('connector.server')

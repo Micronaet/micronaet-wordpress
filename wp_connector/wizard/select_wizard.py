@@ -169,6 +169,8 @@ class WordpressSelectProductWizard(orm.TransientModel):
         'wordpress_categ_ids': fields.many2many(
             'product.public.category', 'product_wp_wizard_rel', 
             'wizard_id', 'category_id', 
-            'Wordpress category', required=True),
+            'Wordpress category', required=True, 
+            domain="[('connector_id', '=', webserver_id)]",
+            ),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

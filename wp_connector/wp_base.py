@@ -52,17 +52,25 @@ class ConnectorServer(orm.Model):
     def get_wp_connector(self, cr, uid, ids, context=None):
         ''' Connect with Word Press API management
         '''        
+        timeout = 40 # TODO parametrize
+
         connector = self.browse(cr, uid, ids, context=context)[0]
         if not connector.wordpress:
             _logger.info('Not Wordpress connector')
 
+        _logger.info('>>> Connecting: %s%s API: %s, timeout=%s' % (
+            connector.wp_url,
+            connector.wp_version,
+            connector.wp_api,
+            timeout,        
+            ))
         return woocommerce.API(
             url=connector.wp_url,
             consumer_key=connector.wp_key,
             consumer_secret=connector.wp_secret,
             wp_api=connector.wp_api,
             version=connector.wp_version,
-            timeout=40, # TODO parametrize
+            timeout=timeout, 
             )
 
     _columns = {
@@ -263,9 +271,6 @@ class ProductProductWebServer(orm.Model):
                 stock_quantity = self.get_existence_for_product(product)
                 # fabric, type_of_material
 
-                # Wordpress ID in lang to update:
-                wp_id = lang_wp_ids.get(lang, False) 
-
                 # -------------------------------------------------------------
                 # Images block:
                 # -------------------------------------------------------------
@@ -286,7 +291,7 @@ class ProductProductWebServer(orm.Model):
                     'name': name,
                     'description': description,
                     'short_description': name,
-                    'sku': default_code,
+                    #'sku': default_code, # XXX needed?
                     'lang': wp_lang,
                     # It doesn't update:
                     'categories': categories,
@@ -309,10 +314,24 @@ class ProductProductWebServer(orm.Model):
                         'images': images,
                         })
                 else:
-                    data.update({
-                        'translation_of': translation_of.get(default_code),
-                        })
-                print data
+                    trans_id = translation_of.get(default_code, False)
+                    if trans_id:
+                        data.update({
+                            'translation_of': trans_id,
+                            })
+                    else:
+                        _logger.error(
+                            'Product with detault lang not present [%s] %s' % (
+                                default_code, lang))
+                        continue    
+                            
+                #print data
+                # Wordpress ID in lang to update:
+                wp_id = lang_wp_ids.get(lang, False) 
+
+                # -------------------------------------------------------------
+                #                         Update:
+                # -------------------------------------------------------------
                 if wp_id:
                     try:
                         reply = wcapi.put('products/%s' % wp_id, data).json()
@@ -321,15 +340,25 @@ class ProductProductWebServer(orm.Model):
                     except:
                         # TODO Check this error!!!!!!
                         _logger.error('Not updated ID %s lang %s [%s]!' % (
-                            wp_id, lang, reply))
+                            wp_id, lang, data))
+
+                # -------------------------------------------------------------
+                #                         Create:
+                # -------------------------------------------------------------
                 else:
                     # Create (will update wp_id from now)
-                    reply = wcapi.post('products', data).json()
                     try:
+                        reply = wcapi.post('products', data).json()
+                    except: # Timeout on server:
+                        _logger.error('Server timeout: %s' % (data, ))
+                        continue
+
+                    try:         
                         if reply.get('code', False) == 'product_invalid_sku':
                             wp_id = reply['data']['resource_id']
-                            _logger.error('Product %s lang %s duplicated!' % (
-                                wp_id, lang))
+                            _logger.error(
+                                'Product %s lang %s duplicated [%s]!' % (
+                                    wp_id, lang, reply))
                             
                         else:    
                             wp_id = reply['id']
@@ -337,19 +366,21 @@ class ProductProductWebServer(orm.Model):
                                 wp_id, lang))
                     except:
                         raise osv.except_osv(
-                            _('Errore'), 
-                            _('Non connesso al server WP: %s' % reply),
+                            _('Error'), 
+                            _('Reply not managed: %s' % reply),
                             )
+                        continue    
                     
                     # Update product WP ID:
-                    lang_pool.create(cr, uid, {
-                        'web_id': item.id,
-                        'lang': lang,
-                        'wp_id': wp_id,
-                        }, context=context)
+                    if wp_id:
+                        lang_pool.create(cr, uid, {
+                            'web_id': item.id,
+                            'lang': lang,
+                            'wp_id': wp_id,
+                            }, context=context)
 
-                # Save translation of ID (for language product)        
-                if lang == default_lang: 
+                # Save translation of ID (for language product)   
+                if wp_id and lang == default_lang: 
                     translation_of[default_code] = wp_id
         
         return True
