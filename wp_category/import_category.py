@@ -115,10 +115,12 @@ class ProductPublicCategory(orm.Model):
                 'display': 'default',
                 }
 
-            # Check if present :            
+            # Check if present (same name or ID):            
             key = (False, name)
-            
-            if wp_id in wp_db or key in wp_name: # Update (ID or Name present)
+            if key in wp_name:
+                wp_id = wp_name[key]
+                
+            if wp_id in wp_db: # Update (ID or Name present)
                 record_data['id'] = wp_id
                 data['update'].append(record_data)
                 try:
@@ -176,8 +178,10 @@ class ProductPublicCategory(orm.Model):
 
             # Check if present :
             key = (parent_wp_id, name)
+            if key in wp_name:
+                wp_id = wp_name[key]
 
-            if wp_id in wp_db or key in wp_name: # Update
+            if wp_id in wp_db: # Update
                 record_data['id'] = wp_id
                 data['update'].append(record_data)
                 try:
