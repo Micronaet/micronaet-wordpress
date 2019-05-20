@@ -156,7 +156,10 @@ class WordpressSelectProductWizard(orm.TransientModel):
             'res_model': 'product.product.web.server',
             'view_id': tree_view_id,
             'views': [(tree_view_id, 'tree'), (form_view_id, 'form')],
-            'domain': [('product_id', 'in', tuple(product_ids))],
+            'domain': [
+                ('connector_id', '=', connector_id),
+                ('product_id', 'in', tuple(product_ids)),
+                ],
             'context': context,
             'target': 'current', # 'new'
             'nodestroy': False,
