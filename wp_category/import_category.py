@@ -119,6 +119,10 @@ class ProductPublicCategory(orm.Model):
             key = (False, name)
             if key in wp_name:
                 wp_id = wp_name[key]
+                # Update this wp_id (same name)
+                category_pool.write(cr, uid, [category.id], {
+                    'wp_id': wp_id,
+                    }, context=context)
                 
             if wp_id in wp_db: # Update (ID or Name present)
                 record_data['id'] = wp_id
@@ -132,6 +136,7 @@ class ProductPublicCategory(orm.Model):
                 data['create'].append(record_data)
                 odoo_parent[name] = odoo_id
 
+        import pdb; pdb.set_trace()
         res = wcapi.post('products/categories/batch', data).json()
         for record in res.get('create', ()):
             wp_id = record['id']
@@ -180,6 +185,10 @@ class ProductPublicCategory(orm.Model):
             key = (parent_wp_id, name)
             if key in wp_name:
                 wp_id = wp_name[key]
+                # Update this wp_id (same name)
+                category_pool.write(cr, uid, [category.id], {
+                    'wp_id': wp_id,
+                    }, context=context)
 
             if wp_id in wp_db: # Update
                 record_data['id'] = wp_id
