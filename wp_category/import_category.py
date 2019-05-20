@@ -80,6 +80,8 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         #                        CREATE CATEGORY OPERATION:
         # ---------------------------------------------------------------------
+        connector_id = ids[0]
+        server_proxy = self.browse(cr, uid, connector_id, context=context)
         data = {'create': [], 'update': []}
 
         # Read WP Category present:
@@ -88,14 +90,63 @@ class ProductPublicCategory(orm.Model):
 
         wp_db = {}
         wp_name = {} # TODO manage!
-        import pdb; pdb.set_trace()
-        for record in wcapi.get('products/categories').json():
+
+        current_wp_category = wcapi.get('products/categories').json()
+        for record in current_wp_category:
             wp_db[record['id']] = record['name']
             wp_name[(record['parent'] or False, record['name'])] = record['id']
-            
+
         # ---------------------------------------------------------------------
-        # Read ODOO PARENT category:
+        #                                Mode IN:
         # ---------------------------------------------------------------------
+        # TODO Language management!!!
+        if server_proxy.wp_category == 'in':
+            _logger.warning('Mode IN Wordpress category import [# %s]' % len(
+                current_wp_category))
+
+            parent_wp_db = {}
+            # Sorted so parent first:
+            for record in sorted(current_wp_category, 
+                    key=lambda x: x['parent']):
+                wp_id = record['id']
+                parent_id = record['parent'] or False
+                name = record['name']
+                
+                category_ids = category_pool.search(cr, uid, [
+                    ('connector_id', '=', connector_id),
+                    ('wp_id', '=', wp_id),
+                    ], context=context)
+                if category_ids:
+                    odoo_id = category_ids[0]
+                    category_pool.write(cr, uid, category_ids, {
+                        'parent_id': parent_wp_db.get(
+                            parent_id, False),
+                        'name': name,
+                        'sequence': record['menu_order'], 
+                        }, context=context)                    
+                    _logger.info('Update %s' % name)    
+                else:                   
+                    odoo_id = category_pool.create(cr, uid, {
+                        'enabled': True,
+                        'connector_id': connector_id,
+                        'wp_id': wp_id,
+                        'parent_id': parent_wp_db.get(
+                            parent_id, False),
+                        'name': name,
+                        'sequence': record['menu_order'], 
+                        }, context=context)
+                    _logger.info('Create %s' % name)    
+                   
+                # Save root parent ID: 
+                parent_wp_db[wp_id] = odoo_id
+            return True
+                        
+        # ---------------------------------------------------------------------
+        #                                Mode OUT:
+        # ---------------------------------------------------------------------
+        # A. Read ODOO PARENT category:
+        # ---------------------------------------------------------------------
+        _logger.warning('Mode OUT Wordpress category export')
         odoo_parent = {}
         category_ids = category_pool.search(cr, uid, [
             ('parent_id', '=', False),
@@ -136,7 +187,6 @@ class ProductPublicCategory(orm.Model):
                 data['create'].append(record_data)
                 odoo_parent[name] = odoo_id
 
-        import pdb; pdb.set_trace()
         res = wcapi.post('products/categories/batch', data).json()
         for record in res.get('create', ()):
             wp_id = record['id']
@@ -158,7 +208,7 @@ class ProductPublicCategory(orm.Model):
             _logger.info('Updated wp_id for %s' % name)
 
         # ---------------------------------------------------------------------
-        # Read ODOO category child:
+        # B. Read ODOO category child:
         # ---------------------------------------------------------------------
         odoo_child = {}
         data = {'create': [], 'update': []}
