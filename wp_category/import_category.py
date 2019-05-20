@@ -131,8 +131,9 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # TODO Language management!!!
         if server_proxy.wp_category == 'in':
-            _logger.warning('Mode IN Wordpress category import [# %s]' % len(
-                current_wp_category))
+            _logger.warning(
+                'Mode IN Wordpress category import [# %s]' % len(
+                    current_wp_category))
 
             parent_wp_db = {}
             # Sorted so parent first:
