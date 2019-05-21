@@ -537,54 +537,59 @@ class ConnectorServer(orm.Model):
                 # TODO Destination:                
                 # -------------------------------------------------------------
                 destination_partner_id = False
-                # TODO Create destination as partner?
-                # (to not change partner data)
-                if any(record_destination.values()):
-                    # Extract data:
-                    destination_name = '%s %s %s' % (
-                        record_destination['company'],
-                        record_destination['first_name'],
-                        record_destination['last_name'],                                                
-                        ).strip()
+
+                # Create destination as partner if not present
+                if not any(record_destination.values()):
+                    # Use partner reference as destination:
+                    record_destination = record_partner
+                    _logger.warning(
+                        'No partner shipping, using partner address')
                     
-                    destination_street = record_destination['address_1']
-                    destination_street2 = record_destination['address_2']
-                    destination_city = record_destination['city']
-                    destination_postcode = record_destination['postcode']
-                    
-                    # Calculated data:
-                    state_id = self.get_detail_id_from_code(
-                        cr, uid, state_pool, 
-                        record_destination['state'], context=context)
-                    country_id = self.get_detail_id_from_code(
-                        cr, uid, country_pool, 
-                        record_destination['country'], context=context)
-                    
-                    address_ids = partner_pool.search(cr, uid, [
-                        ('parent_id', '=', partner_id),
-                        ('name', '=', destination_name),
-                        ('street', '=', destination_street),
-                        ('city', '=', destination_city),
-                        ('zip', '=', destination_postcode),
-                        ], context=context)
-                    if address_ids:
-                        destination_partner_id = address_ids[0]    
-                    else:
-                        destination_partner_id = partner_pool.create(
-                            cr, uid, {
-                                'wordpress': True,
-                                'is_address': True, 
-                                'parent_id': partner_id,
-                                'name': destination_name,
-                                'street': destination_street,
-                                'street2': destination_street2,
-                                'city': destination_city,
-                                'zip': destination_postcode,
-                                }, context=context)    
+                # Extract data:
+                destination_name = '%s %s %s' % (
+                    record_destination['company'],
+                    record_destination['first_name'],
+                    record_destination['last_name'],                                                
+                    )
+                
+                destination_street = record_destination['address_1']
+                destination_street2 = record_destination['address_2']
+                destination_city = record_destination['city']
+                destination_postcode = record_destination['postcode']
+                
+                # Calculated data:
+                state_id = self.get_detail_id_from_code(
+                    cr, uid, state_pool, 
+                    record_destination['state'], context=context)
+                country_id = self.get_detail_id_from_code(
+                    cr, uid, country_pool, 
+                    record_destination['country'], context=context)
+                
+                address_ids = partner_pool.search(cr, uid, [
+                    ('parent_id', '=', partner_id),
+                    ('name', '=', destination_name),
+                    ('street', '=', destination_street),
+                    ('city', '=', destination_city),
+                    ('zip', '=', destination_postcode),
+                    ], context=context)
+                if address_ids:
+                    destination_partner_id = address_ids[0]    
+                else:
+                    _logger.warning('New address created!')
+                    destination_partner_id = partner_pool.create(
+                        cr, uid, {
+                            'wordpress': True,
+                            'is_address': True, 
+                            'parent_id': partner_id,
+                            'name': destination_name,
+                            'street': destination_street,
+                            'street2': destination_street2,
+                            'city': destination_city,
+                            'zip': destination_postcode,
+                            }, context=context)    
                         
                 order_header.update({
                     'partner_id': partner_id,
-                    'destination_partner_id': destination_partner_id,
                     })
 
                 # -------------------------------------------------------------
@@ -594,6 +599,10 @@ class ConnectorServer(orm.Model):
                     order_pool.onchange_partner_id(
                         cr, uid, False, partner_id, context=context).get(
                             'value', {}))    
+
+                order_header.update({ # before onchange will be deleted!)
+                    'destination_partner_id': destination_partner_id,
+                    })
 
                 # -------------------------------------------------------------
                 # Order creation:
