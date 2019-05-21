@@ -53,6 +53,9 @@ class ResPartner(orm.Model):
     _columns = {
         'wordpress': fields.boolean(
             'Wordpress', help='Created from wordpress order'),
+        # TODO used?
+        'wordpress_invoice': fields.boolean(
+            'Wordpress', help='Need invoice, istead of fees'),        
         }
 
 class SaleOrder(orm.Model):
@@ -61,11 +64,79 @@ class SaleOrder(orm.Model):
 
     _inherit = 'sale.order'
     
+    def button_wordpress_detail(self, cr, uid, ids, context=None):
+        ''' View metadata
+        '''        
+        model_pool = self.pool.get('ir.model.data')
+        view_id = model_pool.get_object_reference(
+            cr, uid, 
+            'wp_order', 'view_sale_order_wordpress_metadata_form')[1]
+    
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Wordpress metadata'),
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            'res_id': ids[0],
+            'res_model': 'sale.order',
+            'view_id': view_id, # False
+            'views': [(view_id, 'form'), (False, 'tree')],
+            'domain': [],
+            'context': context,
+            'target': 'new',#'current',
+            'nodestroy': False,
+            }
+        
+    def button_payment_confirmed(self, cr, uid, ids, context=None):
+        ''' Confirm manual payment
+        '''
+        order = self.browse(cr, uid, ids, context=context)[0]
+        connector_id = order.connector_id.id
+        wp_id = order.wp_id
+
+        if not connector_id:
+            raise osv.except_osv(
+                _('Error connector'), 
+                _('Connector for web site not found on order'),
+                )
+
+        #if not wp_id:
+        #    raise osv.except_osv(
+        #        _('Error connector'), 
+        #        _('Wordpress order ID not found on ODOO order'),
+        #        )
+                
+        # ---------------------------------------------------------------------
+        # Update status on wordpress site:
+        # ---------------------------------------------------------------------
+        connector_pool = self.pool.get('connector.server')
+        wcapi = connector_pool.get_wp_connector(
+            cr, uid, connector_id, context=context)
+        data = {
+            'status': 'processing' #completed
+            }
+        res = wcapi.put('orders/%s' % wp_id, data).json()
+
+        # ---------------------------------------------------------------------
+        # Confirmed sale order workflow:
+        # ---------------------------------------------------------------------
+        self.signal_workflow(cr, uid, ids, 'order_confirm')
+        
+        # ---------------------------------------------------------------------
+        # Mark as confirmed:
+        # ---------------------------------------------------------------------
+        return self.write(cr, uid, ids, {
+            'wp_payment_confirmed': True,
+            }, context=context)
+
     _columns = {
         'wp_id': fields.integer('Worpress ID of order'),
         'connector_id': fields.many2one('connector.server', 'Connector', 
             help='Connector Marketplace, is the origin web site'),
         'worpress_record': fields.text('Worpress record'),
+        'wp_payment_confirmed': fields.boolean('Payment confirmed'),
+        'wordpress_invoice': fields.boolean(
+            'Wordpress', help='Need invoice, istead of fees'),        
         }
 
 class ConnectorServer(orm.Model):
@@ -75,6 +146,23 @@ class ConnectorServer(orm.Model):
     _inherit = 'connector.server'
 
     # TODO Schedule action!
+    
+    # -------------------------------------------------------------------------
+    # Utility:
+    # -------------------------------------------------------------------------
+    def get_detail_id_from_code(self, cr, uid, pool, code, context=None):
+        ''' Return state or country ID
+        '''
+        item_ids = pool.search(cr, uid, [
+            ('code', '=', code),
+            ], context=context)
+        if item_ids:
+            return item_ids[0]    
+            _logger.info('Pool %s code exist: %s' % (pool, code))
+        else:
+            # TODO create?
+            _logger.warning('Pool %s new %s (not for now)' % (pool, code))
+            return False
     
     # -------------------------------------------------------------------------
     # Button event:
@@ -91,8 +179,8 @@ class ConnectorServer(orm.Model):
         order_pool = self.pool.get('sale.order')
         line_pool = self.pool.get('sale.order.line')
         partner_pool = self.pool.get('res.partner')
-        country_pool = self.pool.get('res.country')
         state_pool = self.pool.get('res.country.state')
+        country_pool = self.pool.get('res.country')
         
         _logger.warning('Read order on wordpress:')
 
@@ -322,9 +410,46 @@ class ConnectorServer(orm.Model):
             wp_id = record['id']
             name = record['number']
             date_order = record['date_created'][:10]
-            status = record['status'] # on-hold, processing, complete
+            payment_method = record['payment_method']
+            status = record['status']  
+            # XXX Status value:
+            # pending In attesa di pagamento
+            # on-hold Sospeso
+            # processing In lavorazione
+            # processing In lavorazione, 
+            # completed Completo
+            # failed Fallito
+            # cancelled Cancellato
+            # refunded Rimborsato
             
-            if False and status == 'processing': # TODO 
+            
+            # TODO Manage:
+            # -----------------------------------------------------------------            
+            # Shipping add extra line with cost
+            # -----------------------------------------------------------------            
+            #shipping_total
+            #shipping_tax
+            
+            # -----------------------------------------------------------------
+            # Payment method to manage supended order
+            # -----------------------------------------------------------------
+            if payment_method in ('bacs', ): # TODO add other pendin payment
+                wp_payment_confirmed = False
+                new_status = 'pending'
+                wf_confirm = True
+            else:
+                wp_payment_confirmed = True
+                new_status = 'suspended'    
+                wf_confirm = False
+
+            # -----------------------------------------------------------------            
+            # Discount add extra line with discount value
+            # -----------------------------------------------------------------            
+            #discount_total
+            #discount_tax
+            
+            # Only on-hold status will be imported again:
+            if status not in ('on-hold', ): # TODO 
                 _logger.warning('[%s] Status: %s so jumped' % (
                     name, status))
                 continue
@@ -343,6 +468,7 @@ class ConnectorServer(orm.Model):
                 'client_order_ref': name,
                 'date_order': date_order,
                 'worpress_record': record,
+                'wp_payment_confirmed': wp_payment_confirmed
                 }    
 
             if order_ids:
@@ -351,23 +477,18 @@ class ConnectorServer(orm.Model):
             else:
                 # Read data:
                 record_partner = record['billing']
-                state_code = record_partner['state']
-                country_code = record_partner['country']
-                email = record_partner['email']
+                record_destination = record['shipping']
 
-                # -------------------------------------------------------------
-                # State:
-                # -------------------------------------------------------------
-                state_ids = state_pool.search(cr, uid, [
-                    ('code', '=', state_code),
-                    ], context=context)
-                if state_ids:
-                    state_id = state_ids[0]    
-                    _logger.warning('State exist')
-                else:
-                    # TODO create state?
-                    state_id = False    
-                    _logger.warning('State new (not for now)')
+                email = record_partner['email']
+                wordpress_invoice = False # TODO check if need invoice!!!!!!!!!
+
+                # Calculated data:
+                state_id = self.get_detail_id_from_code(
+                    cr, uid, state_pool, 
+                    record_partner['state'], context=context)
+                country_id = self.get_detail_id_from_code(
+                    cr, uid, country_pool, 
+                    record_partner['country'], context=context)
 
                 # -------------------------------------------------------------
                 # Country:
@@ -405,9 +526,11 @@ class ConnectorServer(orm.Model):
                     'phone': record_partner['phone'],
                     'state_id': state_id,
                     'country_id': country_id,  
+                    
                     # TODO evaluate fiscal position:
                     'property_account_position': 
                         company.partner_id.property_account_position.id,
+                    'wordpress_invoice': wordpress_invoice,
                     }    
                 if partner_ids:
                     partner_id = partner_ids[0]
@@ -419,11 +542,56 @@ class ConnectorServer(orm.Model):
                         cr, uid, partner_data, context=context)
                     _logger.warning('Partner new: %s' % email)
 
+                # Update order if need invoice or account fees
+                partner = partner_pool.browse(
+                    cr, uid, partner_id, context=context)
+                order_header['wordpress_invoice'] = partner.wordpress_invoice
+
                 # -------------------------------------------------------------
                 # TODO Destination:                
                 # -------------------------------------------------------------
                 destination_partner_id = False
-                                                        
+                if record_destination:
+                    # Extract data:
+                    destination_name = '%s %s %s' % (
+                        record_destination['company'],
+                        record_destination['first_name'],
+                        record_destination['last_name'],                                                
+                        )
+                    destination_street = record_destination['address_1']
+                    destination_street2 = record_destination['address_2']
+                    destination_city = record_destination['city']
+                    destination_postcode = record_destination['postcode']
+                    
+                    # Calculated data:
+                    state_id = self.get_detail_id_from_code(
+                        cr, uid, state_pool, 
+                        record_destination['state'], context=context)
+                    country_id = self.get_detail_id_from_code(
+                        cr, uid, country_pool, 
+                        record_destination['country'], context=context)
+                    
+                    address_ids = partner_pool.search(cr, uid, [
+                        ('parent_id', '=', partner_id),
+                        ('name', '=', destination_name),
+                        ('street', '=', destination_street),
+                        ('city', '=', destination_city),
+                        ('zip', '=', destination_postcode),
+                        ], context=context)
+                    if address_ids:
+                        destination_partner_id = address_ids[0]    
+                    else:
+                        destination_partner_id = partner_pool.create(cr, uid, {
+                            'wordpress': True,
+                            'is_address': True, 
+                            'parent_id': partner_id,
+                            'name': destination_name,
+                            'street': destination_street,
+                            'street2': destination_street2,
+                            'city': destination_city,
+                            'zip': destination_postcode,
+                            }, context=context)    
+                        
                 order_header.update({
                     'partner_id': partner_id,
                     'destination_partner_id': destination_partner_id,
@@ -537,9 +705,14 @@ class ConnectorServer(orm.Model):
             # Update status on web:
             # -----------------------------------------------------------------            
             data = {
-                'status': 'processing' #completed
+                'status': new_status#'processing' #completed
                 }
             res = wcapi.put('orders/%s' % wp_id, data).json()
+
+            # Update workflow:
+            if wf_confirm:
+                order_pool.signal_workflow(
+                    cr, uid, [order_id], 'order_confirm')
 
             # Update order list:
             new_order_ids.append(order_id)

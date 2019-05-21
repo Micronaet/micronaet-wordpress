@@ -12,6 +12,117 @@
                         class="oe_highlight" icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
                 </xpath>
             </field>
-        </record>    
+        </record>   
+        
+        <!--res.partner-->         
+        <record model="ir.actions.act_window" id="action_res_partner_wp">
+            <field name="name">Partner</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="base.view_partner_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[('wordpress', '=', True),('is_address', '=', False)]</field>
+        </record>
+        <record model="ir.actions.act_window" id="action_res_partner_address_wp">
+            <field name="name">Partner address</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="base.view_partner_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[('wordpress', '=', True),('is_address', '=', True)]</field>
+        </record>
+        <!--TODO destination?-->
+        
+        <!--sale.order-->         
+        <record model="ir.ui.view" id="view_sale_order_wordpress_metadata_form">
+            <field name="name">sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+                <form string="Metadata" version="7.0">        
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="name" readonly="1"/>
+                            <field name="date_order"  readonly="1"/>
+                            <field name="partner_id"  readonly="1"/>
+                            <field name="destination_partner_id" readonly="1" />
+                            <separator string="Wordpress Metadata:" colspan="4"/>
+                            <field name="worpress_record" colspan="4" nolabel="1" readonly="1"/>
+                        </group>
+                    </sheet>        
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_sale_order_wordpress_tree">
+            <field name="name">sale.order.tree</field>
+            <field name="model">sale.order</field>
+            <field name="priority" eval="40" />
+            <field name="arch" type="xml">
+                <tree string="Sales Orders" fonts="bold:message_unread==True" colors="grey:wp_payment_confirmed==False;blue:wordpress_invoice==True">
+                    <field name="message_unread" invisible="1"/>
+                    <field name="name" string="Order Number"/>
+                    <field name="date_order"/>
+                    <field name="partner_id"/>
+                    <field name="destination_partner_id"/>
+                    <field name="user_id" invisible="1"/>
+                    <field name="wp_id" />
+                    <field name="connector_id" />
+                    <field name="wordpress_invoice" />
+                    <field name="wp_payment_confirmed" />
+                    <field name="amount_total" sum="Total Tax Included"/>
+                    <field name="state"/>
+                    <button name="button_wordpress_detail" string="Wordpress metadata" type="object" icon="gtk-goto-last"/>
+                    <button name="button_payment_confirmed" string="Payment confirmed" type="object" attrs="{'invisible': [('wp_payment_confirmed','=',True)]}" icon="STOCK_APPLY" confirm="If payment is confirmed the order will go in confirmed status too, confirm?"/>
+                </tree>            
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_sale_order_wp">
+            <field name="name">Wordpress order</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_sale_order_wordpress_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[('wp_id', '>', 0)]</field>
+        </record>
+        <record model="ir.actions.act_window" id="action_sale_order_wp_payment">
+            <field name="name">Wordpress order suspended</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_sale_order_wordpress_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[('wp_id', '>', 0),('wp_payment_confirmed', '=', False)]</field>
+        </record>
+        
+        <menuitem 
+            parent="wp_connector.menu_connector_worppress_root" 
+            id="menu_connector_worppress_order" 
+            name="Order"
+            sequence="20"
+            />
+            <menuitem 
+                parent="menu_connector_worppress_order" 
+                id="menu_connector_worppress_partner" 
+                action="action_res_partner_wp"
+                sequence="10"
+                />            
+            <menuitem 
+                parent="menu_connector_worppress_order" 
+                id="menu_connector_worppress_order_all" 
+                action="action_sale_order_wp"
+                sequence="20"
+                />
+            <menuitem 
+                parent="menu_connector_worppress_order" 
+                id="menu_connector_worppress_order_payment" 
+                action="action_sale_order_wp_payment"
+                sequence="30"
+                />
+                
+            
+        
     </data>
 </openerp>

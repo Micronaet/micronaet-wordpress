@@ -36,6 +36,7 @@
         'sale',
         'wp_connector', 
         'connector_web_base',
+        'order_destination',
         ],
     'init_xml': [],
     'demo': [],
