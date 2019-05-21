@@ -86,6 +86,8 @@ class ConnectorServer(orm.Model):
             context = {}
 
         # Pool used:
+        company_pool = self.pool.get('res.company')
+        product_pool = self.pool.get('product.product')
         order_pool = self.pool.get('sale.order')
         line_pool = self.pool.get('sale.order.line')
         partner_pool = self.pool.get('res.partner')
@@ -93,6 +95,12 @@ class ConnectorServer(orm.Model):
         state_pool = self.pool.get('res.country.state')
         
         _logger.warning('Read order on wordpress:')
+
+        # ---------------------------------------------------------------------
+        # Compnay reference:
+        # ---------------------------------------------------------------------
+        company_id = company_pool.search(cr, uid, [], context=context)[0]
+        company = company_pool.browse(cr, uid, company_id, context=context)
 
         # ---------------------------------------------------------------------
         #                        CREATE ORDERS OPERATION:
@@ -314,6 +322,12 @@ class ConnectorServer(orm.Model):
             wp_id = record['id']
             name = record['number']
             date_order = record['date_created'][:10]
+            status = record['status'] # on-hold, processing, complete
+            
+            if False and status == 'processing': # TODO 
+                _logger.warning('[%s] Status: %s so jumped' % (
+                    name, status))
+                continue
             
             # -----------------------------------------------------------------
             #                          ORDER HEADER: 
@@ -339,6 +353,7 @@ class ConnectorServer(orm.Model):
                 record_partner = record['billing']
                 state_code = record_partner['state']
                 country_code = record_partner['country']
+                email = record_partner['email']
 
                 # -------------------------------------------------------------
                 # State:
@@ -372,7 +387,7 @@ class ConnectorServer(orm.Model):
                 # Partner creation:
                 # -------------------------------------------------------------
                 partner_ids = partner_pool.search(cr, uid, [
-                    ('email', '=', record_partner['email']),
+                    ('email', '=', email),
                     ], context=context)
 
                 partner_data = {
@@ -390,6 +405,9 @@ class ConnectorServer(orm.Model):
                     'phone': record_partner['phone'],
                     'state_id': state_id,
                     'country_id': country_id,  
+                    # TODO evaluate fiscal position:
+                    'property_account_position': 
+                        company.partner_id.property_account_position.id,
                     }    
                 if partner_ids:
                     partner_id = partner_ids[0]
@@ -426,7 +444,6 @@ class ConnectorServer(orm.Model):
                     cr, uid, order_header, context=context)
                 # TODO Workflow trigger:    
                 _logger.info('Create %s' % name)    
-                new_order_ids.append(order_id)    
                 _logger.warning('Order new %s' % name)
                 
             # -----------------------------------------------------------------
@@ -434,17 +451,23 @@ class ConnectorServer(orm.Model):
             # -----------------------------------------------------------------            
             order_proxy = order_pool.browse(cr, uid, order_id, context=context)
             wp_line = record['line_items']
-            if order_proxy.order_line and \
-                    len(order_proxy.order_line) != len(wp_line):
-                # TODO continue not raise!
-                raise osv.except_osv(
-                    _('Error order line'),
-                    _('Error importing line, yet present but different!'), 
-                    )
-            import pdb; pdb.set_trace()
-            partner = order_proxy.partner
+            if order_proxy.order_line:
+                if len(order_proxy.order_line) != len(wp_line):
+                    # TODO continue not raise!
+                    _logger.error('Line are yet loaded but different!')
+                    #raise osv.except_osv(
+                    #    _('Error order line'),
+                    #    _('Error importing line, yet present but different!'), 
+                    #    )
+                else:
+                    _logger.warning('Line are yet load!')
+                continue # yet load the lines        
+
+            # Create the lines:
+            partner = order_proxy.partner_id
             for line in wp_line:
                 product_wp_id = line['product_id']
+                product_code = line['sku']
                 name = line['name']
                 quantity = line['quantity']
                 total = line['total']
@@ -452,40 +475,75 @@ class ConnectorServer(orm.Model):
                 price = line['price']
                 
                 line_data = {
-                    'product_id': False,
+                    'order_id': order_id,
                     'name': name,
+                    'product_uom_qty': quantity,
                     }
+                product_id = False    
                 if product_wp_id:
+                    # Search with Worpdress IP:
                     product_ids = product_pool.search(cr, uid, [
                         ('wp_id', '=', product_wp_id),
                         ], context=context)
                     if product_ids:
                         product_id = product_ids[0]
-                        line_data.update({
-                            'product_id': product_id,
-                            })
-                        
-                        # Update with onchange product event:
-                        line_data.update(
-                            line_pool.product_id_change_with_wh(
-                                cr, uid, False,
-                                order_proxy.pricelist_id.id,
-                                product_id,
-                                quantity,
-                                False, # UOM;
-                                quantity,
-                                False, # UOS;
-                                name,
-                                partner.id,
-                                partner.lang,
-                                True, # Update tax
-                                order_proxy.date_order,
-                                False, # Packaging
-                                partner.fiscal_position.id,
-                                False, # Flag
-                                False, # warehouse_id
-                                contex=context).get('value', {}))
+                    else: # Try searching with code: 
+                        _logger.warning(
+                            'Lost WP id for product %s' % product_code)   
+                        product_ids = product_pool.search(cr, uid, [
+                            ('default_code', '=', product_code),
+                            ], context=context)
+                        if product_ids:
+                            product_id = product_ids[0]
+
+                if not product_id and product_code:
+                    # TODO create or import <<<<<<<
+                    product_id = product_pool.create(cr, uid, {
+                        'name': name,
+                        'default_code': product_code,
+                        }, context=context)
+                                            
+                line_data.update({
+                    'product_id': product_id,
+                    })
                 
+                # Update with onchange product event:
+                onchange = line_pool.product_id_change_with_wh(
+                        cr, uid, False,
+                        order_proxy.pricelist_id.id,
+                        product_id,
+                        quantity,
+                        False, # UOM;
+                        quantity,
+                        False, # UOS;
+                        name,
+                        partner.id,
+                        partner.lang,
+                        True, # Update tax
+                        order_proxy.date_order,
+                        False, # Packaging
+                        partner.property_account_position.id,
+                        False, # Flag
+                        False, # warehouse_id
+                        context=context).get('value', {})
+                 
+                # Format correct fhe Tax relation:     
+                if 'tax_id' in onchange:
+                    onchange['tax_id'] = [(6, 0, onchange['tax_id'])]
+                line_data.update(onchange)
+                line_pool.create(cr, uid, line_data, context=context)        
+
+            # -----------------------------------------------------------------            
+            # Update status on web:
+            # -----------------------------------------------------------------            
+            data = {
+                'status': 'processing' #completed
+                }
+            res = wcapi.put('orders/%s' % wp_id, data).json()
+
+            # Update order list:
+            new_order_ids.append(order_id)
+            
         return {
             'type': 'ir.actions.act_window',
             'name': _('New order'),
