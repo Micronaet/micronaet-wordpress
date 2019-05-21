@@ -51,7 +51,7 @@ class ResPartner(orm.Model):
     _inherit = 'res.partner'
     
     _columns = {
-        'wordpress':fields.boolean(
+        'wordpress': fields.boolean(
             'Wordpress', help='Created from wordpress order'),
         }
 
@@ -65,6 +65,7 @@ class SaleOrder(orm.Model):
         'wp_id': fields.integer('Worpress ID of order'),
         'connector_id': fields.many2one('connector.server', 'Connector', 
             help='Connector Marketplace, is the origin web site'),
+        'worpress_record': fields.text('Worpress record'),
         }
 
 class ConnectorServer(orm.Model):
@@ -86,6 +87,7 @@ class ConnectorServer(orm.Model):
 
         # Pool used:
         order_pool = self.pool.get('sale.order')
+        line_pool = self.pool.get('sale.order.line')
         partner_pool = self.pool.get('res.partner')
         country_pool = self.pool.get('res.country')
         state_pool = self.pool.get('res.country.state')
@@ -305,33 +307,38 @@ class ConnectorServer(orm.Model):
         # Insert order
         # ---------------------------------------------------------------------
         # Sorted so parent first:
+        new_order_ids = []
+        _logger.warning('Order found %s' % (len(wp_order), ))        
         for record in sorted(wp_order, 
                 key=lambda x: x['date_created']):
             wp_id = record['id']
             name = record['number']
-            date_order = record['date_created']
+            date_order = record['date_created'][:10]
             
+            # -----------------------------------------------------------------
+            #                          ORDER HEADER: 
+            # -----------------------------------------------------------------
             order_ids = order_pool.search(cr, uid, [
                 ('connector_id', '=', connector_id),
                 ('wp_id', '=', wp_id),
                 ], context=context)
-            if order_ids:
-                odoo_id = order_ids[0]
                 
-                # TODO 
-                #order_pool.write(cr, uid, order_ids, {
-                #    'parent_id': parent_wp_db.get(
-                #        parent_id, False),
-                #    'name': name,
-                #    'sequence': record['menu_order'], 
-                #    }, context=context)                    
-                #_logger.info('Update %s' % name)    
+            order_header = {
+                'connector_id': connector_id,
+                'wp_id': wp_id,
+                'client_order_ref': name,
+                'date_order': date_order,
+                'worpress_record': record,
+                }    
+
+            if order_ids:
+                order_id = order_ids[0]
+                # XXX No update of header
             else:
-                import pdb; pdb.set_trace()
                 # Read data:
                 record_partner = record['billing']
-                state_code = record_partner['country']
-                country_code = record_partner['state']
+                state_code = record_partner['state']
+                country_code = record_partner['country']
 
                 # -------------------------------------------------------------
                 # State:
@@ -341,9 +348,11 @@ class ConnectorServer(orm.Model):
                     ], context=context)
                 if state_ids:
                     state_id = state_ids[0]    
+                    _logger.warning('State exist')
                 else:
                     # TODO create state?
                     state_id = False    
+                    _logger.warning('State new (not for now)')
 
                 # -------------------------------------------------------------
                 # Country:
@@ -353,9 +362,11 @@ class ConnectorServer(orm.Model):
                     ], context=context)
                 if country_ids:
                     country_id = country_ids[0]    
+                    _logger.warning('Country exist')
                 else:
                     # TODO create state?
                     country_id = False    
+                    _logger.warning('Country new (not for now)')
                 
                 # -------------------------------------------------------------
                 # Partner creation:
@@ -363,7 +374,9 @@ class ConnectorServer(orm.Model):
                 partner_ids = partner_pool.search(cr, uid, [
                     ('email', '=', record_partner['email']),
                     ], context=context)
+
                 partner_data = {
+                    'is_company': True,
                     'name': '%s %s %s' % (
                         record_partner['company'],
                         record_partner['first_name'],
@@ -375,39 +388,36 @@ class ConnectorServer(orm.Model):
                     'zip': record_partner['postcode'],
                     'email': record_partner['email'],
                     'phone': record_partner['phone'],
-                    'city_id': city_id,
+                    'state_id': state_id,
                     'country_id': country_id,  
-                    
                     }    
                 if partner_ids:
                     partner_id = partner_ids[0]
+                    _logger.warning('Partner exist: %s' % email)
                     #`TODO update?
                 else:                
                     partner_data['wordpress'] = True                    
                     partner_id = partner_pool.create(
                         cr, uid, partner_data, context=context)
+                    _logger.warning('Partner new: %s' % email)
 
                 # -------------------------------------------------------------
-                # Destination:                
+                # TODO Destination:                
                 # -------------------------------------------------------------
                 destination_partner_id = False
-                            
-                order_header = {
-                    'connector_id': connector_id,
-                    'wp_id': wp_id,
-                    'client_order_ref': name,
+                                                        
+                order_header.update({
                     'partner_id': partner_id,
                     'destination_partner_id': destination_partner_id,
-                    'date_order': date_order,
-                    }    
+                    })
 
                 # -------------------------------------------------------------
                 # Update onchange partner data:
                 # -------------------------------------------------------------
-                onchange = order_pool.onchange_partner_id(
-                    cr, uid, False, partner_id, context=context).get(
-                        'value', {})
-                order_header.update(onchange)    
+                order_header.update(
+                    order_pool.onchange_partner_id(
+                        cr, uid, False, partner_id, context=context).get(
+                            'value', {}))    
 
                 # -------------------------------------------------------------
                 # Order creation:
@@ -416,10 +426,78 @@ class ConnectorServer(orm.Model):
                     cr, uid, order_header, context=context)
                 # TODO Workflow trigger:    
                 _logger.info('Create %s' % name)    
+                new_order_ids.append(order_id)    
+                _logger.warning('Order new %s' % name)
                 
-                # -------------------------------------------------------------
-                # Line creation:
-                # -------------------------------------------------------------
-                # line_items    
-        return True
+            # -----------------------------------------------------------------
+            #                          ORDER DETAIL: 
+            # -----------------------------------------------------------------            
+            order_proxy = order_pool.browse(cr, uid, order_id, context=context)
+            wp_line = record['line_items']
+            if order_proxy.order_line and \
+                    len(order_proxy.order_line) != len(wp_line):
+                # TODO continue not raise!
+                raise osv.except_osv(
+                    _('Error order line'),
+                    _('Error importing line, yet present but different!'), 
+                    )
+            import pdb; pdb.set_trace()
+            partner = order_proxy.partner
+            for line in wp_line:
+                product_wp_id = line['product_id']
+                name = line['name']
+                quantity = line['quantity']
+                total = line['total']
+                total_tax = line['total_tax']
+                price = line['price']
+                
+                line_data = {
+                    'product_id': False,
+                    'name': name,
+                    }
+                if product_wp_id:
+                    product_ids = product_pool.search(cr, uid, [
+                        ('wp_id', '=', product_wp_id),
+                        ], context=context)
+                    if product_ids:
+                        product_id = product_ids[0]
+                        line_data.update({
+                            'product_id': product_id,
+                            })
+                        
+                        # Update with onchange product event:
+                        line_data.update(
+                            line_pool.product_id_change_with_wh(
+                                cr, uid, False,
+                                order_proxy.pricelist_id.id,
+                                product_id,
+                                quantity,
+                                False, # UOM;
+                                quantity,
+                                False, # UOS;
+                                name,
+                                partner.id,
+                                partner.lang,
+                                True, # Update tax
+                                order_proxy.date_order,
+                                False, # Packaging
+                                partner.fiscal_position.id,
+                                False, # Flag
+                                False, # warehouse_id
+                                contex=context).get('value', {}))
+                
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('New order'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            #'res_id': 1,
+            'res_model': 'sale.order',
+            'view_id': False,#view_id, # False
+            'views': [(False, 'tree'), (False, 'form')],
+            'domain': [('id', 'in', new_order_ids)],
+            'context': context,
+            'target': 'current', # 'new'
+            'nodestroy': False,
+            }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
