@@ -491,20 +491,6 @@ class ConnectorServer(orm.Model):
                     record_partner['country'], context=context)
 
                 # -------------------------------------------------------------
-                # Country:
-                # -------------------------------------------------------------
-                country_ids = country_pool.search(cr, uid, [
-                    ('code', '=', country_code),
-                    ], context=context)
-                if country_ids:
-                    country_id = country_ids[0]    
-                    _logger.warning('Country exist')
-                else:
-                    # TODO create state?
-                    country_id = False    
-                    _logger.warning('Country new (not for now)')
-                
-                # -------------------------------------------------------------
                 # Partner creation:
                 # -------------------------------------------------------------
                 partner_ids = partner_pool.search(cr, uid, [
@@ -535,7 +521,7 @@ class ConnectorServer(orm.Model):
                 if partner_ids:
                     partner_id = partner_ids[0]
                     _logger.warning('Partner exist: %s' % email)
-                    #`TODO update?
+                    # TODO update?
                 else:                
                     partner_data['wordpress'] = True                    
                     partner_id = partner_pool.create(
@@ -551,13 +537,16 @@ class ConnectorServer(orm.Model):
                 # TODO Destination:                
                 # -------------------------------------------------------------
                 destination_partner_id = False
-                if record_destination:
+                # TODO Create destination as partner?
+                # (to not change partner data)
+                if any(record_destination.values()):
                     # Extract data:
                     destination_name = '%s %s %s' % (
                         record_destination['company'],
                         record_destination['first_name'],
                         record_destination['last_name'],                                                
-                        )
+                        ).strip()
+                    
                     destination_street = record_destination['address_1']
                     destination_street2 = record_destination['address_2']
                     destination_city = record_destination['city']
@@ -581,16 +570,17 @@ class ConnectorServer(orm.Model):
                     if address_ids:
                         destination_partner_id = address_ids[0]    
                     else:
-                        destination_partner_id = partner_pool.create(cr, uid, {
-                            'wordpress': True,
-                            'is_address': True, 
-                            'parent_id': partner_id,
-                            'name': destination_name,
-                            'street': destination_street,
-                            'street2': destination_street2,
-                            'city': destination_city,
-                            'zip': destination_postcode,
-                            }, context=context)    
+                        destination_partner_id = partner_pool.create(
+                            cr, uid, {
+                                'wordpress': True,
+                                'is_address': True, 
+                                'parent_id': partner_id,
+                                'name': destination_name,
+                                'street': destination_street,
+                                'street2': destination_street2,
+                                'city': destination_city,
+                                'zip': destination_postcode,
+                                }, context=context)    
                         
                 order_header.update({
                     'partner_id': partner_id,
