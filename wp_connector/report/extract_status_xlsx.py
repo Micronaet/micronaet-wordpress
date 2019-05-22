@@ -89,7 +89,7 @@ class ConnectorServer(orm.Model):
             15, 
             30, 70, 
             30, 70,
-            15,
+            50, 15,
             10, 10, 20, 
             20, 40,
             ])
@@ -101,7 +101,7 @@ class ConnectorServer(orm.Model):
             'Codice', 
             'Nome', 'Descrizione', 
             'Name', 'Description',
-            'Prezzo',
+            'Categorie', 'Prezzo',
             'Cat. Stat.', 'Peso', 'Dimensioni',
             'Magazzino', 'Immagini'            
             ], default_format=f_header)
@@ -146,7 +146,8 @@ class ConnectorServer(orm.Model):
                     product.name,
                     product.large_description or '',  
                     '', 
-                    '',            
+                    '',     
+                    '%s' % ([c.name for c in product.wordpress_categ_ids]),
                     product.lst_price,
                     product.statistic_category or '',
                     product.weight,
