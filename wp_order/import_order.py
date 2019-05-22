@@ -485,11 +485,11 @@ class ConnectorServer(orm.Model):
             if payment_method in ('bacs', ): # TODO add other pendin payment
                 wp_payment_confirmed = False
                 new_status = 'pending'
-                wf_confirm = True
+                wf_confirm = False
             else:
                 wp_payment_confirmed = True
                 new_status = 'suspended'    
-                wf_confirm = False
+                wf_confirm = True
 
             # -----------------------------------------------------------------            
             # Discount add extra line with discount value
