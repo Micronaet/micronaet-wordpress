@@ -171,6 +171,8 @@ class ConnectorServer(orm.Model):
             Search extra DB default_code
             Create if not present
         '''
+        product_pool = self.pool.get('product.product')
+
         # Parameters:
         mask = 'C%s' # TODO create parameter
         name = line['name']
@@ -224,7 +226,6 @@ class ConnectorServer(orm.Model):
 
         # Pool used:
         company_pool = self.pool.get('res.company')
-        product_pool = self.pool.get('product.product')
         order_pool = self.pool.get('sale.order')
         line_pool = self.pool.get('sale.order.line')
         partner_pool = self.pool.get('res.partner')
