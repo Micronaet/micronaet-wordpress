@@ -13,14 +13,36 @@
                 </xpath>
             </field>
         </record>   
-        
+
+        <record model="ir.ui.view" id="view_res_partner_invoice_tree">
+            <field name="name">res.partner.tree</field>
+            <field name="model">res.partner</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <tree string="String" colors="blue:wordpress_invoice==True">        
+                    <field name="name" />
+                    <field name="parent_id" />
+                    <field name="street" />
+                    <field name="zip" />
+                    <field name="city" />
+                    <field name="email" />
+                    <field name="phone" />
+                    <field name="country_id" />
+                    <field name="property_account_position" />
+                    <field name="wordpress" invisible="1" />
+                    <field name="wordpress_invoice" invisible="1" />
+                    <button name="partner_wordpress_invoice_on" string="Always invoice" type="object" icon="gtk-justify-fill" attrs="{'invisible': ['|', ('parent_id', '!=', False),('wordpress_invoice','=',True)]}" />
+                    <button name="partner_wordpress_invoice_off" string="No invoice" type="object" icon="gtk-undo" attrs="{'invisible': ['|', ('parent_id', '!=', False),('wordpress_invoice','=',False)]}" />
+                </tree>
+            </field>
+        </record>
         <!--res.partner-->         
         <record model="ir.actions.act_window" id="action_res_partner_wp">
             <field name="name">Partner</field>
             <field name="res_model">res.partner</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="base.view_partner_tree"/>
+            <field name="view_id" ref="view_res_partner_invoice_tree"/>
             <field name="context">{}</field>
             <field name="domain">[('wordpress', '=', True),('parent_id', '=', False)]</field>
         </record>
@@ -29,24 +51,42 @@
             <field name="res_model">res.partner</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="base.view_partner_tree"/>
+            <field name="view_id" ref="view_res_partner_invoice_tree"/>
             <field name="context">{}</field>
             <field name="domain">[('wordpress', '=', True),('parent_id', '!=', False)]</field>
         </record>
         <!--TODO destination?-->
         
-        <!--sale.order-->         
+        <record model="ir.ui.view" id="view_sale_order_alert_form">
+            <field name="name">sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form" />
+            <field name="arch" type="xml">            
+                <field name="partner_id" position="before"> 
+                    <field name="wordpress_invoice" invisible="1" />
+                    <field name="wp_id" invisible="1" />
+                    <div style="background-color: red; text-align: center; font-weight:bold; color: white;">
+                        <field name="wordpress_alert" readonly="1" nolabel="1" attrs="{'invisible': ['|',('wp_id','=',False),('wordpress_invoice', '=', True)]}" class="oe_color_red" colspan="2"/>
+                    </div>
+                </field>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="view_sale_order_wordpress_metadata_form">
             <field name="name">sale.order.form</field>
             <field name="model">sale.order</field>
             <field name="arch" type="xml">
                 <form string="Metadata" version="7.0">        
-                    <sheet>
+                    <header>
+                        <button name="dummy" string="Save" type="object" />
+                    </header>
+                    <sheet>                        
                         <group col="4" colspan="4">
                             <field name="name" readonly="1"/>
                             <field name="date_order"  readonly="1"/>
                             <field name="partner_id"  readonly="1"/>
                             <field name="destination_partner_id" readonly="1" />
+                            <field name="wordpress_invoice" />
                             <separator string="Wordpress Metadata:" colspan="4"/>
                             <field name="worpress_record" colspan="4" nolabel="1" readonly="1"/>
                         </group>
@@ -54,6 +94,7 @@
                 </form>
             </field>
         </record>
+        
         <record model="ir.ui.view" id="view_sale_order_wordpress_tree">
             <field name="name">sale.order.tree</field>
             <field name="model">sale.order</field>

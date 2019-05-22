@@ -243,7 +243,7 @@ class ProductPublicCategory(orm.Model):
         odoo_child = {}
         data = {'create': [], 'update': []}
         category_ids = category_pool.search(cr, uid, [
-            ('connector_id', '=', server_id),
+            ('connector_id', '=', connector_id),
             ('parent_id', '!=', False),
             ], context=context)
 
@@ -293,8 +293,7 @@ class ProductPublicCategory(orm.Model):
                 _('Error'), 
                 _('Wordpress server not answer, timeout!'),
                 )
-                
-        
+                        
         # Update category with WP ID:
         for record in res.get('create', ()):
             wp_id = record['id']

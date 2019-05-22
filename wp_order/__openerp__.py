@@ -37,6 +37,7 @@
         'wp_connector', 
         'connector_web_base',
         'order_destination',
+        'force_as_corresponding', # Unload material with corresponding pick
         ],
     'init_xml': [],
     'demo': [],

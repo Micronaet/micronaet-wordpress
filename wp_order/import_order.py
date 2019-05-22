@@ -50,6 +50,21 @@ class ResPartner(orm.Model):
 
     _inherit = 'res.partner'
     
+    # Button event:
+    def partner_wordpress_invoice_on(self, cr, uid, ids, context=None):
+        ''' Invoice on
+        '''
+        return self.write(cr, uid, ids, {
+            'wordpress_invoice': True,
+            }, context=context)
+
+    def partner_wordpress_invoice_off(self, cr, uid, ids, context=None):
+        ''' Invoice on
+        '''
+        return self.write(cr, uid, ids, {
+            'wordpress_invoice': False,
+            }, context=context)
+            
     _columns = {
         'wordpress': fields.boolean(
             'Wordpress', help='Created from wordpress order'),
@@ -86,6 +101,10 @@ class SaleOrder(orm.Model):
             'target': 'new',#'current',
             'nodestroy': False,
             }
+    def dummy(self, cr, uid, ids, context=None):
+        ''' Do nothing (or save)
+        '''
+        return True
         
     def button_payment_confirmed(self, cr, uid, ids, context=None):
         ''' Confirm manual payment
@@ -129,6 +148,14 @@ class SaleOrder(orm.Model):
             'wp_payment_confirmed': True,
             }, context=context)
 
+    def _get_corresponding_alert(self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate 
+        '''    
+        res = {}
+        if len(ids) == 1:
+            res[ids[0]] = 'ORDINE WORDPRESS NON FARE FATTURA MA CORRISPETTIVO!'
+        return res
+        
     _columns = {
         'wp_id': fields.integer('Worpress ID of order'),
         'connector_id': fields.many2one('connector.server', 'Connector', 
@@ -137,6 +164,9 @@ class SaleOrder(orm.Model):
         'wp_payment_confirmed': fields.boolean('Payment confirmed'),
         'wordpress_invoice': fields.boolean(
             'Wordpress', help='Need invoice, istead of fees'),        
+        'wordpress_alert': fields.function(
+            _get_corresponding_alert, method=True, 
+            type='char', string='Alert', store=False),                         
         }
 
 class ConnectorServer(orm.Model):
