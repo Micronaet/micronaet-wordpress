@@ -178,7 +178,7 @@ class ConnectorServer(orm.Model):
         name = line['name']
         wp_id = line['product_id']
         default_code = line['sku'] # Mandatory!
-        price = line['name']
+        price = line['price'] # TODO Without tax?
 
         # 1. Search WP ID:
         if wp_id:
@@ -207,6 +207,7 @@ class ConnectorServer(orm.Model):
                 return product_ids[0]
        
             # 4. Create fast product (or import?):
+            _logger.warning('Create new product %s' % default_code)   
             return product_pool.create(cr, uid, {
                 'name': name,
                 'default_code': default_code, # Create with masked code!
