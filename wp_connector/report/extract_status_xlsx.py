@@ -106,24 +106,22 @@ class ConnectorServer(orm.Model):
             'Magazzino', 'Immagini'            
             ], default_format=f_header)
 
-        connector_ids = connector_pool.search(cr, uid, [
+        line_ids = connector_pool.search(cr, uid, [
             ('connector_id', '=', connector.id),
             ], context=context)
-        product_ids = [item.product_id.id for item in connector_pool.browse(
-            cr, uid, connector_ids, context=context)]    
-        #product_ids = product_pool.search(cr, uid, [
-        #    ('statistic_category', '=', 'P01'),
-        #    ], context=context)
-        _logger.warning('Selected product: %s' % len(product_ids))
+        _logger.warning('Selected product: %s' % len(line_ids))
 
         # Italian report:
         selected = {}
-        not_selected = []
-        for product in sorted(product_pool.browse(
-                cr, uid, product_ids, context=context),
-                key = lambda p: (p.default_code, p.name),
-                ):
-            
+        not_selected = []        
+        for line in sorted(connector_pool.browse(
+                    cr, uid, line_ids, context=context), 
+                    key = lambda p: (
+                        p.product_id.default_code, 
+                        p.product_id.name),
+                    ):
+            product = line.product_id
+
             # -----------------------------------------------------------------
             # Parameters:
             # -----------------------------------------------------------------
@@ -147,7 +145,8 @@ class ConnectorServer(orm.Model):
                     product.large_description or '',  
                     '', 
                     '',     
-                    '%s' % ([c.name for c in product.wordpress_categ_ids]),
+                    ', '.join(tuple(
+                        [c.name for c in line.wordpress_categ_ids])),
                     product.lst_price,
                     product.statistic_category or '',
                     product.weight,
@@ -209,7 +208,7 @@ class ConnectorServer(orm.Model):
 
         # Width
         excel_pool.column_width(ws_name, [15, 40, 30])
-
+        # TODO Correct?
         product_ids = product_pool.search(cr, uid, [
             ('statistic_category', '!=', 'P01'),
             ], context=context)
