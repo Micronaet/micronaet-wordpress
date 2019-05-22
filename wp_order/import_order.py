@@ -163,6 +163,55 @@ class ConnectorServer(orm.Model):
             # TODO create?
             _logger.warning('Pool %s new %s (not for now)' % (pool, code))
             return False
+
+    def get_product_id_wp_or_code(self, cr, uid, line, context=None):
+        ''' Get product ID, rules:
+            Search wp_id for Wordpress ID
+            Search default_code
+            Search extra DB default_code
+            Create if not present
+        '''
+        # Parameters:
+        mask = 'C%s' # TODO create parameter
+        name = line['name']
+        wp_id = line['product_id']
+        default_code = line['sku'] # Mandatory!
+        price = line['name']
+
+        # 1. Search WP ID:
+        if wp_id:
+            # Search with Worpdress IP:
+            product_ids = product_pool.search(cr, uid, [
+                ('wp_id', '=', wp_id),
+                ], context=context)
+            if product_ids:
+                return product_ids[0]
+
+        # 2. Search with default_code
+        if default_code:
+            _logger.warning('Lost WP id for product %s' % default_code)   
+            product_ids = product_pool.search(cr, uid, [
+                ('default_code', '=', default_code),
+                ], context=context)
+            if product_ids:
+                return product_ids[0]
+
+            # 3. Search with mask:
+            default_code = mask % default_code
+            product_ids = product_pool.search(cr, uid, [
+                ('default_code', '=', default_code),
+                ], context=context)
+            if product_ids:
+                return product_ids[0]
+       
+            # 4. Create fast product (or import?):
+            return product_pool.create(cr, uid, {
+                'name': name,
+                'default_code': default_code, # Create with masked code!
+                'lst_price': price,                
+                }, context=context)
+
+        return False # If no code!
     
     # -------------------------------------------------------------------------
     # Button event:
@@ -633,46 +682,20 @@ class ConnectorServer(orm.Model):
             # Create the lines:
             partner = order_proxy.partner_id
             for line in wp_line:
-                product_wp_id = line['product_id']
-                product_code = line['sku']
                 name = line['name']
                 quantity = line['quantity']
                 total = line['total']
                 total_tax = line['total_tax']
                 price = line['price']
                 
+                product_id = self.get_product_id_wp_or_code(
+                    cr, uid, line, context=context)
                 line_data = {
                     'order_id': order_id,
                     'name': name,
                     'product_uom_qty': quantity,
-                    }
-                product_id = False    
-                if product_wp_id:
-                    # Search with Worpdress IP:
-                    product_ids = product_pool.search(cr, uid, [
-                        ('wp_id', '=', product_wp_id),
-                        ], context=context)
-                    if product_ids:
-                        product_id = product_ids[0]
-                    else: # Try searching with code: 
-                        _logger.warning(
-                            'Lost WP id for product %s' % product_code)   
-                        product_ids = product_pool.search(cr, uid, [
-                            ('default_code', '=', product_code),
-                            ], context=context)
-                        if product_ids:
-                            product_id = product_ids[0]
-
-                if not product_id and product_code:
-                    # TODO create or import <<<<<<<
-                    product_id = product_pool.create(cr, uid, {
-                        'name': name,
-                        'default_code': product_code,
-                        }, context=context)
-                                            
-                line_data.update({
                     'product_id': product_id,
-                    })
+                    }
                 
                 # Update with onchange product event:
                 onchange = line_pool.product_id_change_with_wh(
@@ -701,14 +724,15 @@ class ConnectorServer(orm.Model):
                 line_pool.create(cr, uid, line_data, context=context)        
 
             # -----------------------------------------------------------------            
-            # Update status on web:
+            # Change status:
             # -----------------------------------------------------------------            
+            # 1. Wordpress status:
             data = {
-                'status': new_status#'processing' #completed
+                'status': new_status, #'processing' #completed
                 }
             res = wcapi.put('orders/%s' % wp_id, data).json()
 
-            # Update workflow:
+            # 2. Order workflow status:
             if wf_confirm:
                 order_pool.signal_workflow(
                     cr, uid, [order_id], 'order_confirm')
@@ -723,11 +747,11 @@ class ConnectorServer(orm.Model):
             'view_mode': 'tree,form',
             #'res_id': 1,
             'res_model': 'sale.order',
-            'view_id': False,#view_id, # False
+            'view_id': False,
             'views': [(False, 'tree'), (False, 'form')],
             'domain': [('id', 'in', new_order_ids)],
             'context': context,
-            'target': 'current', # 'new'
+            'target': 'current',
             'nodestroy': False,
             }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

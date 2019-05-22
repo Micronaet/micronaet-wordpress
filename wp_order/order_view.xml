@@ -22,7 +22,7 @@
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="base.view_partner_tree"/>
             <field name="context">{}</field>
-            <field name="domain">[('wordpress', '=', True),('is_address', '=', False)]</field>
+            <field name="domain">[('wordpress', '=', True),('parent_id', '=', False)]</field>
         </record>
         <record model="ir.actions.act_window" id="action_res_partner_address_wp">
             <field name="name">Partner address</field>
@@ -31,7 +31,7 @@
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="base.view_partner_tree"/>
             <field name="context">{}</field>
-            <field name="domain">[('wordpress', '=', True),('is_address', '=', True)]</field>
+            <field name="domain">[('wordpress', '=', True),('parent_id', '!=', False)]</field>
         </record>
         <!--TODO destination?-->
         
@@ -108,7 +108,14 @@
                 id="menu_connector_worppress_partner" 
                 action="action_res_partner_wp"
                 sequence="10"
-                />            
+                />    
+            <menuitem 
+                parent="menu_connector_worppress_order" 
+                id="menu_connector_worppress_partner_address" 
+                action="action_res_partner_address_wp"
+                sequence="10"
+                />    
+
             <menuitem 
                 parent="menu_connector_worppress_order" 
                 id="menu_connector_worppress_order_all" 
