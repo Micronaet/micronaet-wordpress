@@ -64,14 +64,17 @@ class ConnectorServer(orm.Model):
             connector.wp_api,
             timeout,        
             ))
-        return woocommerce.API(
-            url=connector.wp_url,
-            consumer_key=connector.wp_key,
-            consumer_secret=connector.wp_secret,
-            wp_api=connector.wp_api,
-            version=connector.wp_version,
-            timeout=timeout, 
-            )
+        try:    
+            return woocommerce.API(
+                url=connector.wp_url,
+                consumer_key=connector.wp_key,
+                consumer_secret=connector.wp_secret,
+                wp_api=connector.wp_api,
+                version=connector.wp_version,
+                timeout=timeout, 
+                )
+        except:
+            _logger.error('Cannot connect to Wordpress!!')        
 
     _columns = {
         'wordpress': fields.boolean('Wordpress', help='Wordpress web server'),
