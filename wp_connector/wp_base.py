@@ -218,7 +218,7 @@ class ProductProductWebServer(orm.Model):
         first_proxy = self.browse(cr, uid, ids, context=context)[0]        
         if not first_proxy.connector_id.wordpress:
             _logger.warning('Not a wordpress proxy, call other')
-            super(ProductProductWebServer, self).publish_now(
+            return super(ProductProductWebServer, self).publish_now(
                 cr, uid, ids, context=context)
 
         # ---------------------------------------------------------------------
