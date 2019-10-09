@@ -112,6 +112,7 @@ class ConnectorServer(orm.Model):
         _logger.warning('Selected product: %s' % len(line_ids))
 
         # Italian report:
+        grouped = {}
         selected = {}
         not_selected = []        
         for line in sorted(connector_pool.browse(
@@ -121,6 +122,7 @@ class ConnectorServer(orm.Model):
                         p.product_id.name),
                     ):
             product = line.product_id
+            default_code = product.default_code or ''
 
             # -----------------------------------------------------------------
             # Parameters:
@@ -135,12 +137,21 @@ class ConnectorServer(orm.Model):
             if net <= 0:
                 not_selected.append((product, 'no stock'))
                 continue
-                
+            
+            # -----------------------------------------------------------------
+            # Group data:
+            # -----------------------------------------------------------------
+            default_code6 = default_code[:6].strip()
+            if default_code6:
+                if default_code6 not in grouped:
+                    grouped[default_code6] = []
+                grouped[default_code6].append(default_code[6:].strip())
+              
             row += 1
             selected[product.id] = row # To update english lang
             excel_pool.write_xls_line(
                 ws_name, row, [
-                    product.default_code or '',
+                    default_code,
                     product.name,
                     product.large_description or '',  
                     '', 
@@ -174,6 +185,30 @@ class ConnectorServer(orm.Model):
                     product.name,
                     product.large_description or '',  
                     ], default_format=f_text, col=3)
+
+        # ---------------------------------------------------------------------
+        # Web Schema
+        # ---------------------------------------------------------------------
+        ws_name = 'Web schema'
+        excel_pool.create_worksheet(ws_name)
+
+        # Width
+        excel_pool.column_width(ws_name, [20, 60])
+
+        # Print header
+        row = 0
+        excel_pool.write_xls_line(
+            ws_name, row, [
+            'Codice padre', 'Telaio-Colori',
+            ], default_format=f_header)
+
+        for code6 in grouped:
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    code6,
+                    ', '.join(grouped[code6]),
+                    ], default_format=f_text)
         
         # ---------------------------------------------------------------------
         # Not selected product:
