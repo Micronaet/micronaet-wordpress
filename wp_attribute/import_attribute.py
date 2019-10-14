@@ -293,28 +293,19 @@ class ProductPublicCategory(orm.Model):
 
             # 2. Update attributes:
             # TODO Not work:
-            product_parent, product_attribute = split_code(default_code)
+            data = {
+                'attributes': []
+                }
+                
+            for variant, variant_attribute in variants:
+                data['attributes'].append({
+                    'id': attribute_id['Tessuto'], 
+                    'name': variant_attribute,
+                    'variation': True,
+                    })
             try:
-                #data = {'attributes': [{
-                #    'name': 'Tessuto',
-                #    'option': product_attribute,
-                #    }, {
-                #    'name': 'Brand',
-                #    'option': company_name, 
-                #    }, 
-                #    ]}
-
-                data = {'attributes': [{
-                        'id': attribute_id['Tessuto'], 
-                        'name': product_attribute,
-                        }, 
-                        #{
-                        #'id': attribute_id['Brand'], 
-                        #'name': company_name, 
-                        #}, 
-                        ]}
-                res = wcapi.post('products/%s' % wp_id, data=data).json()
                 import pdb; pdb.set_trace()
+                res = wcapi.post('products/%s' % wp_id, data=data).json()
             except:
                 raise osv.except_osv(
                     _('Error'), 
