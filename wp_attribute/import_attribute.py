@@ -91,7 +91,6 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------        
         # Read all category:
         # ---------------------------------------------------------------------        
-        import pdb; pdb.set_trace()
         current_wp_attribute = wcapi.get(
             'products/attributes', params=parameter).json()
 
@@ -103,12 +102,7 @@ class ProductPublicCategory(orm.Model):
                 )
         except:
             pass # no error               
-                
-            if res:
-                current_wp_attribute.extend(res)
-            else:
-                theres_data = False
-
+        import pdb; pdb.set_trace()
         # Search "Tessuto"
         
         
