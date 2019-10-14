@@ -84,7 +84,7 @@ class ProductPublicCategory(orm.Model):
             '''   
             default_code = (default_code or '')[:12] # No exta part
             return (
-                default_code[:6].strip()
+                default_code[:6].strip(),
                 '%s-%s' % (
                     default_code[6:8].strip().upper() or 'NE', # XXX Neutro
                     default_code[8:].strip().upper(),
@@ -242,7 +242,7 @@ class ProductPublicCategory(orm.Model):
         import pdb; pdb.set_trace()
         try:
             res = wcapi.post(
-                'products/attributes/%s/terms/batch' % attribute_id, 
+                'products/attributes/%s/terms/batch' % attribute_id['Tessuto'], 
                 data=data,
                 ).json()
         except:
