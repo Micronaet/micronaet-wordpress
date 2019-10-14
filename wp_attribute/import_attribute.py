@@ -92,25 +92,17 @@ class ProductPublicCategory(orm.Model):
         # Read all category:
         # ---------------------------------------------------------------------        
         import pdb; pdb.set_trace()
-        theres_data = True
-        parameter = {
-            'per_page': 10,
-            'page': 0,
-            }
-        current_wp_attribute = []
-        while theres_data:
-            parameter['page'] += 1
-            res = wcapi.get(
-                'products/attributes', params=parameter).json()
+        current_wp_attribute = wcapi.get(
+            'products/attributes', params=parameter).json()
 
-            try:
-                test_error = res['data']['status'] == 400
-                raise osv.except_osv(
-                    _('Category error:'), 
-                    _('Error getting attributes list: %s' % (res, ) ),
-                    )
-            except:
-                pass # no error               
+        try:
+            test_error = res['data']['status'] == 400
+            raise osv.except_osv(
+                _('Category error:'), 
+                _('Error getting attributes list: %s' % (res, ) ),
+                )
+        except:
+            pass # no error               
                 
             if res:
                 current_wp_attribute.extend(res)
