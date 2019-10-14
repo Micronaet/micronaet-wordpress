@@ -292,20 +292,20 @@ class ProductPublicCategory(orm.Model):
                 continue
 
             # 2. Update attributes:
-            # TODO Not work:
-            data = {
-                'attributes': []
-                }
+            # TODO Not work: <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            data = {'attributes': []}
                 
             for variant, variant_attribute in variants:
                 data['attributes'].append({
                     'id': attribute_id['Tessuto'], 
-                    'name': variant_attribute,
+                    #'name': 'Tessuto',
+                    'option': variant_attribute,
+                    #'name': variant_attribute,
                     'variation': True,
                     })
             try:
-                import pdb; pdb.set_trace()
                 res = wcapi.post('products/%s' % wp_id, data=data).json()
+                print res['attributes'] # XXX remove
             except:
                 raise osv.except_osv(
                     _('Error'), 
@@ -318,8 +318,7 @@ class ProductPublicCategory(orm.Model):
             # Get all variations:
             res = wcapi.get('products/%s/variations' % wp_id).json()
 
-            import pdb; pdb.set_trace()
-            for variant in variants:
+            for variant, variant_code in variants:
                 variant_code = variant.default_code
                 # Create or update variation:
                 # XXX Price for S (ingle)
