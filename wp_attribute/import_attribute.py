@@ -195,7 +195,7 @@ class ProductPublicCategory(orm.Model):
             
             if product_parent not in product_db:
                 product_db[product_parent] = [
-                    product, # Template product
+                    record, # Web line with template product
                     [], # Variant product
                     ]
             product_db[product_parent][1].append((product, product_attribute))
@@ -245,18 +245,28 @@ class ProductPublicCategory(orm.Model):
         # TODO check result for res
     
         # ---------------------------------------------------------------------        
-        # Upload product template:
+        # Upload product template / variations:
         # ---------------------------------------------------------------------
         parent_unset = []
+        
         for parent in product_db:
-            product, variants = product_db[parent]
+            web_product, variants = product_db[parent]
+            product = web_product.product_id
             if not product.wp_parent_template:
                 parent_unset.append(parent)
                 continue
         
             # -----------------------------------------------------------------
+            # Upload product reference:
+            # -----------------------------------------------------------------            
+            web_product_pool.publish_now(
+                cr, uid, [web_product.id], context=context)
+
+            # -----------------------------------------------------------------
             # Upload product variations:
             # -----------------------------------------------------------------
+            wp_id = product.wp_id
+            
             
         if parent_unset:
             _logger.error('Set parent for code start with: %s' % (
