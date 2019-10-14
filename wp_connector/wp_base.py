@@ -138,6 +138,11 @@ class ProductProductWebServerLang(orm.Model):
         'lang': fields.char('Lang code', size=10, required=True),
         'wp_id': fields.integer('WP ID', required=True),
         }
+    
+    _defaults = {
+        # Default value:
+        'wp_type': lambda *x: 'simple',
+        }    
 
 class ProductProductWebServer(orm.Model):
     """ Model name: ProductProductWebServer
@@ -302,7 +307,7 @@ class ProductProductWebServer(orm.Model):
 
                 if lang == default_lang:
                     data.update({
-                        'type': u'simple',
+                        'type': item.wp_type,
                         'sku': default_code,
                         'regular_price': price,
                         'weight': weight,
@@ -418,5 +423,11 @@ class ProductProductWebServer(orm.Model):
             type='boolean', string='Wordpress'),    
         'lang_wp_ids': fields.one2many(
             'product.product.web.server.lang', 'web_id', 'WD ID'),
+        'wp_type': fields.selection([
+            ('simple', 'Simple product'),
+            ('grouped', 'Grouped product'),
+            ('external', 'External product'),
+            ('variable', 'Variable product'),
+            ], 'Wordpress type'),
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

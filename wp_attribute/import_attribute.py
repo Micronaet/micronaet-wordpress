@@ -192,6 +192,11 @@ class ProductPublicCategory(orm.Model):
             ], context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
+        # TODO update product as variant: (XXX all product or only template?)
+        web_product_pool.write(cr, uid, product_ids, {
+            'wp_type': 'variable',
+            }, context=context)
+        
         product_db = {}
         attribute_db = []
 
@@ -299,15 +304,17 @@ class ProductPublicCategory(orm.Model):
                 #    }, 
                 #    ]}
 
-                #data = {'attributes': [{
-                #        'id': attribute_id['Tessuto'], 
-                #        'name': product_attribute,
-                #        }, {
-                #        'id': attribute_id['Brand'], 
-                #        'name': company_name, 
-                #        }, 
-                #        ]}
-                #res = wcapi.post('products/%s' % wp_id, data=data).json()
+                data = {'attributes': [{
+                        'id': attribute_id['Tessuto'], 
+                        'name': product_attribute,
+                        }, 
+                        #{
+                        #'id': attribute_id['Brand'], 
+                        #'name': company_name, 
+                        #}, 
+                        ]}
+                res = wcapi.post('products/%s' % wp_id, data=data).json()
+                import pdb; pdb.set_trace()
             except:
                 raise osv.except_osv(
                     _('Error'), 
@@ -319,31 +326,33 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             # Get all variations:
             res = wcapi.get('products/%s/variations' % wp_id).json()
-            
-            # Create or update variation:
-            data = {
-                'sku': default_code,
-                # TODO
-                # price
-                # image
-                # description
-                # stock_quantity
-                # stock_status
-                # weight
-                # dimensions
-                
-                
-                'attributes': [{
-                    'id': attribute_id['Tessuto'], 
-                    'name': product_attribute,
-                    }]
-                }
 
             import pdb; pdb.set_trace()
-            if True: # TODO create
-                wcapi.post('products/%s/variations' % wp_id, data).json()
-            else: # Update
-                pass # TODO
+            for variant in variants:
+                variant_code = variant.default_code
+                # Create or update variation:
+                # XXX Price for S (ingle)
+                data = {
+                    'sku': variant_code,
+                    # TODO
+                    # price
+                    # image
+                    # description
+                    # stock_quantity
+                    # stock_status
+                    # weight
+                    # dimensions
+                    
+                    
+                    'attributes': [{
+                        'id': attribute_id['Tessuto'], 
+                        'name': product_attribute,
+                        }]
+                    }
+                if True: # TODO create
+                    wcapi.post('products/%s/variations' % wp_id, data).json()
+                else: # Update
+                    pass # TODO
             
         if parent_unset:
             _logger.error('Set parent for code start with: %s' % (
