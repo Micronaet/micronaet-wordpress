@@ -79,6 +79,18 @@ class ProductPublicCategory(orm.Model):
             Used also for more than one elements (not only button click)
             Note all product must be published on the same web server!            
             '''
+        def split_code(default_code):
+            ''' Split 2 part of code
+            '''   
+            default_code = (default_code or '')[:12] # No exta part
+            return (
+                default_code[:6].strip()
+                '%s-%s' % (
+                    default_code[6:8].strip().upper() or 'NE', # XXX Neutro
+                    default_code[8:].strip().upper(),
+                    ),
+                )
+
         if context is None:    
             context = {}
 
@@ -182,14 +194,10 @@ class ProductPublicCategory(orm.Model):
                 key=lambda x: x.product_id.wp_parent_template, reverse=True):
             # First is the template (if present)
             product = record.product_id
-            default_code = (product.default_code or '')[:12]
+            default_code = product.default_code or ''
             if not default_code[:3].isdigit():
                 continue
-            product_parent = default_code[:6].strip()
-            product_attribute = '%s-%s' % (
-                default_code[6:8].strip().upper() or 'NE', # XXX Neutro
-                default_code[8:].strip().upper(),
-                )
+            product_parent, product_attribute = split_code(default_code)
             if product_attribute not in attribute_db:
                 attribute_db.append(product_attribute)
             
@@ -248,7 +256,7 @@ class ProductPublicCategory(orm.Model):
         # Upload product template / variations:
         # ---------------------------------------------------------------------
         parent_unset = []
-        
+        import pdb; pdb.set_trace()
         for parent in product_db:
             web_product, variants = product_db[parent]
             product = web_product.product_id
@@ -259,13 +267,25 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             # Upload product reference:
             # -----------------------------------------------------------------            
+            # 1. Call upload original procedure:
             web_product_pool.publish_now(
                 cr, uid, [web_product.id], context=context)
+            wp_id = product.wp_id
 
+            # 2. Update attributes:
+            product_parent, product_attribute = split_code(default_code)
+            res = wcapi.put(
+                'products/%s' % wp_id, data={
+                    'attributes': [{
+                        'id': attribute_id,
+                        'name': product_attribute,
+                        }, ],
+                    },
+                ).json()
+            
             # -----------------------------------------------------------------
             # Upload product variations:
             # -----------------------------------------------------------------
-            wp_id = product.wp_id
             
             
         if parent_unset:
