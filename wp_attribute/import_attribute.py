@@ -95,7 +95,7 @@ class ProductPublicCategory(orm.Model):
             context = {}
 
         _logger.warning('Publish attribute all on wordpress:')
-
+        
         # ---------------------------------------------------------------------
         #                         WORDPRESS Publish:
         # ---------------------------------------------------------------------
@@ -194,6 +194,7 @@ class ProductPublicCategory(orm.Model):
 
         product_db = {}
         attribute_db = []
+
         for record in sorted(web_product_pool.browse(cr, uid, product_ids, 
                 context=context), 
                 key=lambda x: x.product_id.wp_parent_template, reverse=True):
@@ -260,10 +261,10 @@ class ProductPublicCategory(orm.Model):
         # Upload product template / variations:
         # ---------------------------------------------------------------------
         parent_unset = []
-        import pdb; pdb.set_trace()
         for parent in product_db:
             web_product, variants = product_db[parent]
             product = web_product.product_id
+            default_code = product.default_code
             if not product.wp_parent_template:
                 parent_unset.append(parent)
                 continue
@@ -272,12 +273,18 @@ class ProductPublicCategory(orm.Model):
             # Upload product reference:
             # -----------------------------------------------------------------            
             # 1. Call upload original procedure:
-            web_product_pool.publish_now(
+            translation_of = web_product_pool.publish_now(
                 cr, uid, [web_product.id], context=context)
-            wp_id = product.wp_id
+            wp_id = translation_of.get(default_code)
+            if not wp_id:
+                _logger.error(
+                    'Cannot found wp_id, code %s' % default_code)
+                # XXX Cannot update!
+                continue
 
             # 2. Update attributes:
             product_parent, product_attribute = split_code(default_code)
+            import pdb; pdb.set_trace()
             try:
                 res = wcapi.put('products/%s' % wp_id, data={
                     'attributes': [

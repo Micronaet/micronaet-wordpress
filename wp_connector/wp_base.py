@@ -386,7 +386,7 @@ class ProductProductWebServer(orm.Model):
                 if wp_id and lang == default_lang: 
                     translation_of[default_code] = wp_id
         
-        return True
+        return translation_of
 
     # -------------------------------------------------------------------------
     # Function fields:
