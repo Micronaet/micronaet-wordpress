@@ -148,7 +148,7 @@ class ProductPublicCategory(orm.Model):
                 )        
         
         # ---------------------------------------------------------------------        
-        # Read current attributes terms:
+        # Read current attributes Tessuto terms:
         # ---------------------------------------------------------------------        
         current_wp_terms = []
         theres_data = True
@@ -195,11 +195,15 @@ class ProductPublicCategory(orm.Model):
         product_db = {}
         attribute_db = []
 
+        company_name = False # For brand
         for record in sorted(web_product_pool.browse(cr, uid, product_ids, 
                 context=context), 
                 key=lambda x: x.product_id.wp_parent_template, reverse=True):
             # First is the template (if present)
             product = record.product_id
+            if not company_name:
+                company_name = product.company_id.name.upper().split()[0] # XXX
+                
             default_code = product.default_code or ''
             if not default_code[:3].isdigit():
                 continue
@@ -284,24 +288,27 @@ class ProductPublicCategory(orm.Model):
 
             # 2. Update attributes:
             product_parent, product_attribute = split_code(default_code)
-            import pdb; pdb.set_trace()
             try:
-                res = wcapi.put('products/%s' % wp_id, data={
-                    'attributes': [
-                        {'id': attribute_id, 'name': product_attribute}, 
-                        # TODO Brand?
-                    ]}).json()
+                import pdb; pdb.set_trace()
+                data = {
+                    'attributes': [{
+                        'id': attribute_id['Tessuto'], 
+                        'name': product_attribute,
+                        }, {
+                        'id': attribute_id['Brand'], 
+                        'name': company_name, 
+                        }, 
+                        ]}
+                res = wcapi.post('products/%s' % wp_id, data=data).json()
             except:
                 raise osv.except_osv(
                     _('Error'), 
                     _('Wordpress server not answer, timeout!'),
                     )
-            import pdb; pdb.set_trace()
             
             # -----------------------------------------------------------------
             # Upload product variations:
             # -----------------------------------------------------------------
-            
             
         if parent_unset:
             _logger.error('Set parent for code start with: %s' % (
