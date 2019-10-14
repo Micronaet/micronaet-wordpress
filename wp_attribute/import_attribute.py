@@ -270,7 +270,7 @@ class ProductPublicCategory(orm.Model):
             
         if parent_unset:
             _logger.error('Set parent for code start with: %s' % (
-                parent_unsed))
+                parent_unset))
 
                         
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
