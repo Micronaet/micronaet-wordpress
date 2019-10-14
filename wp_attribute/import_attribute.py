@@ -287,19 +287,27 @@ class ProductPublicCategory(orm.Model):
                 continue
 
             # 2. Update attributes:
+            # TODO Not work:
             product_parent, product_attribute = split_code(default_code)
             try:
-                import pdb; pdb.set_trace()
-                data = {
-                    'attributes': [{
-                        'id': attribute_id['Tessuto'], 
-                        'name': product_attribute,
-                        }, {
-                        'id': attribute_id['Brand'], 
-                        'name': company_name, 
-                        }, 
-                        ]}
-                res = wcapi.post('products/%s' % wp_id, data=data).json()
+                #data = {'attributes': [{
+                #    'name': 'Tessuto',
+                #    'option': product_attribute,
+                #    }, {
+                #    'name': 'Brand',
+                #    'option': company_name, 
+                #    }, 
+                #    ]}
+
+                #data = {'attributes': [{
+                #        'id': attribute_id['Tessuto'], 
+                #        'name': product_attribute,
+                #        }, {
+                #        'id': attribute_id['Brand'], 
+                #        'name': company_name, 
+                #        }, 
+                #        ]}
+                #res = wcapi.post('products/%s' % wp_id, data=data).json()
             except:
                 raise osv.except_osv(
                     _('Error'), 
@@ -309,6 +317,33 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             # Upload product variations:
             # -----------------------------------------------------------------
+            # Get all variations:
+            res = wcapi.get('products/%s/variations' % wp_id).json()
+            
+            # Create or update variation:
+            data = {
+                'sku': default_code,
+                # TODO
+                # price
+                # image
+                # description
+                # stock_quantity
+                # stock_status
+                # weight
+                # dimensions
+                
+                
+                'attributes': [{
+                    'id': attribute_id['Tessuto'], 
+                    'name': product_attribute,
+                    }]
+                }
+
+            import pdb; pdb.set_trace()
+            if True: # TODO create
+                wcapi.post('products/%s/variations' % wp_id, data).json()
+            else: # Update
+                pass # TODO
             
         if parent_unset:
             _logger.error('Set parent for code start with: %s' % (
