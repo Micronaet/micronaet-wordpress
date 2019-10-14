@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wordpress_connector_form">
+            <field name="name">connector.server.attribute.form</field>
+            <field name="model">connector.server</field>
+            <field name="inherit_id" ref="connector_web_base.view_connector_server_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header/button" position="after">
+                    <button name="publish_attribute_now" string="Publish attribute" type="object" 
+                        confirm="Export product attribute where managed, confirm?" 
+                        class="oe_highlight" icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
+                </xpath>
+            </field>
+        </record>    
+    </data>
+</openerp>
