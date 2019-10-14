@@ -95,6 +95,32 @@ class ProductPublicCategory(orm.Model):
             context = {}
 
         _logger.warning('Publish attribute all on wordpress:')
+        limit_color = [
+            # Textilene;
+            'TX-BI',
+            'TX-BIBE',
+            'TX-TA',
+            'TX-SG',
+            
+            # Acrypol
+            'AC-NA',
+            'AC-VS',
+            'AC-BL',
+            
+            # Olefine:
+            'OL-BIBE',
+            'OL-VS',
+            'OL-BL',
+            'OL-BINE',
+            
+            # PVC:
+            'PV-BI',
+            'PV-TA',
+            'PV-AR',
+            'PV-RO',
+            'PV-BL',
+            'PV-SG',
+            ]
         
         # ---------------------------------------------------------------------
         #                         WORDPRESS Publish:
@@ -186,7 +212,11 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Generate attribute terms from product:
         # ---------------------------------------------------------------------
-        product_ids = web_product_pool.search(cr, uid, [], context=context)
+        product_ids = web_product_pool.search(cr, uid, [
+            ('connector_id', '=', ids[0]),
+            ], context=context)
+        _logger.warning('Product for this connector: %s...' % len(product_ids))
+
         product_db = {}
         attribute_db = []
         for record in sorted(web_product_pool.browse(cr, uid, product_ids, 
@@ -239,7 +269,6 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Batch operation:
         # ---------------------------------------------------------------------
-        import pdb; pdb.set_trace()
         try:
             res = wcapi.post(
                 'products/attributes/%s/terms/batch' % attribute_id['Tessuto'], 
@@ -274,14 +303,18 @@ class ProductPublicCategory(orm.Model):
 
             # 2. Update attributes:
             product_parent, product_attribute = split_code(default_code)
-            res = wcapi.put(
-                'products/%s' % wp_id, data={
-                    'attributes': [{
-                        'id': attribute_id,
-                        'name': product_attribute,
-                        }, ],
-                    },
-                ).json()
+            try:
+                res = wcapi.put('products/%s' % wp_id, data={
+                    'attributes': [
+                        {'id': attribute_id, 'name': product_attribute, }, 
+                        # TODO Brand?
+                    ]}).json()
+            except:
+                raise osv.except_osv(
+                    _('Error'), 
+                    _('Wordpress server not answer, timeout!'),
+                    )
+            import pdb; pdb.set_trace()
             
             # -----------------------------------------------------------------
             # Upload product variations:
@@ -293,4 +326,4 @@ class ProductPublicCategory(orm.Model):
                 parent_unset))
 
                         
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+# vim:expandtab:smartindent:ltabstop=4:softtabstop=4:shiftwidth=4:
