@@ -95,33 +95,7 @@ class ProductPublicCategory(orm.Model):
             context = {}
 
         _logger.warning('Publish attribute all on wordpress:')
-        limit_color = [
-            # Textilene;
-            'TX-BI',
-            'TX-BIBE',
-            'TX-TA',
-            'TX-SG',
-            
-            # Acrypol
-            'AC-NA',
-            'AC-VS',
-            'AC-BL',
-            
-            # Olefine:
-            'OL-BIBE',
-            'OL-VS',
-            'OL-BL',
-            'OL-BINE',
-            
-            # PVC:
-            'PV-BI',
-            'PV-TA',
-            'PV-AR',
-            'PV-RO',
-            'PV-BL',
-            'PV-SG',
-            ]
-        
+
         # ---------------------------------------------------------------------
         #                         WORDPRESS Publish:
         # ---------------------------------------------------------------------
@@ -214,6 +188,7 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         product_ids = web_product_pool.search(cr, uid, [
             ('connector_id', '=', ids[0]),
+            ('product_id.default_code', '=ilike', '127TX%'), # XXX remove
             ], context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
@@ -306,7 +281,7 @@ class ProductPublicCategory(orm.Model):
             try:
                 res = wcapi.put('products/%s' % wp_id, data={
                     'attributes': [
-                        {'id': attribute_id, 'name': product_attribute, }, 
+                        {'id': attribute_id, 'name': product_attribute}, 
                         # TODO Brand?
                     ]}).json()
             except:
