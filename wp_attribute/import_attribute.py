@@ -221,7 +221,9 @@ class ProductPublicCategory(orm.Model):
                     record, # Web line with template product
                     [], # Variant product
                     ]
-            product_db[product_parent][1].append((product, product_attribute))
+            else: # First record became product, other variants:     
+                product_db[product_parent][1].append(
+                    (record, product_attribute))
             # Extract frame-color from code
 
         data = {
@@ -292,20 +294,20 @@ class ProductPublicCategory(orm.Model):
                 continue
 
             # 2. Update attributes:
-            # TODO Not work: <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-            data = {'attributes': []}
+            data = {'attributes': [{
+                'id': attribute_id['Tessuto'], 
+                #'name': 'Tessuto',
+                'options': [],
+                #'name': variant_attribute,
+                'variation': True,
+                }
+                ]}                
+            for line, variant_attribute in variants:
+                variant = line.product_id
+                data['attributes'][0]['options'].append(variant_attribute)
                 
-            for variant, variant_attribute in variants:
-                data['attributes'].append({
-                    'id': attribute_id['Tessuto'], 
-                    #'name': 'Tessuto',
-                    'option': variant_attribute,
-                    #'name': variant_attribute,
-                    'variation': True,
-                    })
             try:
                 res = wcapi.post('products/%s' % wp_id, data=data).json()
-                print res['attributes'] # XXX remove
             except:
                 raise osv.except_osv(
                     _('Error'), 
@@ -315,32 +317,55 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             # Upload product variations:
             # -----------------------------------------------------------------
+            variations_web = wcapi.get('products/%s/variations' % wp_id).json()
+            
+            import pdb; pdb.set_trace()
+            data = {'delete': []}
+            current_variation = []
+            for item in variations_web:
+                # No option
+                if not item['attributes'] or not item['attributes'][0][
+                        'option']:
+                    data['delete'].append(item['id'])
+
+            # Clean variation no color:        
+            if data['delete']:
+                wcapi.post('products/%s/variations/batch' % wp_id, data).json()
+            import pdb; pdb.set_trace()
+
             # Get all variations:
             res = wcapi.get('products/%s/variations' % wp_id).json()
 
-            for variant, variant_code in variants:
+            for line, fabric_code in variants:
+                variant = line.product_id
                 variant_code = variant.default_code
                 # Create or update variation:
                 # XXX Price for S (ingle)
                 data = {
-                    'sku': variant_code,
+                    #'sku': variant_code,
                     # TODO
-                    # price
+                    'price': u'%s' % (line.force_price or variant.lst_price),
                     # image
-                    # description
+                    'short_description': 
+                        line.force_name or variant.name or u'',
+                    'description': line.force_description or \
+                        variant.large_description or u'',
                     # stock_quantity
                     # stock_status
                     # weight
                     # dimensions
-                    
+                    'stock_quantity': 
+                        web_product_pool.get_existence_for_product(variant),
+                    'status': 'publish' if line.published else 'private',
                     
                     'attributes': [{
                         'id': attribute_id['Tessuto'], 
-                        'name': product_attribute,
+                        'option': fabric_code,
                         }]
                     }
                 if True: # TODO create
-                    wcapi.post('products/%s/variations' % wp_id, data).json()
+                    res = wcapi.post(
+                        'products/%s/variations' % wp_id, data).json()
                 else: # Update
                     pass # TODO
             
