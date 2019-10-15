@@ -319,19 +319,22 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             variations_web = wcapi.get('products/%s/variations' % wp_id).json()
             
-            import pdb; pdb.set_trace()
-            data = {'delete': []}
-            current_variation = []
+            data = {
+                'delete': [],
+                }
+            current_variation = {}
             for item in variations_web:
                 # No option
                 if not item['attributes'] or not item['attributes'][0][
                         'option']:
                     data['delete'].append(item['id'])
+                else:
+                    current_variation[
+                        item['attributes'][0]['option']] = item['id']
 
             # Clean variation no color:        
             if data['delete']:
                 wcapi.post('products/%s/variations/batch' % wp_id, data).json()
-            import pdb; pdb.set_trace()
 
             # Get all variations:
             res = wcapi.get('products/%s/variations' % wp_id).json()
@@ -342,7 +345,7 @@ class ProductPublicCategory(orm.Model):
                 # Create or update variation:
                 # XXX Price for S (ingle)
                 data = {
-                    #'sku': variant_code,
+                    'sku': variant_code,
                     # TODO
                     'price': u'%s' % (line.force_price or variant.lst_price),
                     # image
@@ -363,12 +366,16 @@ class ProductPublicCategory(orm.Model):
                         'option': fabric_code,
                         }]
                     }
-                if True: # TODO create
+                print data    
+                if fabric_code in current_variation: # Update
+                    res = wcapi.put('products/%s/variations/%s' % (
+                        wp_id,
+                        current_variation[fabric_code],
+                        ), data).json()
+                else: # Create
                     res = wcapi.post(
                         'products/%s/variations' % wp_id, data).json()
-                else: # Update
-                    pass # TODO
-            
+                print res
         if parent_unset:
             _logger.error('Set parent for code start with: %s' % (
                 parent_unset))
