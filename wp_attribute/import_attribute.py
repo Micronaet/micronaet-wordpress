@@ -57,17 +57,6 @@ class ProductProduct(orm.Model):
                 'code)'),
         }
     
-'''class ProductPublicCategory(orm.Model):
-    """ Model name: ProductProduct
-    """
-
-    _inherit = 'product.public.category'
-    
-    _columns = {
-        'wp_id': fields.integer('Worpress ID'),
-        }
-'''
-
 class ProductPublicCategory(orm.Model):
     """ Model name: ProductProduct
     """
@@ -83,112 +72,43 @@ class ProductPublicCategory(orm.Model):
             ''' Split 2 part of code
             '''   
             default_code = (default_code or '')[:12] # No exta part
-            return (
+            res = (
                 default_code[:6].strip(),
                 '%s-%s' % (
                     default_code[6:8].strip().upper() or 'NE', # XXX Neutro
                     default_code[8:].strip().upper(),
                     ),
                 )
+            return res    
 
+        
+        # ---------------------------------------------------------------------
+        # Handle connector:
+        # ---------------------------------------------------------------------
         if context is None:    
             context = {}
 
-        _logger.warning('Publish attribute all on wordpress:')
-        
-        # ---------------------------------------------------------------------
-        #                         WORDPRESS Publish:
-        # ---------------------------------------------------------------------
+        # Pool used:
         server_pool = self.pool.get('connector.server')
         web_product_pool = self.pool.get('product.product.web.server')
-        
-        # ---------------------------------------------------------------------
-        #                        CREATE CATEGORY OPERATION:
-        # ---------------------------------------------------------------------
+
         connector_id = ids[0]
         server_proxy = self.browse(cr, uid, connector_id, context=context)
-        #data = {'create': [], 'update': []}
 
         # Read WP Category present:
         wcapi = server_pool.get_wp_connector(
             cr, uid, connector_id, context=context)
 
-        # ---------------------------------------------------------------------        
-        # Read all attributes:
-        # ---------------------------------------------------------------------        
-        current_wp_attribute = wcapi.get(
-            'products/attributes').json()
-
-        try:
-            test_error = res['data']['status'] == 400
-            raise osv.except_osv(
-                _('Category error:'), 
-                _('Error getting attributes list: %s' % (res, ) ),
-                )
-        except:
-            pass # no error               
-
-        # ---------------------------------------------------------------------        
-        # Search Tessuto attribute:
-        # ---------------------------------------------------------------------        
-        attribute_id = {
-            'Tessuto': False,
-            'Brand': False,
-            }
-        _logger.warning('Searching attribute %s...' % (attribute_id.keys() ))
-        
-        for record in current_wp_attribute:
-            if record['name'] in attribute_id:
-                attribute_id[record['name']] = record['id']
-        
-        if not all(attribute_id.values()):
-            raise osv.except_osv(
-                _('Attribute error'), 
-                _('Cannot find attribute %s!') % (attribute_id, ),
-                )        
-        
-        # ---------------------------------------------------------------------        
-        # Read current attributes Tessuto terms:
-        # ---------------------------------------------------------------------        
-        current_wp_terms = []
-        theres_data = True
-        parameter = {
-            'per_page': 10,
-            'page': 0,
-            }
-        
-        _logger.warning('Search all terms for attribute %s...' % (
-            attribute_id.keys(), ))
-        while theres_data:
-            parameter['page'] += 1
-            res = wcapi.get(
-                'products/attributes/%s/terms' % attribute_id['Tessuto'], 
-                params=parameter).json()
-
-            try:
-                test_error = res['data']['status'] == 400
-                raise osv.except_osv(
-                    _('Category error:'), 
-                    _('Error getting category list: %s' % (res, ) ),
-                    )
-            except:
-                pass # no error               
-                
-            if res:
-                current_wp_terms.extend(res)
-            else:
-                theres_data = False
-
-        web_attribute = {}
-        for record in current_wp_terms:
-            web_attribute[record['name']] = record['id']
+        _logger.warning('Publish attribute all on wordpress:')
 
         # ---------------------------------------------------------------------
-        # Generate attribute terms from product:
+        #                          COLLECT DATA: 
         # ---------------------------------------------------------------------
         product_ids = web_product_pool.search(cr, uid, [
             ('connector_id', '=', ids[0]),
+            #('product_id.default_code', '=ilike', '005TX   O%'), # XXX remove
             ('product_id.default_code', '=ilike', '127TX%'), # XXX remove
+            ('product_id.default_code', 'not ilike', '____________S'), # XXX remove
             ], context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
@@ -199,19 +119,22 @@ class ProductPublicCategory(orm.Model):
         
         product_db = {}
         attribute_db = []
-
         company_name = False # For brand
+
         for record in sorted(web_product_pool.browse(cr, uid, product_ids, 
                 context=context), 
                 key=lambda x: x.product_id.wp_parent_template, reverse=True):
+
             # First is the template (if present)
             product = record.product_id
             if not company_name:
                 company_name = product.company_id.name.upper().split()[0] # XXX
                 
             default_code = product.default_code or ''
-            if not default_code[:3].isdigit():
+            if not default_code[:3].isdigit(): # TODO MT and TL?
+                _logger.warning('Not used %s' % default_code)
                 continue
+
             product_parent, product_attribute = split_code(default_code)
             if product_attribute not in attribute_db:
                 attribute_db.append(product_attribute)
@@ -225,6 +148,71 @@ class ProductPublicCategory(orm.Model):
                 product_db[product_parent][1].append(
                     (record, product_attribute))
             # Extract frame-color from code
+
+        # ---------------------------------------------------------------------        
+        #                     ATTRIBUTES: (need Tessuto, Brand)
+        # ---------------------------------------------------------------------        
+        current_wp_attribute = wcapi.get('products/attributes').json()
+
+        error = ''
+        try:
+            if current_wp_attribute['data']['status'] >= 400:
+                error = current_wp_attribute['message']
+        except:
+            pass
+
+        if error:    
+            raise osv.except_osv(_('Connection error:'), error)
+
+        # ---------------------------------------------------------------------        
+        # Search Tessuto attribute:
+        # ---------------------------------------------------------------------        
+        attribute_id = {
+            'Tessuto': False,
+            'Brand': False,
+            }
+        _logger.warning('Searching attribute %s...' % (attribute_id.keys() ))
+        for record in current_wp_attribute:
+            if record['name'] in attribute_id:
+                attribute_id[record['name']] = record['id']
+        
+        if not all(attribute_id.values()):
+            raise osv.except_osv(
+                _('Attribute error'), 
+                _('Cannot find attribute %s!') % (attribute_id, ),
+                )        
+
+        # ---------------------------------------------------------------------        
+        #                        TERMS: (for Tessuto Attribute)
+        # ---------------------------------------------------------------------        
+        current_wp_terms = []
+        theres_data = True
+        parameter = {'per_page': 10, 'page': 1}
+        _logger.warning('Search all terms for attribute %s...' % (
+            attribute_id.keys(), ))
+
+        while theres_data:
+            res = wcapi.get(
+                'products/attributes/%s/terms' % attribute_id['Tessuto'], 
+                params=parameter).json()
+            parameter['page'] += 1
+
+            try:
+                if res.get['data']['status'] >= 400:
+                    raise osv.except_osv(
+                        _('Category error:'), 
+                        _('Error getting category list: %s' % (res, ) ),
+                        )
+            except:
+                pass # Records present            
+            if res:
+                current_wp_terms.extend(res)
+            else:
+                theres_data = False
+
+        web_attribute = {}
+        for record in current_wp_terms:
+            web_attribute[record['name']] = record['id']
 
         data = {
             'create': [],
@@ -269,7 +257,7 @@ class ProductPublicCategory(orm.Model):
         # TODO check result for res
     
         # ---------------------------------------------------------------------        
-        # Upload product template / variations:
+        #                       PRODUCT AND VARIATIONS:
         # ---------------------------------------------------------------------
         parent_unset = []
         for parent in product_db:
@@ -285,8 +273,17 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------            
             # 1. Call upload original procedure:
             translation_of = web_product_pool.publish_now(
-                cr, uid, [web_product.id], context=context)
+                cr, uid, [web_product.id], context=context)                
             wp_id = translation_of.get(default_code)
+            
+            # Setup default attribute:
+            parent_parent, parent_attribute = split_code(default_code)
+            data = {'default_attributes': [{
+                'id': attribute_id['Tessuto'],
+                'option': parent_attribute,
+                }]}
+            reply = wcapi.put('products/%s' % wp_id, data).json()
+            
             if not wp_id:
                 _logger.error(
                     'Cannot found wp_id, code %s' % default_code)
@@ -322,17 +319,20 @@ class ProductPublicCategory(orm.Model):
             data = {
                 'delete': [],
                 }
-            current_variation = {}
+
+            #current_variation = {}
+            variation_ids = {}
             for item in variations_web:
                 # No option
                 if not item['attributes'] or not item['attributes'][0][
                         'option']:
                     data['delete'].append(item['id'])
                 else:
-                    current_variation[
-                        item['attributes'][0]['option']] = item['id']
+                    #current_variation[
+                    #    item['attributes'][0]['option']] = item['id']
+                    variation_ids[item['sku']] = item['id']
 
-            # Clean variation no color:        
+            # Clean variation no color:
             if data['delete']:
                 wcapi.post('products/%s/variations/batch' % wp_id, data).json()
 
@@ -346,13 +346,13 @@ class ProductPublicCategory(orm.Model):
                 # XXX Price for S (ingle)
                 data = {
                     'sku': variant_code,
-                    # TODO
                     'price': u'%s' % (line.force_price or variant.lst_price),
-                    # image
                     'short_description': 
                         line.force_name or variant.name or u'',
                     'description': line.force_description or \
                         variant.large_description or u'',
+                    # TODO
+                    # image
                     # stock_quantity
                     # stock_status
                     # weight
@@ -366,19 +366,42 @@ class ProductPublicCategory(orm.Model):
                         'option': fabric_code,
                         }]
                     }
-                print data    
-                if fabric_code in current_variation: # Update
+                variation_id = variation_ids.get(variant_code, False)
+                if variation_id: # Update
+                    operation = 'UPD'
                     res = wcapi.put('products/%s/variations/%s' % (
                         wp_id,
-                        current_variation[fabric_code],
-                        ), data).json()
+                        variation_id,
+                        ), data).json()                        
+                    #del(current_variation[fabric_code]) XXX for clean operat.
                 else: # Create
+                    operation = 'NEW'
                     res = wcapi.post(
                         'products/%s/variations' % wp_id, data).json()
-                print res
+                    try:
+                        variation_id = res['id']
+                    except:
+                        variation_id = '?'    
+
+                if res.get('data', {}).get('status', 0) >= 400:
+                    _logger.error('%s Variant: %s [%s] >> %s [%s] %s' % (
+                        operation,
+                        variant_code, 
+                        variation_id,
+                        fabric_code,
+                        res.get('message', 'Error without comment'),                        
+                        wp_id,
+                        ))
+                else:
+                    _logger.info('Variant %s [%s] update on %s' % (
+                        variant_code, 
+                        variation_id or 'NEW',
+                        wp_id,
+                        ))
+            # Delete also remain
+                
         if parent_unset:
             _logger.error('Set parent for code start with: %s' % (
                 parent_unset))
-
                         
 # vim:expandtab:smartindent:ltabstop=4:softtabstop=4:shiftwidth=4:

@@ -157,6 +157,9 @@ class ProductProductWebServer(orm.Model):
         ''' Return real existence for web site
         '''
         stock_quantity = int(product.mx_net_mrp_qty - product.mx_mrp_b_locked)
+        # TODO manage q x pack?
+        #q_x_pack = product.q_x_pack or 1
+        #stock_quantity //= q_x_pack
         if stock_quantity < 0:
             return 0
         return stock_quantity
@@ -237,6 +240,8 @@ class ProductProductWebServer(orm.Model):
         wcapi = server_pool.get_wp_connector(
             cr, uid, [first_proxy.connector_id.id], context=context)
         
+        #res = wcapi.get("products").json() # XXX list of all products
+
         # Context used here:
         db_context = context.copy()
         db_context['lang'] = self._lang_db
@@ -303,6 +308,7 @@ class ProductProductWebServer(orm.Model):
                     'lang': wp_lang,
                     # It doesn't update:
                     'categories': categories,
+                    'wp_type': item.wp_type,
                     }
 
                 if lang == default_lang:
@@ -333,7 +339,6 @@ class ProductProductWebServer(orm.Model):
                                 default_code, lang))
                         continue    
                             
-                #print data
                 # Wordpress ID in lang to update:
                 wp_id = lang_wp_ids.get(lang, False) 
 
@@ -343,17 +348,31 @@ class ProductProductWebServer(orm.Model):
                 if wp_id:
                     try:
                         reply = wcapi.put('products/%s' % wp_id, data).json()
-                        _logger.warning('Product %s lang %s updated!' % (
-                            wp_id, lang))
+                        
+                        if reply.get('code') in (
+                                'product_invalid_sku',
+                                'woocommerce_rest_product_invalid_id'):
+                            # Clean saved ID and set as create:
+                            lang_ids = lang_pool.search(cr, uid, [
+                                ('web_id', '=', item.id),
+                                ('lang', '=', lang),
+                                #'wp_id': wp_id,
+                                ],  context=context)
+                            lang_pool.unlink(
+                                cr, uid, lang_ids, context=context)    
+                            wp_id = False 
+                        else:    
+                            _logger.warning('Product %s lang %s updated!' % (
+                                wp_id, lang))
                     except:
-                        # TODO Check this error!!!!!!
+                        # TODO manage this error if present
                         _logger.error('Not updated ID %s lang %s [%s]!' % (
                             wp_id, lang, data))
-
+     
                 # -------------------------------------------------------------
                 #                         Create:
                 # -------------------------------------------------------------
-                else:
+                if not wp_id:
                     # Create (will update wp_id from now)
                     try:
                         reply = wcapi.post('products', data).json()
@@ -362,7 +381,7 @@ class ProductProductWebServer(orm.Model):
                         continue
 
                     try:         
-                        if reply.get('code', False) == 'product_invalid_sku':
+                        if reply.get('code') == 'product_invalid_sku':
                             wp_id = reply['data']['resource_id']
                             _logger.error(
                                 'Product %s lang %s duplicated [%s]!' % (
@@ -389,8 +408,7 @@ class ProductProductWebServer(orm.Model):
 
                 # Save translation of ID (for language product)   
                 if wp_id and lang == default_lang: 
-                    translation_of[default_code] = wp_id
-        
+                    translation_of[default_code] = wp_id        
         return translation_of
 
     # -------------------------------------------------------------------------
