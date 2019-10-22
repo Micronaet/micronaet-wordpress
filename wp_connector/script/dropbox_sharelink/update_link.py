@@ -80,9 +80,12 @@ for root, folders, files in os.walk(dropbox_path):
 
         fullname = os.path.join(root, f)    
         command = ['dropbox', 'sharelink', fullname]
-        dropbox_link = subprocess.check_output(command)
-        image_pool.write([image_db[f]], {
-            'dropbox_link': dropbox_link.strip().rstrip('dl=0') + 'raw=1'
-            })
+        try:
+            dropbox_link = subprocess.check_output(command)
+            image_pool.write([image_db[f]], {
+                'dropbox_link': dropbox_link.strip().rstrip('dl=0') + 'raw=1'
+                })
+        except:
+            print 'Cannot sharelink file %s' % fullname        
     break
 
