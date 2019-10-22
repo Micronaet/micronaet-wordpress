@@ -45,7 +45,8 @@ port = config.get('dbaccess', 'port')   # verify if it's necessary: getint
 album_id = int(config.get('odoo', 'album_id'))
 dropbox_path = config.get('odoo', 'dropbox_path')
 
-print 'Accesso: Server %s Database %s' % (server, dbname)
+print 'Accesso: Server %s Database %s Read folder: %s [album: %s]' % (
+    server, dbname, dropbox_path, album_id)
 
 # -----------------------------------------------------------------------------
 # Connect to ODOO:
@@ -71,7 +72,7 @@ for image in image_pool.browse(image_ids):
     image_db[image.filename] = image.id
 
 print 'Search image in path %s' % dropbox_path
-import pdb; pdb.set_trace()
+
 for root, folders, files in os.walk(dropbox_path):
     for f in files:
         if f not in image_db:
