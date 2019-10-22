@@ -61,10 +61,11 @@ odoo = erppeek.Client(
 # Pool used:
 image_pool = odoo.model('product.image.file')
 image_ids = image_pool.search([('album_id', '=', album_id)])
-print 'Found %s album image [ID %s]' % (len(image_ids), album_id)
 if not image_ids:
     print 'No image exit in folder, exit'
     sys.exit()
+
+print 'Found %s album image [ID %s]' % (len(image_ids), album_id)
 image_db = {}
 for image in image_pool.browse(image_ids):
     image_db[image.filename] = image.id
