@@ -42,8 +42,8 @@ pwd = config.get('dbaccess', 'pwd')
 server = config.get('dbaccess', 'server')
 port = config.get('dbaccess', 'port')   # verify if it's necessary: getint
 
-album_id = config.get('odoo', 'album_id')
-dropbox_path = config.get('dbaccess', 'user')
+album_id = int(config.get('odoo', 'album_id'))
+dropbox_path = config.get('odoo', 'dropbox_path')
 
 print 'Accesso: Server %s Database %s' % (server, dbname)
 
