@@ -66,6 +66,7 @@ image_db = {}
 for image in image_pool.browse(image_ids):
     image_db[image.filename] = image.id
 
+print 'Search image in path %s' % dropbox_path
 for root, folders, files in os.walk(dropbox_path):
     for f in files:
         if f not in image_db:
