@@ -56,8 +56,7 @@ odoo = erppeek.Client(
     db=dbname,
     user=user,
     password=pwd,
-    )
-    
+    )    
 
 # Pool used:
 image_pool = odoo.model('product.image.file')
