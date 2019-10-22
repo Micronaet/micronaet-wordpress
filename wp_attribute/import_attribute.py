@@ -348,7 +348,7 @@ class ProductPublicCategory(orm.Model):
                 # Images block:
                 # -------------------------------------------------------------
                 images = [] 
-                for image in item.wp_dropbox_images_ids:
+                for image in line.wp_dropbox_images_ids:
                     if image.dropbox_link:
                         images.append({
                             'src': image.dropbox_link,
