@@ -344,6 +344,16 @@ class ProductPublicCategory(orm.Model):
                 variant_code = variant.default_code
                 # Create or update variation:
                 # XXX Price for S (ingle)
+                # -------------------------------------------------------------
+                # Images block:
+                # -------------------------------------------------------------
+                images = [] 
+                for image in item.wp_dropbox_images_ids:
+                    if image.dropbox_link:
+                        images.append({
+                            'src': image.dropbox_link,
+                            })
+
                 data = {
                     'sku': variant_code,
                     'price': u'%s' % (line.force_price or variant.lst_price),
@@ -351,8 +361,8 @@ class ProductPublicCategory(orm.Model):
                         line.force_name or variant.name or u'',
                     'description': line.force_description or \
                         variant.large_description or u'',
+                    'images': images,
                     # TODO
-                    # image
                     # stock_quantity
                     # stock_status
                     # weight
@@ -366,6 +376,7 @@ class ProductPublicCategory(orm.Model):
                         'option': fabric_code,
                         }]
                     }
+
                 variation_id = variation_ids.get(variant_code, False)
                 if variation_id: # Update
                     operation = 'UPD'
