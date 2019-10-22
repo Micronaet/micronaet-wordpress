@@ -22,7 +22,6 @@
 import os
 import sys
 import erppeek
-import xlrd
 import ConfigParser
 import subprocess
 
