@@ -344,15 +344,6 @@ class ProductPublicCategory(orm.Model):
                 variant_code = variant.default_code
                 # Create or update variation:
                 # XXX Price for S (ingle)
-                # -------------------------------------------------------------
-                # Images block:
-                # -------------------------------------------------------------
-                images = [] 
-                for image in line.wp_dropbox_images_ids:
-                    if image.dropbox_link:
-                        images.append({
-                            'src': image.dropbox_link,
-                            })
 
                 data = {
                     'sku': variant_code,
@@ -361,7 +352,6 @@ class ProductPublicCategory(orm.Model):
                         line.force_name or variant.name or u'',
                     'description': line.force_description or \
                         variant.large_description or u'',
-                    'images': images,
                     # TODO
                     # stock_quantity
                     # stock_status
@@ -376,6 +366,22 @@ class ProductPublicCategory(orm.Model):
                         'option': fabric_code,
                         }]
                     }
+                # -------------------------------------------------------------
+                # Images block:
+                # -------------------------------------------------------------
+                images = [] 
+                position = 0
+                for image in line.wp_dropbox_images_ids:                  
+                    if image.dropbox_link:
+                        position += 1
+                        images.append({
+                            'src': image.dropbox_link,
+                            'position': position,
+                            # name
+                            # alt
+                            })
+                if images:
+                    data['image'] = images # XXX Raise error
 
                 variation_id = variation_ids.get(variant_code, False)
                 if variation_id: # Update

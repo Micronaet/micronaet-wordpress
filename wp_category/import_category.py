@@ -52,6 +52,7 @@ class ProductPublicCategory(orm.Model):
     
     _columns = {
         'wp_id': fields.integer('Worpress ID'),
+        'wp_lang_id': fields.integer('Worpress Lang ID (en)'),
         }
 
 class ProductPublicCategory(orm.Model):
@@ -124,6 +125,8 @@ class ProductPublicCategory(orm.Model):
         for record in current_wp_category:
             wp_db[record['id']] = record['name']
             wp_name[(record['parent'] or False, record['name'])] = record['id']
+            print record['name']
+            import pdb; pdb.set_trace()
 
         # ---------------------------------------------------------------------
         #                                Mode IN:
@@ -183,39 +186,52 @@ class ProductPublicCategory(orm.Model):
             ('parent_id', '=', False),
             ], context=context)
 
-        for category in category_pool.browse(
-                cr, uid, category_ids, context=context):    
-            wp_id = category.wp_id            
-            odoo_id = category.id
-            name = category.name
-            
-            record_data = {
-                'name': name,
-                'parent': 0,
-                'menu_order': category.sequence,
-                'display': 'default',
-                }
+        # Loop on language:
+        for lang, lang_translation in [('it', False), ('en', True)]:        
+            context_lang = context.copy()
+            context_lang['lang'] = lang
 
-            # Check if present (same name or ID):            
-            key = (False, name)
-            if key in wp_name:
-                wp_id = wp_name[key]
-                # Update this wp_id (same name)
-                category_pool.write(cr, uid, [category.id], {
-                    'wp_id': wp_id,
-                    }, context=context)
+            for category in category_pool.browse(
+                    cr, uid, category_ids, context=context_lang):    
+                translation = category.wp_id
+                if lang_translation:
+                    wp_id = category.wp_lang_id
+                else:    
+                    wp_id = category.wp_id
+
+                odoo_id = category.id
+                name = category.name
                 
-            if wp_id in wp_db: # Update (ID or Name present)
-                record_data['id'] = wp_id
-                data['update'].append(record_data)
-                try:
-                    del(wp_db[wp_id])
-                except:
-                    pass # yet deleted (from Front end?)
-    
-            else: # Create:
-                data['create'].append(record_data)
-                odoo_parent[name] = odoo_id
+                record_data = {
+                    'name': name,
+                    'parent': 0,
+                    'menu_order': category.sequence,
+                    'display': 'default',
+                    'lang': lang,
+                    }
+                if lang_translation:
+                    record_data['translation'] = wp_id # Created before
+
+                # Check if present (same name or ID):            
+                key = (False, name, lang)
+                if key in wp_name:
+                    wp_id = wp_name[key]
+                    # Update this wp_id (same name)
+                    category_pool.write(cr, uid, [category.id], {
+                        'wp_id': wp_id,
+                        }, context=context)
+                    
+                if wp_id in wp_db: # Update (ID or Name present)
+                    record_data['id'] = wp_id
+                    data['update'].append(record_data)
+                    try:
+                        del(wp_db[wp_id])
+                    except:
+                        pass # yet deleted (from Front end?)
+        
+                else: # Create:
+                    data['create'].append(record_data)
+                    odoo_parent[name] = odoo_id
 
         res = wcapi.post('products/categories/batch', data).json()
         for record in res.get('create', ()):
@@ -262,7 +278,7 @@ class ProductPublicCategory(orm.Model):
                 }
 
             # Check if present :
-            key = (parent_wp_id, name)
+            key = (parent_wp_id, name, lang)
             if key in wp_name:
                 wp_id = wp_name[key]
                 # Update this wp_id (same name)
