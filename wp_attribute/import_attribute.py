@@ -269,13 +269,14 @@ class ProductPublicCategory(orm.Model):
                 continue
         
             # -----------------------------------------------------------------
-            # Upload product reference:
+            # TEMPLATE PRODUCT: Upload product reference:
             # -----------------------------------------------------------------  
-            import pdb; pdb.set_trace()          
             # 1. Call upload original procedure:
-            translation_of = web_product_pool.publish_now(
+            translation_lang = web_product_pool.publish_now(
                 cr, uid, [web_product.id], context=context)                
-            wp_id = translation_of.get(default_code)
+            import pdb; pdb.set_trace()      
+            wp_id = translation_lang.get(default_code, {}).get(lang)
+            return True # XXX
             
             # Setup default attribute:
             parent_parent, parent_attribute = split_code(default_code)
@@ -291,6 +292,9 @@ class ProductPublicCategory(orm.Model):
                 # XXX Cannot update!
                 continue
 
+            # -----------------------------------------------------------------
+            # VARIANTS: Creation
+            # -----------------------------------------------------------------
             # 2. Update attributes:
             data = {'attributes': [{
                 'id': attribute_id['Tessuto'], 
@@ -298,8 +302,7 @@ class ProductPublicCategory(orm.Model):
                 'options': [],
                 #'name': variant_attribute,
                 'variation': True,
-                }
-                ]}                
+                }]}                
             for line, variant_attribute in variants:
                 variant = line.product_id
                 data['attributes'][0]['options'].append(variant_attribute)

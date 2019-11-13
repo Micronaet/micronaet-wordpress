@@ -249,12 +249,11 @@ class ProductProductWebServer(orm.Model):
         #res = wcapi.get("products").json() # XXX list of all products
 
         # Context used here:
-        db_context = context.copy()
-        db_context['lang'] = self._lang_db
+        context_lang = context.copy()
 
         # Read first element only for setup parameters:        
         connector = first_proxy.connector_id
-        db_context['album_id'] = first_proxy.connector_id.album_id.id
+        context_lang['album_id'] = first_proxy.connector_id.album_id.id
         context['album_id'] = first_proxy.connector_id.album_id.id
 
         # ---------------------------------------------------------------------
@@ -265,15 +264,16 @@ class ProductProductWebServer(orm.Model):
         # ---------------------------------------------------------------------
         # Publish product (lang management)
         # ---------------------------------------------------------------------
-        translation_of = {}
+        translation_lang = {}
 
         # First lang = original, second traslate
         import pdb; pdb.set_trace()
         for odoo_lang in ('it_IT', 'en_US'):
+            context_lang['lang'] = lang # self._lang_db
             lang = odoo_lang[:2] # WP lang
-            db_context['lang'] = odoo_lang
+            context_lang['lang'] = odoo_lang
 
-            for item in self.browse(cr, uid, ids, context=db_context):
+            for item in self.browse(cr, uid, ids, context=context_lang):
             
                 # Readability:
                 product = item.product_id                
@@ -285,15 +285,9 @@ class ProductProductWebServer(orm.Model):
                 price = u'%s' % (item.force_price or product.lst_price)
                 weight = u'%s' % product.weight
                 status = 'publish' if item.published else 'private'
+                stock_quantity = self.get_existence_for_product(product)
                 wp_id = eval('item.wp_%s_id' % lang)
                 wp_it_id = item.wp_id_id # Default product for language
-                
-                # Read Wordpress ID in lang:
-                #lang_wp_ids = {}
-                #for product_lang in item.lang_wp_ids:
-                #    lang_wp_ids[product_lang.lang] = product_lang.wp_id
-                
-                stock_quantity = self.get_existence_for_product(product)
                 # fabric, type_of_material
 
                 # -------------------------------------------------------------
@@ -310,8 +304,9 @@ class ProductProductWebServer(orm.Model):
                 # -------------------------------------------------------------
                 # Category block:
                 # -------------------------------------------------------------
-                categories = self.get_category_block_for_publish(item)
+                categories = self.get_category_block_for_publish(item, lang)
 
+                # Text data (in lang):
                 data = {
                     'name': name,
                     'description': description,
@@ -324,6 +319,7 @@ class ProductProductWebServer(orm.Model):
                     }
 
                 if lang == default_lang:
+                    # Numeric data:
                     data.update({
                         'type': item.wp_type,
                         'sku': default_code,
@@ -339,21 +335,19 @@ class ProductProductWebServer(orm.Model):
                            }, 
                         'images': images,
                         })
-                else:
-                    trans_id = translation_of.get(default_code, False)
-                    if trans_id:
-                        data.update({
-                            'translation_of': trans_id,
-                            })
-                    else:
+                        
+                else: # Other lang (only translation
+                    if not wp_it_id: 
                         _logger.error(
-                            'Product with detault lang not present [%s] %s' % (
-                                default_code, lang))
+                            'Product %s without default IT [%s]' % (
+                                lang, default_code))
                         continue    
+                    
+                    # Translation:
+                    data.update({
+                        'translations': {'it': wp_it_id},
+                        })
                             
-                # Wordpress ID in lang to update:
-                wp_id = lang_wp_ids.get(lang, False) 
-
                 # -------------------------------------------------------------
                 #                         Update:
                 # -------------------------------------------------------------
@@ -361,26 +355,18 @@ class ProductProductWebServer(orm.Model):
                     try:
                         reply = wcapi.put('products/%s' % wp_id, data).json()
                         
-                        if reply.get('code') in (
+                        if reply.get('code') in (                        
                                 'product_invalid_sku',
                                 'woocommerce_rest_product_invalid_id'):
-                            # Clean saved ID and set as create:
-                            lang_ids = lang_pool.search(cr, uid, [
-                                ('web_id', '=', item.id),
-                                ('lang', '=', lang),
-                                #'wp_id': wp_id,
-                                ],  context=context)
-                            lang_pool.unlink(
-                                cr, uid, lang_ids, context=context)    
-                            wp_id = False 
-                        else:    
+                            wp_id = False # will be created after    
+                        else:
                             _logger.warning('Product %s lang %s updated!' % (
-                                wp_id, lang))
+                                wp_id, lang))                            
                     except:
                         # TODO manage this error if present
                         _logger.error('Not updated ID %s lang %s [%s]!' % (
                             wp_id, lang, data))
-     
+
                 # -------------------------------------------------------------
                 #                         Create:
                 # -------------------------------------------------------------
@@ -410,17 +396,17 @@ class ProductProductWebServer(orm.Model):
                             )
                         continue    
                     
-                    # Update product WP ID:
                     if wp_id:
-                        lang_pool.create(cr, uid, {
-                            'web_id': item.id,
-                            'lang': lang,
-                            'wp_id': wp_id,
+                        self.write(cr, uid, [line.id], {
+                            'wp_%s_id' % lang: wp_id,
                             }, context=context)
 
                 # Save translation of ID (for language product)   
-                if wp_id and lang == default_lang: 
-                    translation_of[default_code] = wp_id        
+                #if wp_id and lang == default_lang: 
+                #    translation_of[default_code] = wp_id        
+                if default_code not in translation_lang:
+                    translation_lang[default_code] = {}
+                translation_lang[default_code][lang] = wp_id
         return translation_of
 
     # -------------------------------------------------------------------------
