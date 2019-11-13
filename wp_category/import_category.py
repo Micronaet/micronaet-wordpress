@@ -121,7 +121,6 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------        
         # Loading used dict DB
         # ---------------------------------------------------------------------        
-        wp_id2odoo_id = {} # WP ID 2 ODOO ID (for fast information)
         odoo_name2id = {} # (name, lang) > ID
         
         wp_id2name = {} # name > WP ID
@@ -144,41 +143,50 @@ class ProductPublicCategory(orm.Model):
                 'Mode IN Wordpress category import [# %s]' % len(
                     current_wp_category))
 
-            # Sorted so parent first:
-            for record in sorted(current_wp_category, 
-                    key=lambda x: x['parent']):
-                # TODO manage language input    
-                wp_id = record['id']
-                parent_id = record['parent'] or False
-                name = record['name']
-                
-                category_ids = category_pool.search(cr, uid, [
-                    ('connector_id', '=', connector_id),
-                    ('wp_id', '=', wp_id),
-                    ], context=context)
-                if category_ids:
-                    odoo_id = category_ids[0]
-                    category_pool.write(cr, uid, category_ids, {
-                        'parent_id': wp_id2odoo_id.get(
-                            parent_id, False),
-                        'name': name,
-                        'sequence': record['menu_order'], 
-                        }, context=context)                    
-                    _logger.info('Update %s' % name)    
-                else:                   
-                    odoo_id = category_pool.create(cr, uid, {
-                        'enabled': True,
-                        'connector_id': connector_id,
-                        'wp_id': wp_id,
-                        'parent_id': wp_id2odoo_id.get(
-                            parent_id, False),
-                        'name': name,
-                        'sequence': record['menu_order'], 
-                        }, context=context)
-                    _logger.info('Create %s' % name)    
-                   
-                # Save root parent ID: 
-                wp_id2odoo_id[wp_id] = odoo_id
+            wp_id2odoo_id = {} # WP ID 2 ODOO ID (for fast information)
+            for odoo_lang in ('it_IT', 'en_US'):
+                lang = odoo_lang[:2]
+                context_lang = context.copy()
+                context_lang['lang'] = odoo_lang
+
+                # Sorted so parent first:
+                for record in sorted(current_wp_category, 
+                        key=lambda x: x['parent']):                    
+                    if lang != record['lang']:
+                        continue
+
+                    # Readability:       
+                    wp_id = record['id']
+                    wp_parent_id = record['parent'] or False
+                    name = record['name']
+                    
+                    category_ids = category_pool.search(cr, uid, [
+                        ('connector_id', '=', connector_id),
+                        ('wp_%s_id' % lang, '=', wp_id),
+                        ], context=context_lang)
+                    if category_ids:
+                        odoo_id = category_ids[0]
+                        category_pool.write(cr, uid, category_ids, {
+                            'parent_id': wp_id2odoo_id.get(
+                                wp_parent_id, False),
+                            'name': name,
+                            'sequence': record['menu_order'], 
+                            }, context=context_lang)                    
+                        _logger.info('Update %s' % name)    
+                    else:                   
+                        odoo_id = category_pool.create(cr, uid, {
+                            'enabled': True,
+                            'connector_id': connector_id,
+                            'wp_%s_id' % lang: wp_id,
+                            'parent_id': wp_id2odoo_id.get(
+                                wp_parent_id, False),
+                            'name': name,
+                            'sequence': record['menu_order'], 
+                            }, context=context_lang)
+                        _logger.info('Create %s' % name)    
+                       
+                    # Save root parent ID: 
+                    wp_id2odoo_id[wp_id] = odoo_id
             return True
                         
         # ---------------------------------------------------------------------
@@ -186,7 +194,6 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # A. Read ODOO PARENT category:
         # ---------------------------------------------------------------------
-        _logger.warning('Mode OUT Wordpress category export')
         odoo_child = {}
         
         for sign in ('=', '!='): # parent, child
@@ -199,18 +206,23 @@ class ProductPublicCategory(orm.Model):
                 ], context=context)
 
             # Loop on language:
-            for lang in ('it', 'en'):
-                import pdb; pdb.set_trace()
+            for odoo_lang in ('it_IT', 'en_US'):
+                lang = odoo_lang[:2]
                 data = {'create': [], 'update': []}
                 context_lang = context.copy()
-                context_lang['lang'] = lang
+                context_lang['lang'] = odoo_lang
+
+                _logger.warning(
+                    'Wordpress export category, lang: %s, mode: %s' % (
+                        lang, 'parent' if sign == '=' else 'child'))
 
                 for category in category_pool.browse(
                         cr, uid, category_ids, context=context_lang):    
-                    # Readability:    
+                    # ---------------------------------------------------------
+                    # Readability:
+                    # ---------------------------------------------------------
                     odoo_id = category.id
-                    name = category.name + (
-                        ' en' if default_lang != lang else '') # XXX same name problem
+                    name = category.name 
                     sequence = category.sequence
                     wp_id = eval('category.wp_%s_id' % lang) # current lang
                     wp_it_id = category.wp_it_id # reference lang
@@ -255,8 +267,9 @@ class ProductPublicCategory(orm.Model):
                         data['create'].append(record_data)
                         odoo_name2id[(name, lang)] = odoo_id
 
-                # Batch for language:
-                import pdb; pdb.set_trace()
+                # -------------------------------------------------------------
+                # Batch create / update depend on language:
+                # -------------------------------------------------------------
                 res = wcapi.post('products/categories/batch', data).json()
                 for record in res.get('create', ()):
                     wp_id = record['id']
@@ -292,28 +305,30 @@ class ProductPublicCategory(orm.Model):
                         continue
                         
                     name = record['name']
-                    odoo_id = odoo_child.get((name, lang), False)
+                    odoo_id = odoo_name2id.get((name, lang), False)
                     if not odoo_id:
                         _logger.error('Not Updated wp_id for %s' % name)
                         continue
                         
                     category_pool.write(cr, uid, odoo_id, {
-                        'wp_id': record['id'],
+                        'wp_%s_id' % lang: record['id'],
                         }, context=context)
                     _logger.info('Updated wp_id for %s' % name)
 
         # ---------------------------------------------------------------------
         # Delete category no more present
         # ---------------------------------------------------------------------
-        import pdb; pdb.set_trace()
-        data['delete'] = wp_id2name.keys()
-        try:
-            res = wcapi.post('products/categories/batch', data).json()
-        except:
-            raise osv.except_osv(
-                _('Error'), 
-                _('Wordpress server not answer, timeout!'),
-                )
+        if wp_id2name:
+            data = {
+                'delete': wp_id2name.keys(),
+                }
+            try:
+                res = wcapi.post('products/categories/batch', data).json()
+            except:
+                raise osv.except_osv(
+                    _('Error'), 
+                    _('Wordpress server not answer, timeout!'),
+                    )
         return True
         # TODO      
         # Check updated
