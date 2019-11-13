@@ -80,7 +80,6 @@ class ProductPublicCategory(orm.Model):
                     ),
                 )
             return res    
-
         
         # ---------------------------------------------------------------------
         # Handle connector:
@@ -151,7 +150,8 @@ class ProductPublicCategory(orm.Model):
 
         # ---------------------------------------------------------------------        
         #                     ATTRIBUTES: (need Tessuto, Brand)
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------   
+        import pdb; pdb.set_trace()     
         current_wp_attribute = wcapi.get('products/attributes').json()
 
         error = ''
@@ -270,7 +270,8 @@ class ProductPublicCategory(orm.Model):
         
             # -----------------------------------------------------------------
             # Upload product reference:
-            # -----------------------------------------------------------------            
+            # -----------------------------------------------------------------  
+            import pdb; pdb.set_trace()          
             # 1. Call upload original procedure:
             translation_of = web_product_pool.publish_now(
                 cr, uid, [web_product.id], context=context)                

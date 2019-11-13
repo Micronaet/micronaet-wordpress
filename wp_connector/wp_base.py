@@ -104,6 +104,7 @@ class ConnectorServer(orm.Model):
         'wp_all_category': lambda *x: True,
         }
 
+'''
 class ProductProduct(orm.Model):
     """ Model name: ProductProduct
     """
@@ -114,6 +115,7 @@ class ProductProduct(orm.Model):
         'wp_id': fields.integer('Worpress ID'),
         'wp_lang_id': fields.integer('Worpress translate ID'),
         }
+'''
 
 class ProductImageFile(orm.Model):
     """ Model name: ProductImageFile
@@ -125,7 +127,7 @@ class ProductImageFile(orm.Model):
         'dropbox_link': fields.char('Dropbox link', size=100),
         }
 
-class ProductProductWebServerLang(orm.Model):
+'''class ProductProductWebServerLang(orm.Model):
     """ Model name: ProductProductWebServer ID for lang
     """
 
@@ -143,6 +145,7 @@ class ProductProductWebServerLang(orm.Model):
         # Default value:
         'wp_type': lambda *x: 'simple',
         }    
+'''
 
 class ProductProductWebServer(orm.Model):
     """ Model name: ProductProductWebServer
@@ -164,24 +167,26 @@ class ProductProductWebServer(orm.Model):
             return 0
         return stock_quantity
            
-    def get_category_block_for_publish(self, item):
+    def get_category_block_for_publish(self, item, lang):
         ''' Get category block for data record WP
         '''     
         categories = []
         for category in item.wordpress_categ_ids:
+            wp_id = eval('category.wp_%s_id' % lang)
+            wp_parent_id = eval('category.parent_id.wp_%s_id' % lang)
             if not category.wp_id:
                 continue
-            categories.append({'id': category.wp_id })
-            if category.connector_id.wp_all_category and category.parent_id:
-                categories.append({'id': category.parent_id.wp_id})
+            categories.append({'id': wp_id })
+            if category.connector_id.wp_all_category and category.parent_id:                
+                categories.append({'id': wp_parent_id})
         return categories        
         
     # -------------------------------------------------------------------------
     # Button event:
     # -------------------------------------------------------------------------
-    def clean_reference(self, cr, uid, ids, context=None):
-        ''' Delete all link
-        '''
+    '''def clean_reference(self, cr, uid, ids, context=None):
+        """ Delete all link
+        """
         assert len(ids) == 1, 'Works only with one record a time'
         
         lang_pool = self.pool.get('product.product.web.server.lang')
@@ -189,6 +194,7 @@ class ProductProductWebServer(orm.Model):
             ('web_id', '=', ids[0]),
             ], context=context)
         return lang_pool.unlink(cr, uid, lang_ids, context=context)    
+        '''
         
     def open_image_list_product(self, cr, uid, ids, context=None):
         '''
@@ -218,7 +224,7 @@ class ProductProductWebServer(orm.Model):
             Used also for more than one elements (not only button click)
             Note all product must be published on the same web server!            
         '''    
-        default_lang = 'it_IT'
+        default_lang = 'it'
         
         if context is None:    
             context = {}
@@ -235,7 +241,7 @@ class ProductProductWebServer(orm.Model):
         _logger.warning('Publish all on wordpress:')
         product_pool = self.pool.get('product.product')
         server_pool = self.pool.get('connector.server')
-        lang_pool = self.pool.get('product.product.web.server.lang')
+        #lang_pool = self.pool.get('product.product.web.server.lang')
 
         wcapi = server_pool.get_wp_connector(
             cr, uid, [first_proxy.connector_id.id], context=context)
@@ -262,10 +268,14 @@ class ProductProductWebServer(orm.Model):
         translation_of = {}
 
         # First lang = original, second traslate
-        # XXX Note: default lang must be the first!
-        for lang in ('it_IT', 'en_US'): #self._langs:  
-            db_context['lang'] = lang
+        import pdb; pdb.set_trace()
+        for odoo_lang in ('it_IT', 'en_US'):
+            lang = odoo_lang[:2] # WP lang
+            db_context['lang'] = odoo_lang
+
             for item in self.browse(cr, uid, ids, context=db_context):
+            
+                # Readability:
                 product = item.product_id                
                 default_code = product.default_code or u''
                 name = item.force_name or product.name or u''
@@ -275,11 +285,13 @@ class ProductProductWebServer(orm.Model):
                 price = u'%s' % (item.force_price or product.lst_price)
                 weight = u'%s' % product.weight
                 status = 'publish' if item.published else 'private'
+                wp_id = eval('item.wp_%s_id' % lang)
+                wp_it_id = item.wp_id_id # Default product for language
                 
                 # Read Wordpress ID in lang:
-                lang_wp_ids = {}
-                for product_lang in item.lang_wp_ids:
-                    lang_wp_ids[product_lang.lang] = product_lang.wp_id
+                #lang_wp_ids = {}
+                #for product_lang in item.lang_wp_ids:
+                #    lang_wp_ids[product_lang.lang] = product_lang.wp_id
                 
                 stock_quantity = self.get_existence_for_product(product)
                 # fabric, type_of_material
@@ -294,20 +306,18 @@ class ProductProductWebServer(orm.Model):
                             'src': image.dropbox_link,
                             }
                         break    
-                            
 
                 # -------------------------------------------------------------
                 # Category block:
                 # -------------------------------------------------------------
                 categories = self.get_category_block_for_publish(item)
 
-                wp_lang = lang[:2]# only it, en
                 data = {
                     'name': name,
                     'description': description,
                     'short_description': name,
-                    #'sku': default_code, # XXX needed?
-                    'lang': wp_lang,
+                    #'sku': default_code, # XXX not needed
+                    'lang': lang,
                     # It doesn't update:
                     'categories': categories,
                     'wp_type': item.wp_type,
@@ -430,6 +440,9 @@ class ProductProductWebServer(orm.Model):
         return res
 
     _columns = {
+        'wp_it_id': fields.integer('WP it ID'),
+        'wp_en_id': fields.integer('WP en ID'),
+
         'wordpress_categ_ids': fields.many2many(
             'product.public.category', 'product_wp_rel', 
             'product_id', 'category_id', 
@@ -441,8 +454,8 @@ class ProductProductWebServer(orm.Model):
         'wordpress': fields.related(
             'connector_id', 'wordpress', 
             type='boolean', string='Wordpress'),    
-        'lang_wp_ids': fields.one2many(
-            'product.product.web.server.lang', 'web_id', 'WD ID'),
+        #'lang_wp_ids': fields.one2many(
+        #    'product.product.web.server.lang', 'web_id', 'WD ID'),
         'wp_type': fields.selection([
             ('simple', 'Simple product'),
             ('grouped', 'Grouped product'),
