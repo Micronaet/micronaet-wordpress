@@ -139,15 +139,14 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # TODO Language management!!!
         if server_proxy.wp_category == 'in':
-            _logger.warning(
-                'Mode IN Wordpress category import [# %s]' % len(
-                    current_wp_category))
-
             wp_id2odoo_id = {} # WP ID 2 ODOO ID (for fast information)
-            for odoo_lang in ('it_IT', 'en_US'):
+            for odoo_lang in ('it_IT', ):# XXX create only italian? 'en_US'):
                 lang = odoo_lang[:2]
                 context_lang = context.copy()
                 context_lang['lang'] = odoo_lang
+
+                _logger.warning(
+                    'Wordpress category import Lang %s' % lang)
 
                 # Sorted so parent first:
                 for record in sorted(current_wp_category, 
@@ -160,17 +159,24 @@ class ProductPublicCategory(orm.Model):
                     wp_parent_id = record['parent'] or False
                     name = record['name']
                     
+                    # Save WP ID
+                    if lang == default_lang:
+                        wp_it_id = wp_id
+                    else:    
+                        wp_it_id = record['translations'][default_lang]
+                    
                     category_ids = category_pool.search(cr, uid, [
                         ('connector_id', '=', connector_id),
-                        ('wp_%s_id' % lang, '=', wp_id),
+                        ('wp_%s_id' % default_lang, '=', wp_it_id),
                         ], context=context_lang)
                     if category_ids:
                         odoo_id = category_ids[0]
                         category_pool.write(cr, uid, category_ids, {
-                            'parent_id': wp_id2odoo_id.get(
-                                wp_parent_id, False),
+                            # No parent update for update (it was created)
+                            #'parent_id': wp_id2odoo_id.get(
+                            #    wp_parent_id, False),
+                            #'sequence': record['menu_order'], 
                             'name': name,
-                            'sequence': record['menu_order'], 
                             }, context=context_lang)                    
                         _logger.info('Update %s' % name)    
                     else:                   
