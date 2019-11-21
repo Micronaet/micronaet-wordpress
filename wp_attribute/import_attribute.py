@@ -230,7 +230,7 @@ class ProductPublicCategory(orm.Model):
                 'delete': [],
                 }
             for attribute in attribute_db:
-                name = attribute + ('' if lang == 'it' else '.')
+                name = attribute + ('' if lang == 'it' else '-en') # XXX remove?
                 item = {
                     'name': name,
                     'lang': lang,
@@ -250,22 +250,22 @@ class ProductPublicCategory(orm.Model):
                             ))
                         # TODO manage?
                         
-                if (attribute, lang) in web_attribute:
+                if (name, lang) in web_attribute:
                     pass # data['update'].append(item) # no data to update
                 else:
                     data['create'].append(item)
 
-            # ---------------------------------------------------------------------
+            # -----------------------------------------------------------------
             # Delete:
-            # ---------------------------------------------------------------------
+            # -----------------------------------------------------------------
             # XXX Not for now:
             #for name in web_attribute:
             #    if name not in attribute_db:
             #        data['delete'].append(web_attribute[name])
 
-            # ---------------------------------------------------------------------
+            # -----------------------------------------------------------------
             # Batch operation:
-            # ---------------------------------------------------------------------
+            # -----------------------------------------------------------------
             try:
                 if any(data.values()): # only if one is present
                     res = wcapi.post(
@@ -274,9 +274,9 @@ class ProductPublicCategory(orm.Model):
                         data=data,
                         ).json()
                     
-                    # -------------------------------------------------------------
+                    # ---------------------------------------------------------
                     # Save WP ID (only in dict not in ODOO Object)
-                    # -------------------------------------------------------------
+                    # ---------------------------------------------------------
                     for record in res.get('create', ()):
                         wp_id = record['id']
                         if not wp_id: # TODO manage error:
@@ -284,6 +284,7 @@ class ProductPublicCategory(orm.Model):
                             continue
 
                         # Update for next language:
+                        # name = attribute + ('' if lang == 'it' else '.') # XXX remove?
                         web_attribute[(record['name'], lang)] = wp_id 
             except:
                 raise osv.except_osv(
@@ -294,7 +295,6 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------        
         #                       PRODUCT AND VARIATIONS:
         # ---------------------------------------------------------------------
-        import pdb; pdb.set_trace()
         translation_lang = {}
         parent_unset = []
         for parent in product_db:
@@ -314,8 +314,9 @@ class ProductPublicCategory(orm.Model):
                 # TEMPLATE PRODUCT: Upload product reference:
                 # -------------------------------------------------------------
                 # 1. Call upload original procedure:
-                translation_lang.update(web_product_pool.publish_now(
-                    cr, uid, [web_product.id], context=context_lang))
+                translation_lang.update(
+                    web_product_pool.publish_now(
+                        cr, uid, [web_product.id], context=context_lang))
                 wp_id = translation_lang.get(default_code, {}).get(lang)
                 return True
                 
