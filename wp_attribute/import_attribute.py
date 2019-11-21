@@ -84,6 +84,8 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Handle connector:
         # ---------------------------------------------------------------------
+        default_lang = 'it'
+
         if context is None:    
             context = {}
 
@@ -105,9 +107,13 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         product_ids = web_product_pool.search(cr, uid, [
             ('connector_id', '=', ids[0]),
-            #('product_id.default_code', '=ilike', '005TX   O%'), # XXX remove
-            ('product_id.default_code', '=ilike', '127TX%'), # XXX remove
-            ('product_id.default_code', 'not ilike', '____________S'), # XXX remove
+            
+            # -----------------------------------------------------------------
+            # XXX REMOVE:
+            #('product_id.default_code', '=ilike', '005TX   O%'),
+            ('product_id.default_code', '=ilike', '127TX%'),
+            ('product_id.default_code', 'not ilike', '____________S'),
+            # -----------------------------------------------------------------
             ], context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
@@ -151,7 +157,6 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------        
         #                     ATTRIBUTES: (need Tessuto, Brand)
         # ---------------------------------------------------------------------   
-        import pdb; pdb.set_trace()     
         current_wp_attribute = wcapi.get('products/attributes').json()
 
         error = ''
@@ -212,214 +217,250 @@ class ProductPublicCategory(orm.Model):
 
         web_attribute = {}
         for record in current_wp_terms:
-            web_attribute[record['name']] = record['id']
+            web_attribute[(record['name'], record['lang'])] = record['id']
 
-        data = {
-            'create': [],
-            'update': [],
-            'delete': [],
-            }
-        
         # ---------------------------------------------------------------------
         # Update / Create:
         # ---------------------------------------------------------------------
-        for attribute in attribute_db:
-            item = {
-                'name': attribute,
-                # 'color': # XXX RGP color
+        for lang in ('it', 'en'):
+            # Clean every loop:
+            data = {
+                'create': [],
+                'update': [],
+                'delete': [],
                 }
-            if attribute in web_attribute:
-                data['update'].append(item)
-            else:
-                data['create'].append(item)
+            for attribute in attribute_db:
+                name = attribute + ('' if lang == 'it' else '.')
+                item = {
+                    'name': name,
+                    'lang': lang,
+                    # 'color': # XXX RGP color
+                    }
+                    
+                if lang != default_lang: # Different language:
+                    wp_it_id = web_attribute.get((attribute, default_lang))
+                    if wp_it_id:
+                        item.update({
+                            'translations': {'it': wp_it_id}
+                            })
+                    else:
+                        _logger.error('Attribute not found %s %s!' % (
+                            attribute,
+                            lang,
+                            ))
+                        # TODO manage?
+                        
+                if (attribute, lang) in web_attribute:
+                    pass # data['update'].append(item) # no data to update
+                else:
+                    data['create'].append(item)
 
-        # ---------------------------------------------------------------------
-        # Delete:
-        # ---------------------------------------------------------------------
-        # XXX Not for now:
-        #for name in web_attribute:
-        #    if name not in attribute_db:
-        #        data['delete'].append(web_attribute[name])
+            # ---------------------------------------------------------------------
+            # Delete:
+            # ---------------------------------------------------------------------
+            # XXX Not for now:
+            #for name in web_attribute:
+            #    if name not in attribute_db:
+            #        data['delete'].append(web_attribute[name])
 
-        # ---------------------------------------------------------------------
-        # Batch operation:
-        # ---------------------------------------------------------------------
-        try:
-            res = wcapi.post(
-                'products/attributes/%s/terms/batch' % attribute_id['Tessuto'], 
-                data=data,
-                ).json()
-        except:
-            raise osv.except_osv(
-                _('Error'), 
-                _('Wordpress server not answer, timeout!'),
-                )
-        # TODO check result for res
-    
-        # ---------------------------------------------------------------------        
-        #                       PRODUCT AND VARIATIONS:
-        # ---------------------------------------------------------------------
-        parent_unset = []
-        for parent in product_db:
-            web_product, variants = product_db[parent]
-            product = web_product.product_id
-            default_code = product.default_code
-            if not product.wp_parent_template:
-                parent_unset.append(parent)
-                continue
-        
-            # -----------------------------------------------------------------
-            # TEMPLATE PRODUCT: Upload product reference:
-            # -----------------------------------------------------------------  
-            # 1. Call upload original procedure:
-            translation_lang = web_product_pool.publish_now(
-                cr, uid, [web_product.id], context=context)                
-            import pdb; pdb.set_trace()      
-            wp_id = translation_lang.get(default_code, {}).get(lang)
-            return True # XXX
-            
-            # Setup default attribute:
-            parent_parent, parent_attribute = split_code(default_code)
-            data = {'default_attributes': [{
-                'id': attribute_id['Tessuto'],
-                'option': parent_attribute,
-                }]}
-            reply = wcapi.put('products/%s' % wp_id, data).json()
-            
-            if not wp_id:
-                _logger.error(
-                    'Cannot found wp_id, code %s' % default_code)
-                # XXX Cannot update!
-                continue
-
-            # -----------------------------------------------------------------
-            # VARIANTS: Creation
-            # -----------------------------------------------------------------
-            # 2. Update attributes:
-            data = {'attributes': [{
-                'id': attribute_id['Tessuto'], 
-                #'name': 'Tessuto',
-                'options': [],
-                #'name': variant_attribute,
-                'variation': True,
-                }]}                
-            for line, variant_attribute in variants:
-                variant = line.product_id
-                data['attributes'][0]['options'].append(variant_attribute)
-                
+            # ---------------------------------------------------------------------
+            # Batch operation:
+            # ---------------------------------------------------------------------
             try:
-                res = wcapi.post('products/%s' % wp_id, data=data).json()
+                if any(data.values()): # only if one is present
+                    res = wcapi.post(
+                        'products/attributes/%s/terms/batch' % \
+                            attribute_id['Tessuto'], 
+                        data=data,
+                        ).json()
+                    
+                    # -------------------------------------------------------------
+                    # Save WP ID (only in dict not in ODOO Object)
+                    # -------------------------------------------------------------
+                    for record in res.get('create', ()):
+                        wp_id = record['id']
+                        if not wp_id: # TODO manage error:
+                            _logger.error('Not Updated wp_id for %s' % wp_id)
+                            continue
+
+                        # Update for next language:
+                        web_attribute[(record['name'], lang)] = wp_id 
             except:
                 raise osv.except_osv(
                     _('Error'), 
                     _('Wordpress server not answer, timeout!'),
                     )
+    
+        # ---------------------------------------------------------------------        
+        #                       PRODUCT AND VARIATIONS:
+        # ---------------------------------------------------------------------
+        import pdb; pdb.set_trace()
+        translation_lang = {}
+        parent_unset = []
+        for parent in product_db:
+            for odoo_lang in ('it_IT', 'en_US'):
+                lang = odoo_lang[:2]
+                context_lang = context.copy()
+                context_lang['lang'] = odoo_lang
             
-            # -----------------------------------------------------------------
-            # Upload product variations:
-            # -----------------------------------------------------------------
-            variations_web = wcapi.get('products/%s/variations' % wp_id).json()
+                web_product, variants = product_db[parent]
+                product = web_product.product_id
+                default_code = product.default_code
+                if not product.wp_parent_template:
+                    parent_unset.append(parent)
+                    continue
             
-            data = {
-                'delete': [],
-                }
+                # -------------------------------------------------------------
+                # TEMPLATE PRODUCT: Upload product reference:
+                # -------------------------------------------------------------
+                # 1. Call upload original procedure:
+                translation_lang.update(web_product_pool.publish_now(
+                    cr, uid, [web_product.id], context=context_lang))
+                wp_id = translation_lang.get(default_code, {}).get(lang)
+                return True
+                
+                # Setup default attribute:
+                parent_parent, parent_attribute = split_code(default_code)
+                data = {'default_attributes': [{
+                    'id': attribute_id['Tessuto'],
+                    'option': parent_attribute,
+                    }]}
+                reply = wcapi.put('products/%s' % wp_id, data).json()
+                
+                if not wp_id:
+                    _logger.error(
+                        'Cannot found wp_id, code %s' % default_code)
+                    # XXX Cannot update!
+                    continue
 
-            #current_variation = {}
-            variation_ids = {}
-            for item in variations_web:
-                # No option
-                if not item['attributes'] or not item['attributes'][0][
-                        'option']:
-                    data['delete'].append(item['id'])
-                else:
-                    #current_variation[
-                    #    item['attributes'][0]['option']] = item['id']
-                    variation_ids[item['sku']] = item['id']
-
-            # Clean variation no color:
-            if data['delete']:
-                wcapi.post('products/%s/variations/batch' % wp_id, data).json()
-
-            # Get all variations:
-            res = wcapi.get('products/%s/variations' % wp_id).json()
-
-            for line, fabric_code in variants:
-                variant = line.product_id
-                variant_code = variant.default_code
-                # Create or update variation:
-                # XXX Price for S (ingle)
-
-                data = {
-                    'sku': variant_code,
-                    'price': u'%s' % (line.force_price or variant.lst_price),
-                    'short_description': 
-                        line.force_name or variant.name or u'',
-                    'description': line.force_description or \
-                        variant.large_description or u'',
-                    # TODO
-                    # stock_quantity
-                    # stock_status
-                    # weight
-                    # dimensions
-                    'stock_quantity': 
-                        web_product_pool.get_existence_for_product(variant),
-                    'status': 'publish' if line.published else 'private',
+                # -----------------------------------------------------------------
+                # VARIANTS: Creation
+                # -----------------------------------------------------------------
+                # 2. Update attributes:
+                data = {'attributes': [{
+                    'id': attribute_id['Tessuto'], 
+                    #'name': 'Tessuto',
+                    'options': [],
+                    #'name': variant_attribute,
+                    'variation': True,
+                    }]}                
+                for line, variant_attribute in variants:
+                    variant = line.product_id
+                    data['attributes'][0]['options'].append(variant_attribute)
                     
-                    'attributes': [{
-                        'id': attribute_id['Tessuto'], 
-                        'option': fabric_code,
-                        }]
+                try:
+                    res = wcapi.post('products/%s' % wp_id, data=data).json()
+                except:
+                    raise osv.except_osv(
+                        _('Error'), 
+                        _('Wordpress server not answer, timeout!'),
+                        )
+                
+                # -----------------------------------------------------------------
+                # Upload product variations:
+                # -----------------------------------------------------------------
+                variations_web = wcapi.get('products/%s/variations' % wp_id).json()
+                
+                data = {
+                    'delete': [],
                     }
-                # -------------------------------------------------------------
-                # Images block:
-                # -------------------------------------------------------------
-                images = [] 
-                position = 0
-                for image in line.wp_dropbox_images_ids:                  
-                    if image.dropbox_link:
-                        position += 1
-                        images.append({
-                            'src': image.dropbox_link,
-                            'position': position,
-                            # name
-                            # alt
-                            })
-                if images:
-                    data['image'] = images # XXX Raise error
 
-                variation_id = variation_ids.get(variant_code, False)
-                if variation_id: # Update
-                    operation = 'UPD'
-                    res = wcapi.put('products/%s/variations/%s' % (
-                        wp_id,
-                        variation_id,
-                        ), data).json()                        
-                    #del(current_variation[fabric_code]) XXX for clean operat.
-                else: # Create
-                    operation = 'NEW'
-                    res = wcapi.post(
-                        'products/%s/variations' % wp_id, data).json()
-                    try:
-                        variation_id = res['id']
-                    except:
-                        variation_id = '?'    
+                #current_variation = {}
+                variation_ids = {}
+                for item in variations_web:
+                    # No option
+                    if not item['attributes'] or not item['attributes'][0][
+                            'option']:
+                        data['delete'].append(item['id'])
+                    else:
+                        #current_variation[
+                        #    item['attributes'][0]['option']] = item['id']
+                        variation_ids[item['sku']] = item['id']
 
-                if res.get('data', {}).get('status', 0) >= 400:
-                    _logger.error('%s Variant: %s [%s] >> %s [%s] %s' % (
-                        operation,
-                        variant_code, 
-                        variation_id,
-                        fabric_code,
-                        res.get('message', 'Error without comment'),                        
-                        wp_id,
-                        ))
-                else:
-                    _logger.info('Variant %s [%s] update on %s' % (
-                        variant_code, 
-                        variation_id or 'NEW',
-                        wp_id,
-                        ))
-            # Delete also remain
+                # Clean variation no color:
+                if data['delete']:
+                    wcapi.post('products/%s/variations/batch' % wp_id, data).json()
+
+                # Get all variations:
+                res = wcapi.get('products/%s/variations' % wp_id).json()
+
+                for line, fabric_code in variants:
+                    variant = line.product_id
+                    variant_code = variant.default_code
+                    # Create or update variation:
+                    # XXX Price for S (ingle)
+
+                    data = {
+                        'sku': variant_code,
+                        'price': u'%s' % (line.force_price or variant.lst_price),
+                        'short_description': 
+                            line.force_name or variant.name or u'',
+                        'description': line.force_description or \
+                            variant.large_description or u'',
+                        # TODO
+                        # stock_quantity
+                        # stock_status
+                        # weight
+                        # dimensions
+                        'stock_quantity': 
+                            web_product_pool.get_existence_for_product(variant),
+                        'status': 'publish' if line.published else 'private',
+                        
+                        'attributes': [{
+                            'id': attribute_id['Tessuto'], 
+                            'option': fabric_code,
+                            }]
+                        }
+                    # -------------------------------------------------------------
+                    # Images block:
+                    # -------------------------------------------------------------
+                    images = [] 
+                    position = 0
+                    for image in line.wp_dropbox_images_ids:                  
+                        if image.dropbox_link:
+                            position += 1
+                            images.append({
+                                'src': image.dropbox_link,
+                                'position': position,
+                                # name
+                                # alt
+                                })
+                    if images:
+                        data['image'] = images # XXX Raise error
+
+                    variation_id = variation_ids.get(variant_code, False)
+                    if variation_id: # Update
+                        operation = 'UPD'
+                        res = wcapi.put('products/%s/variations/%s' % (
+                            wp_id,
+                            variation_id,
+                            ), data).json()                        
+                        #del(current_variation[fabric_code]) XXX for clean operat.
+                    else: # Create
+                        operation = 'NEW'
+                        res = wcapi.post(
+                            'products/%s/variations' % wp_id, data).json()
+                        try:
+                            variation_id = res['id']
+                        except:
+                            variation_id = '?'    
+
+                    if res.get('data', {}).get('status', 0) >= 400:
+                        _logger.error('%s Variant: %s [%s] >> %s [%s] %s' % (
+                            operation,
+                            variant_code, 
+                            variation_id,
+                            fabric_code,
+                            res.get('message', 'Error without comment'),                        
+                            wp_id,
+                            ))
+                    else:
+                        _logger.info('Variant %s [%s] update on %s' % (
+                            variant_code, 
+                            variation_id or 'NEW',
+                            wp_id,
+                            ))
+                # Delete also remain
                 
         if parent_unset:
             _logger.error('Set parent for code start with: %s' % (

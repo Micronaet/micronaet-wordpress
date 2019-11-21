@@ -174,7 +174,7 @@ class ProductProductWebServer(orm.Model):
         for category in item.wordpress_categ_ids:
             wp_id = eval('category.wp_%s_id' % lang)
             wp_parent_id = eval('category.parent_id.wp_%s_id' % lang)
-            if not category.wp_id:
+            if not wp_id:
                 continue
             categories.append({'id': wp_id })
             if category.connector_id.wp_all_category and category.parent_id:                
@@ -267,11 +267,9 @@ class ProductProductWebServer(orm.Model):
         translation_lang = {}
 
         # First lang = original, second traslate
-        import pdb; pdb.set_trace()
         for odoo_lang in ('it_IT', 'en_US'):
-            context_lang['lang'] = lang # self._lang_db
             lang = odoo_lang[:2] # WP lang
-            context_lang['lang'] = odoo_lang
+            context_lang['lang'] = odoo_lang  # self._lang_db
 
             for item in self.browse(cr, uid, ids, context=context_lang):
             
@@ -287,7 +285,7 @@ class ProductProductWebServer(orm.Model):
                 status = 'publish' if item.published else 'private'
                 stock_quantity = self.get_existence_for_product(product)
                 wp_id = eval('item.wp_%s_id' % lang)
-                wp_it_id = item.wp_id_id # Default product for language
+                wp_it_id = item.wp_it_id # Default product for language
                 # fabric, type_of_material
 
                 # -------------------------------------------------------------
@@ -295,7 +293,8 @@ class ProductProductWebServer(orm.Model):
                 # -------------------------------------------------------------
                 images = False #[] 
                 for image in item.wp_dropbox_images_ids:
-                    if image.dropbox_link:
+                    dropbox_link = image.dropbox_link
+                    if dropbox_link and dropbox_link.startswith('http'):                        
                         images = {#.append({
                             'src': image.dropbox_link,
                             }
@@ -333,8 +332,9 @@ class ProductProductWebServer(orm.Model):
                            'length': '%s' % product.length,
                            'height': '%s' % product.height,
                            }, 
-                        'images': images,
                         })
+                    if images:
+                        data['images'] = images
                         
                 else: # Other lang (only translation
                     if not wp_it_id: 
@@ -397,7 +397,7 @@ class ProductProductWebServer(orm.Model):
                         continue    
                     
                     if wp_id:
-                        self.write(cr, uid, [line.id], {
+                        self.write(cr, uid, [item.id], {
                             'wp_%s_id' % lang: wp_id,
                             }, context=context)
 
@@ -407,7 +407,7 @@ class ProductProductWebServer(orm.Model):
                 if default_code not in translation_lang:
                     translation_lang[default_code] = {}
                 translation_lang[default_code][lang] = wp_id
-        return translation_of
+        return translation_lang
 
     # -------------------------------------------------------------------------
     # Function fields:

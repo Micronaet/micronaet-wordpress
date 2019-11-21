@@ -164,12 +164,9 @@
                         
                         <separator string="Wordpress line:" colspan="3"/>
                         <!--<button name="clean_reference" string="Clean reference" colspan="1" type="object" confirm="Do you want delete reference with Wordpress linked product?"/>-->
-                        <field name="lang_wp_ids" colspan="4" readonly="1" nolabel="1">
-                            <tree string="WP ID:" editable="bottom">
-                                <field name="lang" />
-                                <field name="wp_id" />                               
-                            </tree>
-                        </field>
+
+                        <field name="wp_it_id" readonly="1"/>
+                        <field name="wp_en_id" readonly="1"/>
                     </group>    
                 </form>           
             </field>
