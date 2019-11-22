@@ -40,7 +40,6 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT, 
     DATETIME_FORMATS_MAP, 
     float_compare)
-from slugify import slugify
 
 _logger = logging.getLogger(__name__)
 
@@ -68,12 +67,6 @@ class ProductPublicCategory(orm.Model):
             Used also for more than one elements (not only button click)
             Note all product must be published on the same web server!            
             '''
-        def get_lang_slug(name, lang):
-            ''' Slug problem with lang
-            '''
-            slug = slugify(name)
-            return slug + ('' if lang == 'it' else '-en')
-            
         def split_code(default_code):
             ''' Split 2 part of code
             '''   
@@ -239,7 +232,7 @@ class ProductPublicCategory(orm.Model):
                 item = {
                     'name': attribute,
                     'lang': lang,
-                    'slug': get_lang_slug(attribute, lang)
+                    'slug': self.get_lang_slug(attribute, lang)
                     # 'color': # XXX RGP color
                     }
                     
@@ -318,7 +311,7 @@ class ProductPublicCategory(orm.Model):
             if not product.wp_parent_template:
                 parent_unset.append(parent)
                 continue
-            import pdb; pdb.set_trace()
+
             for odoo_lang in ('it_IT', 'en_US'):
                 lang = odoo_lang[:2]
                 context_lang = context.copy()

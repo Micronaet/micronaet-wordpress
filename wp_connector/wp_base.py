@@ -40,6 +40,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT, 
     DATETIME_FORMATS_MAP, 
     float_compare)
+from slugify import slugify
 
 
 _logger = logging.getLogger(__name__)
@@ -48,6 +49,15 @@ class ConnectorServer(orm.Model):
     """ Model name: ConnectorServer
     """    
     _inherit = 'connector.server'
+
+    # -------------------------------------------------------------------------
+    # Utility:
+    # -------------------------------------------------------------------------
+    def get_lang_slug(self, name, lang):
+        ''' Slug problem with lang
+        '''
+        slug = slugify(name)
+        return slug + ('' if lang == 'it' else '-en')
 
     def get_wp_connector(self, cr, uid, ids, context=None):
         ''' Connect with Word Press API management
