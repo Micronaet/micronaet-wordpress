@@ -312,6 +312,7 @@ class ProductPublicCategory(orm.Model):
                 parent_unset.append(parent)
                 continue
 
+            web_variant = {}
             for odoo_lang in ('it_IT', 'en_US'):
                 lang = odoo_lang[:2]
                 context_lang = context.copy()
@@ -365,7 +366,6 @@ class ProductPublicCategory(orm.Model):
                     'delete': [],
                     }
 
-                web_variant = {}
                 import pdb; pdb.set_trace()
                 for item in res:
                     # No option
@@ -422,6 +422,9 @@ class ProductPublicCategory(orm.Model):
                         
                     if default_lang != lang: # Add language default ref.
                         if not variant_it_id:
+                            _logger.error(
+                                'Cannot update variant in lang, no it')
+                            continue # XXX test if correct!
                             
                         data['translations'] = {
                             'it': variant_it_id, # Created before
