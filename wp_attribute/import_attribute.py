@@ -366,7 +366,6 @@ class ProductPublicCategory(orm.Model):
                     'delete': [],
                     }
 
-                import pdb; pdb.set_trace()
                 for item in res:
                     # No option
                     if not item['attributes'] or not item['attributes'][0][
@@ -404,6 +403,7 @@ class ProductPublicCategory(orm.Model):
                         'description': line.force_description or \
                             variant.large_description or u'',
                         'lang': lang,    
+                        'slug': self.get_slug(variant_code, lang),
                         # TODO
                         # stock_quantity
                         # stock_status
