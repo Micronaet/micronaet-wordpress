@@ -124,34 +124,44 @@ class ProductPublicCategory(orm.Model):
         product_db = {}
         attribute_db = []
         company_name = False # For brand
+        for odoo_lang in ('it_IT', 'en_US'):
+            lang = odoo_lang[:2]
+            context_lang = context.copy()
+            context_lang['lang'] = odoo_lang
+            records = web_product_pool.browse(
+                cr, uid, product_ids, context=context_lang)
 
-        for record in sorted(web_product_pool.browse(cr, uid, product_ids, 
-                context=context), 
-                key=lambda x: x.product_id.wp_parent_template, reverse=True):
-
-            # First is the template (if present)
-            product = record.product_id
-            if not company_name:
-                company_name = product.company_id.name.upper().split()[0] # XXX
-                
-            default_code = product.default_code or ''
-            if not default_code[:3].isdigit(): # TODO MT and TL?
-                _logger.warning('Not used %s' % default_code)
-                continue
-
-            product_parent, product_attribute = split_code(default_code)
-            if product_attribute not in attribute_db:
-                attribute_db.append(product_attribute)
             
-            if product_parent not in product_db:
-                product_db[product_parent] = [
-                    record, # Web line with template product
-                    [], # Variant product
-                    ]
-            else: # First record became product, other variants:     
-                product_db[product_parent][1].append(
-                    (record, product_attribute))
-            # Extract frame-color from code
+            for record in sorted(records, 
+                    key=lambda x: x.product_id.wp_parent_template, 
+                    reverse=True
+                    ):
+
+                # First is the template (if present)
+                product = record.product_id
+                if not company_name:
+                    company_name = product.company_id.name.upper().split()[0] # XXX
+                    
+                default_code = product.default_code or ''
+                if not default_code[:3].isdigit(): # TODO MT and TL?
+                    _logger.warning('Not used %s' % default_code)
+                    continue
+
+                product_parent, product_attribute = split_code(default_code)
+                if product_attribute not in attribute_db:
+                    attribute_db.append(product_attribute)
+                
+                if product_parent not in product_db:
+                    product_db[product_parent] = [
+                        record, # Web line with template product
+                        {}, # Variant product (not the first)
+                        ]                        
+                else: # First record became product, other variants:     
+                    if lang not in product_db[product_parent][1]:
+                        product_db[product_parent][1][lang] = []
+                    product_db[product_parent][1][lang].append(
+                        (record, product_attribute))
+                # Extract frame-color from code
 
         # ---------------------------------------------------------------------        
         #                     ATTRIBUTES: (need Tessuto, Brand)
@@ -296,7 +306,7 @@ class ProductPublicCategory(orm.Model):
         translation_lang = {}
         parent_unset = []
         for parent in product_db:
-            web_product, variants = product_db[parent]
+            web_product, lang_variants = product_db[parent]
 
             # -----------------------------------------------------------------
             # TEMPLATE PRODUCT: Upload product reference:
@@ -317,6 +327,8 @@ class ProductPublicCategory(orm.Model):
                 lang = odoo_lang[:2]
                 context_lang = context.copy()
                 context_lang['lang'] = odoo_lang
+
+                variants = lang_variants.get(lang, [])
 
                 # Setup default attribute:
                 wp_id = translation_lang.get(default_code, {}).get(lang)
@@ -403,7 +415,7 @@ class ProductPublicCategory(orm.Model):
                         'description': line.force_description or \
                             variant.large_description or u'',
                         'lang': lang,    
-                        'slug': self.get_slug(variant_code, lang),
+                        'slug': self.get_lang_slug(variant_code, lang),
                         # TODO
                         # stock_quantity
                         # stock_status
