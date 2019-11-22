@@ -40,7 +40,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT, 
     DATETIME_FORMATS_MAP, 
     float_compare)
-
+from slugify import slugify
 
 _logger = logging.getLogger(__name__)
 
@@ -68,6 +68,12 @@ class ProductPublicCategory(orm.Model):
             Used also for more than one elements (not only button click)
             Note all product must be published on the same web server!            
             '''
+        def get_lang_slug(name, lang):
+            ''' Slug problem with lang
+            '''
+            slug = slugify(name)
+            return slug + ('' if lang == 'it' else '-en')
+            
         def split_code(default_code):
             ''' Split 2 part of code
             '''   
@@ -229,11 +235,11 @@ class ProductPublicCategory(orm.Model):
                 'update': [],
                 'delete': [],
                 }
-            for attribute in attribute_db:
-                name = attribute + ('' if lang == 'it' else '-en') # XXX remove?
+            for attribute in attribute_db:                
                 item = {
-                    'name': name,
+                    'name': attribute,
                     'lang': lang,
+                    'slug': get_lang_slug(attribute, lang)
                     # 'color': # XXX RGP color
                     }
                     
@@ -250,7 +256,7 @@ class ProductPublicCategory(orm.Model):
                             ))
                         # TODO manage?
                         
-                if (name, lang) in web_attribute:
+                if (attribute, lang) in web_attribute:
                     pass # data['update'].append(item) # no data to update
                 else:
                     data['create'].append(item)
@@ -284,43 +290,42 @@ class ProductPublicCategory(orm.Model):
                             continue
 
                         # Update for next language:
-                        # name = attribute + ('' if lang == 'it' else '.') # XXX remove?
                         web_attribute[(record['name'], lang)] = wp_id 
             except:
                 raise osv.except_osv(
                     _('Error'), 
                     _('Wordpress server not answer, timeout!'),
                     )
-    
+
         # ---------------------------------------------------------------------        
         #                       PRODUCT AND VARIATIONS:
         # ---------------------------------------------------------------------
         translation_lang = {}
         parent_unset = []
         for parent in product_db:
+            web_product, variants = product_db[parent]
+
+            # -----------------------------------------------------------------
+            # TEMPLATE PRODUCT: Upload product reference:
+            # -----------------------------------------------------------------
+            # 1. Call upload original procedure:
+            translation_lang.update(
+                web_product_pool.publish_now(
+                    cr, uid, [web_product.id], context=context))
+
+            product = web_product.product_id
+            default_code = product.default_code
+            if not product.wp_parent_template:
+                parent_unset.append(parent)
+                continue
+            import pdb; pdb.set_trace()
             for odoo_lang in ('it_IT', 'en_US'):
                 lang = odoo_lang[:2]
                 context_lang = context.copy()
                 context_lang['lang'] = odoo_lang
-            
-                web_product, variants = product_db[parent]
-                product = web_product.product_id
-                default_code = product.default_code
-                if not product.wp_parent_template:
-                    parent_unset.append(parent)
-                    continue
-            
-                # -------------------------------------------------------------
-                # TEMPLATE PRODUCT: Upload product reference:
-                # -------------------------------------------------------------
-                # 1. Call upload original procedure:
-                translation_lang.update(
-                    web_product_pool.publish_now(
-                        cr, uid, [web_product.id], context=context_lang))
-                wp_id = translation_lang.get(default_code, {}).get(lang)
-                return True
-                
+
                 # Setup default attribute:
+                wp_id = translation_lang.get(default_code, {}).get(lang)
                 parent_parent, parent_attribute = split_code(default_code)
                 data = {'default_attributes': [{
                     'id': attribute_id['Tessuto'],
@@ -333,10 +338,11 @@ class ProductPublicCategory(orm.Model):
                         'Cannot found wp_id, code %s' % default_code)
                     # XXX Cannot update!
                     continue
-
-                # -----------------------------------------------------------------
+                import pdb; pdb.set_trace()
+                
+                # -------------------------------------------------------------
                 # VARIANTS: Creation
-                # -----------------------------------------------------------------
+                # -------------------------------------------------------------
                 # 2. Update attributes:
                 data = {'attributes': [{
                     'id': attribute_id['Tessuto'], 
@@ -357,10 +363,11 @@ class ProductPublicCategory(orm.Model):
                         _('Wordpress server not answer, timeout!'),
                         )
                 
-                # -----------------------------------------------------------------
+                # -------------------------------------------------------------
                 # Upload product variations:
-                # -----------------------------------------------------------------
-                variations_web = wcapi.get('products/%s/variations' % wp_id).json()
+                # -------------------------------------------------------------
+                variations_web = wcapi.get(
+                    'products/%s/variations' % wp_id).json()
                 
                 data = {
                     'delete': [],
@@ -380,7 +387,8 @@ class ProductPublicCategory(orm.Model):
 
                 # Clean variation no color:
                 if data['delete']:
-                    wcapi.post('products/%s/variations/batch' % wp_id, data).json()
+                    wcapi.post(
+                        'products/%s/variations/batch' % wp_id, data).json()
 
                 # Get all variations:
                 res = wcapi.get('products/%s/variations' % wp_id).json()
@@ -393,7 +401,8 @@ class ProductPublicCategory(orm.Model):
 
                     data = {
                         'sku': variant_code,
-                        'price': u'%s' % (line.force_price or variant.lst_price),
+                        'price': u'%s' % (
+                            line.force_price or variant.lst_price),
                         'short_description': 
                             line.force_name or variant.name or u'',
                         'description': line.force_description or \
@@ -404,7 +413,8 @@ class ProductPublicCategory(orm.Model):
                         # weight
                         # dimensions
                         'stock_quantity': 
-                            web_product_pool.get_existence_for_product(variant),
+                            web_product_pool.get_existence_for_product(
+                                variant),
                         'status': 'publish' if line.published else 'private',
                         
                         'attributes': [{
@@ -412,9 +422,9 @@ class ProductPublicCategory(orm.Model):
                             'option': fabric_code,
                             }]
                         }
-                    # -------------------------------------------------------------
+                    # ---------------------------------------------------------
                     # Images block:
-                    # -------------------------------------------------------------
+                    # ---------------------------------------------------------
                     images = [] 
                     position = 0
                     for image in line.wp_dropbox_images_ids:                  
@@ -436,7 +446,7 @@ class ProductPublicCategory(orm.Model):
                             wp_id,
                             variation_id,
                             ), data).json()                        
-                        #del(current_variation[fabric_code]) XXX for clean operat.
+                        #del(current_variation[fabric_code]) #for clean operat.
                     else: # Create
                         operation = 'NEW'
                         res = wcapi.post(
