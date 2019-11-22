@@ -331,7 +331,6 @@ class ProductPublicCategory(orm.Model):
                         'Cannot found wp_id, code %s' % default_code)
                     # XXX Cannot update!
                     continue
-                import pdb; pdb.set_trace()
                 
                 # -------------------------------------------------------------
                 # VARIANTS: Creation
@@ -359,39 +358,43 @@ class ProductPublicCategory(orm.Model):
                 # -------------------------------------------------------------
                 # Upload product variations:
                 # -------------------------------------------------------------
-                variations_web = wcapi.get(
+                res = wcapi.get(
                     'products/%s/variations' % wp_id).json()
                 
                 data = {
                     'delete': [],
                     }
 
-                #current_variation = {}
-                variation_ids = {}
-                for item in variations_web:
+                web_variant = {}
+                import pdb; pdb.set_trace()
+                for item in res:
                     # No option
                     if not item['attributes'] or not item['attributes'][0][
                             'option']:
                         data['delete'].append(item['id'])
                     else:
-                        #current_variation[
+                        #current_variant[
                         #    item['attributes'][0]['option']] = item['id']
-                        variation_ids[item['sku']] = item['id']
+                        web_variant[(item['sku'], lang)] = item['id']
 
-                # Clean variation no color:
+                # Clean variant no color:
                 if data['delete']:
                     wcapi.post(
                         'products/%s/variations/batch' % wp_id, data).json()
 
-                # Get all variations:
-                res = wcapi.get('products/%s/variations' % wp_id).json()
-
+                import pdb; pdb.set_trace()
                 for line, fabric_code in variants:
                     variant = line.product_id
                     variant_code = variant.default_code
-                    # Create or update variation:
+                    
+                    variant_id = web_variant.get(
+                        (variant_code, lang), False)
+                    variant_it_id = web_variant.get(
+                        (variant_code, 'it'), False)                    
+
                     # XXX Price for S (ingle)
 
+                    # Create or update variant:
                     data = {
                         'sku': variant_code,
                         'price': u'%s' % (
@@ -400,6 +403,7 @@ class ProductPublicCategory(orm.Model):
                             line.force_name or variant.name or u'',
                         'description': line.force_description or \
                             variant.large_description or u'',
+                        'lang': lang,    
                         # TODO
                         # stock_quantity
                         # stock_status
@@ -415,6 +419,14 @@ class ProductPublicCategory(orm.Model):
                             'option': fabric_code,
                             }]
                         }
+                        
+                    if default_lang != lang: # Add language default ref.
+                        if not variant_it_id:
+                            
+                        data['translations'] = {
+                            'it': variant_it_id, # Created before
+                            }
+                        
                     # ---------------------------------------------------------
                     # Images block:
                     # ---------------------------------------------------------
@@ -432,28 +444,31 @@ class ProductPublicCategory(orm.Model):
                     if images:
                         data['image'] = images # XXX Raise error
 
-                    variation_id = variation_ids.get(variant_code, False)
-                    if variation_id: # Update
+                    #variant_id = variant_ids.get(
+                    #    (variant_code, lang), False)
+                    if variant_id: # Update
                         operation = 'UPD'
                         res = wcapi.put('products/%s/variations/%s' % (
                             wp_id,
-                            variation_id,
+                            variant_id,
                             ), data).json()                        
-                        #del(current_variation[fabric_code]) #for clean operat.
+                        #del(current_variant[fabric_code]) #for clean operat.
                     else: # Create
                         operation = 'NEW'
                         res = wcapi.post(
                             'products/%s/variations' % wp_id, data).json()
                         try:
-                            variation_id = res['id']
+                            variant_id = res['id']
+                            # Save for other lang:
+                            web_variant[(variant_code, lang)] = variant_id
                         except:
-                            variation_id = '?'    
+                            variant_id = '?'    
 
                     if res.get('data', {}).get('status', 0) >= 400:
                         _logger.error('%s Variant: %s [%s] >> %s [%s] %s' % (
                             operation,
                             variant_code, 
-                            variation_id,
+                            variant_id,
                             fabric_code,
                             res.get('message', 'Error without comment'),                        
                             wp_id,
@@ -461,7 +476,7 @@ class ProductPublicCategory(orm.Model):
                     else:
                         _logger.info('Variant %s [%s] update on %s' % (
                             variant_code, 
-                            variation_id or 'NEW',
+                            variant_id or 'NEW',
                             wp_id,
                             ))
                 # Delete also remain
