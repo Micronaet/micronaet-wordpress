@@ -336,16 +336,17 @@ class ProductPublicCategory(orm.Model):
             # Batch operation:
             # -----------------------------------------------------------------
 
-            # =================================================================
-            # Excel log:
-            # -----------------------------------------------------------------
-            row += 1
-            excel_pool.write_xls_line(ws_name, row, [
-                'Aggiornamento tessuti:',
-                ], default_format=excel_format['title'])
-            # =================================================================
             
             try:
+                # =============================================================
+                # Excel log:
+                # -------------------------------------------------------------
+                row += 1
+                excel_pool.write_xls_line(ws_name, row, [
+                    'Aggiornamento tessuti:',
+                    ], default_format=excel_format['title'])
+                # =============================================================
+
                 if any(data.values()): # only if one is present
                     call = 'products/attributes/%s/terms/batch' % \
                         attribute_id['Tessuto']
