@@ -393,11 +393,14 @@ class ProductPublicCategory(orm.Model):
                     wcapi.post(
                         'products/%s/variations/batch' % wp_id, data).json()
 
-                import pdb; pdb.set_trace()
                 for line, fabric_code in variants:
                     variant = line.product_id
                     variant_code = variant.default_code
-                    
+                    if variant_code == default_code:
+                        _logger.warning(
+                            'Jump variant, product yet present: %s' % \
+                                default_code)
+
                     variant_id = web_variant.get(
                         (variant_code, lang), False)
                     variant_it_id = web_variant.get(
@@ -407,7 +410,6 @@ class ProductPublicCategory(orm.Model):
 
                     # Create or update variant:
                     data = {
-                        'sku': variant_code,
                         'price': u'%s' % (
                             line.force_price or variant.lst_price),
                         'short_description': 
@@ -432,7 +434,9 @@ class ProductPublicCategory(orm.Model):
                             }]
                         }
                         
-                    if default_lang != lang: # Add language default ref.
+                    if default_lang == lang: # Add language default ref.
+                        data['sku'] = variant_code
+                    else:
                         if not variant_it_id:
                             _logger.error(
                                 'Cannot update variant in lang, no it')
@@ -448,6 +452,7 @@ class ProductPublicCategory(orm.Model):
                     images = [] 
                     position = 0
                     for image in line.wp_dropbox_images_ids:                  
+                        import pdb; pdb.set_trace()
                         if image.dropbox_link:
                             position += 1
                             images.append({
