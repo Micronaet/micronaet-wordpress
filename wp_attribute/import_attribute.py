@@ -80,6 +80,29 @@ class ProductPublicCategory(orm.Model):
                 )
             return res    
         
+        # =====================================================================
+        # Log operation on Excel file:
+        # ---------------------------------------------------------------------
+        ws_name = 'Chiamate'
+        excel_pool = self.pool.get('excel.writer')        
+        excel_pool.create_worksheet(ws_name)
+        excel_pool.set_format()
+        excel_format = {
+            'title': excel_pool.get_format('title'),
+            'header': excel_pool.get_format('header'),
+            'text': excel_pool.get_format('text'),
+            }
+        row = 0
+        excel_pool.write_xls_line(ws_name, row, [
+            'Commento',
+            'Chiamata',
+            'End point',
+            'Data',
+            'Reply',
+            ], default_format=excel_format['header'])
+        excel_pool.column_width(ws_name, [30, 20, 30, 50, 100])
+        # =====================================================================
+
         # ---------------------------------------------------------------------
         # Handle connector:
         # ---------------------------------------------------------------------
@@ -130,7 +153,6 @@ class ProductPublicCategory(orm.Model):
             context_lang['lang'] = odoo_lang
             records = web_product_pool.browse(
                 cr, uid, product_ids, context=context_lang)
-
             
             for record in sorted(records, 
                     key=lambda x: x.product_id.wp_parent_template, 
@@ -166,8 +188,25 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------        
         #                     ATTRIBUTES: (need Tessuto, Brand)
         # ---------------------------------------------------------------------   
-        current_wp_attribute = wcapi.get('products/attributes').json()
+        call = 'products/attributes'
+        current_wp_attribute = wcapi.get(call).json()
 
+        # =====================================================================
+        # Excel log:
+        # ---------------------------------------------------------------------   
+        row += 1
+        excel_pool.write_xls_line(ws_name, row, [
+            'Richiesta elenco attributi:',
+            ], default_format=excel_format['title'])
+        row += 1
+        excel_pool.write_xls_line(ws_name, row, [
+            'get',
+            call,
+            '',
+            u'%s' % (current_wp_attribute, ),
+            ], default_format=excel_format['text'], col=1)
+        # =====================================================================
+        
         error = ''
         try:
             if current_wp_attribute['data']['status'] >= 400:
@@ -205,11 +244,32 @@ class ProductPublicCategory(orm.Model):
         _logger.warning('Search all terms for attribute %s...' % (
             attribute_id.keys(), ))
 
+        # =====================================================================
+        # Excel log:
+        # ---------------------------------------------------------------------   
+        row += 1
+        excel_pool.write_xls_line(ws_name, row, [
+            'Richiesta termini:',
+            ], default_format=excel_format['title'])
+        # =====================================================================
+
         while theres_data:
+            call = 'products/attributes/%s/terms' % attribute_id['Tessuto']
             res = wcapi.get(
-                'products/attributes/%s/terms' % attribute_id['Tessuto'], 
-                params=parameter).json()
+                call, params=parameter).json()
             parameter['page'] += 1
+            
+            # =================================================================
+            # Excel log:
+            # -----------------------------------------------------------------
+            row += 1
+            excel_pool.write_xls_line(ws_name, row, [
+                'get',
+                call,
+                u'%s' % (parameter),
+                u'%s' % (res, ),
+                ], default_format=excel_format['text'], col=1)
+            # =================================================================
 
             try:
                 if res.get['data']['status'] >= 400:
@@ -275,13 +335,33 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             # Batch operation:
             # -----------------------------------------------------------------
+
+            # =================================================================
+            # Excel log:
+            # -----------------------------------------------------------------
+            row += 1
+            excel_pool.write_xls_line(ws_name, row, [
+                'Aggiornamento tessuti:',
+                ], default_format=excel_format['title'])
+            # =================================================================
+            
             try:
                 if any(data.values()): # only if one is present
-                    res = wcapi.post(
-                        'products/attributes/%s/terms/batch' % \
-                            attribute_id['Tessuto'], 
-                        data=data,
-                        ).json()
+                    call = 'products/attributes/%s/terms/batch' % \
+                        attribute_id['Tessuto']
+                    res = wcapi.post(call, data=data).json()
+
+                    # =========================================================
+                    # Excel log:
+                    # ---------------------------------------------------------
+                    row += 1
+                    excel_pool.write_xls_line(ws_name, row, [
+                        'post',
+                        call,
+                        u'%s' % (data),
+                        u'%s' % (res, ),
+                        ], default_format=excel_format['text'], col=1)
+                    # =========================================================
                     
                     # ---------------------------------------------------------
                     # Save WP ID (only in dict not in ODOO Object)
@@ -305,6 +385,8 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         translation_lang = {}
         parent_unset = []
+
+        context['log_excel'] = []
         for parent in product_db:
             web_product, lang_variants = product_db[parent]
 
@@ -316,6 +398,20 @@ class ProductPublicCategory(orm.Model):
                 web_product_pool.publish_now(
                     cr, uid, [web_product.id], context=context))
 
+            # =================================================================
+            # Excel log:
+            # -----------------------------------------------------------------
+            row += 1
+            excel_pool.write_xls_line(ws_name, row, [
+                'Pubblicazione prodotto base',
+                ], default_format=excel_format['title'])
+
+            for log in context['log_excel']:
+                row += 1
+                excel_pool.write_xls_line(ws_name, row, log, 
+                    default_format=excel_format['text'], col=1)
+                # =============================================================
+
             product = web_product.product_id
             default_code = product.default_code
             if not product.wp_parent_template:
@@ -323,6 +419,8 @@ class ProductPublicCategory(orm.Model):
                 continue
 
             web_variant = {}
+
+
             for odoo_lang in ('it_IT', 'en_US'):
                 lang = odoo_lang[:2]
                 context_lang = context.copy()
@@ -337,7 +435,25 @@ class ProductPublicCategory(orm.Model):
                     'id': attribute_id['Tessuto'],
                     'option': parent_attribute,
                     }]}
-                reply = wcapi.put('products/%s' % wp_id, data).json()
+
+                call = 'products/%s' % wp_id
+                reply = wcapi.put(call, data).json()
+                
+                # =============================================================
+                # Excel log:
+                # -------------------------------------------------------------
+                row += 1
+                excel_pool.write_xls_line(ws_name, row, [
+                    'Pubblicazione varianti lingua %s' % lang ,
+                    ], default_format=excel_format['title'])
+                row += 1
+                excel_pool.write_xls_line(ws_name, row, [
+                    'put',
+                    call,
+                    u'%s' % (data),
+                    u'%s' % (reply, ),
+                    ], default_format=excel_format['text'], col=1)
+                # =============================================================
                 
                 if not wp_id:
                     _logger.error(
@@ -361,7 +477,21 @@ class ProductPublicCategory(orm.Model):
                     data['attributes'][0]['options'].append(variant_attribute)
                     
                 try:
-                    res = wcapi.post('products/%s' % wp_id, data=data).json()
+                    call = 'products/%s' % wp_id
+                    res = wcapi.post(call, data=data).json()
+                    
+                    # =========================================================
+                    # Excel log:
+                    # ---------------------------------------------------------
+                    row += 1
+                    excel_pool.write_xls_line(ws_name, row, [
+                        'post',
+                        call,
+                        u'%s' % (data),
+                        u'%s' % (res, ),
+                        ], default_format=excel_format['text'], col=1)
+                    # =========================================================
+                    
                 except:
                     raise osv.except_osv(
                         _('Error'), 
@@ -371,9 +501,21 @@ class ProductPublicCategory(orm.Model):
                 # -------------------------------------------------------------
                 # Upload product variations:
                 # -------------------------------------------------------------
-                res = wcapi.get(
-                    'products/%s/variations' % wp_id).json()
-                
+                call = 'products/%s/variations' % wp_id
+                res = wcapi.get(call).json()
+                    
+                # =============================================================
+                # Excel log:
+                # -------------------------------------------------------------
+                row += 1
+                excel_pool.write_xls_line(ws_name, row, [
+                    'get',
+                    call,
+                    u'%s' % (data),
+                    u'%s' % (res, ),
+                    ], default_format=excel_format['text'], col=1)
+                # =============================================================
+
                 data = {
                     'delete': [],
                     }
@@ -386,20 +528,38 @@ class ProductPublicCategory(orm.Model):
                     else:
                         #current_variant[
                         #    item['attributes'][0]['option']] = item['id']
-                        web_variant[(item['sku'], lang)] = item['id']
+                        if lang == default_lang:
+                            web_variant[(item['sku'], lang)] = item['id']
+                        else:
+                            # Variant has no sku, compose from parent + option
+                            option = False
+                            for attribute in item['attributes']:
+                                if attribute['id'] == attribute_id['Tessuto']:
+                                    option = attribute['option'].replace(
+                                        '-', '')
+                            if not option:
+                                _logger.error(
+                                    'Cannot get sku for variant %s' % (item, ))
+                                continue
+                            web_variant[(
+                                '%-6s%s' % (parent, option), 
+                                lang,
+                                )] = item['id']
 
                 # Clean variant no color:
                 if data['delete']:
                     wcapi.post(
                         'products/%s/variations/batch' % wp_id, data).json()
+                    # TODO log
 
                 for line, fabric_code in variants:
                     variant = line.product_id
                     variant_code = variant.default_code
                     if variant_code == default_code:
                         _logger.warning(
-                            'Jump variant, product yet present: %s' % \
+                            'Jump variant, is product: %s' % \
                                 default_code)
+                        continue # Jump this varient line        
 
                     variant_id = web_variant.get(
                         (variant_code, lang), False)
@@ -439,7 +599,9 @@ class ProductPublicCategory(orm.Model):
                     else:
                         if not variant_it_id:
                             _logger.error(
-                                'Cannot update variant in lang, no it')
+                                'Cannot update variant in lang, no it: %s' % (
+                                    variant_code
+                                    ))
                             continue # XXX test if correct!
                             
                         data['translations'] = {
@@ -449,34 +611,57 @@ class ProductPublicCategory(orm.Model):
                     # ---------------------------------------------------------
                     # Images block:
                     # ---------------------------------------------------------
-                    images = [] 
-                    position = 0
+                    image = [] 
                     for image in line.wp_dropbox_images_ids:                  
-                        import pdb; pdb.set_trace()
                         if image.dropbox_link:
-                            position += 1
-                            images.append({
+                            image = {
                                 'src': image.dropbox_link,
-                                'position': position,
-                                # name
-                                # alt
-                                })
-                    if images:
-                        data['image'] = images # XXX Raise error
+                                }
+                            break # Only one image in variant!    
+                                
+                    if image:
+                        data['image'] = image
 
                     #variant_id = variant_ids.get(
                     #    (variant_code, lang), False)
                     if variant_id: # Update
                         operation = 'UPD'
-                        res = wcapi.put('products/%s/variations/%s' % (
+                        call = 'products/%s/variations/%s' % (
                             wp_id,
                             variant_id,
-                            ), data).json()                        
+                            )
+                        res = wcapi.put(call, data).json()
                         #del(current_variant[fabric_code]) #for clean operat.
+                        
+                        # =====================================================
+                        # Excel log:
+                        # -----------------------------------------------------
+                        row += 1
+                        excel_pool.write_xls_line(ws_name, row, [
+                            'put',
+                            call,
+                            u'%s' % (data, ),
+                            u'%s' % (res, ),
+                            ], default_format=excel_format['text'], col=1)
+                        # =====================================================
+
                     else: # Create
                         operation = 'NEW'
-                        res = wcapi.post(
-                            'products/%s/variations' % wp_id, data).json()
+                        call = 'products/%s/variations' % wp_id
+                        res = wcapi.post(call, data).json()
+
+                        # =====================================================
+                        # Excel log:
+                        # -----------------------------------------------------
+                        row += 1
+                        excel_pool.write_xls_line(ws_name, row, [
+                            'post',
+                            call,
+                            u'%s' % (data, ),
+                            u'%s' % (res, ),
+                            ], default_format=excel_format['text'], col=1)
+                        # =====================================================
+
                         try:
                             variant_id = res['id']
                             # Save for other lang:
@@ -494,7 +679,7 @@ class ProductPublicCategory(orm.Model):
                             wp_id,
                             ))
                     else:
-                        _logger.info('Variant %s [%s] update on %s' % (
+                        _logger.info('NEW Variant %s [%s] update on %s' % (
                             variant_code, 
                             variant_id or 'NEW',
                             wp_id,
@@ -504,5 +689,8 @@ class ProductPublicCategory(orm.Model):
         if parent_unset:
             _logger.error('Set parent for code start with: %s' % (
                 parent_unset))
-                        
+                
+        # Rerturn log calls:        
+        return excel_pool.return_attachment(
+            cr, uid, 'Log call', name_of_file='call.xlsx', context=context)
 # vim:expandtab:smartindent:ltabstop=4:softtabstop=4:shiftwidth=4:

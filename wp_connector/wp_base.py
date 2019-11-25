@@ -176,7 +176,7 @@ class ProductProductWebServer(orm.Model):
         if stock_quantity < 0:
             return 0
         return stock_quantity
-           
+    
     def get_category_block_for_publish(self, item, lang):
         ''' Get category block for data record WP
         '''     
@@ -239,6 +239,8 @@ class ProductProductWebServer(orm.Model):
         if context is None:    
             context = {}
 
+        log_excel = context.get('log_excel', False)
+        
         first_proxy = self.browse(cr, uid, ids, context=context)[0]    
         if not first_proxy.connector_id.wordpress:
             _logger.warning('Not a wordpress proxy, call other')
@@ -363,12 +365,18 @@ class ProductProductWebServer(orm.Model):
                 # -------------------------------------------------------------
                 if wp_id:
                     try:
-                        reply = wcapi.put('products/%s' % wp_id, data).json()
-                        
+                        call = 'products/%s' % wp_id
+                        reply = wcapi.put(call, data).json()
+
+                        if log_excel != False:
+                            log_excel.append(('put', call, u'%s' % (data), 
+                                u'%s' % (reply)))
+
                         if reply.get('code') in (                        
                                 'product_invalid_sku',
                                 'woocommerce_rest_product_invalid_id'):
-                            wp_id = False # will be created after    
+                            pass # TODO Manage this case?
+                            #wp_id = False # will be created after    
                         else:
                             _logger.warning('Product %s lang %s updated!' % (
                                 wp_id, lang))                            
@@ -383,7 +391,11 @@ class ProductProductWebServer(orm.Model):
                 if not wp_id:
                     # Create (will update wp_id from now)
                     try:
-                        reply = wcapi.post('products', data).json()
+                        call = 'products'
+                        reply = wcapi.post(call, data).json()
+                        if log_excel != False:
+                            log_excel.append(('post', call, u'%s' % (data), 
+                                u'%s' % (reply)))
                     except: # Timeout on server:
                         _logger.error('Server timeout: %s' % (data, ))
                         continue
