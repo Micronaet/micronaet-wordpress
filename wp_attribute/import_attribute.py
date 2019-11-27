@@ -67,15 +67,16 @@ class ProductPublicCategory(orm.Model):
             Used also for more than one elements (not only button click)
             Note all product must be published on the same web server!            
             '''
-        def split_code(default_code):
+        def split_code(default_code, lang):
             ''' Split 2 part of code
             '''   
             default_code = (default_code or '')[:12] # No exta part
             res = (
                 default_code[:6].strip(),
-                '%s-%s' % (
+                '%s-%s%s' % (
                     default_code[6:8].strip().upper() or 'NE', # XXX Neutro
                     default_code[8:].strip().upper(),
+                    '.' if lang == 'en' else '',
                     ),
                 )
             return res    
@@ -169,7 +170,8 @@ class ProductPublicCategory(orm.Model):
                     _logger.warning('Not used %s' % default_code)
                     continue
 
-                product_parent, product_attribute = split_code(default_code)
+                product_parent, product_attribute = split_code(
+                    default_code, lang)
                 if product_attribute not in attribute_db:
                     attribute_db.append(product_attribute)
                 
@@ -431,7 +433,8 @@ class ProductPublicCategory(orm.Model):
 
                 # Setup default attribute:
                 wp_id = translation_lang.get(default_code, {}).get(lang)
-                parent_parent, parent_attribute = split_code(default_code)
+                parent_parent, parent_attribute = split_code(
+                    default_code, lang)
                 data = {'default_attributes': [{
                     'id': attribute_id['Tessuto'],
                     'option': parent_attribute,
