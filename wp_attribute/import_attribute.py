@@ -67,7 +67,7 @@ class ProductPublicCategory(orm.Model):
             Used also for more than one elements (not only button click)
             Note all product must be published on the same web server!            
             '''
-        def split_code(default_code, lang):
+        def split_code(default_code, lang='it'):
             ''' Split 2 part of code
             '''   
             default_code = (default_code or '')[:12] # No exta part
@@ -76,7 +76,7 @@ class ProductPublicCategory(orm.Model):
                 '%s-%s%s' % (
                     default_code[6:8].strip().upper() or 'NE', # XXX Neutro
                     default_code[8:].strip().upper(),
-                    '.' if lang == 'en' else '',
+                    '-EN' if lang == 'en' else '',
                     ),
                 )
             return res    
@@ -170,8 +170,7 @@ class ProductPublicCategory(orm.Model):
                     _logger.warning('Not used %s' % default_code)
                     continue
 
-                product_parent, product_attribute = split_code(
-                    default_code, lang)
+                product_parent, product_attribute = split_code(default_code)
                 if product_attribute not in attribute_db:
                     attribute_db.append(product_attribute)
                 
@@ -301,8 +300,9 @@ class ProductPublicCategory(orm.Model):
                 'delete': [],
                 }
             for attribute in attribute_db:                
+                attribute_lang = attribute + ('-EN' if lang == 'en' else '')
                 item = {
-                    'name': attribute,
+                    'name': attribute_lang,
                     'lang': lang,
                     'slug': self.get_lang_slug(attribute, lang)
                     # 'color': # XXX RGP color
@@ -594,7 +594,8 @@ class ProductPublicCategory(orm.Model):
                         
                         'attributes': [{
                             'id': attribute_id['Tessuto'], 
-                            'option': fabric_code,
+                            'option': fabric_code + (
+                                '-EN' if lang == 'en' else ''),
                             }]
                         }
                         
