@@ -67,6 +67,12 @@ class ProductPublicCategory(orm.Model):
             Used also for more than one elements (not only button click)
             Note all product must be published on the same web server!            
             '''
+
+        def attribute_in_lang(variant_attribute, lang):
+            ''' Different name for attribute for EN lang
+            '''
+            return variant_attribute + ('-EN' if lang == 'en' else '')
+    
         def split_code(default_code, lang='it'):
             ''' Split 2 part of code
             '''   
@@ -74,7 +80,7 @@ class ProductPublicCategory(orm.Model):
             res = (
                 default_code[:6].strip(),
                 '%s-%s%s' % (
-                    default_code[6:8].strip().upper() or 'NE', # XXX Neutro
+                    default_code[6:8].strip().upper() or 'NE',  # XXX Neutro
                     default_code[8:].strip().upper(),
                     '-EN' if lang == 'en' else '',
                     ),
@@ -300,9 +306,8 @@ class ProductPublicCategory(orm.Model):
                 'delete': [],
                 }
             for attribute in attribute_db:                
-                attribute_lang = attribute + ('-EN' if lang == 'en' else '')
                 item = {
-                    'name': attribute_lang,
+                    'name': attribute_in_lang(attribute, lang),
                     'lang': lang,
                     'slug': self.get_lang_slug(attribute, lang)
                     # 'color': # XXX RGP color
@@ -478,7 +483,8 @@ class ProductPublicCategory(orm.Model):
                     }]}                
                 for line, variant_attribute in variants:
                     variant = line.product_id
-                    data['attributes'][0]['options'].append(variant_attribute)
+                    data['attributes'][0]['options'].append(
+                        attribute_in_lang(variant_attribute, lang))
                     
                 try:
                     call = 'products/%s' % wp_id
