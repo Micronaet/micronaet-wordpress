@@ -13,5 +13,35 @@
                 </xpath>
             </field>
         </record>    
+        
+        <!--product.product-->
+        <record model="ir.ui.view" id="view_product_product_parent_tree">
+            <field name="name">product.product.tree</field>
+            <field name="model">product.product</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <tree string="Parent product" editable="bottom" colors="green:wp_parent_template==True">        
+                    <field name="wp_parent_template" />
+                    <field name="default_code" />
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_product_product_parent_tree">
+            <field name="name">Parent product</field>
+            <field name="res_model">product.product</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_product_product_parent_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+        <menuitem 
+            parent="wp_connector.menu_connector_worppress_root" 
+            id="menu_product_product_parent" 
+            action="action_product_product_parent_tree"
+            sequence="20"
+            />
+        
     </data>
 </openerp>

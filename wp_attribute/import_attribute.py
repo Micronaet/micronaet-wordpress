@@ -141,9 +141,9 @@ class ProductPublicCategory(orm.Model):
             
             # -----------------------------------------------------------------
             # XXX REMOVE:
-            #('product_id.default_code', '=ilike', '005TX   O%'),
-            ('product_id.default_code', '=ilike', '127TX%'),
-            ('product_id.default_code', 'not ilike', '____________S'),
+            ('product_id.default_code', '=ilike', '005TX   O%'),
+            #('product_id.default_code', '=ilike', '127TX%'),
+            #('product_id.default_code', 'not ilike', '____________S'),
             # -----------------------------------------------------------------
             ], context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
