@@ -68,24 +68,26 @@ class ProductPublicCategory(orm.Model):
             Note all product must be published on the same web server!            
             '''
 
-        def attribute_in_lang(variant_attribute, lang):
-            ''' Different name for attribute for EN lang
-            '''
-            return variant_attribute + ('-EN' if lang == 'en' else '')
+        #def attribute_in_lang(variant_attribute, lang):
+        #    ''' Different name for attribute for EN lang
+        #    '''
+        #    return '%s-%s' % (
+        #        variant_attribute,
+        #        lang.upper(),
+        #        )
     
         def split_code(default_code, lang='it'):
             ''' Split 2 part of code
             '''   
             default_code = (default_code or '')[:12] # No exta part
-            res = (
+            return (
                 default_code[:6].strip(),
-                '%s-%s%s' % (
+                '%s-%s-%s' % (
                     default_code[6:8].strip().upper() or 'NE',  # XXX Neutro
                     default_code[8:].strip().upper(),
-                    '-EN' if lang == 'en' else '',
+                    lang.upper(),
                     ),
                 )
-            return res    
         
         # =====================================================================
         # Log operation on Excel file:
@@ -176,7 +178,8 @@ class ProductPublicCategory(orm.Model):
                     _logger.warning('Not used %s' % default_code)
                     continue
 
-                product_parent, product_attribute = split_code(default_code)
+                product_parent, product_attribute = split_code(
+                    default_code, lang)
                 if product_attribute not in attribute_db:
                     attribute_db.append(product_attribute)
                 
@@ -230,6 +233,7 @@ class ProductPublicCategory(orm.Model):
         attribute_id = {
             'Tessuto': False,
             'Brand': False,
+            # TODO Material, Certificate
             }
         _logger.warning('Searching attribute %s...' % (attribute_id.keys() ))
         for record in current_wp_attribute:
@@ -293,7 +297,7 @@ class ProductPublicCategory(orm.Model):
 
         web_attribute = {}
         for record in current_wp_terms:
-            web_attribute[(record['name'], record['lang'])] = record['id']
+            web_attribute[record['name']] = record['id']
 
         # ---------------------------------------------------------------------
         # Update / Create:
@@ -305,16 +309,19 @@ class ProductPublicCategory(orm.Model):
                 'update': [],
                 'delete': [],
                 }
-            for attribute in attribute_db:                
+            for attribute in attribute_db: 
+                if attribute[-2:] != lang.upper():
+                    continue # only terms for this lang
                 item = {
-                    'name': attribute_in_lang(attribute, lang),
+                    'name': attribute,
                     'lang': lang,
-                    'slug': self.get_lang_slug(attribute, lang)
+                    #'slug': self.get_lang_slug(attribute, lang)
                     # 'color': # XXX RGP color
                     }
                     
                 if lang != default_lang: # Different language:
-                    wp_it_id = web_attribute.get((attribute, default_lang))
+                    wp_it_id = web_attribute.get(
+                        attribute[:-2] + default_lang.upper())
                     if wp_it_id:
                         item.update({
                             'translations': {'it': wp_it_id}
@@ -326,7 +333,7 @@ class ProductPublicCategory(orm.Model):
                             ))
                         # TODO manage?
                         
-                if (attribute, lang) in web_attribute:
+                if attribute in web_attribute:
                     pass # data['update'].append(item) # no data to update
                 else:
                     data['create'].append(item)
@@ -342,7 +349,6 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             # Batch operation:
             # -----------------------------------------------------------------
-
             
             try:
                 # =============================================================
@@ -381,7 +387,7 @@ class ProductPublicCategory(orm.Model):
                             continue
 
                         # Update for next language:
-                        web_attribute[(record['name'], lang)] = wp_id 
+                        web_attribute[record['name']] = wp_id 
             except:
                 raise osv.except_osv(
                     _('Error'), 
@@ -428,22 +434,29 @@ class ProductPublicCategory(orm.Model):
 
             web_variant = {}
 
-
             for odoo_lang in ('it_IT', 'en_US'):
                 lang = odoo_lang[:2]
                 context_lang = context.copy()
                 context_lang['lang'] = odoo_lang
+                import pdb; pdb.set_trace()
 
                 variants = lang_variants.get(lang, [])
 
                 # Setup default attribute:
-                wp_id = translation_lang.get(default_code, {}).get(lang)
+                wp_id, lang_name = translation_lang.get(
+                    default_code, {}).get(lang, (False, False))
                 parent_parent, parent_attribute = split_code(
                     default_code, lang)
-                data = {'default_attributes': [{
-                    'id': attribute_id['Tessuto'],
-                    'option': parent_attribute,
-                    }]}
+                data = {
+                    'default_attributes': [{                        
+                        'id': attribute_id['Tessuto'],
+                        'option': parent_attribute,
+                        }],
+
+                    # Write to force code in attribute:
+                    'lang': lang,
+                    'name': lang_name,                    
+                    }
 
                 call = 'products/%s' % wp_id
                 reply = wcapi.put(call, data).json()
@@ -483,8 +496,7 @@ class ProductPublicCategory(orm.Model):
                     }]}                
                 for line, variant_attribute in variants:
                     variant = line.product_id
-                    data['attributes'][0]['options'].append(
-                        attribute_in_lang(variant_attribute, lang))
+                    data['attributes'][0]['options'].append(variant_attribute)
                     
                 try:
                     call = 'products/%s' % wp_id
@@ -538,6 +550,7 @@ class ProductPublicCategory(orm.Model):
                     else:
                         #current_variant[
                         #    item['attributes'][0]['option']] = item['id']
+
                         if lang == default_lang:
                             web_variant[(item['sku'], lang)] = item['id']
                         else:
@@ -545,14 +558,13 @@ class ProductPublicCategory(orm.Model):
                             option = False
                             for attribute in item['attributes']:
                                 if attribute['id'] == attribute_id['Tessuto']:
-                                    option = attribute['option'].replace(
-                                        '-', '')
+                                    option = attribute['option']
                             if not option:
                                 _logger.error(
                                     'Cannot get sku for variant %s' % (item, ))
                                 continue
                             web_variant[(
-                                '%-6s%s' % (parent, option), 
+                                '%-6s%s' % (parent, option[:-3]), # remove part
                                 lang,
                                 )] = item['id']
 
@@ -587,7 +599,7 @@ class ProductPublicCategory(orm.Model):
                         'description': line.force_description or \
                             variant.large_description or u'',
                         'lang': lang,    
-                        'slug': self.get_lang_slug(variant_code, lang),
+                        #'slug': self.get_lang_slug(variant_code, lang),
                         # TODO
                         # stock_quantity
                         # stock_status
@@ -600,8 +612,7 @@ class ProductPublicCategory(orm.Model):
                         
                         'attributes': [{
                             'id': attribute_id['Tessuto'], 
-                            'option': fabric_code + (
-                                '-EN' if lang == 'en' else ''),
+                            'option': fabric_code,
                             }]
                         }
                         
@@ -690,12 +701,13 @@ class ProductPublicCategory(orm.Model):
                             wp_id,
                             ))
                     else:
-                        _logger.info('NEW Variant %s [%s] update on %s' % (
+                        _logger.info('%s Variant %s [%s] linked to %s' % (
+                            operation,
                             variant_code, 
                             variant_id or 'NEW',
                             wp_id,
                             ))
-                # Delete also remain
+                # TODO Delete also remain
                 
         if parent_unset:
             _logger.error('Set parent for code start with: %s' % (
