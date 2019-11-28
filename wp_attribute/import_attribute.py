@@ -438,7 +438,6 @@ class ProductPublicCategory(orm.Model):
                 lang = odoo_lang[:2]
                 context_lang = context.copy()
                 context_lang['lang'] = odoo_lang
-                import pdb; pdb.set_trace()
 
                 variants = lang_variants.get(lang, [])
 
@@ -493,6 +492,7 @@ class ProductPublicCategory(orm.Model):
                     'options': [],
                     #'name': variant_attribute,
                     'variation': True,
+                    # XXX remove?:
                     }]}                
                 for line, variant_attribute in variants:
                     variant = line.product_id
@@ -563,8 +563,9 @@ class ProductPublicCategory(orm.Model):
                                 _logger.error(
                                     'Cannot get sku for variant %s' % (item, ))
                                 continue
+                            option = option[:-3].replace('-', '') # remove lang
                             web_variant[(
-                                '%-6s%s' % (parent, option[:-3]), # remove part
+                                '%-6s%s' % (parent, option), 
                                 lang,
                                 )] = item['id']
 
@@ -616,8 +617,11 @@ class ProductPublicCategory(orm.Model):
                             }]
                         }
                         
+                    data['sku'] = variant_code
+                    #if default_lang == lang: # Add language default ref.
+                    #    data['sku'] = variant_code
                     if default_lang == lang: # Add language default ref.
-                        data['sku'] = variant_code
+                        pass
                     else:
                         if not variant_it_id:
                             _logger.error(
