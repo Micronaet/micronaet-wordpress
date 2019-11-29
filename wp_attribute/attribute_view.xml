@@ -15,6 +15,23 @@
         </record>    
         
         <!--product.product-->
+        <record model="ir.ui.view" id="view_product_product_parent_search">
+            <field name="name">product.product.search</field>
+            <field name="model">product.product</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <search string="Product parent" version="7.0">        
+                    <field name="default_code" />
+                    <field name="name" />
+                    <!--<field name="partner_id" filter_domain="[('partner_id','=',self)]"/>-->
+                    <filter name="wp_parent_template_on" string="Prodotto padre" domain="[('wp_parent_template','=',True)]"/>
+                    <filter name="wp_parent_template_off" string="Prodotto figlio" domain="[('wp_parent_template','=',True)]"/>
+                    <group expand="0" string="Raggruppa per...">
+                        <filter name="group_parent" string="Padre" context="{'group_by': 'wp_parent_template'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
         <record model="ir.ui.view" id="view_product_product_parent_tree">
             <field name="name">product.product.tree</field>
             <field name="model">product.product</field>
@@ -33,6 +50,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_product_product_parent_tree"/>
+            <field name="search_view_id" ref="view_product_product_parent_search"/>
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>

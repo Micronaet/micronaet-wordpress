@@ -141,7 +141,7 @@ class ProductPublicCategory(orm.Model):
             
             # -----------------------------------------------------------------
             # XXX REMOVE:
-            ('product_id.default_code', '=ilike', '005TX   O%'),
+            #('product_id.default_code', '=ilike', '005TX   O%'),
             #('product_id.default_code', '=ilike', '127TX%'),
             #('product_id.default_code', 'not ilike', '____________S'),
             # -----------------------------------------------------------------
@@ -194,6 +194,7 @@ class ProductPublicCategory(orm.Model):
                     product_db[product_parent][1][lang].append(
                         (record, product_attribute))
                 # Extract frame-color from code
+        _logger.warning('Parent found: %s' % len(product_db))
 
         # ---------------------------------------------------------------------        
         #                     ATTRIBUTES: (need Tessuto, Brand)
