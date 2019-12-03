@@ -11,6 +11,11 @@
                         confirm="Export product attribute where managed, confirm?" 
                         class="oe_highlight" icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
                 </xpath>
+                
+                <field name="name" position="after">
+                    <field name="brand_code" />
+                </field>
+                
             </field>
         </record>    
         

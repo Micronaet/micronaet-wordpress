@@ -62,6 +62,11 @@ class ProductPublicCategory(orm.Model):
 
     _inherit = 'connector.server'
 
+    _columns = {
+        'brand_code': fields.char('Brand code', size=30, required=True, 
+            help='Brand used for attribute name for company product'),
+        }
+        
     def publish_attribute_now(self, cr, uid, ids, context=None):
         ''' Publish now button
             Used also for more than one elements (not only button click)
@@ -121,14 +126,14 @@ class ProductPublicCategory(orm.Model):
             context = {}
 
         # Pool used:
-        server_pool = self.pool.get('connector.server')
         web_product_pool = self.pool.get('product.product.web.server')
 
         connector_id = ids[0]
         server_proxy = self.browse(cr, uid, connector_id, context=context)
+        brand_code = server_proxy.brand_code
 
         # Read WP Category present:
-        wcapi = server_pool.get_wp_connector(
+        wcapi = self.get_wp_connector(
             cr, uid, connector_id, context=context)
 
         _logger.warning('Publish attribute all on wordpress:')
@@ -142,8 +147,8 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             # XXX REMOVE:
             #('product_id.default_code', '=ilike', '005TX   O%'),
-            #('product_id.default_code', '=ilike', '127TX%'),
-            #('product_id.default_code', 'not ilike', '____________S'),
+            ('product_id.default_code', '=ilike', '127TX%'),
+            ('product_id.default_code', 'not ilike', '____________S'),
             # -----------------------------------------------------------------
             ], context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
@@ -172,7 +177,7 @@ class ProductPublicCategory(orm.Model):
                 product = record.product_id
                 if not company_name:
                     company_name = product.company_id.name.upper().split()[0] # XXX
-                    
+
                 default_code = product.default_code or ''
                 if not default_code[:3].isdigit(): # TODO MT and TL?
                     _logger.warning('Not used %s' % default_code)
@@ -256,6 +261,7 @@ class ProductPublicCategory(orm.Model):
         _logger.warning('Search all terms for attribute %s...' % (
             attribute_id.keys(), ))
 
+        """
         # =====================================================================
         # Excel log:
         # ---------------------------------------------------------------------   
@@ -264,13 +270,16 @@ class ProductPublicCategory(orm.Model):
             'Richiesta termini:',
             ], default_format=excel_format['title'])
         # =====================================================================
+        """
 
+        # Fabric attribute:
         while theres_data:
             call = 'products/attributes/%s/terms' % attribute_id['Tessuto']
             res = wcapi.get(
                 call, params=parameter).json()
             parameter['page'] += 1
             
+            """
             # =================================================================
             # Excel log:
             # -----------------------------------------------------------------
@@ -282,6 +291,7 @@ class ProductPublicCategory(orm.Model):
                 u'%s' % (res, ),
                 ], default_format=excel_format['text'], col=1)
             # =================================================================
+            """
 
             try:
                 if res.get['data']['status'] >= 400:
@@ -300,8 +310,30 @@ class ProductPublicCategory(orm.Model):
         for record in current_wp_terms:
             web_attribute[record['name']] = record['id']
 
+        # ---------------------------------------------------------------------        
+        #                        TERMS: (for Brand Attribute)
+        # ---------------------------------------------------------------------        
+        #company_db = cr.dbname.upper()[:4] # XXX remove :4
+        brand_attribute = {} # not needed for now
+        brand_company_id = {}
+        
+        call = 'products/attributes/%s/terms' % attribute_id['Brand']
+        for record in wcapi.get(call).json():
+            lang = record['lang']
+            name = record['name']
+            record_id = record['id']
+
+            if lang not in brand_attribute:
+                brand_attribute[lang] = {}
+                
+            brand_attribute[lang][name] = record_id
+            if brand_code == name:
+                brand_company_id = {
+                    lang: record_id,
+                    }
+
         # ---------------------------------------------------------------------
-        # Update / Create:
+        # Update / Create: (XXX only fabric?)
         # ---------------------------------------------------------------------
         for lang in ('it', 'en'):
             # Clean every loop:
@@ -348,10 +380,10 @@ class ProductPublicCategory(orm.Model):
             #        data['delete'].append(web_attribute[name])
 
             # -----------------------------------------------------------------
-            # Batch operation:
-            # -----------------------------------------------------------------
-            
+            # Batch operation (fabric terms for attribute manage):
+            # -----------------------------------------------------------------            
             try:
+                """
                 # =============================================================
                 # Excel log:
                 # -------------------------------------------------------------
@@ -360,12 +392,14 @@ class ProductPublicCategory(orm.Model):
                     'Aggiornamento tessuti:',
                     ], default_format=excel_format['title'])
                 # =============================================================
+                """
 
                 if any(data.values()): # only if one is present
                     call = 'products/attributes/%s/terms/batch' % \
                         attribute_id['Tessuto']
                     res = wcapi.post(call, data=data).json()
 
+                    """
                     # =========================================================
                     # Excel log:
                     # ---------------------------------------------------------
@@ -377,6 +411,7 @@ class ProductPublicCategory(orm.Model):
                         u'%s' % (res, ),
                         ], default_format=excel_format['text'], col=1)
                     # =========================================================
+                    """
                     
                     # ---------------------------------------------------------
                     # Save WP ID (only in dict not in ODOO Object)
@@ -412,7 +447,17 @@ class ProductPublicCategory(orm.Model):
             translation_lang.update(
                 web_product_pool.publish_now(
                     cr, uid, [web_product.id], context=context))
+            
+            # -----------------------------------------------------------------
+            # Update brand terms for product:
+            # -----------------------------------------------------------------
+            #call = 'products/attributes/%s/terms/batch' % \
+            #    attribute_id['Tessuto']
+            #res = wcapi.post(call, data=data).json()
+            
+                    
 
+            """
             # =================================================================
             # Excel log:
             # -----------------------------------------------------------------
@@ -426,6 +471,7 @@ class ProductPublicCategory(orm.Model):
                 excel_pool.write_xls_line(ws_name, row, log, 
                     default_format=excel_format['text'], col=1)
                 # =============================================================
+            """
 
             product = web_product.product_id
             default_code = product.default_code
@@ -448,10 +494,14 @@ class ProductPublicCategory(orm.Model):
                 parent_parent, parent_attribute = split_code(
                     default_code, lang)
                 data = {
-                    'default_attributes': [{                        
+                    'default_attributes': [{
                         'id': attribute_id['Tessuto'],
                         'option': parent_attribute,
-                        }],
+                        }, {
+                        'id': attribute_id['Brand'],
+                        'option': brand_code,
+                        },
+                        ],
 
                     # Write to force code in attribute:
                     'lang': lang,
@@ -487,14 +537,25 @@ class ProductPublicCategory(orm.Model):
                 # VARIANTS: Creation
                 # -------------------------------------------------------------
                 # 2. Update attributes:
-                data = {'attributes': [{
-                    'id': attribute_id['Tessuto'], 
-                    #'name': 'Tessuto',
-                    'options': [],
-                    #'name': variant_attribute,
-                    'variation': True,
-                    # XXX remove?:
-                    }]}                
+                data = {
+                    'attributes': [{
+                        'id': attribute_id['Tessuto'], 
+                        #'name': 'Tessuto',
+                        'options': [],
+                        #'name': variant_attribute,
+                        'variation': True,
+                        # XXX remove?:
+                        }]}
+
+                # NOTE: Second element!
+                brand_lang = brand_company_id.get(lang)
+                if brand_lang:
+                    data['attributes'].append({
+                        'id': attribute_id['Brand'], 
+                        'options': [brand_code],
+                        'variation': True,
+                        })
+
                 for line, variant_attribute in variants:
                     variant = line.product_id
                     data['attributes'][0]['options'].append(variant_attribute)
@@ -592,14 +653,21 @@ class ProductPublicCategory(orm.Model):
 
                     # XXX Price for S (ingle)
 
+                    # Description:
+                    short_description = line.force_name or \
+                        variant.emotional_short_description or \
+                        variant.name or u''
+
+                    description = line.force_description or \
+                        variant.emotional_description or \
+                        variant.large_description or u''
+
                     # Create or update variant:
                     data = {
                         'price': u'%s' % (
                             line.force_price or variant.lst_price),
-                        'short_description': 
-                            line.force_name or variant.name or u'',
-                        'description': line.force_description or \
-                            variant.large_description or u'',
+                        'short_description': short_description,
+                        'description': description,
                         'lang': lang,    
                         #'slug': self.get_lang_slug(variant_code, lang),
                         # TODO
