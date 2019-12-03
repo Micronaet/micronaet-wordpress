@@ -1,6 +1,48 @@
 <?xml version="1.0"?>
 <openerp>
     <data>    
+        <record model="ir.ui.view" id="view_product_product_emotional_search">
+            <field name="name">product.product.tree</field>
+            <field name="model">product.product</field>
+            <field name="priority" eval="40" />
+            <field name="arch" type="xml">
+                <search string="Product" version="7.0">
+                    <field name="default_code" />        
+                    <field name="name" />
+                    <!--<field name="partner_id" filter_domain="[('partner_id','=',self)]"/>-->
+                    <filter name="has_emotional" string="Has emotional" domain="['|', ('emotional_short_description','!=',False), ('emotional_description','!=',False)]"/>
+                    <!--<group expand="0" string="Group By...">
+                        <filter name="group_partner" string="Partner" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Status" context="{'group_by': 'state'}" />
+                    </group>-->
+                </search>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_product_product_emotional_tree">
+            <field name="name">product.product.tree</field>
+            <field name="model">product.product</field>
+            <field name="priority" eval="40" />
+            <field name="arch" type="xml">
+                <tree string="Product emotional" editable="bottom">
+                    <field name="default_code" readonly="1"/>
+                    <field name="name" readonly="1" />
+                    <field name="large_description" readonly="1" />
+                    <field name="emotional_short_description" />
+                    <field name="emotional_description" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_product_product_emotional">
+            <field name="name">Product emotional</field>
+            <field name="res_model">product.product</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_product_product_emotional_tree"/>
+            <field name="search_view_id" ref="view_product_product_emotional_search"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
         <!--connector_web_base.view_connector_server_tree-->
         <record model="ir.ui.view" id="view_wordpress_connector_tree">
             <field name="name">connector.server.tree</field>
@@ -185,12 +227,18 @@
             id="menu_connector_worppress_root" 
             name="Manage Wordpress"
             sequence="20"
-            />
+            />            
+            <menuitem 
+                parent="menu_connector_worppress_root" 
+                id="menu_emotional_product" 
+                action="action_product_product_emotional"
+                sequence="10"
+                />
             <menuitem 
                 parent="menu_connector_worppress_root" 
                 id="menu_connector_worppress_product" 
                 action="action_product_product_web_server_form"
-                sequence="10"
+                sequence="20"
                 />
             <menuitem 
                 parent="menu_connector_worppress_root" 

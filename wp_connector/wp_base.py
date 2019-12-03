@@ -114,7 +114,6 @@ class ConnectorServer(orm.Model):
         'wp_all_category': lambda *x: True,
         }
 
-'''
 class ProductProduct(orm.Model):
     """ Model name: ProductProduct
     """
@@ -122,10 +121,13 @@ class ProductProduct(orm.Model):
     _inherit = 'product.product'
     
     _columns = {
-        'wp_id': fields.integer('Worpress ID'),
-        'wp_lang_id': fields.integer('Worpress translate ID'),
+        # 'wp_id': fields.integer('Worpress ID'),
+        # 'wp_lang_id': fields.integer('Worpress translate ID'),
+        'emotional_short_description': fields.text(
+            'Emotional short description', translate=True),
+        'emotional_description': fields.text(
+            'Emotional description', translate=True),
         }
-'''
 
 class ProductImageFile(orm.Model):
     """ Model name: ProductImageFile
