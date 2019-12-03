@@ -57,34 +57,46 @@ class ConnectorProductColorDot(orm.Model):
         '''
         res = {}        
         path = False
-        for image in self(cr, uid, ids context=context):
+        with_check = len(ids) == 1
+        for image in self.browse(cr, uid, ids, context=context):
             if not path:
                 path = os.path.expanduser(image.connector_id.dot_image_path)
             
             name = '%s.png' % image.name.upper()
+            fullname = os.path.join(path, name)
+            
+            if with_check:
+                image_present = os.isfile(fullname)
+            else: 
+                image_present = False
+
             res[image.id] = {
                 'image_name': name,
-                'image_fullname': os.path.join(path, name),
-                }    
+                'image_fullname': fullname,
+                'image_present': image_present,
+                }
         return res        
         
     _columns = {
+        'not_active': fields.boolean('Not active'),
+        'connector_id': fields.many2one(
+            'connector.server', 'Server', required=True),
         'name': fields.char('Code', size=64, required=True, 
             help='Frame-Color used on web site for color'),             
-            ),
-        'connector_id': fields.many2one('connector.server', 'Server'),
-        'not_active': fields.boolean('Not active'),
         'description': fields.char('Web description', size=80),
         'hint': fields.char('Hint', size=80,
             help='Tooltip text when mouse over image'),
+
         # Image in particular folder   
         'image_name': fields.function(
-            _get_image_name, method=True, multi=True
-            type='char', string='Image name', store=False), 
+            _get_image_name, method=True, multi=True,
+            type='char', string='Image name',), 
         'image_fullname': fields.function(
-            _get_image_name, method=True, multi=True
-            type='char', string='Image fullname', store=False), 
-                        
+            _get_image_name, method=True, multi=True,
+            type='char', string='Image fullname'), 
+        'image_present': fields.function(
+            _get_image_name, method=True, multi=True,
+            type='boolean', string='Image present'), 
         }
 
 class ProductProduct(orm.Model):

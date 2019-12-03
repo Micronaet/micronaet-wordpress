@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!--connector.server-->
         <record model="ir.ui.view" id="view_wordpress_connector_form">
             <field name="name">connector.server.attribute.form</field>
             <field name="model">connector.server</field>
@@ -10,15 +11,51 @@
                     <button name="publish_attribute_now" string="Publish attribute" type="object" 
                         confirm="Export product attribute where managed, confirm?" 
                         class="oe_highlight" icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
-                </xpath>
-                
+                </xpath>                
                 <field name="name" position="after">
                     <field name="brand_code" />
-                    <field name="dot_image_path" />
-                </field>
-                
+                    <field name="dot_image_path" colspan="4" />
+                </field>                
             </field>
         </record>    
+        
+        <!--connector.product.color.dot-->
+        <record model="ir.ui.view" id="view_connector_product_color_dot_tree">
+            <field name="name">connector.product.color.dot.tree</field>
+            <field name="model">connector.product.color.dot</field>
+            <field name="arch" type="xml">
+                <tree string="String" colors="grey:not_active==True">
+                    <field name="connector_id" />
+                    <field name="not_active" />                    
+                    <field name="name" />
+                    <field name="description" />
+                    <field name="hint" />
+                    <field name="image_name" />                    
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_connector_product_color_dot_form">
+            <field name="name">connector.product.color.dot.form</field>
+            <field name="model">connector.product.color.dot</field>
+            <field name="arch" type="xml">
+                <form string="Colori Dot">                
+                    <sheet> 
+                        <group colspan="4" col="4">                
+                            <field name="connector_id" />
+                            <newline/>
+                            
+                            <field name="not_active" />                    
+                            <field name="name" />
+                            <field name="description" />
+                            <field name="hint" />
+                            
+                            <field name="image_name" />                    
+                            <field name="image_fullname" />
+                        </group>    
+                    </sheet>
+                </form>
+            </field>
+        </record>
         
         <!--product.product-->
         <record model="ir.ui.view" id="view_product_product_parent_search">
