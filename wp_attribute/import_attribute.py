@@ -43,6 +43,50 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+class ConnectorProductColorDot(orm.Model):
+    """ Model name: ConnectorProductColorDot
+    """
+    
+    _name = 'connector.product.color.dot'
+    _description = 'Color dot'
+    _rec_name = 'name'
+    _order = 'name'
+
+    def _get_image_name(self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate 
+        '''
+        res = {}        
+        path = False
+        for image in self(cr, uid, ids context=context):
+            if not path:
+                path = os.path.expanduser(image.connector_id.dot_image_path)
+            
+            name = '%s.png' % image.name.upper()
+            res[image.id] = {
+                'image_name': name,
+                'image_fullname': os.path.join(path, name),
+                }    
+        return res        
+        
+    _columns = {
+        'name': fields.char('Code', size=64, required=True, 
+            help='Frame-Color used on web site for color'),             
+            ),
+        'connector_id': fields.many2one('connector.server', 'Server'),
+        'not_active': fields.boolean('Not active'),
+        'description': fields.char('Web description', size=80),
+        'hint': fields.char('Hint', size=80,
+            help='Tooltip text when mouse over image'),
+        # Image in particular folder   
+        'image_name': fields.function(
+            _get_image_name, method=True, multi=True
+            type='char', string='Image name', store=False), 
+        'image_fullname': fields.function(
+            _get_image_name, method=True, multi=True
+            type='char', string='Image fullname', store=False), 
+                        
+        }
+
 class ProductProduct(orm.Model):
     """ Model name: ProductProduct
     """
@@ -65,6 +109,8 @@ class ProductPublicCategory(orm.Model):
     _columns = {
         'brand_code': fields.char('Brand code', size=30, required=True, 
             help='Brand used for attribute name for company product'),
+        'dot_image_path': fields.char('Color image', size=180, required=True,
+            help='Color path for dot images, use ~ for home'),
         }
         
     def publish_attribute_now(self, cr, uid, ids, context=None):
@@ -206,10 +252,11 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------   
         call = 'products/attributes'
         current_wp_attribute = wcapi.get(call).json()
-
+        
         # =====================================================================
         # Excel log:
         # ---------------------------------------------------------------------   
+        """
         row += 1
         excel_pool.write_xls_line(ws_name, row, [
             'Richiesta elenco attributi:',
@@ -221,6 +268,7 @@ class ProductPublicCategory(orm.Model):
             '',
             u'%s' % (current_wp_attribute, ),
             ], default_format=excel_format['text'], col=1)
+        """
         # =====================================================================
         
         error = ''
@@ -313,7 +361,6 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Brand Attribute)
         # ---------------------------------------------------------------------        
-        #company_db = cr.dbname.upper()[:4] # XXX remove :4
         brand_attribute = {} # not needed for now
         brand_company_id = {}
         
@@ -386,7 +433,7 @@ class ProductPublicCategory(orm.Model):
                 """
                 # =============================================================
                 # Excel log:
-                # -------------------------------------------------------------
+                # -----------------------------LERT FIDO--------------------------------
                 row += 1
                 excel_pool.write_xls_line(ws_name, row, [
                     'Aggiornamento tessuti:',
@@ -595,7 +642,7 @@ class ProductPublicCategory(orm.Model):
                 excel_pool.write_xls_line(ws_name, row, [
                     'get',
                     call,
-                    u'%s' % (data),
+                    u'',
                     u'%s' % (res, ),
                     ], default_format=excel_format['text'], col=1)
                 # =============================================================

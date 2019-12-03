@@ -14,6 +14,7 @@
                 
                 <field name="name" position="after">
                     <field name="brand_code" />
+                    <field name="dot_image_path" />
                 </field>
                 
             </field>
