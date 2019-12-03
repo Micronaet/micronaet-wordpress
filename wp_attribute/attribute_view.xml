@@ -46,15 +46,28 @@
                             
                             <field name="not_active" />                    
                             <field name="name" />
+
                             <field name="description" />
                             <field name="hint" />
                             
+                            <separator string="Image not present:" colspan="4" attrs="{'invisible': [('image_present','=',False)]}" />
+                            <separator string="Image present:" colspan="4" attrs="{'invisible': [('image_present','=',False)]}" />
                             <field name="image_name" />                    
-                            <field name="image_fullname" />
-                        </group>    
+                            <field name="image_fullname" />                    
+                            <field name="image_present" invisible="1" />        
+                        </group>
                     </sheet>
                 </form>
             </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_connector_product_color_dot">
+            <field name="name">Dot colore</field>
+            <field name="res_model">connector.product.color.dot</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_connector_product_color_dot_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
         </record>
         
         <!--product.product-->
@@ -102,6 +115,12 @@
             id="menu_product_product_parent" 
             action="action_product_product_parent_tree"
             sequence="20"
+            />
+        <menuitem 
+            parent="wp_connector.menu_connector_worppress_configuration" 
+            id="menu_action_connector_product_color_dot" 
+            action="action_connector_product_color_dot"
+            sequence="30"
             />
         
     </data>

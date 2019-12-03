@@ -81,10 +81,10 @@ class ConnectorProductColorDot(orm.Model):
         'not_active': fields.boolean('Not active'),
         'connector_id': fields.many2one(
             'connector.server', 'Server', required=True),
-        'name': fields.char('Code', size=64, required=True, 
+        'name': fields.char('Code', size=64, required=True, translate=True,
             help='Frame-Color used on web site for color'),             
-        'description': fields.char('Web description', size=80),
-        'hint': fields.char('Hint', size=80,
+        'description': fields.char('Web description', size=80, translate=True),
+        'hint': fields.char('Hint', size=80, translate=True,
             help='Tooltip text when mouse over image'),
 
         # Image in particular folder   
@@ -185,6 +185,7 @@ class ProductPublicCategory(orm.Model):
 
         # Pool used:
         web_product_pool = self.pool.get('product.product.web.server')
+        dot_pool = self.pool.get('connector.product.color.dot')
 
         connector_id = ids[0]
         server_proxy = self.browse(cr, uid, connector_id, context=context)

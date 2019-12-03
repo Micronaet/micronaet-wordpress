@@ -32,14 +32,13 @@
     'website': 'http://www.micronaet.it',
     'license': 'AGPL-3',
     'depends': [
-        'security/ir.model.access.csv',
         'base',
         'wp_connector', 
         ],
     'init_xml': [],
     'demo': [],
     'data': [
-        #'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         'attribute_view.xml',
         ],
     'active': False,
