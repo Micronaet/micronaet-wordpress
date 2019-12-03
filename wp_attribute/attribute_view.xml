@@ -81,7 +81,7 @@
                     <field name="name" />
                     <!--<field name="partner_id" filter_domain="[('partner_id','=',self)]"/>-->
                     <filter name="wp_parent_template_on" string="Prodotto padre" domain="[('wp_parent_template','=',True)]"/>
-                    <filter name="wp_parent_template_off" string="Prodotto figlio" domain="[('wp_parent_template','=',True)]"/>
+                    <filter name="wp_parent_template_off" string="Prodotto figlio" domain="[('wp_parent_template','=',False)]"/>
                     <group expand="0" string="Raggruppa per...">
                         <filter name="group_parent" string="Padre" context="{'group_by': 'wp_parent_template'}"/>
                     </group>
