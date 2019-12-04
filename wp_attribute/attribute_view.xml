@@ -50,7 +50,7 @@
                             <field name="description" />
                             <field name="hint" />
                             
-                            <separator string="Image not present:" colspan="4" attrs="{'invisible': [('image_present','=',False)]}" />
+                            <separator string="Image not present:" colspan="4" attrs="{'invisible': [('image_present','=',True)]}" />
                             <separator string="Image present:" colspan="4" attrs="{'invisible': [('image_present','=',False)]}" />
                             <field name="image_name" />                    
                             <field name="image_fullname" />                    
