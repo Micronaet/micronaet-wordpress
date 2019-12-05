@@ -58,7 +58,7 @@ class ProductProductWebServer(orm.Model):
         '''
         if len(default_code) <= 3:  # Short parent
             search_code = '%s%%' % default_code[:3]
-        else: <= 6  # Long parent    
+        else: #<= 6  # Long parent    
             search_code = '%6s%%' % default_code[:3]
         
         web_product_ids = self.search(cr, uid, [

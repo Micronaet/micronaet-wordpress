@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-        <!--connector.server-->
+        <!--product.product.web.server
         <record model="ir.ui.view" id="view_product_product_web_server_wp_form">
             <field name="name">product.product.web.server.form</field>
             <field name="model">product.product.web.server</field>
@@ -9,7 +9,7 @@
             <field name="arch" type="xml">
                 
             </field>
-        </record>    
+        </record>-->
 
         <record model="ir.ui.view" id="view_wordpress_connector_form">
             <field name="name">connector.server.attribute.form</field>
@@ -79,51 +79,22 @@
             <field name="domain">[]</field>
         </record>
         
-        <!--product.product-->
-        <record model="ir.ui.view" id="view_product_product_parent_search">
-            <field name="name">product.product.search</field>
-            <field name="model">product.product</field>
-            <field name="priority" eval="40"/>
-            <field name="arch" type="xml">
-                <search string="Product parent" version="7.0">        
-                    <field name="default_code" />
-                    <field name="name" />
-                    <!--<field name="partner_id" filter_domain="[('partner_id','=',self)]"/>-->
-                    <filter name="wp_parent_template_on" string="Prodotto padre" domain="[('wp_parent_template','=',True)]"/>
-                    <filter name="wp_parent_template_off" string="Prodotto figlio" domain="[('wp_parent_template','=',False)]"/>
-                    <group expand="0" string="Raggruppa per...">
-                        <filter name="group_parent" string="Padre" context="{'group_by': 'wp_parent_template'}"/>
-                    </group>
-                </search>
-            </field>
-        </record>
-        <record model="ir.ui.view" id="view_product_product_parent_tree">
-            <field name="name">product.product.tree</field>
-            <field name="model">product.product</field>
-            <field name="priority" eval="40"/>
-            <field name="arch" type="xml">
-                <tree string="Parent product" editable="bottom" colors="green:wp_parent_template==True">        
-                    <field name="wp_parent_template" />
-                    <field name="default_code" />
-                    <field name="name" />
-                </tree>
-            </field>
-        </record>
+        <!--product.product.web.server-->
         <record model="ir.actions.act_window" id="action_product_product_parent_tree">
-            <field name="name">Parent product</field>
-            <field name="res_model">product.product</field>
+            <field name="name">Prodotto master</field>
+            <field name="res_model">product.product.web.server</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="view_product_product_parent_tree"/>
-            <field name="search_view_id" ref="view_product_product_parent_search"/>
+            <!--<field name="view_id" ref="view_product_product_parent_tree"/>
+            <field name="search_view_id" ref="view_product_product_parent_search"/>-->
             <field name="context">{}</field>
-            <field name="domain">[]</field>
+            <field name="domain">[('wp_parent_template', '=', True)]</field>
         </record>
         <menuitem 
             parent="wp_connector.menu_connector_worppress_root" 
             id="menu_product_product_parent" 
             action="action_product_product_parent_tree"
-            sequence="20"
+            sequence="10"
             />
         <menuitem 
             parent="wp_connector.menu_connector_worppress_configuration" 
