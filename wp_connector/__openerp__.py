@@ -46,6 +46,7 @@
         
         'wp_view.xml',
         'wizard/select_view.xml',
+        'wizard/category_wizard_view.xml',
         ],
     'active': False,
     'installable': True,
