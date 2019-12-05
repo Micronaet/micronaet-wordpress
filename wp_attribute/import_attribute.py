@@ -49,9 +49,11 @@ class ProductProductWebServer(orm.Model):
 
     _inherit = 'product.product.web.server'
 
+    # -------------------------------------------------------------------------
     # Utility:
-    def get_product_search_parent(self, cr, uid, ids, default_code,
-            context=None):
+    # -------------------------------------------------------------------------
+    def get_product_search_parent(self, cr, uid, ids, default_code, 
+            connection_id, context=None):
         ''' Find all product with same parent in web product
         '''
         if len(default_code) <= 3:  # Short parent
@@ -65,6 +67,7 @@ class ProductProductWebServer(orm.Model):
         
         if web_product_ids:
             self.write(cr, uid, web_product_ids, {
+                'connection_id': connection_id,
                 'wp_parent_template': False
                 }, context=context)
             # TODO save wp_it_id and wp_en_id?    
@@ -86,7 +89,8 @@ class ProductProductWebServer(orm.Model):
         # Remove all previous parent if present:        
         # ---------------------------------------------------------------------
         web_product_ids = self.get_product_search_parent(
-            cr, uid, ids, web_product.product_id.default_code,
+            cr, uid, ids, web_product.product_id.default_code, 
+            connection_id,
             context=context)
                 
         # ---------------------------------------------------------------------
@@ -105,6 +109,7 @@ class ProductProductWebServer(orm.Model):
         for web_product in self.browse(cr, uid, ids, context=context):            
             web_product_ids = self.get_product_search_parent(
                 cr, uid, ids, web_product.product_id.default_code,
+                web_product.connection_id.id,
                 context=context)
             res[web_product.id] = web_product_ids.remove(ids[0])
         return res
@@ -527,7 +532,7 @@ class ProductPublicCategory(orm.Model):
                 """
                 # =============================================================
                 # Excel log:
-                # -----------------------------LERT FIDO--------------------------------
+                # -------------------------------------------------------------
                 row += 1
                 excel_pool.write_xls_line(ws_name, row, [
                     'Aggiornamento tessuti:',
