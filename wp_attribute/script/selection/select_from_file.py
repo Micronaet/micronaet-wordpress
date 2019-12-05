@@ -104,13 +104,13 @@ for row in range(row_start, WS.nrows):
         'connector_id': connector_id,
         'published': True,
         'product_id': product_id,             
-        'wp_ty pe': 'variable',
+        'wp_type': 'variable',
         }
     
     if selection == 'X': 
         # Create as parant    
         data['wp_parent_template'] = True
 
-    web_product.create(data)
+    web_pool.create(data)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
