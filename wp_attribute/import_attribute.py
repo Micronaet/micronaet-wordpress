@@ -177,6 +177,7 @@ class ConnectorProductColorDot(orm.Model):
             type='boolean', string='Image present'), 
         }
 
+'''
 class ProductProduct(orm.Model):
     """ Model name: ProductProduct
     """
@@ -190,7 +191,8 @@ class ProductProduct(orm.Model):
             help='Product used as tempalte for variants (first six char of '
                 'code)'),
         }
-    
+'''
+
 class ProductPublicCategory(orm.Model):
     """ Model name: ProductProduct
     """
@@ -307,7 +309,7 @@ class ProductPublicCategory(orm.Model):
                 cr, uid, product_ids, context=context_lang)
             
             for record in sorted(records, 
-                    key=lambda x: x.product_id.wp_parent_template, 
+                    key=lambda x: x.wp_parent_template, 
                     reverse=True
                     ):
 
@@ -614,7 +616,7 @@ class ProductPublicCategory(orm.Model):
 
             product = web_product.product_id
             default_code = product.default_code
-            if not product.wp_parent_template:
+            if not web_product.wp_parent_template:
                 parent_unset.append(parent)
                 continue
 
