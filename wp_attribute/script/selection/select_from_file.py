@@ -27,7 +27,7 @@ import erppeek
 import xlrd
 import ConfigParser
 
-print 'Cambiare connector ID!'
+print 'Cambiare connector ID (and DB access)!'
 import pdb; pdb.set_trace()
 connector_id = 9 # connector.server for wordpress # XXX change!
 
@@ -38,8 +38,8 @@ row_start = 1
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
 # From config file:
-cfg_file = os.path.expanduser('../openerp.cfg')
-#cfg_file = os.path.expanduser('../local.cfg')
+#cfg_file = os.path.expanduser('../openerp.cfg')
+cfg_file = os.path.expanduser('../local.cfg')
 
 config = ConfigParser.ConfigParser()
 config.read([cfg_file])
@@ -84,9 +84,10 @@ if web_ids:
 # -----------------------------------------------------------------------------
 # Create from files:
 # -----------------------------------------------------------------------------
+import pdb; pdb.set_trace()
 for row in range(row_start, WS.nrows):
     default_code = WS.cell(row, 0).value
-    selection = (WS.cell(row, 2).value or '').upper()
+    selection = (WS.cell(row, 1).value or '').upper()
 
     if not default_code or selection not in ('X', 'O'):
         print 'No Default code or no selection: %s [%s]' % (
@@ -94,7 +95,7 @@ for row in range(row_start, WS.nrows):
         continue
         
     product_ids = product_pool.search([
-        ('defaulf_code', '=', default_code),
+        ('default_code', '=', default_code),
         ])
     if product_ids:
         product_id = product_ids[0]
@@ -103,6 +104,7 @@ for row in range(row_start, WS.nrows):
         'connector_id': connector_id,
         'published': True,
         'product_id': product_id,             
+        'wp_ty pe': 'variable',
         }
     
     if selection == 'X': 
