@@ -43,6 +43,84 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+class ProductProductWebServer(orm.Model):
+    """ Model name: ProductProductWebServer
+    """
+
+    _inherit = 'product.product.web.server'
+
+    # Utility:
+    def get_product_search_parent(self, cr, uid, ids, default_code,
+            context=None):
+        ''' Find all product with same parent in web product
+        '''
+        if len(default_code) <= 3:  # Short parent
+            search_code = '%s%%' % default_code[:3]
+        else: <= 6  # Long parent    
+            search_code = '%6s%%' % default_code[:3]
+        
+        web_product_ids = self.search(cr, uid, [
+            ('product_id.default_code', '=ilike', search_code),
+            ], context=context)
+        
+        if web_product_ids:
+            self.write(cr, uid, web_product_ids, {
+                'wp_parent_template': False
+                }, context=context)
+            # TODO save wp_it_id and wp_en_id?    
+        
+    def set_as_master_product(cr, uid, ids, context=None):
+        ''' Set as master product for this connection and remove if present
+            previous
+        '''
+        current_product = self.browse(cr, uid, ids, context=context)[0]
+        connection_id = current_product.connection_id.id
+        default_code = current_product.product_id.default_code
+        if not default_code:
+            raise osv.except_osv(
+                _('Errore'), 
+                _('Codice non presente, impossibile impostarlo!'),
+                )
+        
+        # ---------------------------------------------------------------------
+        # Remove all previous parent if present:        
+        # ---------------------------------------------------------------------
+        web_product_ids = self.get_product_search_parent(
+            cr, uid, ids, web_product.product_id.default_code,
+            context=context)
+                
+        # ---------------------------------------------------------------------
+        # Set this as parent
+        # ---------------------------------------------------------------------
+        return self.write(cr, uid, ids, {
+            'wp_parent_template': True,
+            }, context=context)
+
+    def _get_product_slave(self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate 
+        '''
+        assert len(ids) == 1, 'Works only with one record a time'
+                
+        res = {}        
+        for web_product in self.browse(cr, uid, ids, context=context):            
+            web_product_ids = self.get_product_search_parent(
+                cr, uid, ids, web_product.product_id.default_code,
+                context=context)
+            res[web_product.id] = web_product_ids.remove(ids[0])
+        return res
+
+    _columns = {
+        'wp_parent_template': fields.boolean(
+            'Template for variants', 
+            help='Product used as tempalte for variants (first six char of '
+                'code)'),
+
+        'slave_ids': fields.function(
+            _get_product_slave, method=True, 
+            relation='product.product.web.server',
+            type='one2many', string='Slaves', 
+            store=False), 
+        }
 class ConnectorProductColorDot(orm.Model):
     """ Model name: ConnectorProductColorDot
     """
@@ -106,6 +184,7 @@ class ProductProduct(orm.Model):
     _inherit = 'product.product'
     
     _columns = {
+        # TODO remove:
         'wp_parent_template': fields.boolean(
             'Template for variants', 
             help='Product used as tempalte for variants (first six char of '

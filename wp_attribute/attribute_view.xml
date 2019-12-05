@@ -2,6 +2,15 @@
 <openerp>
     <data>
         <!--connector.server-->
+        <record model="ir.ui.view" id="view_product_product_web_server_wp_form">
+            <field name="name">product.product.web.server.form</field>
+            <field name="model">product.product.web.server</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                
+            </field>
+        </record>    
+
         <record model="ir.ui.view" id="view_wordpress_connector_form">
             <field name="name">connector.server.attribute.form</field>
             <field name="model">connector.server</field>
