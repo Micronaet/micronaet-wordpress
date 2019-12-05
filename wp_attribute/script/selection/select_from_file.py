@@ -29,7 +29,8 @@ import ConfigParser
 
 print 'Cambiare connector ID (and DB access)!'
 import pdb; pdb.set_trace()
-connector_id = 9 # connector.server for wordpress # XXX change!
+connector_id = 5 # connector.server for wordpress # XXX change!
+#connector_id = 9 # connector.server for wordpress # XXX change!
 
 file_in = './product.xlsx'
 row_start = 1
@@ -38,7 +39,7 @@ row_start = 1
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
 # From config file:
-#cfg_file = os.path.expanduser('../openerp.cfg')
+cfg_file = os.path.expanduser('../openerp.cfg')
 cfg_file = os.path.expanduser('../local.cfg')
 
 config = ConfigParser.ConfigParser()
@@ -84,7 +85,6 @@ if web_ids:
 # -----------------------------------------------------------------------------
 # Create from files:
 # -----------------------------------------------------------------------------
-import pdb; pdb.set_trace()
 for row in range(row_start, WS.nrows):
     default_code = WS.cell(row, 0).value
     selection = (WS.cell(row, 1).value or '').upper()
