@@ -170,6 +170,8 @@
                     <field name="published"/>
                     <field name="product_id" readonly="1" invisible="context.get('embedded_view', False)"/>
                     <field name="connector_id" />
+                    <field name="name" />
+                    <field name="wp_type" />                      
                     <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]"/>
                     <field name="force_name"/>
                     <field name="force_description"/>
@@ -192,8 +194,11 @@
                     </header>
                     <sheet>
                         <group colspan="4" col="4">
-                            <field name="published"/>
                             <field name="connector_id" />  
+                            <newline/>
+
+                            <field name="published"/>
+                            <field name="wp_type" />
                                                   
                             <field name="product_id" readonly="1" invisible="context.get('embedded_view', False)"/>
                             <field name="wordpress_categ_ids" domain="[('connector_id','=',connector_id),('enabled','=',True)]" widget="many2many_tags"/>
