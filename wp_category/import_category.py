@@ -431,7 +431,9 @@ class ProductPublicCategory(orm.Model):
                     _('Error'), 
                     _('Wordpress server not answer, timeout!'),
                     )
-        return True
+        # Rerturn log calls:        
+        return excel_pool.return_attachment(
+            cr, uid, 'Log call', name_of_file='call.xlsx', context=context)
         # TODO      
         # Check updated
         # Check deleted
