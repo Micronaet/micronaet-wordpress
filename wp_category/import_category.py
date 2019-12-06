@@ -69,12 +69,12 @@ class ProductPublicCategory(orm.Model):
         category_ids = category_pool.search(cr, uid, [
             ('connection_id', '=', ids[0]),
             ], context=context)
+        import pdb; pdb.set_trace()    
         category_pool.write(cr, uid, category_ids, {
             'wp_it_id': False,
             'wp_en_id': False,
             }, context=context)
-        return publish_category_now(cr, uid, ids, context=context)    
-        
+        return publish_category_now(cr, uid, ids, context=context)            
 
     def publish_category_now(self, cr, uid, ids, context=None):
         ''' Publish now button
