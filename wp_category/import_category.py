@@ -67,7 +67,7 @@ class ProductPublicCategory(orm.Model):
         '''
         category_pool = self.pool.get('product.public.category')
         category_ids = category_pool.search(cr, uid, [
-            ('connection_id', '=', ids[0]),
+            ('connector_id', '=', ids[0]),
             ], context=context)
         import pdb; pdb.set_trace()    
         category_pool.write(cr, uid, category_ids, {
