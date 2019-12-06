@@ -29,8 +29,8 @@ import ConfigParser
 
 print 'Cambiare connector ID (and DB access)!'
 import pdb; pdb.set_trace()
-connector_id = 5 # connector.server for wordpress # XXX change!
-#connector_id = 9 # connector.server for wordpress # XXX change!
+connector_id = 5 # REAL connector.server for wordpress # XXX change!
+#connector_id = 9 # LOCAL connector.server for wordpress # XXX change!
 
 file_in = './product.xlsx'
 row_start = 1
@@ -40,7 +40,7 @@ row_start = 1
 # -----------------------------------------------------------------------------
 # From config file:
 cfg_file = os.path.expanduser('../openerp.cfg')
-cfg_file = os.path.expanduser('../local.cfg')
+#cfg_file = os.path.expanduser('../local.cfg')
 
 config = ConfigParser.ConfigParser()
 config.read([cfg_file])

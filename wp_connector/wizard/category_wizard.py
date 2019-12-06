@@ -52,7 +52,6 @@ class WordpressSelectProductCategoryWizard(orm.TransientModel):
             context = {} 
         
         # Pool:
-        import pdb; pdb.set_trace()
         web_pool = self.pool.get('product.product.web.server')
         category_pool = self.pool.get('product.public.category')
         model_pool = self.pool.get('ir.model.data')
