@@ -62,6 +62,20 @@ class ProductPublicCategory(orm.Model):
 
     _inherit = 'connector.server'
 
+    def clean_and_republish_id_now(self, cr, uid, ids, context=None):
+        ''' Procedure used for recreate category deleted from backupffice
+        '''
+        category_pool = self.pool.get('product.public.category')
+        category_ids = category_pool.search(cr, uid, [
+            ('connection_id', '=', ids[0]),
+            ], context=context)
+        category_pool.write(cr, uid, category_ids, {
+            'wp_it_id': False,
+            'wp_en_id': False,
+            }, context=context)
+        return publish_category_now(cr, uid, ids, context=context)    
+        
+
     def publish_category_now(self, cr, uid, ids, context=None):
         ''' Publish now button
             Used also for more than one elements (not only button click)

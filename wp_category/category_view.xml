@@ -7,6 +7,10 @@
             <field name="inherit_id" ref="connector_web_base.view_connector_server_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//header/button" position="after">
+                    
+                    <button name="clean_and_republish_id_now" string="Reset and republish category" type="object" 
+                        confirm="Clean all WP ID saved and republish all (used when category are delete from web), confirm?" 
+                        icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
                     <button name="publish_category_now" string="Publish category" type="object" 
                         confirm="Depend on server configuration, import or export category, confirm?" 
                         class="oe_highlight" icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
