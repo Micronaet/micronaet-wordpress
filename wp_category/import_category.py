@@ -145,7 +145,7 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             row += 1
             excel_pool.write_xls_line(ws_name, row, [
-                'Lettura categorie %s' % lang ,
+                'Lettura categorie',
                 ], default_format=excel_format['title'])
             row += 1
             excel_pool.write_xls_line(ws_name, row, [
