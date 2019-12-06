@@ -52,18 +52,16 @@ class WordpressSelectProductCategoryWizard(orm.TransientModel):
             context = {} 
         
         # Pool:
+        import pdb; pdb.set_trace()
         web_pool = self.pool.get('product.product.web.server')
         category_pool = self.pool.get('product.public.category')
         model_pool = self.pool.get('ir.model.data')
         
         wiz_browse = self.browse(cr, uid, ids, context=context)[0]
 
-        # Get wizard parameters:
-        active_ids = set(context.get('active_ids') or ())
-        
         connector_id = wiz_browse.webserver_id.id
         code_start = wiz_browse.code_start
-        statistic_category = [
+        wordpress_categ_ids = [
             item.id for item in wiz_browse.wordpress_categ_ids]
 
         # ---------------------------------------------------------------------
@@ -80,7 +78,7 @@ class WordpressSelectProductCategoryWizard(orm.TransientModel):
         # Update category:
         # ---------------------------------------------------------------------
         web_pool.write(cr, uid, web_ids, {
-            'wordpress_categ_ids': [(6, 0, category_ids)],
+            'wordpress_categ_ids': [(6, 0, wordpress_categ_ids)],
             }, context=context)
                 
         tree_view_id = model_pool.get_object_reference(
@@ -110,7 +108,7 @@ class WordpressSelectProductCategoryWizard(orm.TransientModel):
     _columns = {
         'webserver_id': fields.many2one(
             'connector.server', 'Webserver', required=True),
-        'code_start': fields.char('Code start', size=25),
+        'code_start': fields.char('Code start', size=25, required=True),
         'wordpress_categ_ids': fields.many2many(
             'product.public.category', 'product_wp_cat_wizard_rel', 
             'wizard_id', 'category_id', 
