@@ -245,6 +245,7 @@ class ProductPublicCategory(orm.Model):
                         'menu_order': sequence,
                         'display': 'default',
                         'lang': lang,
+                        'slug': server_pool.get_lang_slug(name, lang),
                         }
                     if default_lang != lang: # Add language default ref.
                         record_data['translations'] = {
@@ -277,14 +278,19 @@ class ProductPublicCategory(orm.Model):
                 # Batch create / update depend on language:
                 # -------------------------------------------------------------
                 res = wcapi.post('products/categories/batch', data).json()
-                import pdb; pdb.set_trace()
                 for record in res.get('create', ()):
                     wp_id = record['id']
                     if not wp_id:
                         # TODO manage error:
                         _logger.error('Not Updated wp_id for %s' % wp_id)
                         continue
-                    lang = record['lang']
+                    try:    
+                        lang = record['lang']
+                    except:
+                        raise osv.except_osv(
+                            _('Wrong response'), 
+                            _('Record is error? [%s]' % record),
+                            )    
 
                     name = record['name']
                     odoo_id = odoo_name2id.get((name, lang), False)
@@ -310,8 +316,9 @@ class ProductPublicCategory(orm.Model):
                         # TODO manage error:
                         _logger.error('Not Updated wp_id for %s' % wp_id)
                         continue
-                        
+                    
                     name = record['name']
+                        
                     odoo_id = odoo_name2id.get((name, lang), False)
                     if not odoo_id:
                         _logger.error('Not Updated wp_id for %s' % name)
