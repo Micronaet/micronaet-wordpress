@@ -85,6 +85,7 @@
             <field name="res_model">product.product.web.server</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="wp_connector.view_product_product_web_server_wp_tree"/>
             <!--<field name="view_id" ref="view_product_product_parent_tree"/>
             <field name="search_view_id" ref="view_product_product_parent_search"/>-->
             <field name="context">{}</field>
