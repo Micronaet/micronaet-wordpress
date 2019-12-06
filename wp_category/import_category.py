@@ -92,6 +92,29 @@ class ProductPublicCategory(orm.Model):
         server_pool = self.pool.get('connector.server')
         category_pool = self.pool.get('product.public.category')
         
+        # =====================================================================
+        # Log operation on Excel file:
+        # ---------------------------------------------------------------------
+        ws_name = 'Chiamate'
+        excel_pool = self.pool.get('excel.writer')        
+        excel_pool.create_worksheet(ws_name)
+        excel_pool.set_format()
+        excel_format = {
+            'title': excel_pool.get_format('title'),
+            'header': excel_pool.get_format('header'),
+            'text': excel_pool.get_format('text'),
+            }
+        row = 0
+        excel_pool.write_xls_line(ws_name, row, [
+            'Commento',
+            'Chiamata',
+            'End point',
+            'Data',
+            'Reply',
+            ], default_format=excel_format['header'])
+        excel_pool.column_width(ws_name, [30, 20, 30, 50, 100])
+        # =====================================================================
+
         # ---------------------------------------------------------------------
         #                        CREATE CATEGORY OPERATION:
         # ---------------------------------------------------------------------
@@ -114,8 +137,24 @@ class ProductPublicCategory(orm.Model):
         current_wp_category = []
         while theres_data:
             parameter['page'] += 1
-            res = wcapi.get(
-                'products/categories', params=parameter).json()
+            call = 'products/categories'
+            res = wcapi.get(call, params=parameter).json()
+
+            # =================================================================
+            # Excel log:
+            # -----------------------------------------------------------------
+            row += 1
+            excel_pool.write_xls_line(ws_name, row, [
+                'Lettura categorie %s' % lang ,
+                ], default_format=excel_format['title'])
+            row += 1
+            excel_pool.write_xls_line(ws_name, row, [
+                'get',
+                call,
+                u'%s' % (parameter),
+                u'%s' % (res, ),
+                ], default_format=excel_format['text'], col=1)
+            # =================================================================
 
             try:
                 test_error = res['data']['status'] == 400
@@ -290,7 +329,25 @@ class ProductPublicCategory(orm.Model):
                 # -------------------------------------------------------------
                 # Batch create / update depend on language:
                 # -------------------------------------------------------------
-                res = wcapi.post('products/categories/batch', data).json()
+                call = 'products/categories/batch'
+                res = wcapi.post(call, data).json()
+                
+                # =============================================================
+                # Excel log:
+                # -------------------------------------------------------------
+                row += 1
+                excel_pool.write_xls_line(ws_name, row, [
+                    'Aggiornamento batch',
+                    ], default_format=excel_format['title'])
+                row += 1
+                excel_pool.write_xls_line(ws_name, row, [
+                    'post',
+                    call,
+                    u'%s' % (data, ),
+                    u'%s' % (res, ),
+                    ], default_format=excel_format['text'], col=1)
+                # =============================================================
+
                 for record in res.get('create', ()):
                     wp_id = record['id']
                     if not wp_id:
@@ -350,7 +407,25 @@ class ProductPublicCategory(orm.Model):
                 'delete': wp_id2name.keys(),
                 }
             try:
-                res = wcapi.post('products/categories/batch', data).json()
+                call = 'products/categories/batch'
+                res = wcapi.post(call, data).json()
+
+                # =============================================================
+                # Excel log:
+                # -------------------------------------------------------------
+                row += 1
+                excel_pool.write_xls_line(ws_name, row, [
+                    'Eliminazione non presenti',
+                    ], default_format=excel_format['title'])
+                row += 1
+                excel_pool.write_xls_line(ws_name, row, [
+                    'post',
+                    call,
+                    u'%s' % (data, ),
+                    u'%s' % (res, ),
+                    ], default_format=excel_format['text'], col=1)
+                # =============================================================
+
             except:
                 raise osv.except_osv(
                     _('Error'), 
