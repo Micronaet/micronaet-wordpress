@@ -277,13 +277,14 @@ class ProductPublicCategory(orm.Model):
                 # Batch create / update depend on language:
                 # -------------------------------------------------------------
                 res = wcapi.post('products/categories/batch', data).json()
+                import pdb; pdb.set_trace()
                 for record in res.get('create', ()):
                     wp_id = record['id']
-                    lang = record['lang']
                     if not wp_id:
                         # TODO manage error:
                         _logger.error('Not Updated wp_id for %s' % wp_id)
                         continue
+                    lang = record['lang']
 
                     name = record['name']
                     odoo_id = odoo_name2id.get((name, lang), False)
