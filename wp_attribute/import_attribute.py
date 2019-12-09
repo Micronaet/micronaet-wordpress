@@ -226,16 +226,18 @@ class ProductPublicCategory(orm.Model):
         #        )
     
         def split_code(default_code, lang='it'):
-            ''' Split 2 part of code
-            '''   
+            ''' Split 2 part of code                
+            ''' 
+            # TODO Manage MS and other half worked
             default_code = (default_code or '')[:12] # No exta part
-            # TODO manage 2/3 format
+
+            # XXX No more use lang setup!  
             return (
                 default_code[:6].strip(),
-                '%s-%s-%s' % (
+                '%s-%s' % (
                     default_code[6:8].strip().upper() or 'NE',  # XXX Neutro
                     default_code[8:].strip().upper(),
-                    lang.upper(),
+                    #lang.upper(),
                     ),
                 )
         
@@ -331,8 +333,9 @@ class ProductPublicCategory(orm.Model):
 
                 product_parent, product_attribute = split_code(
                     default_code, lang)
-                if product_attribute not in attribute_db:
-                    attribute_db.append(product_attribute)
+                key = (product_attribute, lang)    
+                if key not in attribute_db:
+                    attribute_db.append(key)
                 
                 if product_parent not in product_db:
                     product_db[product_parent] = [
@@ -456,7 +459,8 @@ class ProductPublicCategory(orm.Model):
 
         web_attribute = {}
         for record in current_wp_terms:
-            web_attribute[record['name']] = record['id']
+            key = (record['name'], record['lang'])
+            web_attribute[key] = record['id']
 
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Brand Attribute)
@@ -489,8 +493,8 @@ class ProductPublicCategory(orm.Model):
                 'update': [],
                 'delete': [],
                 }
-            for attribute in attribute_db: 
-                if attribute[-2:] != lang.upper():
+            for attribute, attribute_lang in attribute_db: 
+                if attribute_lang != lang.upper():
                     continue # only terms for this lang
                 item = {
                     'name': attribute,
@@ -500,8 +504,7 @@ class ProductPublicCategory(orm.Model):
                     }
                     
                 if lang != default_lang: # Different language:
-                    wp_it_id = web_attribute.get(
-                        attribute[:-2] + default_lang.upper())
+                    wp_it_id = web_attribute.get((attribute, default_lang))
                     if wp_it_id:
                         item.update({
                             'translations': {'it': wp_it_id}
@@ -513,7 +516,7 @@ class ProductPublicCategory(orm.Model):
                             ))
                         # TODO manage?
                         
-                if attribute in web_attribute:
+                if (attribute, lang) in web_attribute:
                     pass # data['update'].append(item) # no data to update
                 else:
                     data['create'].append(item)
@@ -570,7 +573,7 @@ class ProductPublicCategory(orm.Model):
                             continue
 
                         # Update for next language:
-                        web_attribute[record['name']] = wp_id 
+                        web_attribute[(record['name'], lang)] = wp_id 
             except:
                 raise osv.except_osv(
                     _('Error'), 
@@ -936,17 +939,16 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Attribute update ODOO VS WP:
         # ---------------------------------------------------------------------
-        for attribute in attribute_db:
-            if not attribute.endswith('-IT'):
+        for attribute, attribute_lang in attribute_db:
+            if not attribute_lang != default_lang:
                 continue
             
-            name = attribute[:-3] # TODO remove
             dot_ids = dot_pool.search(cr, uid, [(
-                'name', '=', name)], context=context)    
+                'name', '=', attribute)], context=context)    
             if not dot_ids:
                 dot_pool.create(cr, uid, {
                     'connector_id': connector_id,
-                    'name': name,                    
+                    'name': attribute,                    
                     }, context=context)
             
         # Rerturn log calls:        
