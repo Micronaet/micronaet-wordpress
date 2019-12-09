@@ -226,18 +226,15 @@ class ProductPublicCategory(orm.Model):
         #        )
     
         def split_code(default_code, lang='it'):
-            ''' Split 2 part of code                
-            ''' 
-            # TODO Manage MS and other half worked
+            ''' Split 2 part of code
+            '''   
             default_code = (default_code or '')[:12] # No exta part
-
-            # XXX No more use lang setup!  
             return (
                 default_code[:6].strip(),
-                '%s-%s' % (
+                '%s-%s-%s' % (
                     default_code[6:8].strip().upper() or 'NE',  # XXX Neutro
                     default_code[8:].strip().upper(),
-                    #lang.upper(),
+                    lang.upper(),
                     ),
                 )
         
