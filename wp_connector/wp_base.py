@@ -139,26 +139,6 @@ class ProductImageFile(orm.Model):
         'dropbox_link': fields.char('Dropbox link', size=100),
         }
 
-'''class ProductProductWebServerLang(orm.Model):
-    """ Model name: ProductProductWebServer ID for lang
-    """
-
-    _name = 'product.product.web.server.lang'
-    _description = 'Product published with lang'
-    _rec_name = 'lang'    
-    
-    _columns = {
-        'web_id': fields.many2one('product.product.web.server', 'Link'),
-        'lang': fields.char('Lang code', size=10, required=True),
-        'wp_id': fields.integer('WP ID', required=True),
-        }
-    
-    _defaults = {
-        # Default value:
-        'wp_type': lambda *x: 'simple',
-        }    
-'''
-
 class ProductProductWebServer(orm.Model):
     """ Model name: ProductProductWebServer
     """
