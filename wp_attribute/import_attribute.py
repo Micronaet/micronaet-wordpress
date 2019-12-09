@@ -939,16 +939,17 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Attribute update ODOO VS WP:
         # ---------------------------------------------------------------------
-        for attribute, attribute_lang in attribute_db:
-            if not attribute_lang != default_lang:
+        for attribute in attribute_db:
+            if not attribute.endswith('-IT'):
                 continue
             
+            name = attribute[:-3] # TODO remove
             dot_ids = dot_pool.search(cr, uid, [(
-                'name', '=', attribute)], context=context)    
+                'name', '=', name)], context=context)    
             if not dot_ids:
                 dot_pool.create(cr, uid, {
                     'connector_id': connector_id,
-                    'name': attribute,                    
+                    'name': name,                    
                     }, context=context)
             
         # Rerturn log calls:        
