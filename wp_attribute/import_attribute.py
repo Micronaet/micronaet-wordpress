@@ -333,9 +333,8 @@ class ProductPublicCategory(orm.Model):
 
                 product_parent, product_attribute = split_code(
                     default_code, lang)
-                key = (product_attribute, lang)    
-                if key not in attribute_db:
-                    attribute_db.append(key)
+                if product_attribute not in attribute_db:
+                    attribute_db.append(product_attribute)
                 
                 if product_parent not in product_db:
                     product_db[product_parent] = [
@@ -459,8 +458,7 @@ class ProductPublicCategory(orm.Model):
 
         web_attribute = {}
         for record in current_wp_terms:
-            key = (record['name'], record['lang'])
-            web_attribute[key] = record['id']
+            web_attribute[record['name']] = record['id']
 
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Brand Attribute)
@@ -493,8 +491,8 @@ class ProductPublicCategory(orm.Model):
                 'update': [],
                 'delete': [],
                 }
-            for attribute, attribute_lang in attribute_db: 
-                if attribute_lang != lang.upper():
+            for attribute in attribute_db: 
+                if attribute[-2:] != lang.upper():
                     continue # only terms for this lang
                 item = {
                     'name': attribute,
@@ -504,7 +502,8 @@ class ProductPublicCategory(orm.Model):
                     }
                     
                 if lang != default_lang: # Different language:
-                    wp_it_id = web_attribute.get((attribute, default_lang))
+                    wp_it_id = web_attribute.get(
+                        attribute[:-2] + default_lang.upper())
                     if wp_it_id:
                         item.update({
                             'translations': {'it': wp_it_id}
@@ -516,7 +515,7 @@ class ProductPublicCategory(orm.Model):
                             ))
                         # TODO manage?
                         
-                if (attribute, lang) in web_attribute:
+                if attribute in web_attribute:
                     pass # data['update'].append(item) # no data to update
                 else:
                     data['create'].append(item)
@@ -573,7 +572,7 @@ class ProductPublicCategory(orm.Model):
                             continue
 
                         # Update for next language:
-                        web_attribute[(record['name'], lang)] = wp_id 
+                        web_attribute[record['name']] = wp_id 
             except:
                 raise osv.except_osv(
                     _('Error'), 
