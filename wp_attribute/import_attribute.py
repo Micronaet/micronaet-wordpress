@@ -691,14 +691,14 @@ class ProductPublicCategory(orm.Model):
                         }]}
 
                 # NOTE: Second element for brand!
-                brand_lang = brand_company_id.get(lang)
-                if brand_lang:
-                    data['attributes'].append({
-                        'id': attribute_id['Brand'], 
-                        'options': [brand_code],
-                        'variation': False,
-                        'visible': True,
-                        })
+                #brand_lang = brand_company_id.get(lang)
+                #if brand_lang:
+                data['attributes'].append({
+                    'id': attribute_id['Brand'], 
+                    'options': [brand_code],
+                    'variation': False,
+                    'visible': True,
+                    })
 
                 # Upodate first element colors:
                 for line, variant_attribute in variants:
