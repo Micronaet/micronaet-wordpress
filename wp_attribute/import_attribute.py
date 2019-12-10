@@ -355,7 +355,6 @@ class ProductPublicCategory(orm.Model):
         # =====================================================================
         # Excel log:
         # ---------------------------------------------------------------------   
-        """
         row += 1
         excel_pool.write_xls_line(ws_name, row, [
             'Richiesta elenco attributi:',
@@ -367,7 +366,6 @@ class ProductPublicCategory(orm.Model):
             '',
             u'%s' % (current_wp_attribute, ),
             ], default_format=excel_format['text'], col=1)
-        """
         # =====================================================================
         
         error = ''
@@ -408,7 +406,6 @@ class ProductPublicCategory(orm.Model):
         _logger.warning('Search all terms for attribute %s...' % (
             attribute_id.keys(), ))
 
-        """
         # =====================================================================
         # Excel log:
         # ---------------------------------------------------------------------   
@@ -417,7 +414,6 @@ class ProductPublicCategory(orm.Model):
             'Richiesta termini:',
             ], default_format=excel_format['title'])
         # =====================================================================
-        """
 
         # Fabric attribute:
         while theres_data:
@@ -426,7 +422,6 @@ class ProductPublicCategory(orm.Model):
                 call, params=parameter).json()
             parameter['page'] += 1
             
-            """
             # =================================================================
             # Excel log:
             # -----------------------------------------------------------------
@@ -438,7 +433,6 @@ class ProductPublicCategory(orm.Model):
                 u'%s' % (res, ),
                 ], default_format=excel_format['text'], col=1)
             # =================================================================
-            """
 
             try:
                 if res.get['data']['status'] >= 400:
@@ -529,7 +523,6 @@ class ProductPublicCategory(orm.Model):
             # Batch operation (fabric terms for attribute manage):
             # -----------------------------------------------------------------            
             try:
-                """
                 # =============================================================
                 # Excel log:
                 # -------------------------------------------------------------
@@ -538,14 +531,12 @@ class ProductPublicCategory(orm.Model):
                     'Aggiornamento tessuti:',
                     ], default_format=excel_format['title'])
                 # =============================================================
-                """
 
                 if any(data.values()): # only if one is present
                     call = 'products/attributes/%s/terms/batch' % \
                         attribute_id['Tessuto']
                     res = wcapi.post(call, data=data).json()
 
-                    """
                     # =========================================================
                     # Excel log:
                     # ---------------------------------------------------------
@@ -557,7 +548,6 @@ class ProductPublicCategory(orm.Model):
                         u'%s' % (res, ),
                         ], default_format=excel_format['text'], col=1)
                     # =========================================================
-                    """
                     
                     # ---------------------------------------------------------
                     # Save WP ID (only in dict not in ODOO Object)
@@ -593,7 +583,7 @@ class ProductPublicCategory(orm.Model):
             translation_lang.update(
                 web_product_pool.publish_now(
                     cr, uid, [web_product.id], context=context))
-            import pdb; pdb.set_trace()
+            
             # -----------------------------------------------------------------
             # Update brand terms for product:
             # -----------------------------------------------------------------
@@ -601,7 +591,6 @@ class ProductPublicCategory(orm.Model):
             #    attribute_id['Tessuto']
             #res = wcapi.post(call, data=data).json()
 
-            """
             # =================================================================
             # Excel log:
             # -----------------------------------------------------------------
@@ -615,7 +604,6 @@ class ProductPublicCategory(orm.Model):
                 excel_pool.write_xls_line(ws_name, row, log, 
                     default_format=excel_format['text'], col=1)
                 # =============================================================
-            """
 
             product = web_product.product_id
             default_code = product.default_code
