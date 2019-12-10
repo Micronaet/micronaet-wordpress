@@ -471,7 +471,7 @@ class ProductPublicCategory(orm.Model):
                 brand_company_id = {
                     lang: record_id,
                     }
-
+        import pdb; pdb.set_trace()
         # ---------------------------------------------------------------------
         # Update / Create: (XXX only fabric?)
         # ---------------------------------------------------------------------
