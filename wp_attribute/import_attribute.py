@@ -678,15 +678,15 @@ class ProductPublicCategory(orm.Model):
                 data = {
                     # For force lang procedure:
                     'lang': lang,
-                    'name': lang_name,                    
+                    'name': lang_name,
 
                     'attributes': [{
                         'id': attribute_id['Tessuto'], 
-                        #'name': 'Tessuto',
                         'options': [],
-                        #'name': variant_attribute,
                         'variation': True,
                         # XXX remove?:
+                        #'name': 'Tessuto',
+                        #'name': variant_attribute,
                         }]}
 
                 # NOTE: Second element for brand!
@@ -696,6 +696,7 @@ class ProductPublicCategory(orm.Model):
                         'id': attribute_id['Brand'], 
                         'options': [brand_code],
                         'variation': False,
+                        'visible': True,
                         })
 
                 # Upodate first element colors:
