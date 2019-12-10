@@ -604,9 +604,8 @@ class ProductPublicCategory(orm.Model):
 
             for log in context['log_excel']:
                 row += 1
-                excel_pool.write_xls_line(ws_name, row, 
-                    ['Prodotto base'].extend(log), 
-                    default_format=excel_format['text'])
+                excel_pool.write_xls_line(ws_name, row, log, 
+                    default_format=excel_format['text'], col=1)
                 # =============================================================
 
             product = web_product.product_id
