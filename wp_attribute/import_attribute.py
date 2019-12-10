@@ -467,11 +467,11 @@ class ProductPublicCategory(orm.Model):
                 brand_attribute[lang] = {}
                 
             brand_attribute[lang][name] = record_id
-            if brand_code == name:
+            if brand_code == name and lang == default_lang:
                 brand_company_id = {
                     lang: record_id,
                     }
-        import pdb; pdb.set_trace()
+
         # ---------------------------------------------------------------------
         # Update / Create: (XXX only fabric?)
         # ---------------------------------------------------------------------
