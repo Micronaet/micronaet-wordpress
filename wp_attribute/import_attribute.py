@@ -684,6 +684,7 @@ class ProductPublicCategory(orm.Model):
                         'id': attribute_id['Tessuto'], 
                         'options': [],
                         'variation': True,
+                        'visible': True,
                         # XXX remove?:
                         #'name': 'Tessuto',
                         #'name': variant_attribute,
