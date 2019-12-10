@@ -361,11 +361,12 @@ class ProductPublicCategory(orm.Model):
             ], default_format=excel_format['title'])
         row += 1
         excel_pool.write_xls_line(ws_name, row, [
+            'Elenco attributi',
             'get',
             call,
             '',
             u'%s' % (current_wp_attribute, ),
-            ], default_format=excel_format['text'], col=1)
+            ], default_format=excel_format['text'])
         # =====================================================================
         
         error = ''
@@ -427,11 +428,12 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             row += 1
             excel_pool.write_xls_line(ws_name, row, [
+                'Lettura attributi tessuto',
                 'get',
                 call,
                 u'%s' % (parameter),
                 u'%s' % (res, ),
-                ], default_format=excel_format['text'], col=1)
+                ], default_format=excel_format['text'])
             # =================================================================
 
             try:
@@ -542,11 +544,12 @@ class ProductPublicCategory(orm.Model):
                     # ---------------------------------------------------------
                     row += 1
                     excel_pool.write_xls_line(ws_name, row, [
+                        'Batch attributi tessuto',
                         'post',
                         call,
                         u'%s' % (data),
                         u'%s' % (res, ),
-                        ], default_format=excel_format['text'], col=1)
+                        ], default_format=excel_format['text'])
                     # =========================================================
                     
                     # ---------------------------------------------------------
@@ -601,8 +604,9 @@ class ProductPublicCategory(orm.Model):
 
             for log in context['log_excel']:
                 row += 1
-                excel_pool.write_xls_line(ws_name, row, log, 
-                    default_format=excel_format['text'], col=1)
+                excel_pool.write_xls_line(ws_name, row, 
+                    ['Prodotto base'].extend(log), 
+                    default_format=excel_format['text'])
                 # =============================================================
 
             product = web_product.product_id
@@ -652,11 +656,12 @@ class ProductPublicCategory(orm.Model):
                     ], default_format=excel_format['title'])
                 row += 1
                 excel_pool.write_xls_line(ws_name, row, [
+                    'Detault nella scheda prodotto',
                     'put',
                     call,
                     u'%s' % (data),
                     u'%s' % (reply, ),
-                    ], default_format=excel_format['text'], col=1)
+                    ], default_format=excel_format['text'])
                 # =============================================================
                 
                 if not wp_id:
@@ -679,7 +684,7 @@ class ProductPublicCategory(orm.Model):
                         # XXX remove?:
                         }]}
 
-                # NOTE: Second element!
+                # NOTE: Second element for brand!
                 brand_lang = brand_company_id.get(lang)
                 if brand_lang:
                     data['attributes'].append({
@@ -688,6 +693,7 @@ class ProductPublicCategory(orm.Model):
                         'variation': True,
                         })
 
+                # Upodate first element colors:
                 for line, variant_attribute in variants:
                     variant = line.product_id
                     data['attributes'][0]['options'].append(variant_attribute)
@@ -701,11 +707,12 @@ class ProductPublicCategory(orm.Model):
                     # ---------------------------------------------------------
                     row += 1
                     excel_pool.write_xls_line(ws_name, row, [
+                        'Aggiornamento termini attributi',
                         'post',
                         call,
                         u'%s' % (data),
                         u'%s' % (res, ),
-                        ], default_format=excel_format['text'], col=1)
+                        ], default_format=excel_format['text'])
                     # =========================================================
                     
                 except:
@@ -725,11 +732,12 @@ class ProductPublicCategory(orm.Model):
                 # -------------------------------------------------------------
                 row += 1
                 excel_pool.write_xls_line(ws_name, row, [
-                    'get',
+                    'Lettura varianti attuali',
+                    'get',                    
                     call,
                     u'',
                     u'%s' % (res, ),
-                    ], default_format=excel_format['text'], col=1)
+                    ], default_format=excel_format['text'])
                 # =============================================================
 
                 data = {
@@ -865,11 +873,12 @@ class ProductPublicCategory(orm.Model):
                         # -----------------------------------------------------
                         row += 1
                         excel_pool.write_xls_line(ws_name, row, [
+                            'Aggiorna variante',
                             'put',
                             call,
                             u'%s' % (data, ),
                             u'%s' % (res, ),
-                            ], default_format=excel_format['text'], col=1)
+                            ], default_format=excel_format['text'])
                         # =====================================================
 
                     else: # Create
@@ -882,11 +891,12 @@ class ProductPublicCategory(orm.Model):
                         # -----------------------------------------------------
                         row += 1
                         excel_pool.write_xls_line(ws_name, row, [
+                            'Crea variante',
                             'post',
                             call,
                             u'%s' % (data, ),
                             u'%s' % (res, ),
-                            ], default_format=excel_format['text'], col=1)
+                            ], default_format=excel_format['text'])
                         # =====================================================
 
                         try:
