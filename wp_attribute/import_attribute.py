@@ -632,10 +632,12 @@ class ProductPublicCategory(orm.Model):
                     'default_attributes': [{
                         'id': attribute_id['Tessuto'],
                         'option': parent_attribute,
-                        }, {
-                        'id': attribute_id['Brand'],
-                        'option': brand_code,
-                        },
+                        }, 
+                        # No brand default
+                        #{
+                        #'id': attribute_id['Brand'],
+                        #'option': brand_code,
+                        #},
                         ],
 
                     # Write to force code in attribute:
@@ -655,7 +657,7 @@ class ProductPublicCategory(orm.Model):
                     ], default_format=excel_format['title'])
                 row += 1
                 excel_pool.write_xls_line(ws_name, row, [
-                    'Detault nella scheda prodotto',
+                    'Default nella scheda prodotto',
                     'put',
                     call,
                     u'%s' % (data),
@@ -674,6 +676,10 @@ class ProductPublicCategory(orm.Model):
                 # -------------------------------------------------------------
                 # 2. Update attributes:
                 data = {
+                    # For force lang procedure:
+                    'lang': lang,
+                    'name': lang_name,                    
+
                     'attributes': [{
                         'id': attribute_id['Tessuto'], 
                         #'name': 'Tessuto',
@@ -689,7 +695,7 @@ class ProductPublicCategory(orm.Model):
                     data['attributes'].append({
                         'id': attribute_id['Brand'], 
                         'options': [brand_code],
-                        'variation': True,
+                        'variation': False,
                         })
 
                 # Upodate first element colors:
