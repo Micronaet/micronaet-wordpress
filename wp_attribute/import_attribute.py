@@ -593,15 +593,13 @@ class ProductPublicCategory(orm.Model):
             translation_lang.update(
                 web_product_pool.publish_now(
                     cr, uid, [web_product.id], context=context))
-            
+            import pdb; pdb.set_trace()
             # -----------------------------------------------------------------
             # Update brand terms for product:
             # -----------------------------------------------------------------
             #call = 'products/attributes/%s/terms/batch' % \
             #    attribute_id['Tessuto']
             #res = wcapi.post(call, data=data).json()
-            
-                    
 
             """
             # =================================================================
