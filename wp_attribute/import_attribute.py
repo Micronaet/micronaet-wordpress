@@ -216,15 +216,6 @@ class ProductPublicCategory(orm.Model):
             Used also for more than one elements (not only button click)
             Note all product must be published on the same web server!            
             '''
-
-        #def attribute_in_lang(variant_attribute, lang):
-        #    ''' Different name for attribute for EN lang
-        #    '''
-        #    return '%s-%s' % (
-        #        variant_attribute,
-        #        lang.upper(),
-        #        )
-    
         def split_code(default_code, lang='it'):
             ''' Split 2 part of code
             '''   
@@ -813,6 +804,7 @@ class ProductPublicCategory(orm.Model):
                     data = {
                         'regular_price': u'%s' % (
                             line.force_price or variant.lst_price),
+                        # sale_price (discounted)
                         'short_description': short_description,
                         'description': description,
                         'lang': lang,    

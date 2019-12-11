@@ -337,6 +337,7 @@ class ProductProductWebServer(orm.Model):
                         'type': item.wp_type,
                         'sku': default_code,
                         'regular_price': price,
+                        # sale_price (discounted)
                         'weight': weight,
                         'stock_quantity': stock_quantity,
                         'status': status,
