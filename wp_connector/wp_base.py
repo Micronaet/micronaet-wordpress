@@ -120,6 +120,41 @@ class ProductProduct(orm.Model):
 
     _inherit = 'product.product'
     
+    def auto_package_assign(self, cr, uid, ids, context=None):
+        ''' Auto assign code
+        '''
+        package_pool = self.pool.get('product.product.web.package')
+        for product in self.browse(cr, uid, ids, context=context):
+            default_code = product.default_code or ''
+            if not default_code:
+                _logger.error('No default code, no package assigned!')
+                continue
+
+            # -----------------------------------------------------------------            
+            # Search:    
+            # -----------------------------------------------------------------
+            # Mode 6:      
+            search_code = '%-6s' % default_code[:6]
+            package_ids = package_pool.search(cr, uid, [
+                ('name', 'ilike', search_code),
+                ], context=context)
+            if package_ids:
+                self.write(cr, uid, [product.id], {
+                    'model_package_id': package_ids[0],
+                    }, context=context)    
+                continue
+
+            # Mode 3:
+            search_code = default_code[:3]
+            package_ids = package_pool.search(cr, uid, [
+                ('name', 'ilike', search_code),
+                ], context=context)
+            if package_ids:
+                self.write(cr, uid, [product.id], {
+                    'model_package_id': package_ids[0],
+                    }, context=context)
+        return True
+
     _columns = {
         # 'wp_id': fields.integer('Worpress ID'),
         # 'wp_lang_id': fields.integer('Worpress translate ID'),

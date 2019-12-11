@@ -62,6 +62,7 @@
                     <field name="emotional_short_description" />
                     <field name="emotional_description" />
                     <field name="model_package_id" />
+                    <button name="auto_package_assign" string="Auto assegnazione" type="object" />
                 </tree>
             </field>
         </record>
