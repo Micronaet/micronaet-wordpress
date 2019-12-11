@@ -107,7 +107,7 @@ for row in range(row_start, WS.nrows):
         ])
     if product_ids:
         product_id = product_ids[0]
-            
+
     # -------------------------------------------------------------------------
     #                         Product:
     # -------------------------------------------------------------------------
@@ -115,6 +115,9 @@ for row in range(row_start, WS.nrows):
         'emotional_short_description': short_text,
         'emotional_description': long_text,
         })
+
+    # Update package:
+    product_pool.auto_package_assign(product_ids)
     
     # -------------------------------------------------------------------------
     #                         Web selection:

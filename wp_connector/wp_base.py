@@ -142,6 +142,8 @@ class ProductProduct(orm.Model):
                 self.write(cr, uid, [product.id], {
                     'model_package_id': package_ids[0],
                     }, context=context)    
+
+                _logger.warning('Code 6 "%s" found!' % search_code)
                 continue
 
             # Mode 3:
@@ -153,6 +155,9 @@ class ProductProduct(orm.Model):
                 self.write(cr, uid, [product.id], {
                     'model_package_id': package_ids[0],
                     }, context=context)
+                _logger.warning('Code 3 "%s" found!' % search_code)
+            else:    
+                _logger.warning('Code not found!' % default_code)
         return True
 
     _columns = {
