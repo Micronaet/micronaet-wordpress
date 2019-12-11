@@ -45,7 +45,7 @@
                     <filter name="has_emotional" string="Has emotional" domain="['|', ('emotional_short_description','!=',False), ('emotional_description','!=',False)]"/>
 
                     <group expand="0" string="Group By...">
-                        <filter name="group_model_package_id" string="Package" context="{'group_by': 'model_package_id}"/>
+                        <filter name="group_model_package_id" string="Package" context="{'group_by': 'model_package_id'}"/>
                     </group>
                 </search>
             </field>
