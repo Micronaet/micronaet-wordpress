@@ -568,7 +568,6 @@ class ProductPublicCategory(orm.Model):
 
         context['log_excel'] = []
         context['override_sku'] = '' # SKU not present for product 
-        import pdb; pdb.set_trace()
         for parent in product_db:
             web_product, lang_variants = product_db[parent]
 
@@ -696,6 +695,7 @@ class ProductPublicCategory(orm.Model):
                     })
 
                 # Upodate first element colors:
+                import pdb; pdb.set_trace()
                 for line, variant_attribute in variants:
                     variant = line.product_id
                     data['attributes'][0]['options'].append(variant_attribute)
