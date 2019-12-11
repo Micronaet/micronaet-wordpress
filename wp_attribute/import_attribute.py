@@ -695,7 +695,6 @@ class ProductPublicCategory(orm.Model):
                     })
 
                 # Upodate first element colors:
-                import pdb; pdb.set_trace()
                 for line, variant_attribute in variants:
                     variant = line.product_id
                     data['attributes'][0]['options'].append(variant_attribute)
@@ -779,6 +778,7 @@ class ProductPublicCategory(orm.Model):
                         'products/%s/variations/batch' % wp_id, data).json()
                     # TODO log
 
+                import pdb; pdb.set_trace()
                 for line, fabric_code in variants:
                     variant = line.product_id
                     variant_code = variant.default_code
