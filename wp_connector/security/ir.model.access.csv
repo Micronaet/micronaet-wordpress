@@ -1,3 +1,4 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 access_product_product_web_package_user,product.product.web.package,model_product_product_web_package,base.group_user,1,1,1,1
+access_product_product_web_category_user,product.product.web.category,model_product_product_web_category,base.group_user,1,1,1,1
 

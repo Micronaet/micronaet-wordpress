@@ -200,6 +200,27 @@ class ProductImageFile(orm.Model):
         'wp_type': lambda *x: 'simple',
         }    
 '''
+
+class ProductProductWebCategory(orm.Model):
+    """ Model name: ProductProductWebPackage
+    """
+
+    _name = 'product.product.web.category'
+    _description = 'Category template'
+    _order = 'name'
+    
+    _columns = {
+        'name': fields.char('Codice padre', size=3, required=True),
+        'category_ids': fields.many2many(
+            'product.public.category', 'template_web_category_rel', 
+            'product_id', 'category_id', 
+            'Category', required=True),
+        }
+
+    _sql_constraints = [
+        ('name_uniq', 'unique (name)', 'Nome duplicato!'),
+        ]
+
 class ProductProductWebPackage(orm.Model):
     """ Model name: ProductProductWebPackage
     """
@@ -226,8 +247,8 @@ class ProductProductWebPackage(orm.Model):
         
     _sql_constraints = [
         ('name_uniq', 'unique (name)', 'Nome duplicato!'),
-        
         ]
+
 class ProductProductWebServer(orm.Model):
     """ Model name: ProductProductWebServer
     """
