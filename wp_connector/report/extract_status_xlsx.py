@@ -100,7 +100,7 @@ class ConnectorServer(orm.Model):
             ws_name, row, [
             'Codice', 
             'Nome', 'Descrizione', 
-            'Name', 'Description',
+            '(Name)', '(Description)',
             'Categorie', 'Prezzo',
             'Cat. Stat.', 'Peso', 'Dimensioni',
             'Magazzino', 'Immagini'            
@@ -149,11 +149,21 @@ class ConnectorServer(orm.Model):
               
             row += 1
             selected[product.id] = row # To update english lang
+            
+            # Readability:
+            short_description = line.force_name or \
+                variant.emotional_short_description or \
+                variant.name or u''
+
+            description = line.force_description or \
+                variant.emotional_description or \
+                variant.large_description or u''
+                
             excel_pool.write_xls_line(
                 ws_name, row, [
                     default_code,
-                    product.name,
-                    product.large_description or '',  
+                    short_description,  # product.name,
+                    description,  # product.large_description or '',  
                     '', 
                     '',     
                     ', '.join(tuple(

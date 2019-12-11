@@ -80,18 +80,26 @@ web_ids = web_pool.search([
     ('connector_id', '=', connector_id),
     ])
 if web_ids:
-    web_pool.unlink(web_ids)
+    print 'Set unpublish all product for this connector, # %s' % len(web_ids)
+    web_pool.write(web_ids, {
+        'published': False,
+        })
         
 # -----------------------------------------------------------------------------
 # Create from files:
 # -----------------------------------------------------------------------------
+i = 0
 for row in range(row_start, WS.nrows):
+    i += 1
+    # Mapping:
     default_code = WS.cell(row, 0).value
     selection = (WS.cell(row, 1).value or '').upper()
+    short_text = WS.cell(row, 3).value
+    long_text = WS.cell(row, 4).value
 
     if not default_code or selection not in ('X', 'O'):
-        print 'No Default code or no selection: %s [%s]' % (
-            default_code, selection)
+        print '%s. Selezione non corretta: %s [%s]' % (
+            i, default_code, selection)
         continue
         
     product_ids = product_pool.search([
@@ -100,6 +108,17 @@ for row in range(row_start, WS.nrows):
     if product_ids:
         product_id = product_ids[0]
             
+    # -------------------------------------------------------------------------
+    #                         Product:
+    # -------------------------------------------------------------------------
+    product_pool.write(product_ids, {
+        'emotional_short_description': short_text,
+        'emotional_description': long_text,
+        })
+    
+    # -------------------------------------------------------------------------
+    #                         Web selection:
+    # -------------------------------------------------------------------------
     data = {
         'connector_id': connector_id,
         'published': True,
@@ -111,6 +130,16 @@ for row in range(row_start, WS.nrows):
         # Create as parant    
         data['wp_parent_template'] = True
 
-    web_pool.create(data)
+    web_ids = web_pool.search([
+        ('connector_id', '=', connector_id),
+        ('product_id', '=', product_id),
+        ])
+
+    if web_ids:
+        print '%s. Aggiornamento: %s' % (i, default_code)
+        web_pool.write(web_ids, data)
+    else:    
+        print '%s. Creazione: %s' % (i, default_code)
+        web_pool.create(data)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
