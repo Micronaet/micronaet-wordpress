@@ -335,7 +335,7 @@ class ProductPublicCategory(orm.Model):
                     (record, product_attribute))
 
                 # Extract frame-color from code
-
+        import pdb; pdb.set_trace()
         _logger.warning('Parent found: %s' % len(product_db))
 
         # ---------------------------------------------------------------------        
