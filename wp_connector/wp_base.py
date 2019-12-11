@@ -158,7 +158,34 @@ class ProductImageFile(orm.Model):
         'wp_type': lambda *x: 'simple',
         }    
 '''
+class ProductProductWebPackage(orm.Model):
+    """ Model name: ProductProductWebPackage
+    """
 
+    _name = 'product.product.web.package'
+    _description = 'Package data'    
+    _order = 'name'
+    
+    _columns = {
+        'name': fields.char('Codice padre', size=10, required=True),
+        
+        'pcs_box': fields.integer('pcs / box'),
+        'pcs_pallet': fields.integer('pcs / pallet'),
+
+        'net_weight': fields.integer('Peso netto (gr)'),
+        'gross_weight': fields.integer('Peso lordo (gr)'),
+
+        'box_width': fields.integer('Box: larg.'),
+        'box_depth': fields.integer('Box: prof..'),
+        'box_height': fields.integer('Box: alt.'),
+
+        'pallet_dimension': fields.char('Dim. Pallet', size=30),
+        }
+        
+    _sql_constraints = [
+        ('name_uniq', 'unique (name)', 'Nome duplicato!'),
+        
+        ]
 class ProductProductWebServer(orm.Model):
     """ Model name: ProductProductWebServer
     """

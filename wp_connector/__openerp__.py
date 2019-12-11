@@ -42,7 +42,7 @@
     'demo': [],
     'data': [
         'security/wp_group.xml',
-        #'security/ir.model.access.csv',    
+        'security/ir.model.access.csv',    
         
         'wp_view.xml',
         'wizard/select_view.xml',
