@@ -157,7 +157,7 @@ class ProductProduct(orm.Model):
                     }, context=context)
                 _logger.warning('Code 3 "%s" found!' % search_code)
             else:    
-                _logger.warning('Code not found!' % default_code)
+                _logger.error('Code not found %s !' % default_code)
         return True
 
     _columns = {
