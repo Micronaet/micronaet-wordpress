@@ -567,6 +567,7 @@ class ProductPublicCategory(orm.Model):
         parent_unset = []
 
         context['log_excel'] = []
+        context['override_sku'] = '' # SKU not present for product 
         import pdb; pdb.set_trace()
         for parent in product_db:
             web_product, lang_variants = product_db[parent]

@@ -241,6 +241,8 @@ class ProductProductWebServer(orm.Model):
         if context is None:    
             context = {}
 
+        override_sku = context.get('override_sku', False)
+
         log_excel = context.get('log_excel', False)
         
         first_proxy = self.browse(cr, uid, ids, context=context)[0]    
@@ -290,6 +292,10 @@ class ProductProductWebServer(orm.Model):
                 # Readability:
                 product = item.product_id                
                 default_code = product.default_code or u''
+                if override_sku == False:
+                    sku = default_code
+                else:    
+                    sku = override_sku
                 name = item.force_name or product.name or u''
                 description = item.force_description or \
                     product.large_description or u''
@@ -335,7 +341,7 @@ class ProductProductWebServer(orm.Model):
                     # Numeric data:
                     data.update({
                         'type': item.wp_type,
-                        'sku': default_code,
+                        'sku': sku,
                         'regular_price': price,
                         # sale_price (discounted)
                         'weight': weight,
