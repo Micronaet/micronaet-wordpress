@@ -76,10 +76,18 @@ class ConnectorServer(orm.Model):
         excel_pool.create_worksheet(ws_name)
 
         # Load formats:
-        f_title = excel_pool.get_format('title')
-        f_header = excel_pool.get_format('header')
-        f_text = excel_pool.get_format('text')
-        f_number = excel_pool.get_format('number')
+        excel_format = {
+            'title': excel_pool.get_format('title'),
+            'header': excel_pool.get_format('header'),
+            'black': {
+                'text': excel_pool.get_format('text'),
+                'number': excel_pool.get_format('number'),
+                },
+            'red': {
+                'text': excel_pool.get_format('bg_red'),
+                'number': excel_pool.get_format('bg_red_number'),
+                },
+            }
 
         # ---------------------------------------------------------------------
         # Published product:
@@ -104,7 +112,7 @@ class ConnectorServer(orm.Model):
             'Categorie', 'Prezzo',
             'Cat. Stat.', 'Peso', 'Dimensioni',
             'Magazzino', 'Immagini'            
-            ], default_format=f_header)
+            ], default_format=excel_format['header'])
 
         line_ids = connector_pool.search(cr, uid, [
             ('connector_id', '=', connector.id),
@@ -135,8 +143,11 @@ class ConnectorServer(orm.Model):
             locked = int(product.mx_mrp_b_locked)
             net = stock - locked
             if net <= 0:
-                not_selected.append((product, 'no stock'))
-                continue
+                color_format = excel_format['red']
+            else:    
+                color_format = excel_format['black']
+                #not_selected.append((product, 'no stock'))
+                #continue
             
             # -----------------------------------------------------------------
             # Group data:
@@ -175,7 +186,7 @@ class ConnectorServer(orm.Model):
                         product.width, product.length, product.height),
                     '%s (M. %s - B. %s)' % (net, stock, locked),
                     image,
-                    ], default_format=f_text)
+                    ], default_format=color_format['text'])
 
 
         # English report (integration):
@@ -204,7 +215,7 @@ class ConnectorServer(orm.Model):
                 ws_name, row, [
                     short_description,  # product.name,
                     description,  # product.large_description or '',  
-                    ], default_format=f_text, col=3)
+                    ], default_format=excel_format['black']['text'], col=3)
 
         # ---------------------------------------------------------------------
         # Web Schema
@@ -220,7 +231,7 @@ class ConnectorServer(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, [
             'Codice padre', 'Telaio-Colori',
-            ], default_format=f_header)
+            ], default_format=excel_format['header'])
 
         for code6 in grouped:
             row += 1
@@ -228,7 +239,7 @@ class ConnectorServer(orm.Model):
                 ws_name, row, [
                     code6,
                     ', '.join(grouped[code6]),
-                    ], default_format=f_text)
+                    ], default_format=excel_format['black']['text'])
         
         # ---------------------------------------------------------------------
         # Not selected product:
@@ -244,7 +255,7 @@ class ConnectorServer(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, [
             'Codice', 'Nome', 'Motivo',
-            ], default_format=f_header)
+            ], default_format=excel_format['header'])
 
         for product, reason in not_selected:
             row += 1
@@ -253,7 +264,7 @@ class ConnectorServer(orm.Model):
                     product.default_code or '',
                     product.name,
                     reason,
-                    ], default_format=f_text)
+                    ], default_format=excel_format['black']['text'])
 
         # ---------------------------------------------------------------------
         # Removed product:
@@ -274,7 +285,7 @@ class ConnectorServer(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, [
             'Codice', 'Nome', 'Categ. stat.',
-            ], default_format=f_header)
+            ], default_format=excel_format['header'])
         for product in sorted(product_pool.browse(
                 cr, uid, product_ids, context=context),
                 key = lambda p: (p.default_code, p.name),
@@ -286,7 +297,7 @@ class ConnectorServer(orm.Model):
                     product.default_code or '',
                     product.name,
                     product.statistic_category or '',
-                    ], default_format=f_text)
+                    ], default_format=excel_format['black']['text'])
 
         return excel_pool.return_attachment(cr, uid, 'web_product')
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
