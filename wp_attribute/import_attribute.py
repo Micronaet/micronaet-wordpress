@@ -296,7 +296,7 @@ class ProductPublicCategory(orm.Model):
         
         product_db = {}
         attribute_db = []
-        company_name = False # For brand
+
         for odoo_lang in ('it_IT', 'en_US'):
             lang = odoo_lang[:2]
             context_lang = context.copy()
@@ -311,9 +311,6 @@ class ProductPublicCategory(orm.Model):
 
                 # First is the template (if present)
                 product = record.product_id
-                if not company_name:
-                    company_name = product.company_id.name.upper().split()[0] # XXX
-
                 default_code = product.default_code or ''
                 if not default_code[:3].isdigit(): # TODO MT and TL?
                     _logger.warning('Not used %s' % default_code)
@@ -323,18 +320,22 @@ class ProductPublicCategory(orm.Model):
                     default_code, lang)
                 if product_attribute not in attribute_db:
                     attribute_db.append(product_attribute)
-                
+              
+                # A. Create master product and prepara for variant:  
                 if product_parent not in product_db:
                     product_db[product_parent] = [
                         record, # Web line with template product
                         {}, # Variant product (not the first)
-                        ]                        
-                else: # First record became product, other variants:     
-                    if lang not in product_db[product_parent][1]:
-                        product_db[product_parent][1][lang] = []
-                    product_db[product_parent][1][lang].append(
-                        (record, product_attribute))
+                        ]
+                  
+                # B. Add variant:
+                if lang not in product_db[product_parent][1]:
+                    product_db[product_parent][1][lang] = []
+                product_db[product_parent][1][lang].append(
+                    (record, product_attribute))
+
                 # Extract frame-color from code
+
         _logger.warning('Parent found: %s' % len(product_db))
 
         # ---------------------------------------------------------------------        
