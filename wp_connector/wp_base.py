@@ -124,9 +124,9 @@ class ProductProduct(orm.Model):
         # 'wp_id': fields.integer('Worpress ID'),
         # 'wp_lang_id': fields.integer('Worpress translate ID'),
         'emotional_short_description': fields.text(
-            'Emotional short description', translate=True),
+            'Emozionale breve', translate=True),
         'emotional_description': fields.text(
-            'Emotional description', translate=True),
+            'Emozionale dettagliata', translate=True),
         'model_package_id': fields.many2one(
             'product.product.web.package', 'Package'),
         }
