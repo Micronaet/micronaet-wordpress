@@ -58,7 +58,7 @@ odoo = erppeek.Client(
     )
     
 # Pool used:
-web_pool = odoo.model('product.product.web.package')
+package_pool = odoo.model('product.product.web.package')
 
 # Excel input:
 try:
@@ -71,7 +71,7 @@ WS = WB.sheet_by_index(0)
 # -----------------------------------------------------------------------------
 # Delete all
 # -----------------------------------------------------------------------------
-previous_ids = web_pool.search([])
+previous_ids = package_pool.search([])
 #if web_ids:
 #    print 'Set unpublish all product for this connector, # %s' % len(web_ids)
 #    web_pool.write(web_ids, {
@@ -84,8 +84,9 @@ previous_ids = web_pool.search([])
 i = 0
 for row in range(row_start, WS.nrows):
     i += 1
+
     # Mapping:
-    name = WS.cell(row, 0).value
+    name = WS.cell(row, 0).value.upper()
     
     pcs_box = WS.cell(row, 1).value or False
     pcs_pallet = WS.cell(row, 2).value or False
@@ -98,6 +99,9 @@ for row in range(row_start, WS.nrows):
     box_height = WS.cell(row, 7).value or False
 
     pallet_dimension = WS.cell(row, 8).value or False
+
+    if len(name) == 5:
+        name += ' '
 
     package_ids = package_pool.search([
         ('name', '=', name),

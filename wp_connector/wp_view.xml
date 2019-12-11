@@ -59,6 +59,7 @@
                     <field name="large_description" readonly="1" />
                     <field name="emotional_short_description" />
                     <field name="emotional_description" />
+                    <field name="model_package_id" />
                 </tree>
             </field>
         </record>

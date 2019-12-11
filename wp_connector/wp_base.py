@@ -127,6 +127,8 @@ class ProductProduct(orm.Model):
             'Emotional short description', translate=True),
         'emotional_description': fields.text(
             'Emotional description', translate=True),
+        'model_package_id': fields.many2one(
+            'product.product.web.package', 'Package'),
         }
 
 class ProductImageFile(orm.Model):
