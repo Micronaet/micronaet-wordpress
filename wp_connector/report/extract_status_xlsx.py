@@ -97,7 +97,7 @@ class ConnectorServer(orm.Model):
             15, 
             30, 70, 
             30, 70,
-            50, 15,
+            50, 10, 15,
             10, 10, 20, 
             20, 40,
             ])
@@ -109,7 +109,7 @@ class ConnectorServer(orm.Model):
             'Codice', 
             'Nome', 'Descrizione', 
             '(Name)', '(Description)',
-            'Categorie', 'Prezzo',
+            'Categorie', 'Mag.', 'Prezzo',
             'Cat. Stat.', 'Peso', 'Dimensioni',
             'Magazzino', 'Immagini'            
             ], default_format=excel_format['header'])
@@ -121,6 +121,7 @@ class ConnectorServer(orm.Model):
 
         # Italian report:
         grouped = {}
+        color_format_all = {}
         selected = {}
         not_selected = []        
         for line in sorted(connector_pool.browse(
@@ -160,6 +161,7 @@ class ConnectorServer(orm.Model):
               
             row += 1
             selected[product.id] = row # To update english lang
+            color_format_all[product.id] = color_format
             
             # Readability:
             short_description = line.force_name or \
@@ -179,6 +181,7 @@ class ConnectorServer(orm.Model):
                     '',     
                     ', '.join(tuple(
                         [c.name for c in line.wordpress_categ_ids])),
+                    net,
                     product.lst_price,
                     product.statistic_category or '',
                     product.weight,
@@ -201,6 +204,7 @@ class ConnectorServer(orm.Model):
                 cr, uid, product_ids, context=ctx):
                 
             row = selected[product.id]
+            color_format = color_format_all[product.id]
 
             # Readability:
             short_description = line.force_name or \
@@ -215,7 +219,7 @@ class ConnectorServer(orm.Model):
                 ws_name, row, [
                     short_description,  # product.name,
                     description,  # product.large_description or '',  
-                    ], default_format=excel_format['black']['text'], col=3)
+                    ], default_format=color_format['text'], col=3)
 
         # ---------------------------------------------------------------------
         # Web Schema
