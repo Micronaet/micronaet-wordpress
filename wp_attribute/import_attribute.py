@@ -778,16 +778,9 @@ class ProductPublicCategory(orm.Model):
                         'products/%s/variations/batch' % wp_id, data).json()
                     # TODO log
 
-                import pdb; pdb.set_trace()
                 for line, fabric_code in variants:
                     variant = line.product_id
                     variant_code = variant.default_code
-                    if variant_code == default_code:
-                        _logger.warning(
-                            'Jump variant, is product: %s' % \
-                                default_code)
-                        continue # Jump this varient line        
-
                     variant_id = web_variant.get(
                         (variant_code, lang), False)
                     variant_it_id = web_variant.get(
