@@ -39,12 +39,14 @@
                 <search string="Product" version="7.0">
                     <field name="default_code" />        
                     <field name="name" />
+                    <field name="model_package_id" />
+                    
                     <!--<field name="partner_id" filter_domain="[('partner_id','=',self)]"/>-->
                     <filter name="has_emotional" string="Has emotional" domain="['|', ('emotional_short_description','!=',False), ('emotional_description','!=',False)]"/>
-                    <!--<group expand="0" string="Group By...">
-                        <filter name="group_partner" string="Partner" context="{'group_by': 'partner_id'}"/>
-                        <filter string="Status" context="{'group_by': 'state'}" />
-                    </group>-->
+
+                    <group expand="0" string="Group By...">
+                        <filter name="group_model_package_id" string="Package" context="{'group_by': 'model_package_id}"/>
+                    </group>
                 </search>
             </field>
         </record>
@@ -70,7 +72,7 @@
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_product_product_emotional_tree"/>
             <field name="search_view_id" ref="view_product_product_emotional_search"/>
-            <field name="context">{}</field>
+            <field name="context">{'search_default_has_emotional': True}</field>
             <field name="domain">[]</field>
         </record>
 
