@@ -190,10 +190,20 @@ class ConnectorServer(orm.Model):
                 cr, uid, product_ids, context=ctx):
                 
             row = selected[product.id]
+
+            # Readability:
+            short_description = line.force_name or \
+                product.emotional_short_description or \
+                product.name or u''
+
+            description = line.force_description or \
+                product.emotional_description or \
+                product.large_description or u''
+                
             excel_pool.write_xls_line(
                 ws_name, row, [
-                    product.name,
-                    product.large_description or '',  
+                    short_description,  # product.name,
+                    description,  # product.large_description or '',  
                     ], default_format=f_text, col=3)
 
         # ---------------------------------------------------------------------
