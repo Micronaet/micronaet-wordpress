@@ -811,7 +811,7 @@ class ProductPublicCategory(orm.Model):
 
                     # Create or update variant:
                     data = {
-                        'price': u'%s' % (
+                        'regular_price': u'%s' % (
                             line.force_price or variant.lst_price),
                         'short_description': short_description,
                         'description': description,
