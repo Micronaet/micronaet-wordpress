@@ -615,7 +615,9 @@ class ProductPublicCategory(orm.Model):
 
                 variants = lang_variants.get(lang, [])
 
+                # -------------------------------------------------------------
                 # Setup default attribute:
+                # -------------------------------------------------------------
                 wp_id, lang_name = translation_lang.get(
                     default_code, {}).get(lang, (False, False))
                 parent_parent, parent_attribute = split_code(
@@ -664,7 +666,7 @@ class ProductPublicCategory(orm.Model):
                     continue
                 
                 # -------------------------------------------------------------
-                # VARIANTS: Creation
+                #                        VARIANTS: Creation
                 # -------------------------------------------------------------
                 # 2. Update attributes:
                 data = {
