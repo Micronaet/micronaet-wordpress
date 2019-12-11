@@ -333,9 +333,8 @@ class ProductPublicCategory(orm.Model):
                     product_db[product_parent][1][lang] = []
                 product_db[product_parent][1][lang].append(
                     (record, product_attribute))
-
                 # Extract frame-color from code
-        import pdb; pdb.set_trace()
+
         _logger.warning('Parent found: %s' % len(product_db))
 
         # ---------------------------------------------------------------------        
@@ -568,6 +567,7 @@ class ProductPublicCategory(orm.Model):
         parent_unset = []
 
         context['log_excel'] = []
+        import pdb; pdb.set_trace()
         for parent in product_db:
             web_product, lang_variants = product_db[parent]
 
