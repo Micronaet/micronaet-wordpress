@@ -152,12 +152,12 @@ class ConnectorServer(orm.Model):
             
             # Readability:
             short_description = line.force_name or \
-                variant.emotional_short_description or \
-                variant.name or u''
+                product.emotional_short_description or \
+                product.name or u''
 
             description = line.force_description or \
-                variant.emotional_description or \
-                variant.large_description or u''
+                product.emotional_description or \
+                product.large_description or u''
                 
             excel_pool.write_xls_line(
                 ws_name, row, [
