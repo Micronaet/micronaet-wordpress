@@ -85,7 +85,7 @@
             <field name="model">product.product.web.server</field>
             <field name="priority" eval="40"/>
             <field name="arch" type="xml">
-                <tree string="Product" color="red:published==False">
+                <tree string="Product" color="blue:wp_parent_code!=False">
                     <field name="published"/>
                     <field name="product_id" readonly="1" />
                     <field name="connector_id" />
@@ -105,7 +105,7 @@
             </field>            
         </record>        
         <record model="ir.ui.view" id="view_product_product_web_server_wp_parent_form">
-            <field name="name">product.product.web.server.form</field>
+            <field name="name">product.product.web.server.parent.form</field>
             <field name="model">product.product.web.server</field>
             <field name="priority" eval="40"/>
             <field name="arch" type="xml">
