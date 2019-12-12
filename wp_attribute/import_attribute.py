@@ -106,7 +106,7 @@ class ProductProductWebServer(orm.Model):
             'Prodotto master', 
             help='Prodotto riferimento per raggruppare i prodotti dipendenti'),
         'wp_parent_code': fields.char('Codice appartenenza', 
-            help='Codice usato per calcolare appartenenza automatica')
+            help='Codice usato per calcolare appartenenza automatica'),
         'wp_parent_id': fields.many2one(
             'product.product.web.server', 'Prodotto padre'),    
         }

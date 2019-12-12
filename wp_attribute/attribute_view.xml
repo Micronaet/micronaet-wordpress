@@ -80,15 +80,86 @@
         </record>
         
         <!--product.product.web.server-->
+        <record model="ir.ui.view" id="view_product_product_web_server_wp_parent_tree">
+            <field name="name">product.product.web.server.parent.tree</field>
+            <field name="model">product.product.web.server</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <tree string="Product" color="red:published==False">
+                    <field name="published"/>
+                    <field name="product_id" readonly="1" />
+                    <field name="connector_id" />
+                    <field name="wp_type" />
+                    <field name="wp_parent_code" />
+                    <field name="slave_ids" />
+                    
+                    <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]"/>
+                    <!--<field name="force_name"/>
+                    <field name="force_description"/>
+                    <field name="force_q_x_pack"/>
+                    <field name="force_ean13"/>
+                    <field name="force_price"/>
+                    <field name="force_min_stock"/>-->
+                    <!--<button name="publish_now" string="Publish now" type="object"/>-->
+                </tree>           
+            </field>            
+        </record>        
+        <record model="ir.ui.view" id="view_product_product_web_server_wp_parent_form">
+            <field name="name">product.product.web.server.form</field>
+            <field name="model">product.product.web.server</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <form string="Product" version="7.0">
+                    <header>
+                        <!--<button name="publish_now" string="Publish now" type="object" />-->
+                    </header>
+                    <sheet>
+                        <group colspan="4" col="4">
+                            <field name="connector_id" />  
+                            <newline/>
+
+                            <field name="published"/>
+                            <field name="wp_type" />
+                                                  
+                            <field name="product_id" readonly="1" />
+                            <field name="wordpress_categ_ids" domain="[('connector_id','=',connector_id),('enabled','=',True)]" widget="many2many_tags"/>
+
+                            <!--<field name="force_name"/>
+                            <field name="force_description"/>
+                            
+                            <field name="force_q_x_pack"/>
+                            <field name="force_ean13"/>
+                            
+                            <field name="force_price"/>
+                            <field name="force_min_stock"/>-->
+                            
+                            <separator string="Wordpress line:" colspan="4"/>
+                            <!--<button name="clean_reference" string="Clean reference" colspan="1" type="object" confirm="Do you want delete reference with Wordpress linked product?"/>-->
+                            <field name="child_ids">
+                                <tree string="Varianti" editable="bottom">
+                                    <field name="published"/>
+                                    <field name="product_id" readonly="1" />
+                                    <field name="force_q_x_pack"/>
+                                    <field name="force_ean13"/>
+                                    <field name="force_price"/>                                    
+                                </tree>
+                            </field>
+
+                            <field name="wp_it_id" readonly="1"/>
+                            <field name="wp_en_id" readonly="1"/>
+                        </group>    
+                    </sheet>
+                </form>           
+            </field>
+        </record>        
         <record model="ir.actions.act_window" id="action_product_product_parent_tree">
             <field name="name">Prodotto master</field>
             <field name="res_model">product.product.web.server</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="wp_connector.view_product_product_web_server_wp_tree"/>
-            <!--<field name="view_id" ref="view_product_product_parent_tree"/>
+            <field name="view_id" ref="view_product_product_web_server_wp_parent_tree"/>
             <field name="search_view_id" ref="view_product_product_parent_search"/>-->
-            <field name="context">{}</field>
+            <field name="context">{'form_view_id': 'wp_attribute.view_product_product_web_server_wp_parent_form'}</field>
             <field name="domain">[('wp_parent_template', '=', True)]</field>
         </record>
         <menuitem 
