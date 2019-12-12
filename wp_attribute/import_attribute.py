@@ -43,7 +43,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
-class ProductProductWebServer(orm.Model):
+class ProductProductWebServerIntegration(orm.Model):
     """ Model name: ProductProductWebServer
     """
 
@@ -102,33 +102,63 @@ class ProductProductWebServer(orm.Model):
                 'wp_parent_template': False
                 }, context=context)
             # TODO save wp_it_id and wp_en_id?
-        
-    def set_as_master_product(cr, uid, ids, context=None):
+
+    def set_as_master_product(self, cr, uid, ids, context=None):
         ''' Set as master product for this connection and remove if present
             previous
         '''
-        current_product = self.browse(cr, uid, ids, context=context)[0]
-        connection_id = current_product.connection_id.id
+        current_id = ids[0]
+        current_product = self.browse(cr, uid, current_id, context=context)
+        connector_id = current_product.connector_id.id
         default_code = current_product.product_id.default_code
-        if not default_code:
-            raise osv.except_osv(
-                _('Errore'), 
-                _('Codice non presente, impossibile impostarlo!'),
-                )
+        wp_parent_code = current_product.wp_parent_code  # if auto master
+        wp_parent_id = current_product.wp_parent_id  # Current master
+        
+        # XXX Bad reference (when add new lang):
+        wp_it_id = wp_parent_id.wp_it_id 
+        wp_en_id = wp_parent_id.wp_en_id 
+        
+        if wp_parent_code:
+            # -----------------------------------------------------------------
+            # Case: has parent code:
+            # -----------------------------------------------------------------
+            # Search parent with same code if present
+            previous_ids = self.search(cr, uid, [
+                ('wp_parent_code', '=', wp_parent_code),
+                ('id', '!=', current_id),                
+                ], context=context)
+                
+            # Remove previous situation:
+            self.write(cr, uid, previous_ids, {
+                'wp_parent_code': False,
+                'wp_parent_id': False, 
+                }, context=context)    
+            
+            # Force this master with code:
+            self.link_variant_now(cr, uid, ids, context=context)
+               
+        elif wp_parent_id: 
+            # Case: parent present:
+            pass
+        else: 
+            # Case: no parent no code:
+            pass
         
         # ---------------------------------------------------------------------
         # Remove all previous parent if present:        
         # ---------------------------------------------------------------------
-        web_product_ids = self.get_product_search_parent(
-            cr, uid, ids, web_product.product_id.default_code, 
-            connection_id,
-            context=context)
+        #web_product_ids = self.get_product_search_parent(
+        #    cr, uid, ids, web_product.product_id.default_code, 
+        #    connection_id,
+        #    context=context)
             
         # ---------------------------------------------------------------------
         # Set this as parent
         # ---------------------------------------------------------------------
         return self.write(cr, uid, ids, {
             'wp_parent_template': True,
+            'wp_it_id': wp_it_id,
+            'wp_en_id': wp_en_id,
             }, context=context)
 
     _columns = {
@@ -146,7 +176,7 @@ class ProductProductWebServer(orm.Model):
             'Il codice di appartenenza deve essere unico!'),        
         ]    
 
-class ProductProductWebServer(orm.Model):
+class ProductProductWebServerRelation(orm.Model):
     """ Model name: ProductProductWebServer
     """
 

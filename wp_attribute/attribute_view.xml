@@ -91,8 +91,7 @@
                     <field name="connector_id" />
                     <field name="wp_type" />
                     <field name="wp_parent_code" />
-                    <field name="variant_ids" />
-                    
+                    <field name="variant_ids" />                    
                     <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]"/>
                     <!--<field name="force_name"/>
                     <field name="force_description"/>
@@ -101,6 +100,23 @@
                     <field name="force_price"/>
                     <field name="force_min_stock"/>-->
                     <!--<button name="publish_now" string="Publish now" type="object"/>-->
+                </tree>           
+            </field>            
+        </record>        
+        <record model="ir.ui.view" id="view_product_product_web_server_wp_variant_tree">
+            <field name="name">product.product.web.server.variant.tree</field>
+            <field name="model">product.product.web.server</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <tree string="Product" editable="bottom">
+                    <field name="published" readonly="1"/>
+                    <field name="product_id" readonly="1" />
+                    <field name="connector_id"  readonly="1"/>
+                    <field name="wp_type"  readonly="1"/>
+                    <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]" readonly="1" widget="many2many_tags"/>
+                    <field name="wp_parent_id" readonly="1"/>
+                    <field name="wp_parent_code" />
+                    <button name="set_as_master_product" string="Diventa master" type="object" attrs="{'invisible': [('wp_parent_code','=',True)]}"/>
                 </tree>           
             </field>            
         </record>        
@@ -164,12 +180,27 @@
             <field name="context">{'form_view_ref': 'wp_attribute.view_product_product_web_server_wp_parent_form'}</field>
             <field name="domain">[('wp_parent_template', '=', True)]</field>
         </record>
+        <record model="ir.actions.act_window" id="action_product_product_variant_tree">
+            <field name="name">Prodotto variant</field>
+            <field name="res_model">product.product.web.server</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_product_product_web_server_wp_variant_tree"/>
+            <field name="domain">[('connector_id.wordpress', '=', True), ('wp_parent_template', '=', False)]</field>
+        </record>
+
         <menuitem 
             parent="wp_connector.menu_connector_worppress_root" 
             id="menu_product_product_parent" 
             action="action_product_product_parent_tree"
             sequence="10"
             />
+            <menuitem 
+                parent="menu_product_product_parent" 
+                id="menu_product_product_variant" 
+                action="action_product_product_variant_tree"
+                sequence="10"
+                />
         <menuitem 
             parent="wp_connector.menu_connector_worppress_configuration" 
             id="menu_action_connector_product_color_dot" 
