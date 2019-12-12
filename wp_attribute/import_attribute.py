@@ -52,14 +52,18 @@ class ProductProductWebServer(orm.Model):
     # -------------------------------------------------------------------------
     # Button event:
     # -------------------------------------------------------------------------
-    def link_variant_now(cr, uid, ids, context=None):
+    def link_variant_now(self, cr, uid, ids, context=None):
         ''' Link all child variant
         '''
-        import pdb; pdb.set_trace()
         parent_id = ids[0]
         current_product = self.browse(cr, uid, parent_id, context=context)
         connector_id = current_product.connector_id.id
         wp_parent_code = current_product.wp_parent_code
+        if not wp_parent_code:
+            raise osv.except_osv(
+                _('Errore'), 
+                _('Non presnete il codice da usare quindi non possibile!'),
+                )
         
         child_ids = self.search(cr, uid, [
             # Parent code similar:
@@ -67,7 +71,7 @@ class ProductProductWebServer(orm.Model):
             
             ('wp_parent_id', '!=', parent_id),  # Different parent:
             ('id', '!=', parent_id),  # Not this
-            ('connector_id', '!=', connector_id),  # This connector:
+            ('connector_id', '=', connector_id),  # This connector:
             ], context=context)
             
         return self.write(cr, uid, child_ids, {
