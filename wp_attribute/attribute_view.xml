@@ -91,7 +91,7 @@
                     <field name="connector_id" />
                     <field name="wp_type" />
                     <field name="wp_parent_code" />
-                    <field name="slave_ids" />
+                    <field name="variant_ids" />
                     
                     <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]"/>
                     <!--<field name="force_name"/>
@@ -112,17 +112,20 @@
                 <form string="Product" version="7.0">
                     <header>
                         <!--<button name="publish_now" string="Publish now" type="object" />-->
+                        <button name="link_variant_now" string="Collega tutti figli" type="object" />
                     </header>
                     <sheet>
                         <group colspan="4" col="4">
-                            <field name="connector_id" />  
+                            <field name="connector_id" readonly="1"/>  
                             <newline/>
 
-                            <field name="published"/>
-                            <field name="wp_type" />
+                            <field name="published" readonly="1"/>
+                            <field name="wp_type" readonly="1"/>
                                                   
                             <field name="product_id" readonly="1" />
-                            <field name="wordpress_categ_ids" domain="[('connector_id','=',connector_id),('enabled','=',True)]" widget="many2many_tags"/>
+                            <field name="wp_parent_code" />
+                            
+                            <field name="wordpress_categ_ids" domain="[('connector_id','=',connector_id),('enabled','=',True)]" widget="many2many_tags" colspan="4"/>
 
                             <!--<field name="force_name"/>
                             <field name="force_description"/>
@@ -135,13 +138,13 @@
                             
                             <separator string="Wordpress line:" colspan="4"/>
                             <!--<button name="clean_reference" string="Clean reference" colspan="1" type="object" confirm="Do you want delete reference with Wordpress linked product?"/>-->
-                            <field name="child_ids">
+                            <field name="variant_ids" colspan="4" nolabel="1" readonly="1">
                                 <tree string="Varianti" editable="bottom">
-                                    <field name="published"/>
+                                    <field name="published" />
                                     <field name="product_id" readonly="1" />
-                                    <field name="force_q_x_pack"/>
-                                    <field name="force_ean13"/>
-                                    <field name="force_price"/>                                    
+                                    <field name="force_q_x_pack" readonly="1"/>
+                                    <field name="force_ean13" readonly="1"/>
+                                    <field name="force_price" readonly="1"/>                                    
                                 </tree>
                             </field>
 
@@ -158,8 +161,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_product_product_web_server_wp_parent_tree"/>
-            <field name="search_view_id" ref="view_product_product_parent_search"/>-->
-            <field name="context">{'form_view_id': 'wp_attribute.view_product_product_web_server_wp_parent_form'}</field>
+            <field name="context">{'form_view_ref': 'wp_attribute.view_product_product_web_server_wp_parent_form'}</field>
             <field name="domain">[('wp_parent_template', '=', True)]</field>
         </record>
         <menuitem 

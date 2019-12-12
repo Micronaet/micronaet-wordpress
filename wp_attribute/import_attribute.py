@@ -50,6 +50,31 @@ class ProductProductWebServer(orm.Model):
     _inherit = 'product.product.web.server'
 
     # -------------------------------------------------------------------------
+    # Button event:
+    # -------------------------------------------------------------------------
+    def link_variant_now(cr, uid, ids, context=None):
+        ''' Link all child variant
+        '''
+        import pdb; pdb.set_trace()
+        parent_id = ids[0]
+        current_product = self.browse(cr, uid, parent_id, context=context)
+        connector_id = current_product.connector_id.id
+        wp_parent_code = current_product.wp_parent_code
+        
+        child_ids = self.search(cr, uid, [
+            # Parent code similar:
+            ('product_id.default_code', '=ilike', '%s%%' % wp_parent_code),
+            # Different parent:
+            ('wp_parent_id', '!=', parent_id),
+            # This connector:
+            ('connector_id', '!=', connector_id),            
+            ], context=context)
+            
+        return self.write(cr, uid, child_ids, {
+            'wp_parent_id': parent_id,            
+            }, context=context)
+
+    # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
     #TODO remove
@@ -118,7 +143,7 @@ class ProductProductWebServer(orm.Model):
     _inherit = 'product.product.web.server'
 
     _columns = {
-        'slave_ids': fields.one2many(
+        'variant_ids': fields.one2many(
             'product.product.web.server', 'wp_parent_id', 'Varianti'),
         }
 
