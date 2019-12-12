@@ -52,6 +52,7 @@ class ProductProductWebServer(orm.Model):
     # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
+    #TODO remove
     def get_product_search_parent(self, cr, uid, ids, default_code, 
             connection_id, context=None):
         ''' Find all product with same parent in web product
@@ -70,7 +71,7 @@ class ProductProductWebServer(orm.Model):
                 'connection_id': connection_id,
                 'wp_parent_template': False
                 }, context=context)
-            # TODO save wp_it_id and wp_en_id?    
+            # TODO save wp_it_id and wp_en_id?
         
     def set_as_master_product(cr, uid, ids, context=None):
         ''' Set as master product for this connection and remove if present
@@ -92,7 +93,7 @@ class ProductProductWebServer(orm.Model):
             cr, uid, ids, web_product.product_id.default_code, 
             connection_id,
             context=context)
-                
+            
         # ---------------------------------------------------------------------
         # Set this as parent
         # ---------------------------------------------------------------------
@@ -100,32 +101,27 @@ class ProductProductWebServer(orm.Model):
             'wp_parent_template': True,
             }, context=context)
 
-    def _get_product_slave(self, cr, uid, ids, fields, args, context=None):
-        ''' Fields function for calculate 
-        '''
-        assert len(ids) == 1, 'Works only with one record a time'
-                
-        res = {}        
-        for web_product in self.browse(cr, uid, ids, context=context):            
-            web_product_ids = self.get_product_search_parent(
-                cr, uid, ids, web_product.product_id.default_code,
-                web_product.connection_id.id,
-                context=context)
-            res[web_product.id] = web_product_ids.remove(ids[0])
-        return res
-
     _columns = {
         'wp_parent_template': fields.boolean(
-            'Template for variants', 
-            help='Product used as tempalte for variants (first six char of '
-                'code)'),
-
-        'slave_ids': fields.function(
-            _get_product_slave, method=True, 
-            relation='product.product.web.server',
-            type='one2many', string='Slaves', 
-            store=False), 
+            'Prodotto master', 
+            help='Prodotto riferimento per raggruppare i prodotti dipendenti'),
+        'wp_parent_code': fields.char('Codice appartenenza', 
+            help='Codice usato per calcolare appartenenza automatica')
+        'wp_parent_id': fields.many2one(
+            'product.product.web.server', 'Prodotto padre'),    
         }
+
+class ProductProductWebServer(orm.Model):
+    """ Model name: ProductProductWebServer
+    """
+
+    _inherit = 'product.product.web.server'
+
+    _columns = {
+        'slave_ids': fields.one2many(
+            'product.product.web.server', 'wp_parent_id', 'Varianti'),
+        }
+
 class ConnectorProductColorDot(orm.Model):
     """ Model name: ConnectorProductColorDot
     """
