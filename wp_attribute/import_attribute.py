@@ -64,10 +64,10 @@ class ProductProductWebServer(orm.Model):
         child_ids = self.search(cr, uid, [
             # Parent code similar:
             ('product_id.default_code', '=ilike', '%s%%' % wp_parent_code),
-            # Different parent:
-            ('wp_parent_id', '!=', parent_id),
-            # This connector:
-            ('connector_id', '!=', connector_id),            
+            
+            ('wp_parent_id', '!=', parent_id),  # Different parent:
+            ('id', '!=', parent_id),  # Not this
+            ('connector_id', '!=', connector_id),  # This connector:
             ], context=context)
             
         return self.write(cr, uid, child_ids, {
