@@ -141,6 +141,11 @@ class ProductProductWebServer(orm.Model):
             'product.product.web.server', 'Prodotto padre'),    
         }
 
+    _sql_constraints = [
+        ('parent_code_uniq', 'unique (wp_parent_code)', 
+            'Il codice di appartenenza deve essere unico!'),        
+        ]    
+
 class ProductProductWebServer(orm.Model):
     """ Model name: ProductProductWebServer
     """
