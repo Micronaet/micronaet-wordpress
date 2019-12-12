@@ -82,31 +82,24 @@ class ProductProductWebServerIntegration(orm.Model):
     # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
-    #TODO remove
-    def get_product_search_parent(self, cr, uid, ids, default_code, 
-            connection_id, context=None):
-        ''' Find all product with same parent in web product
+    def reset_parent(self, cr, uid, parent_ids, context=None):
+        ''' Remove parent reference
         '''
-        if len(default_code) <= 3:  # Short parent
-            search_code = '%s%%' % default_code[:3]
-        else: #<= 6  # Long parent    
-            search_code = '%6s%%' % default_code[:3]
-        
-        web_product_ids = self.search(cr, uid, [
-            ('product_id.default_code', '=ilike', search_code),
-            ], context=context)
-        
-        if web_product_ids:
-            self.write(cr, uid, web_product_ids, {
-                'connection_id': connection_id,
-                'wp_parent_template': False
-                }, context=context)
-            # TODO save wp_it_id and wp_en_id?
+        return self.write(cr, uid, parent_ids, {
+            'wp_parent_code': False,
+            'wp_parent_id': False, 
+            
+            # XXX Lang reset:
+            'wp_it_id': False,
+            'wp_en_id': False,
+            # TODO There's problem if product has no previous parent
+            }, context=context)    
 
     def set_as_master_product(self, cr, uid, ids, context=None):
         ''' Set as master product for this connection and remove if present
             previous
         '''
+                
         current_id = ids[0]
         current_product = self.browse(cr, uid, current_id, context=context)
         connector_id = current_product.connector_id.id
@@ -115,43 +108,52 @@ class ProductProductWebServerIntegration(orm.Model):
         wp_parent_id = current_product.wp_parent_id  # Current master
         
         # XXX Bad reference (when add new lang):
-        wp_it_id = wp_parent_id.wp_it_id 
-        wp_en_id = wp_parent_id.wp_en_id 
+        wp_it_id = wp_en_id = False
+        if wp_parent_id:
+            wp_it_id = wp_parent_id.wp_it_id 
+            wp_en_id = wp_parent_id.wp_en_id 
+        elif wp_parent_code:
+            find_parent_ids = self.search(cr, uid, [
+                ('wp_parent_code', '=', wp_parent_code),
+                ('id', '!=', current_id),
+                ('wp_parent_template', '=', True),
+                ], context=context)
+            if find_parent_ids:    
+                wp_parent_id = self.browse(
+                    cr, uid, find_parent_ids, context=context)[0]    
+                wp_it_id = wp_parent_id.wp_it_id 
+                wp_en_id = wp_parent_id.wp_en_id 
         
         if wp_parent_code:
+                
             # -----------------------------------------------------------------
             # Case: has parent code:
             # -----------------------------------------------------------------
             # Search parent with same code if present
             previous_ids = self.search(cr, uid, [
                 ('wp_parent_code', '=', wp_parent_code),
-                ('id', '!=', current_id),                
+                ('id', '!=', current_id),
                 ], context=context)
                 
             # Remove previous situation:
-            self.write(cr, uid, previous_ids, {
-                'wp_parent_code': False,
-                'wp_parent_id': False, 
-                }, context=context)    
+            self.reset_parent(cr, uid, previous_ids, context=context)
             
             # Force this master with code:
             self.link_variant_now(cr, uid, ids, context=context)
                
         elif wp_parent_id: 
+            # -----------------------------------------------------------------
             # Case: parent present:
-            pass
-        else: 
-            # Case: no parent no code:
-            pass
-        
-        # ---------------------------------------------------------------------
-        # Remove all previous parent if present:        
-        # ---------------------------------------------------------------------
-        #web_product_ids = self.get_product_search_parent(
-        #    cr, uid, ids, web_product.product_id.default_code, 
-        #    connection_id,
-        #    context=context)
+            # -----------------------------------------------------------------
+            # Remove previous situation:
+            self.reset_parent(cr, uid, [wp_parent_id], context=context)
             
+        else: 
+            # -----------------------------------------------------------------
+            # Case: no parent no code:
+            # -----------------------------------------------------------------
+            pass # nothing to do
+        
         # ---------------------------------------------------------------------
         # Set this as parent
         # ---------------------------------------------------------------------
