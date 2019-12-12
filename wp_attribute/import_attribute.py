@@ -69,9 +69,9 @@ class ProductProductWebServer(orm.Model):
             # Parent code similar:
             ('product_id.default_code', '=ilike', '%s%%' % wp_parent_code),
             
-            ('wp_parent_id', '!=', parent_id),  # Different parent:
+            ('wp_parent_template', '=', False),  # Not parent product
             ('id', '!=', parent_id),  # Not this
-            ('connector_id', '=', connector_id),  # This connector:
+            ('connector_id', '=', connector_id),  # This connector
             ], context=context)
         
         _logger.info('Updating %s product...' % len(child_ids))
