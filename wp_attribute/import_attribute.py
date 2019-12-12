@@ -62,7 +62,7 @@ class ProductProductWebServer(orm.Model):
         if not wp_parent_code:
             raise osv.except_osv(
                 _('Errore'), 
-                _('Non presnete il codice da usare quindi non possibile!'),
+                _('Non presente il codice da usare quindi non possibile!'),
                 )
         
         child_ids = self.search(cr, uid, [
@@ -73,7 +73,8 @@ class ProductProductWebServer(orm.Model):
             ('id', '!=', parent_id),  # Not this
             ('connector_id', '=', connector_id),  # This connector:
             ], context=context)
-            
+        
+        _logger.info('Updating %s product...' % len(child_ids))
         return self.write(cr, uid, child_ids, {
             'wp_parent_id': parent_id,            
             }, context=context)
