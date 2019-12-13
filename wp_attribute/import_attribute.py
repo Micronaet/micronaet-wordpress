@@ -630,359 +630,358 @@ class ProductPublicCategory(orm.Model):
         context['log_excel'] = []
         context['override_sku'] = '' # SKU not present for product 
         
-        for odoo_lang in sorted(product_db, key=lambda l: sort_lang(l)):
-        
         #for parent in product_db:
-            master_record, lang_variants = product_db[parent]
+        for odoo_lang in sorted(product_db, key=lambda l: sort_lang(l)):
+            for master_record, lang_variants in product_db[odoo_lang]
 
-            # -----------------------------------------------------------------
-            # TEMPLATE PRODUCT: Upload product reference:
-            # -----------------------------------------------------------------
-            # 1. Call upload original procedure:
-            translation_lang.update(
-                web_product_pool.publish_now(
-                    cr, uid, [master_record.id], context=context))
-            
-            # -----------------------------------------------------------------
-            # Update brand terms for product:
-            # -----------------------------------------------------------------
-            #call = 'products/attributes/%s/terms/batch' % \
-            #    attribute_id['Tessuto']
-            #res = wcapi.post(call, data=data).json()
-
-            # =================================================================
-            # Excel log:
-            # -----------------------------------------------------------------
-            row += 1
-            excel_pool.write_xls_line(ws_name, row, [
-                'Pubblicazione prodotto base',
-                ], default_format=excel_format['title'])
-
-            for log in context['log_excel']:
-                row += 1
-                excel_pool.write_xls_line(ws_name, row, log, 
-                    default_format=excel_format['text'], col=1)
-                # =============================================================
-
-            product = master_record.product_id
-            default_code = product.default_code
-            if not master_record.wp_parent_template:
-                parent_unset.append(parent)
-                continue
-
-            web_variant = {}
-
-            for odoo_lang in ('it_IT', 'en_US'):
-                lang = odoo_lang[:2]
-                context_lang = context.copy()
-                context_lang['lang'] = odoo_lang
-
-                variants = lang_variants.get(lang, [])
-
-                # -------------------------------------------------------------
-                # Setup default attribute:
-                # -------------------------------------------------------------
-                wp_id, lang_name = translation_lang.get(
-                    default_code, {}).get(lang, (False, False))
-                parent_parent, parent_attribute = split_code(
-                    default_code, lang)
-                data = {
-                    'default_attributes': [{
-                        'id': attribute_id['Tessuto'],
-                        'option': parent_attribute,
-                        }, 
-                        # No brand default
-                        #{
-                        #'id': attribute_id['Brand'],
-                        #'option': brand_code,
-                        #},
-                        ],
-
-                    # Write to force code in attribute:
-                    'lang': lang,
-                    'name': lang_name,                    
-                    }
-
-                call = 'products/%s' % wp_id
-                reply = wcapi.put(call, data).json()
+                # -----------------------------------------------------------------
+                # TEMPLATE PRODUCT: Upload product reference:
+                # -----------------------------------------------------------------
+                # 1. Call upload original procedure:
+                translation_lang.update(
+                    web_product_pool.publish_now(
+                        cr, uid, [master_record.id], context=context))
                 
-                # =============================================================
+                # -----------------------------------------------------------------
+                # Update brand terms for product:
+                # -----------------------------------------------------------------
+                #call = 'products/attributes/%s/terms/batch' % \
+                #    attribute_id['Tessuto']
+                #res = wcapi.post(call, data=data).json()
+
+                # =================================================================
                 # Excel log:
-                # -------------------------------------------------------------
+                # -----------------------------------------------------------------
                 row += 1
                 excel_pool.write_xls_line(ws_name, row, [
-                    'Pubblicazione varianti lingua %s' % lang ,
+                    'Pubblicazione prodotto base',
                     ], default_format=excel_format['title'])
-                row += 1
-                excel_pool.write_xls_line(ws_name, row, [
-                    'Default nella scheda prodotto',
-                    'put',
-                    call,
-                    u'%s' % (data),
-                    u'%s' % (reply, ),
-                    ], default_format=excel_format['text'])
-                # =============================================================
-                
-                if not wp_id:
-                    _logger.error(
-                        'Cannot found wp_id, code %s' % default_code)
-                    # XXX Cannot update!
+
+                for log in context['log_excel']:
+                    row += 1
+                    excel_pool.write_xls_line(ws_name, row, log, 
+                        default_format=excel_format['text'], col=1)
+                    # =============================================================
+
+                product = master_record.product_id
+                default_code = product.default_code
+                if not master_record.wp_parent_template:
+                    parent_unset.append(parent)
                     continue
-                
-                # -------------------------------------------------------------
-                #                        VARIANTS: Creation
-                # -------------------------------------------------------------
-                # 2. Update attributes:
-                data = {
-                    # For force lang procedure:
-                    'lang': lang,
-                    'name': lang_name,
 
-                    'attributes': [{
-                        'id': attribute_id['Tessuto'], 
-                        'options': [],
-                        'variation': True,
-                        'visible': True,
-                        # XXX remove?:
-                        #'name': 'Tessuto',
-                        #'name': variant_attribute,
-                        }]}
+                web_variant = {}
 
-                # NOTE: Second element for brand!
-                #brand_lang = brand_company_id.get(lang)
-                #if brand_lang:
-                data['attributes'].append({
-                    'id': attribute_id['Brand'], 
-                    'options': [brand_code],
-                    'variation': False,
-                    'visible': True,
-                    })
+                for odoo_lang in ('it_IT', 'en_US'):
+                    lang = odoo_lang[:2]
+                    context_lang = context.copy()
+                    context_lang['lang'] = odoo_lang
 
-                # Upodate first element colors:
-                for line, variant_attribute in variants:
-                    variant = line.product_id
-                    data['attributes'][0]['options'].append(variant_attribute)
-                    
-                try:
+                    variants = lang_variants.get(lang, [])
+
+                    # -------------------------------------------------------------
+                    # Setup default attribute:
+                    # -------------------------------------------------------------
+                    wp_id, lang_name = translation_lang.get(
+                        default_code, {}).get(lang, (False, False))
+                    parent_parent, parent_attribute = split_code(
+                        default_code, lang)
+                    data = {
+                        'default_attributes': [{
+                            'id': attribute_id['Tessuto'],
+                            'option': parent_attribute,
+                            }, 
+                            # No brand default
+                            #{
+                            #'id': attribute_id['Brand'],
+                            #'option': brand_code,
+                            #},
+                            ],
+
+                        # Write to force code in attribute:
+                        'lang': lang,
+                        'name': lang_name,                    
+                        }
+
                     call = 'products/%s' % wp_id
-                    res = wcapi.post(call, data=data).json()
+                    reply = wcapi.put(call, data).json()
                     
-                    # =========================================================
+                    # =============================================================
                     # Excel log:
-                    # ---------------------------------------------------------
+                    # -------------------------------------------------------------
                     row += 1
                     excel_pool.write_xls_line(ws_name, row, [
-                        'Aggiornamento termini attributi',
-                        'post',
+                        'Pubblicazione varianti lingua %s' % lang ,
+                        ], default_format=excel_format['title'])
+                    row += 1
+                    excel_pool.write_xls_line(ws_name, row, [
+                        'Default nella scheda prodotto',
+                        'put',
                         call,
                         u'%s' % (data),
-                        u'%s' % (res, ),
+                        u'%s' % (reply, ),
                         ], default_format=excel_format['text'])
-                    # =========================================================
+                    # =============================================================
                     
-                except:
-                    raise osv.except_osv(
-                        _('Error'), 
-                        _('Wordpress server not answer, timeout!'),
-                        )
-                
-                # -------------------------------------------------------------
-                # Upload product variations:
-                # -------------------------------------------------------------
-                call = 'products/%s/variations' % wp_id
-                res = wcapi.get(call).json()
+                    if not wp_id:
+                        _logger.error(
+                            'Cannot found wp_id, code %s' % default_code)
+                        # XXX Cannot update!
+                        continue
                     
-                # =============================================================
-                # Excel log:
-                # -------------------------------------------------------------
-                row += 1
-                excel_pool.write_xls_line(ws_name, row, [
-                    'Lettura varianti attuali',
-                    'get',                    
-                    call,
-                    u'',
-                    u'%s' % (res, ),
-                    ], default_format=excel_format['text'])
-                # =============================================================
-
-                data = {
-                    'delete': [],
-                    }
-
-                for item in res:
-                    # No option
-                    if not item['attributes'] or not item['attributes'][0][
-                            'option']:
-                        data['delete'].append(item['id'])
-                    else:
-                        #current_variant[
-                        #    item['attributes'][0]['option']] = item['id']
-
-                        if lang == default_lang:
-                            web_variant[(item['sku'], lang)] = item['id']
-                        else:
-                            # Variant has no sku, compose from parent + option
-                            option = False
-                            for attribute in item['attributes']:
-                                if attribute['id'] == attribute_id['Tessuto']:
-                                    option = attribute['option']
-                            if not option:
-                                _logger.error(
-                                    'Cannot get sku for variant %s' % (item, ))
-                                continue
-                            option = option[:-3].replace('-', '') # remove lang
-                            web_variant[(
-                                '%-6s%s' % (parent, option), # XXX 
-                                lang,
-                                )] = item['id']
-
-                # Clean variant no color:
-                if data['delete']:
-                    wcapi.post(
-                        'products/%s/variations/batch' % wp_id, data).json()
-                    # TODO log
-
-                for line, fabric_code in variants:
-                    variant = line.product_id
-                    variant_code = variant.default_code
-                    variant_id = web_variant.get(
-                        (variant_code, lang), False)
-                    variant_it_id = web_variant.get(
-                        (variant_code, 'it'), False)                    
-
-                    # XXX Price for S (ingle)
-
-                    # Description:
-                    short_description = line.force_name or \
-                        variant.emotional_short_description or \
-                        variant.name or u''
-
-                    description = line.force_description or \
-                        variant.emotional_description or \
-                        variant.large_description or u''
-
-                    # Create or update variant:
+                    # -------------------------------------------------------------
+                    #                        VARIANTS: Creation
+                    # -------------------------------------------------------------
+                    # 2. Update attributes:
                     data = {
-                        'regular_price': u'%s' % (
-                            line.force_price or variant.lst_price),
-                        # sale_price (discounted)
-                        'short_description': short_description,
-                        'description': description,
-                        'lang': lang,    
-                        #'slug': self.get_lang_slug(variant_code, lang),
-                        # TODO
-                        # stock_quantity
-                        # stock_status
-                        # weight
-                        # dimensions
-                        'stock_quantity': 
-                            web_product_pool.get_existence_for_product(
-                                variant),
-                        'status': 'publish' if line.published else 'private',
-                        
+                        # For force lang procedure:
+                        'lang': lang,
+                        'name': lang_name,
+
                         'attributes': [{
                             'id': attribute_id['Tessuto'], 
-                            'option': fabric_code,
-                            }]
-                        }
-                        
-                    data['sku'] = variant_code
-                    #if default_lang == lang: # Add language default ref.
-                    #    data['sku'] = variant_code
-                    if default_lang == lang: # Add language default ref.
-                        pass
-                    else:
-                        if not variant_it_id:
-                            _logger.error(
-                                'Cannot update variant in lang, no it: %s' % (
-                                    variant_code
-                                    ))
-                            continue # XXX test if correct!
-                            
-                        data['translations'] = {
-                            'it': variant_it_id, # Created before
-                            }
-                        
-                    # ---------------------------------------------------------
-                    # Images block:
-                    # ---------------------------------------------------------
-                    image = [] 
-                    for image in line.wp_dropbox_images_ids:                  
-                        if image.dropbox_link:
-                            image = {
-                                'src': image.dropbox_link,
-                                }
-                            break # Only one image in variant!    
-                                
-                    if image:
-                        data['image'] = image
+                            'options': [],
+                            'variation': True,
+                            'visible': True,
+                            # XXX remove?:
+                            #'name': 'Tessuto',
+                            #'name': variant_attribute,
+                            }]}
 
-                    #variant_id = variant_ids.get(
-                    #    (variant_code, lang), False)
-                    if variant_id: # Update
-                        operation = 'UPD'
-                        call = 'products/%s/variations/%s' % (
-                            wp_id,
-                            variant_id,
-                            )
-                        res = wcapi.put(call, data).json()
-                        #del(current_variant[fabric_code]) #for clean operat.
+                    # NOTE: Second element for brand!
+                    #brand_lang = brand_company_id.get(lang)
+                    #if brand_lang:
+                    data['attributes'].append({
+                        'id': attribute_id['Brand'], 
+                        'options': [brand_code],
+                        'variation': False,
+                        'visible': True,
+                        })
+
+                    # Upodate first element colors:
+                    for line, variant_attribute in variants:
+                        variant = line.product_id
+                        data['attributes'][0]['options'].append(variant_attribute)
                         
-                        # =====================================================
+                    try:
+                        call = 'products/%s' % wp_id
+                        res = wcapi.post(call, data=data).json()
+                        
+                        # =========================================================
                         # Excel log:
-                        # -----------------------------------------------------
+                        # ---------------------------------------------------------
                         row += 1
                         excel_pool.write_xls_line(ws_name, row, [
-                            'Aggiorna variante',
-                            'put',
-                            call,
-                            u'%s' % (data, ),
-                            u'%s' % (res, ),
-                            ], default_format=excel_format['text'])
-                        # =====================================================
-
-                    else: # Create
-                        operation = 'NEW'
-                        call = 'products/%s/variations' % wp_id
-                        res = wcapi.post(call, data).json()
-
-                        # =====================================================
-                        # Excel log:
-                        # -----------------------------------------------------
-                        row += 1
-                        excel_pool.write_xls_line(ws_name, row, [
-                            'Crea variante',
+                            'Aggiornamento termini attributi',
                             'post',
                             call,
-                            u'%s' % (data, ),
+                            u'%s' % (data),
                             u'%s' % (res, ),
                             ], default_format=excel_format['text'])
-                        # =====================================================
+                        # =========================================================
+                        
+                    except:
+                        raise osv.except_osv(
+                            _('Error'), 
+                            _('Wordpress server not answer, timeout!'),
+                            )
+                    
+                    # -------------------------------------------------------------
+                    # Upload product variations:
+                    # -------------------------------------------------------------
+                    call = 'products/%s/variations' % wp_id
+                    res = wcapi.get(call).json()
+                        
+                    # =============================================================
+                    # Excel log:
+                    # -------------------------------------------------------------
+                    row += 1
+                    excel_pool.write_xls_line(ws_name, row, [
+                        'Lettura varianti attuali',
+                        'get',                    
+                        call,
+                        u'',
+                        u'%s' % (res, ),
+                        ], default_format=excel_format['text'])
+                    # =============================================================
 
-                        try:
-                            variant_id = res['id']
-                            # Save for other lang:
-                            web_variant[(variant_code, lang)] = variant_id
-                        except:
-                            variant_id = '?'    
+                    data = {
+                        'delete': [],
+                        }
 
-                    if res.get('data', {}).get('status', 0) >= 400:
-                        _logger.error('%s Variant: %s [%s] >> %s [%s] %s' % (
-                            operation,
-                            variant_code, 
-                            variant_id,
-                            fabric_code,
-                            res.get('message', 'Error without comment'),                        
-                            wp_id,
-                            ))
-                    else:
-                        _logger.info('%s Variant %s [%s] linked to %s' % (
-                            operation,
-                            variant_code, 
-                            variant_id or 'NEW',
-                            wp_id,
-                            ))
-                # TODO Delete also remain
+                    for item in res:
+                        # No option
+                        if not item['attributes'] or not item['attributes'][0][
+                                'option']:
+                            data['delete'].append(item['id'])
+                        else:
+                            #current_variant[
+                            #    item['attributes'][0]['option']] = item['id']
+
+                            if lang == default_lang:
+                                web_variant[(item['sku'], lang)] = item['id']
+                            else:
+                                # Variant has no sku, compose from parent + option
+                                option = False
+                                for attribute in item['attributes']:
+                                    if attribute['id'] == attribute_id['Tessuto']:
+                                        option = attribute['option']
+                                if not option:
+                                    _logger.error(
+                                        'Cannot get sku for variant %s' % (item, ))
+                                    continue
+                                option = option[:-3].replace('-', '') # remove lang
+                                web_variant[(
+                                    '%-6s%s' % (parent, option), # XXX 
+                                    lang,
+                                    )] = item['id']
+
+                    # Clean variant no color:
+                    if data['delete']:
+                        wcapi.post(
+                            'products/%s/variations/batch' % wp_id, data).json()
+                        # TODO log
+
+                    for line, fabric_code in variants:
+                        variant = line.product_id
+                        variant_code = variant.default_code
+                        variant_id = web_variant.get(
+                            (variant_code, lang), False)
+                        variant_it_id = web_variant.get(
+                            (variant_code, 'it'), False)                    
+
+                        # XXX Price for S (ingle)
+
+                        # Description:
+                        short_description = line.force_name or \
+                            variant.emotional_short_description or \
+                            variant.name or u''
+
+                        description = line.force_description or \
+                            variant.emotional_description or \
+                            variant.large_description or u''
+
+                        # Create or update variant:
+                        data = {
+                            'regular_price': u'%s' % (
+                                line.force_price or variant.lst_price),
+                            # sale_price (discounted)
+                            'short_description': short_description,
+                            'description': description,
+                            'lang': lang,    
+                            #'slug': self.get_lang_slug(variant_code, lang),
+                            # TODO
+                            # stock_quantity
+                            # stock_status
+                            # weight
+                            # dimensions
+                            'stock_quantity': 
+                                web_product_pool.get_existence_for_product(
+                                    variant),
+                            'status': 'publish' if line.published else 'private',
+                            
+                            'attributes': [{
+                                'id': attribute_id['Tessuto'], 
+                                'option': fabric_code,
+                                }]
+                            }
+                            
+                        data['sku'] = variant_code
+                        #if default_lang == lang: # Add language default ref.
+                        #    data['sku'] = variant_code
+                        if default_lang == lang: # Add language default ref.
+                            pass
+                        else:
+                            if not variant_it_id:
+                                _logger.error(
+                                    'Cannot update variant in lang, no it: %s' % (
+                                        variant_code
+                                        ))
+                                continue # XXX test if correct!
+                                
+                            data['translations'] = {
+                                'it': variant_it_id, # Created before
+                                }
+                            
+                        # ---------------------------------------------------------
+                        # Images block:
+                        # ---------------------------------------------------------
+                        image = [] 
+                        for image in line.wp_dropbox_images_ids:                  
+                            if image.dropbox_link:
+                                image = {
+                                    'src': image.dropbox_link,
+                                    }
+                                break # Only one image in variant!    
+                                    
+                        if image:
+                            data['image'] = image
+
+                        #variant_id = variant_ids.get(
+                        #    (variant_code, lang), False)
+                        if variant_id: # Update
+                            operation = 'UPD'
+                            call = 'products/%s/variations/%s' % (
+                                wp_id,
+                                variant_id,
+                                )
+                            res = wcapi.put(call, data).json()
+                            #del(current_variant[fabric_code]) #for clean operat.
+                            
+                            # =====================================================
+                            # Excel log:
+                            # -----------------------------------------------------
+                            row += 1
+                            excel_pool.write_xls_line(ws_name, row, [
+                                'Aggiorna variante',
+                                'put',
+                                call,
+                                u'%s' % (data, ),
+                                u'%s' % (res, ),
+                                ], default_format=excel_format['text'])
+                            # =====================================================
+
+                        else: # Create
+                            operation = 'NEW'
+                            call = 'products/%s/variations' % wp_id
+                            res = wcapi.post(call, data).json()
+
+                            # =====================================================
+                            # Excel log:
+                            # -----------------------------------------------------
+                            row += 1
+                            excel_pool.write_xls_line(ws_name, row, [
+                                'Crea variante',
+                                'post',
+                                call,
+                                u'%s' % (data, ),
+                                u'%s' % (res, ),
+                                ], default_format=excel_format['text'])
+                            # =====================================================
+
+                            try:
+                                variant_id = res['id']
+                                # Save for other lang:
+                                web_variant[(variant_code, lang)] = variant_id
+                            except:
+                                variant_id = '?'    
+
+                        if res.get('data', {}).get('status', 0) >= 400:
+                            _logger.error('%s Variant: %s [%s] >> %s [%s] %s' % (
+                                operation,
+                                variant_code, 
+                                variant_id,
+                                fabric_code,
+                                res.get('message', 'Error without comment'),                        
+                                wp_id,
+                                ))
+                        else:
+                            _logger.info('%s Variant %s [%s] linked to %s' % (
+                                operation,
+                                variant_code, 
+                                variant_id or 'NEW',
+                                wp_id,
+                                ))
+                    # TODO Delete also remain
                 
         if parent_unset:
             _logger.error('Set parent for code start with: %s' % (
