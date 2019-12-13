@@ -344,21 +344,10 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         product_ids = web_product_pool.search(cr, uid, [
             ('connector_id', '=', ids[0]),
-            
-            # -----------------------------------------------------------------
-            # XXX REMOVE:
-            #('product_id.default_code', '=ilike', '005TX   O%'),
-            ('product_id.default_code', '=ilike', '127TX%'),
-            ('product_id.default_code', 'not ilike', '____________S'),
-            # -----------------------------------------------------------------
+            ('wp_parent_template', '=', True),
             ], context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
-        # TODO update product as variant: (XXX all product or only template?)
-        web_product_pool.write(cr, uid, product_ids, {
-            'wp_type': 'variable',
-            }, context=context)
-        
         product_db = {}
         attribute_db = []
 
@@ -445,6 +434,8 @@ class ProductPublicCategory(orm.Model):
             }
         _logger.warning('Searching attribute %s...' % (attribute_id.keys() ))
         for record in current_wp_attribute:
+            name = record['name']
+            lang = record['lang']
             if record['name'] in attribute_id:
                 attribute_id[record['name']] = record['id']
         
