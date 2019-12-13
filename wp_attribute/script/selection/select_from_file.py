@@ -35,6 +35,7 @@ connector_id = 5 # REAL connector.server for wordpress # XXX change!
 column = {
     'code': 0,
     'selection': 1,
+    'mrp': 2,
     'short': 3,
     'long': 4, 
     'color': 5,
@@ -103,6 +104,7 @@ if web_ids:
 # -----------------------------------------------------------------------------
 i = 0
 wp_parent_last = False
+import pdb; pdb.set_trace()
 for row in range(row_start, WS.nrows):
     i += 1
 
@@ -111,9 +113,10 @@ for row in range(row_start, WS.nrows):
     # -------------------------------------------------------------------------
     default_code = WS.cell(row, column['code']).value
     selection = (WS.cell(row, column['selection']).value or '').upper()
+    mrp = (WS.cell(row, column['mrp']).value or '').upper()
     short_text = WS.cell(row, column['short']).value
     long_text = WS.cell(row, column['long']).value
-    color = WS.cell(row, column['color']).value
+    color = WS.cell(row, column['color']).value or 'NON SELEZIONABILE'
 
     if not default_code or selection not in ('X', 'O'):
         print '%s. Selezione non corretta: %s [%s]' % (
@@ -124,16 +127,21 @@ for row in range(row_start, WS.nrows):
     # Color:
     # -------------------------------------------------------------------------
     wp_color_id = False
-    import pdb; pdb.set_trace()
-    if color:
-        wp_color_ids = color_pool.search([
-            ('name', '=', color),
-            ])
-        if not wp_color_ids:
-            print '%s. Creazione colore' % color
-            wp_color_id = color_pool.create({
-                'name': color,
-                }).id
+    if mrp:
+        color = '%s-%s' % (
+            default_code[6:8].strip().upper() or 'NE',  # XXX Neutro
+            default_code[8:].strip().upper(),
+            )
+
+    wp_color_ids = color_pool.search([
+        ('name', '=', color),
+        ])
+    if not wp_color_ids:
+        print '   Creazione colore: %s' % color
+        wp_color_id = color_pool.create({
+            'connector_id': connector_id,
+            'name': color,
+            }).id
 
     product_ids = product_pool.search([
         ('default_code', '=', default_code),
@@ -163,12 +171,19 @@ for row in range(row_start, WS.nrows):
         'wp_type': 'variable',
         }
     
-    if selection == 'X': 
-        # Create as parent    
-        data['wp_parent_template'] = True
-        #'wp_parent_code' 
-    else:
-        data['wp_parent_id'] = wp_parent_last
+    if selection == 'X':  # Parent
+        data.update({
+            'wp_parent_template': True,
+            'wp_parent_id': False,
+            'wp_parent_code': default_code[:6],
+            })
+        # XXX wp_it_id problem!
+    else:  # Variation:
+        data.update({
+            'wp_parent_template': False,
+            'wp_parent_id': wp_parent_last,
+            'wp_parent_code': False,
+            })
 
     web_ids = web_pool.search([
         ('connector_id', '=', connector_id),
