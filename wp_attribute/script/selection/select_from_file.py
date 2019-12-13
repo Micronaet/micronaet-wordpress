@@ -102,7 +102,6 @@ if web_ids:
 # Create from files:
 # -----------------------------------------------------------------------------
 i = 0
-import pdb; pdb.set_trace()
 wp_parent_last = False
 for row in range(row_start, WS.nrows):
     i += 1
@@ -125,7 +124,8 @@ for row in range(row_start, WS.nrows):
     # Color:
     # -------------------------------------------------------------------------
     wp_color_id = False
-    if not color:
+    import pdb; pdb.set_trace()
+    if color:
         wp_color_ids = color_pool.search([
             ('name', '=', color),
             ])
