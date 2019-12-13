@@ -487,9 +487,9 @@ class ProductPublicCategory(orm.Model):
             else:
                 theres_data = False
 
-        web_attribute = {}
+        lang_color_terms = {}
         for record in current_wp_terms:
-            web_attribute[record['name']] = record['id']
+            lang_color_terms[record['name']] = record['id']
 
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Brand Attribute)
@@ -533,7 +533,7 @@ class ProductPublicCategory(orm.Model):
                     }
                     
                 if lang != default_lang: # Different language:
-                    wp_it_id = web_attribute.get(
+                    wp_it_id = lang_color_terms.get(
                         attribute[:-2] + default_lang.upper())
                     if wp_it_id:
                         item.update({
@@ -546,7 +546,7 @@ class ProductPublicCategory(orm.Model):
                             ))
                         # TODO manage?
                         
-                if attribute in web_attribute:
+                if attribute in lang_color_terms:
                     pass # data['update'].append(item) # no data to update
                 else:
                     data['create'].append(item)
@@ -555,9 +555,9 @@ class ProductPublicCategory(orm.Model):
             # Delete:
             # -----------------------------------------------------------------
             # XXX Not for now:
-            #for name in web_attribute:
+            #for name in lang_color_terms:
             #    if name not in color_db:
-            #        data['delete'].append(web_attribute[name])
+            #        data['delete'].append(lang_color_terms[name])
 
             # -----------------------------------------------------------------
             # Batch operation (fabric terms for attribute manage):
@@ -600,7 +600,7 @@ class ProductPublicCategory(orm.Model):
                             continue
 
                         # Update for next language:
-                        web_attribute[record['name']] = wp_id 
+                        lang_color_terms[record['name']] = wp_id 
             except:
                 raise osv.except_osv(
                     _('Error'), 
