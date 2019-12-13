@@ -538,6 +538,7 @@ class ProductPublicCategory(orm.Model):
                     }
                     
                 if lang != default_lang: # Different language:
+                    # TODO correct 
                     wp_it_id = lang_color_terms.get(
                         attribute[:-2] + default_lang.upper())
                     if wp_it_id:
@@ -551,6 +552,7 @@ class ProductPublicCategory(orm.Model):
                             ))
                         # TODO manage?
                         
+                # TODO correct
                 if attribute in lang_color_terms:
                     pass # data['update'].append(item) # no data to update
                 else:
@@ -559,7 +561,8 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             # Delete:
             # -----------------------------------------------------------------
-            # XXX Not for now:
+            # XXX Not for now: 
+            # TODO correct
             #for name in lang_color_terms:
             #    if name not in color_db:
             #        data['delete'].append(lang_color_terms[name])
@@ -605,6 +608,7 @@ class ProductPublicCategory(orm.Model):
                             continue
 
                         # Update for next language:
+                        # TODO correct
                         lang_color_terms[record['name']] = wp_id 
             except:
                 raise osv.except_osv(
