@@ -980,18 +980,8 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Attribute update ODOO VS WP:
         # ---------------------------------------------------------------------
-        for attribute in lang_color_db:
-            if not attribute.endswith('-IT'):
-                continue
-            
-            name = attribute[:-3] # TODO remove
-            dot_ids = dot_pool.search(cr, uid, [(
-                'name', '=', name)], context=context)    
-            if not dot_ids:
-                dot_pool.create(cr, uid, {
-                    'connector_id': connector_id,
-                    'name': name,                    
-                    }, context=context)
+        # TODO 
+        # Update dot color images and records! (here?)
             
         # Rerturn log calls:        
         return excel_pool.return_attachment(
