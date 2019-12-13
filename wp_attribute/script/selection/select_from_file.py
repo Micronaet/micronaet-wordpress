@@ -32,6 +32,14 @@ import pdb; pdb.set_trace()
 connector_id = 5 # REAL connector.server for wordpress # XXX change!
 #connector_id = 9 # LOCAL connector.server for wordpress # XXX change!
 
+column = {
+    'code': 0,
+    'selection': 1,
+    'short': 3,
+    'long': 4, 
+    'color': 5,
+    }
+    
 file_in = './product.xlsx'
 row_start = 1
 
@@ -60,10 +68,14 @@ odoo = erppeek.Client(
     user=user,
     password=pwd,
     )
-    
+
+# Setup as Italian lang:
+odoo.context = {'lang': 'it_IT'}
+
 # Pool used:
 product_pool = odoo.model('product.product')
 web_pool = odoo.model('product.product.web.server')
+color_pool = odoo.model('connector.product.color.dot')
 
 # Excel input:
 try:
@@ -84,24 +96,45 @@ if web_ids:
     web_pool.write(web_ids, {
         'published': False,
         })
-        
+
+
 # -----------------------------------------------------------------------------
 # Create from files:
 # -----------------------------------------------------------------------------
 i = 0
+import pdb; pdb.set_trace()
+wp_parent_last = False
 for row in range(row_start, WS.nrows):
     i += 1
+
+    # -------------------------------------------------------------------------
     # Mapping:
-    default_code = WS.cell(row, 0).value
-    selection = (WS.cell(row, 1).value or '').upper()
-    short_text = WS.cell(row, 3).value
-    long_text = WS.cell(row, 4).value
+    # -------------------------------------------------------------------------
+    default_code = WS.cell(row, column['code']).value
+    selection = (WS.cell(row, column['selection']).value or '').upper()
+    short_text = WS.cell(row, column['short']).value
+    long_text = WS.cell(row, column['long']).value
+    color = WS.cell(row, column['color']).value
 
     if not default_code or selection not in ('X', 'O'):
         print '%s. Selezione non corretta: %s [%s]' % (
             i, default_code, selection)
         continue
         
+    # -------------------------------------------------------------------------
+    # Color:
+    # -------------------------------------------------------------------------
+    wp_color_id = False
+    if not color:
+        wp_color_ids = color_pool.search([
+            ('name', '=', color),
+            ])
+        if not wp_color_ids:
+            print '%s. Creazione colore' % color
+            wp_color_id = color_pool.create({
+                'name': color,
+                }).id
+
     product_ids = product_pool.search([
         ('default_code', '=', default_code),
         ])
@@ -124,14 +157,18 @@ for row in range(row_start, WS.nrows):
     # -------------------------------------------------------------------------
     data = {
         'connector_id': connector_id,
+        'wp_color_id': wp_color_id,
         'published': True,
         'product_id': product_id,             
         'wp_type': 'variable',
         }
     
     if selection == 'X': 
-        # Create as parant    
+        # Create as parent    
         data['wp_parent_template'] = True
+        #'wp_parent_code' 
+    else:
+        data['wp_parent_id'] = wp_parent_last
 
     web_ids = web_pool.search([
         ('connector_id', '=', connector_id),
@@ -141,8 +178,13 @@ for row in range(row_start, WS.nrows):
     if web_ids:
         print '%s. Aggiornamento: %s' % (i, default_code)
         web_pool.write(web_ids, data)
+        web_id = web_ids[0]
     else:    
         print '%s. Creazione: %s' % (i, default_code)
-        web_pool.create(data)
+        wb_id = web_pool.create(data).id
+
+    if selection == 'X': 
+        # Save for child:
+        wp_parent_last = web_id
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

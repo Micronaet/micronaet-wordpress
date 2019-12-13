@@ -171,6 +171,8 @@ class ProductProductWebServerIntegration(orm.Model):
             help='Codice usato per calcolare appartenenza automatica'),
         'wp_parent_id': fields.many2one(
             'product.product.web.server', 'Prodotto padre'),    
+        'wp_color_id': fields.many2one(
+            'connector.product.color.dot', 'Colore'),
         }
 
     _sql_constraints = [
