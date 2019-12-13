@@ -362,6 +362,7 @@ class ProductPublicCategory(orm.Model):
 
         product_db = {} # Master database for lang - parent - child
         lang_color_db = {} # Master list for color in default lang
+        product_default_color = {} # First variant showed
 
         parent_total = 0
         for odoo_lang in langs:
@@ -377,18 +378,24 @@ class ProductPublicCategory(orm.Model):
                     cr, uid, product_ids, context=context_lang): 
                 parent_total += 1
                     
-                # TODO parent first element could change (default setup)!    
-                product_db[odoo_lang][parent] = [parent, []] 
+                # TODO parent first element could change (default setup)!   
+                default_selected = parent 
+                product_db[odoo_lang][parent] = [default_selected, []] 
                 
                 for record in parent.variant_ids:
                     # Note: first variat is parent:                    
                     product = record.product_id
                     default_code = product.default_code or ''
-                    color = product.color_id.name
-                
+                    color = record.color_id.name
+                    
+                    # Save color for attribute update
                     if color not in lang_color_db[lang]:
                         lang_color_db[lang].append(color)
                         
+                # Save default color for lang product
+                product_default_color[
+                    (default_selected, lang)] = default_selected.color_id.name
+                
                 # Save variant with color element: 
                 product_db[odoo_lang][parent][1].append((record, color))
 
@@ -632,6 +639,8 @@ class ProductPublicCategory(orm.Model):
         
         #for parent in product_db:
         for odoo_lang in sorted(product_db, key=lambda l: sort_lang(l)):
+            context_lang = context.copy()
+            context_lang['lang'] = odoo_lang
             lang = odoo_lang[:2]
             for master_record, lang_variants in product_db[odoo_lang]:
                 # -------------------------------------------------------------
@@ -657,43 +666,28 @@ class ProductPublicCategory(orm.Model):
                         default_format=excel_format['text'], col=1)
                 # =============================================================
 
-                product = master_record.product_id
-                default_code = product.default_code
-
+                master_product = master_record.product_id
+                master_code = master_product.default_code
                 wp_variant_lang_ref = {}
-
-
-
-
-
-
-                context_lang = context.copy()
-                context_lang['lang'] = odoo_lang
-
                 variants = lang_variants.get(lang, [])
+                lang_product_default_color = product_default_color[
+                    (master_record, lang)]
 
                 # -------------------------------------------------------------
                 # Setup default attribute:
                 # -------------------------------------------------------------
-                wp_id, lang_name = translation_lang.get(
-                    default_code, {}).get(lang, (False, False))
-                parent_parent, parent_attribute = split_code(
-                    default_code, lang)
+                wp_id, lang_master_name = translation_lang.get(
+                    master_code, {}).get(lang, (False, False))
                 data = {
+                    # Only color (not brand as default)
                     'default_attributes': [{
                         'id': attribute_id['Tessuto'],
-                        'option': parent_attribute,
-                        }, 
-                        # No brand default
-                        #{
-                        #'id': attribute_id['Brand'],
-                        #'option': brand_code,
-                        #},
-                        ],
+                        'option': lang_product_default_color,
+                        }],
 
                     # Write to force code in attribute:
                     'lang': lang,
-                    'name': lang_name,                    
+                    'name': lang_master_name,                    
                     }
 
                 call = 'products/%s' % wp_id
