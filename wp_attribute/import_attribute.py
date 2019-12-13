@@ -370,7 +370,7 @@ class ProductPublicCategory(orm.Model):
             context_lang['lang'] = odoo_lang
             
             # Start with lang level:
-            product_db[lang] = []
+            product_db[odoo_lang] = []
             lang_color_db[lang] = []
             
             for parent in web_product_pool.browse(  # Parent product:
@@ -378,7 +378,7 @@ class ProductPublicCategory(orm.Model):
                 parent_total += 1
                     
                 # TODO parent first element could change (default setup)!    
-                product_db[lang][parent] = [parent, []] 
+                product_db[odoo_lang][parent] = [parent, []] 
                 
                 for record in parent.variant_ids:
                     # Note: first variat is parent:                    
@@ -390,7 +390,7 @@ class ProductPublicCategory(orm.Model):
                         lang_color_db[lang].append(color)
                         
                 # Save variant with color element: 
-                product_db[lang][parent][1].append((record, color))
+                product_db[odoo_lang][parent][1].append((record, color))
 
         _logger.warning('Parent found: %s' % parent_total)
 
@@ -613,9 +613,8 @@ class ProductPublicCategory(orm.Model):
                             _logger.error('Not Updated wp_id for %s' % wp_id)
                             continue
 
-                        # Update for next language:
-                        # TODO correct
-                        lang_color_terms[record['name']] = wp_id 
+                        # Update for language not IT (default):
+                        lang_color_terms[lang][record['name']] = wp_id 
             except:
                 raise osv.except_osv(
                     _('Error'), 
@@ -630,8 +629,11 @@ class ProductPublicCategory(orm.Model):
 
         context['log_excel'] = []
         context['override_sku'] = '' # SKU not present for product 
-        for parent in product_db:
-            web_product, lang_variants = product_db[parent]
+        
+        for odoo_lang in sorted(product_db, key=lambda l: sort_lang(l)):
+        
+        #for parent in product_db:
+            master_record, lang_variants = product_db[parent]
 
             # -----------------------------------------------------------------
             # TEMPLATE PRODUCT: Upload product reference:
@@ -639,7 +641,7 @@ class ProductPublicCategory(orm.Model):
             # 1. Call upload original procedure:
             translation_lang.update(
                 web_product_pool.publish_now(
-                    cr, uid, [web_product.id], context=context))
+                    cr, uid, [master_record.id], context=context))
             
             # -----------------------------------------------------------------
             # Update brand terms for product:
@@ -662,9 +664,9 @@ class ProductPublicCategory(orm.Model):
                     default_format=excel_format['text'], col=1)
                 # =============================================================
 
-            product = web_product.product_id
+            product = master_record.product_id
             default_code = product.default_code
-            if not web_product.wp_parent_template:
+            if not master_record.wp_parent_template:
                 parent_unset.append(parent)
                 continue
 
