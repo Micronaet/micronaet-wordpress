@@ -800,11 +800,14 @@ class ProductPublicCategory(orm.Model):
                             'option']:
                         data['delete'].append(item['id'])
                     else:
-                        #current_variant[
-                        #    item['attributes'][0]['option']] = item['id']
-
+                        # TODO TEST BETTER:
+                        wp_variant_lang_ref[
+                            (item['sku'], item['lang'])] = item['id']
+                    
+                        """
                         if lang == default_lang:
-                            wp_variant_lang_ref[(item['sku'], lang)] = item['id']
+                            wp_variant_lang_ref[
+                                (item['sku'], lang)] = item['id']
                         else:
                             # Variant has no sku, compose from parent + option
                             option = False
@@ -815,11 +818,13 @@ class ProductPublicCategory(orm.Model):
                                 _logger.error(
                                     'Cannot get sku for variant %s' % (item, ))
                                 continue
+                                
                             option = option[:-3].replace('-', '') # remove lang
                             wp_variant_lang_ref[(
                                 '%-6s%s' % (parent, option), # XXX 
                                 lang,
                                 )] = item['id']
+                        """
 
                 # Clean variant no color:
                 if data['delete']:
