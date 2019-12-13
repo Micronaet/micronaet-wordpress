@@ -717,7 +717,7 @@ class ProductPublicCategory(orm.Model):
                     continue
                 
                 # -------------------------------------------------------------
-                #                        VARIANTS: Creation
+                #          VARIANTS: Setup color terms for product
                 # -------------------------------------------------------------
                 # 2. Update attributes:
                 # First block for setup color:
@@ -791,6 +791,9 @@ class ProductPublicCategory(orm.Model):
                     'delete': [],
                     }
 
+                # -------------------------------------------------------------
+                #                       VARIANTS: Creation
+                # -------------------------------------------------------------
                 for item in res:
                     # No option
                     if not item['attributes'] or not item['attributes'][0][
