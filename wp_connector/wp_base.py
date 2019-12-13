@@ -155,9 +155,11 @@ class ProductProduct(orm.Model):
                 self.write(cr, uid, [product.id], {
                     'model_package_id': package_ids[0],
                     }, context=context)
-                _logger.warning('Code 3 "%s" found!' % search_code)
+                _logger.warning(
+                    'Auto assign package: Code 3 "%s" found!' % search_code)
             else:    
-                _logger.error('Code not found %s !' % default_code)
+                _logger.error(
+                    'Auto assign package: Code not found %s !' % default_code)
         return True
 
     _columns = {

@@ -104,7 +104,6 @@ if web_ids:
 # -----------------------------------------------------------------------------
 i = 0
 wp_parent_last = False
-import pdb; pdb.set_trace()
 for row in range(row_start, WS.nrows):
     i += 1
 
@@ -126,7 +125,6 @@ for row in range(row_start, WS.nrows):
     # -------------------------------------------------------------------------
     # Color:
     # -------------------------------------------------------------------------
-    wp_color_id = False
     if mrp:
         color = '%s-%s' % (
             default_code[6:8].strip().upper() or 'NE',  # XXX Neutro
@@ -136,7 +134,10 @@ for row in range(row_start, WS.nrows):
     wp_color_ids = color_pool.search([
         ('name', '=', color),
         ])
-    if not wp_color_ids:
+
+    if wp_color_ids:
+        wp_color_id = wp_color_ids[0]
+    else:
         print '   Creazione colore: %s' % color
         wp_color_id = color_pool.create({
             'connector_id': connector_id,
@@ -175,6 +176,9 @@ for row in range(row_start, WS.nrows):
         data.update({
             'wp_parent_template': True,
             'wp_parent_id': False,
+            })
+        if mrp:
+            data.update({
             'wp_parent_code': default_code[:6],
             })
         # XXX wp_it_id problem!
