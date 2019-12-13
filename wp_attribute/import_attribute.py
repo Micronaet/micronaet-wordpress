@@ -281,7 +281,7 @@ class ProductPublicCategory(orm.Model):
             Used also for more than one elements (not only button click)
             Note all product must be published on the same web server!            
             '''
-        def split_code(default_code, lang='it'):
+        """def split_code(default_code, lang='it'):
             ''' Split 2 part of code
             '''   
             default_code = (default_code or '')[:12] # No exta part
@@ -292,8 +292,15 @@ class ProductPublicCategory(orm.Model):
                     default_code[8:].strip().upper(),
                     lang.upper(),
                     ),
-                )
-        
+                )"""
+        def lang_sort(lang):
+            ''' Setup lang order
+            '''        
+            if 'it' in lang:
+                return 1
+            elif 'en' in lang:
+                return 2
+          
         # =====================================================================
         # Log operation on Excel file:
         # ---------------------------------------------------------------------
@@ -320,6 +327,11 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Handle connector:
         # ---------------------------------------------------------------------
+        # Sort order and list of languages:
+        langs = [
+            'it_IT', 
+            'en_US',
+            ]
         default_lang = 'it'
 
         if context is None:    
@@ -349,16 +361,17 @@ class ProductPublicCategory(orm.Model):
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
         product_db = {} # Master database for lang - parent - child
-        color_db = [] # Master list for color in default lang
+        lang_color_db = {} # Master list for color in default lang
 
         parent_total = 0
-        for odoo_lang in ('it_IT', 'en_US'):
+        for odoo_lang in langs:
             lang = odoo_lang[:2]
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
             
             # Start with lang level:
             product_db[lang] = []
+            lang_color_db[lang] = []
             
             for parent in web_product_pool.browse(  # Parent product:
                     cr, uid, product_ids, context=context_lang): 
@@ -373,9 +386,8 @@ class ProductPublicCategory(orm.Model):
                     default_code = product.default_code or ''
                     color = product.color_id.name
                 
-                    # Save color always in italian:
-                    if color not in color_db:
-                        color_db.append(color)
+                    if color not in lang_color_db[lang]:
+                        lang_color_db[lang].append(color)
                         
                 # Save variant with color element: 
                 product_db[lang][parent][1].append((record, color))
@@ -499,8 +511,8 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Brand Attribute)
         # ---------------------------------------------------------------------        
-        brand_attribute = {} # not needed for now
-        brand_company_id = {}
+        lang_brand_terms = {} # not needed for now
+        brand_company_id = {} # Brand: Company reference (for MRP product)
         
         call = 'products/attributes/%s/terms' % attribute_id['Brand']
         for record in wcapi.get(call).json():
@@ -508,10 +520,10 @@ class ProductPublicCategory(orm.Model):
             name = record['name']
             record_id = record['id']
 
-            if lang not in brand_attribute:
-                brand_attribute[lang] = {}
+            if lang not in lang_brand_terms:
+                lang_brand_terms[lang] = {}
                 
-            brand_attribute[lang][name] = record_id
+            lang_brand_terms[lang][name] = record_id
             if brand_code == name and lang == default_lang:
                 brand_company_id = {
                     lang: record_id,
@@ -520,27 +532,23 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Update / Create: (XXX only fabric?)
         # ---------------------------------------------------------------------
-        for lang in ('it', 'en'):
+        # Start from IT (default) lang:
+        for lang in sorted(lang_color_db, key=lambda l: lang_sort(l)):
             # Clean every loop:
             data = {
                 'create': [],
                 'update': [],
                 'delete': [],
                 }
-            for attribute in color_db: 
-                if attribute[-2:] != lang.upper():
-                    continue # only terms for this lang
+            for attribute in lang_color_db[lang]:
                 item = {
                     'name': attribute,
                     'lang': lang,
-                    #'slug': self.get_lang_slug(attribute, lang)
-                    # 'color': # XXX RGP color
                     }
                     
                 if lang != default_lang: # Different language:
                     # TODO correct 
-                    wp_it_id = lang_color_terms.get(
-                        attribute[:-2] + default_lang.upper())
+                    wp_it_id = lang_color_terms[default_lang].get(attribute)
                     if wp_it_id:
                         item.update({
                             'translations': {'it': wp_it_id}
@@ -552,10 +560,8 @@ class ProductPublicCategory(orm.Model):
                             ))
                         # TODO manage?
                         
-                # TODO correct
-                if attribute in lang_color_terms:
-                    pass # data['update'].append(item) # no data to update
-                else:
+                # Only create:
+                if attribute not in lang_color_terms[lang]:
                     data['create'].append(item)
 
             # -----------------------------------------------------------------
@@ -564,7 +570,7 @@ class ProductPublicCategory(orm.Model):
             # XXX Not for now: 
             # TODO correct
             #for name in lang_color_terms:
-            #    if name not in color_db:
+            #    if name not in lang_color_db:
             #        data['delete'].append(lang_color_terms[name])
 
             # -----------------------------------------------------------------
@@ -983,7 +989,7 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Attribute update ODOO VS WP:
         # ---------------------------------------------------------------------
-        for attribute in color_db:
+        for attribute in lang_color_db:
             if not attribute.endswith('-IT'):
                 continue
             
