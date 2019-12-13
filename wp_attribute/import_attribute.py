@@ -643,9 +643,9 @@ class ProductPublicCategory(orm.Model):
                         cr, uid, [master_record.id], context=context))
                 # REMOVE: Update brand terms for product:
 
-                # =================================================================
+                # =============================================================
                 # Excel log:
-                # -----------------------------------------------------------------
+                # -------------------------------------------------------------
                 row += 1
                 excel_pool.write_xls_line(ws_name, row, [
                     'Pubblicazione prodotto base',
@@ -655,15 +655,12 @@ class ProductPublicCategory(orm.Model):
                     row += 1
                     excel_pool.write_xls_line(ws_name, row, log, 
                         default_format=excel_format['text'], col=1)
-                    # =============================================================
+                # =============================================================
 
                 product = master_record.product_id
                 default_code = product.default_code
-                if not master_record.wp_parent_template:
-                    parent_unset.append(parent)
-                    continue
 
-                web_variant = {}
+                wp_variant_lang_ref = {}
 
                 for odoo_lang in ('it_IT', 'en_US'):
                     lang = odoo_lang[:2]
@@ -812,7 +809,7 @@ class ProductPublicCategory(orm.Model):
                             #    item['attributes'][0]['option']] = item['id']
 
                             if lang == default_lang:
-                                web_variant[(item['sku'], lang)] = item['id']
+                                wp_variant_lang_ref[(item['sku'], lang)] = item['id']
                             else:
                                 # Variant has no sku, compose from parent + option
                                 option = False
@@ -824,7 +821,7 @@ class ProductPublicCategory(orm.Model):
                                         'Cannot get sku for variant %s' % (item, ))
                                     continue
                                 option = option[:-3].replace('-', '') # remove lang
-                                web_variant[(
+                                wp_variant_lang_ref[(
                                     '%-6s%s' % (parent, option), # XXX 
                                     lang,
                                     )] = item['id']
@@ -838,9 +835,9 @@ class ProductPublicCategory(orm.Model):
                     for line, fabric_code in variants:
                         variant = line.product_id
                         variant_code = variant.default_code
-                        variant_id = web_variant.get(
+                        variant_id = wp_variant_lang_ref.get(
                             (variant_code, lang), False)
-                        variant_it_id = web_variant.get(
+                        variant_it_id = wp_variant_lang_ref.get(
                             (variant_code, 'it'), False)                    
 
                         # XXX Price for S (ingle)
@@ -955,7 +952,7 @@ class ProductPublicCategory(orm.Model):
                             try:
                                 variant_id = res['id']
                                 # Save for other lang:
-                                web_variant[(variant_code, lang)] = variant_id
+                                wp_variant_lang_ref[(variant_code, lang)] = variant_id
                             except:
                                 variant_id = '?'    
 
