@@ -632,22 +632,16 @@ class ProductPublicCategory(orm.Model):
         
         #for parent in product_db:
         for odoo_lang in sorted(product_db, key=lambda l: sort_lang(l)):
-            for master_record, lang_variants in product_db[odoo_lang]
-
-                # -----------------------------------------------------------------
+            lang = odoo_lang[:2]
+            for master_record, lang_variants in product_db[odoo_lang]:
+                # -------------------------------------------------------------
                 # TEMPLATE PRODUCT: Upload product reference:
-                # -----------------------------------------------------------------
+                # -------------------------------------------------------------
                 # 1. Call upload original procedure:
                 translation_lang.update(
                     web_product_pool.publish_now(
                         cr, uid, [master_record.id], context=context))
-                
-                # -----------------------------------------------------------------
-                # Update brand terms for product:
-                # -----------------------------------------------------------------
-                #call = 'products/attributes/%s/terms/batch' % \
-                #    attribute_id['Tessuto']
-                #res = wcapi.post(call, data=data).json()
+                # REMOVE: Update brand terms for product:
 
                 # =================================================================
                 # Excel log:
