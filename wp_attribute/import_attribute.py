@@ -349,7 +349,7 @@ class ProductPublicCategory(orm.Model):
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
         product_db = {}
-        attribute_db = []
+        color_db = []
 
         for odoo_lang in ('it_IT', 'en_US'):
             lang = odoo_lang[:2]
@@ -361,25 +361,25 @@ class ProductPublicCategory(orm.Model):
             for record in records: # Parent product:
                 product = record.product_id
                 default_code = product.default_code or ''
-
-                product_parent, product_attribute = split_code(
-                    default_code, lang)
-                if product_attribute not in attribute_db:
-                    attribute_db.append(product_attribute)
+                color = product.color_id.name
+                
+                # Save color always in italian:
+                if color not in color_db:
+                    color_db.append(color)
               
                 # A. Create master product and prepara for variant:  
-                if product_parent not in product_db:
-                    product_db[product_parent] = [
+                if product not in product_db:
+                    product_db[product] = [                        
                         record, # Web line with template product
                         {}, # Variant product (not the first)
                         ]
                   
                 # B. Add variant:
-                if lang not in product_db[product_parent][1]:
-                    product_db[product_parent][1][lang] = []
-                product_db[product_parent][1][lang].append(
-                    (record, product_attribute))
-                # Extract frame-color from code
+                if lang not in product_db[product][1]:
+                    product_db[product][1][lang] = []
+                    
+                product_db[product][1][lang].append(
+                    (record, color))
 
         _logger.warning('Parent found: %s' % len(product_db))
 
@@ -523,7 +523,7 @@ class ProductPublicCategory(orm.Model):
                 'update': [],
                 'delete': [],
                 }
-            for attribute in attribute_db: 
+            for attribute in color_db: 
                 if attribute[-2:] != lang.upper():
                     continue # only terms for this lang
                 item = {
@@ -557,7 +557,7 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             # XXX Not for now:
             #for name in web_attribute:
-            #    if name not in attribute_db:
+            #    if name not in color_db:
             #        data['delete'].append(web_attribute[name])
 
             # -----------------------------------------------------------------
@@ -816,7 +816,7 @@ class ProductPublicCategory(orm.Model):
                                 continue
                             option = option[:-3].replace('-', '') # remove lang
                             web_variant[(
-                                '%-6s%s' % (parent, option), 
+                                '%-6s%s' % (parent, option), # XXX 
                                 lang,
                                 )] = item['id']
 
@@ -975,7 +975,7 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Attribute update ODOO VS WP:
         # ---------------------------------------------------------------------
-        for attribute in attribute_db:
+        for attribute in color_db:
             if not attribute.endswith('-IT'):
                 continue
             
