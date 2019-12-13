@@ -838,7 +838,7 @@ class ProductPublicCategory(orm.Model):
                     variant_id = wp_variant_lang_ref.get(
                         (variant_code, lang), False)
                     variant_it_id = wp_variant_lang_ref.get(
-                        (variant_code, 'it'), False)                    
+                        (variant_code, default_lang), False)                    
 
                     # XXX Price for S (ingle)
 
@@ -877,9 +877,8 @@ class ProductPublicCategory(orm.Model):
                         }
                         
                     data['sku'] = variant_code
-                    #if default_lang == lang: # Add language default ref.
-                    #    data['sku'] = variant_code
                     if default_lang == lang: # Add language default ref.
+                        # data['sku'] = variant_code
                         pass
                     else:
                         if not variant_it_id:
