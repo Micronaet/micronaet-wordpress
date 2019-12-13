@@ -487,9 +487,14 @@ class ProductPublicCategory(orm.Model):
             else:
                 theres_data = False
 
+        # TODO need lang?
         lang_color_terms = {}
         for record in current_wp_terms:
-            lang_color_terms[record['name']] = record['id']
+            name = record['name']
+            lang = record['lang']
+            if lang not in lang_color_terms:
+                lang_color_terms[lang] = {}
+            lang_color_terms[lang)][name] = record['id']
 
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Brand Attribute)
