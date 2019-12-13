@@ -203,7 +203,12 @@ for row in range(row_start, WS.nrows):
         wb_id = web_pool.create(data).id
 
     if selection == 'X': 
+        # Parent are also child:
+        web_pool.write([web_id], {
+            'wp_parent_id': web_id,
+            }) 
+
         # Save for child:
-        wp_parent_last = web_id
+        wp_parent_last = web_id        
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

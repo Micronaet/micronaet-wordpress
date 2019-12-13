@@ -348,40 +348,39 @@ class ProductPublicCategory(orm.Model):
             ], context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
-        product_db = {}
-        color_db = []
+        product_db = {} # Master database for lang - parent - child
+        color_db = [] # Master list for color in default lang
 
+        parent_total = 0
         for odoo_lang in ('it_IT', 'en_US'):
             lang = odoo_lang[:2]
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
-            records = web_product_pool.browse(
-                cr, uid, product_ids, context=context_lang)
             
-            for record in records: # Parent product:
-                product = record.product_id
-                default_code = product.default_code or ''
-                color = product.color_id.name
-                
-                # Save color always in italian:
-                if color not in color_db:
-                    color_db.append(color)
-              
-                # A. Create master product and prepara for variant:  
-                if product not in product_db:
-                    product_db[product] = [                        
-                        record, # Web line with template product
-                        {}, # Variant product (not the first)
-                        ]
-                  
-                # B. Add variant:
-                if lang not in product_db[product][1]:
-                    product_db[product][1][lang] = []
+            # Start with lang level:
+            product_db[lang] = []
+            
+            for parent in web_product_pool.browse(  # Parent product:
+                    cr, uid, product_ids, context=context_lang): 
+                parent_total += 1
                     
-                product_db[product][1][lang].append(
-                    (record, color))
+                # TODO parent first element could change (default setup)!    
+                product_db[lang][parent] = [parent, []] 
+                
+                for record in parent.variant_ids:
+                    # Note: first variat is parent:                    
+                    product = record.product_id
+                    default_code = product.default_code or ''
+                    color = product.color_id.name
+                
+                    # Save color always in italian:
+                    if color not in color_db:
+                        color_db.append(color)
+                        
+                # Save variant with color element: 
+                product_db[lang][parent][1].append((record, color))
 
-        _logger.warning('Parent found: %s' % len(product_db))
+        _logger.warning('Parent found: %s' % parent_total)
 
         # ---------------------------------------------------------------------        
         #                     ATTRIBUTES: (need Tessuto, Brand)
@@ -417,7 +416,7 @@ class ProductPublicCategory(orm.Model):
             raise osv.except_osv(_('Connection error:'), error)
 
         # ---------------------------------------------------------------------        
-        # Search Tessuto attribute:
+        # Search Master Attribute:
         # ---------------------------------------------------------------------        
         attribute_id = {
             'Tessuto': False,
@@ -434,7 +433,7 @@ class ProductPublicCategory(orm.Model):
         if not all(attribute_id.values()):
             raise osv.except_osv(
                 _('Attribute error'), 
-                _('Cannot find attribute %s!') % (attribute_id, ),
+                _('Cannot find some attribute terms %s!') % (attribute_id, ),
                 )        
 
         # ---------------------------------------------------------------------        
