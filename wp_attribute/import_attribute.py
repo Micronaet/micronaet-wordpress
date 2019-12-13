@@ -358,17 +358,9 @@ class ProductPublicCategory(orm.Model):
             records = web_product_pool.browse(
                 cr, uid, product_ids, context=context_lang)
             
-            for record in sorted(records, 
-                    key=lambda x: x.wp_parent_template, 
-                    reverse=True
-                    ):
-
-                # First is the template (if present)
+            for record in records: # Parent product:
                 product = record.product_id
                 default_code = product.default_code or ''
-                if not default_code[:3].isdigit(): # TODO MT and TL?
-                    _logger.warning('Not used %s' % default_code)
-                    continue
 
                 product_parent, product_attribute = split_code(
                     default_code, lang)
