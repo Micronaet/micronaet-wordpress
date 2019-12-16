@@ -400,7 +400,7 @@ class ProductPublicCategory(orm.Model):
 
                 # Save default color for lang product
                 product_default_color[(default_selected, lang)
-                    ] = default_selected.wp_color_id.name + '-it'
+                    ] = default_selected.wp_color_id.name + '-' + lang
 
         _logger.warning('Parent found: %s' % parent_total)
 
