@@ -835,7 +835,6 @@ class ProductPublicCategory(orm.Model):
                     variant_code = variant.default_code
                     variant_id = wp_variant_lang_ref.get(
                         (variant_code, lang), False)
-                    import pdb; pdb.set_trace()
                     variant_it_id = wp_variant_lang_ref.get(
                         (variant_code, default_lang), False)                    
 
