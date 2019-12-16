@@ -877,6 +877,7 @@ class ProductPublicCategory(orm.Model):
                         }
                         
                     data['sku'] = variant_code
+                    import pdb; pdb.set_trace()
                     if default_lang == lang: # Add language default ref.
                         # data['sku'] = variant_code
                         pass
