@@ -444,10 +444,9 @@ class ProductPublicCategory(orm.Model):
             # TODO Material, Certificate
             }
         _logger.warning('Searching attribute %s...' % (attribute_id.keys() ))
-        import pdb; pdb.set_trace()
         for record in current_wp_attribute:
             name = record['name']
-            lang = record['lang']
+            # lang = record['lang'] # TODO not present!
             if record['name'] in attribute_id:
                 attribute_id[record['name']] = record['id']
         if not all(attribute_id.values()):
@@ -455,6 +454,7 @@ class ProductPublicCategory(orm.Model):
                 _('Attribute error'), 
                 _('Cannot find some attribute terms %s!') % (attribute_id, ),
                 )        
+        import pdb; pdb.set_trace()
 
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Tessuto Attribute)
