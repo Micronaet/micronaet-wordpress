@@ -544,6 +544,7 @@ class ProductPublicCategory(orm.Model):
                 'delete': [],
                 }
             for attribute in lang_color_db[lang]:
+                import pdb; pdb.set_trace()
                 key = attribute[:-3] # Key element (without -it or -en)
                 item = {
                     'name': attribute,
