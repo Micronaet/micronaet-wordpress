@@ -211,10 +211,25 @@ class ProductProductWebCategory(orm.Model):
     _description = 'Category template'
     _order = 'name'
     
-    def update_product_category(self, cr, uid, context=None):
+    def update_product_category(self, cr, uid, ids, context=None):
         ''' Update product category for all selected item of this connector
         '''
+        line_pool = self.pool.get('product.product.web.server')
         
+        current = line_pool.browse(cr, uid, ids, context=context)[0]
+        category_ids = [item.id for item in current.category_ids]
+        
+        line_ids = line_pool.search(cr, uid, [
+            ('connection_id', '=', current.connection_id.id),
+            ('product_id.default_code', '=ilike', '%s%%' % current.name)
+            ], context=context)
+            
+        if line_ids:
+            line_pool.write(cr, uid, line_ids, {
+                'wordpress_categ_ids': [(6, 0, category_ids)],
+                }, context=context)
+            
+            _logger.info('Updated %s records' % len(line_ids))                
         return True
 
     _columns = {
