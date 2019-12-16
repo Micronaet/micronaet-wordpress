@@ -374,30 +374,31 @@ class ProductPublicCategory(orm.Model):
             product_db[odoo_lang] = []
             lang_color_db[lang] = []
             
-            for parent in web_product_pool.browse(  # Parent product:
+            for parent in web_product_pool.browse(  # Default_selected product:
                     cr, uid, product_ids, context=context_lang): 
                 parent_total += 1
                     
-                # TODO parent first element could change (default setup)!   
-                default_selected = parent 
+                # TODO default_selected is first element                
+                default_selected = parent # TODO Change during next loop:
                 product_db[odoo_lang][parent] = [default_selected, []] 
                 
-                for record in parent.variant_ids:
+                for variant in parent.variant_ids:
                     # Note: first variat is parent:                    
-                    product = record.product_id
+                    product = variant.product_id
                     default_code = product.default_code or ''
-                    color = record.color_id.name
+                    color = recvariantord.color_id.name
                     
                     # Save color for attribute update
                     if color not in lang_color_db[lang]:
                         lang_color_db[lang].append(color)
                         
+                    # Save variant with color element: 
+                    product_db[odoo_lang][parent][1].append((variant, color))
+
                 # Save default color for lang product
                 product_default_color[
                     (default_selected, lang)] = default_selected.color_id.name
                 
-                # Save variant with color element: 
-                product_db[odoo_lang][parent][1].append((record, color))
 
         _logger.warning('Parent found: %s' % parent_total)
 
