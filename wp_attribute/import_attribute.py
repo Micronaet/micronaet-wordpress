@@ -609,6 +609,7 @@ class ProductPublicCategory(orm.Model):
                     # ---------------------------------------------------------
                     # Save WP ID (only in dict not in ODOO Object)
                     # ---------------------------------------------------------
+                    import pdb; pdb.set_trace()
                     for record in res.get('create', ()):
                         wp_id = record['id']
                         if not wp_id: # TODO manage error:
