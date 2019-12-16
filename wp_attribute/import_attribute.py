@@ -505,8 +505,6 @@ class ProductPublicCategory(orm.Model):
                 current_wp_terms.extend(res)
             else:
                 theres_data = False
-        print current_wp_terms
-        import pdb; pdb.set_trace()
         
         # TODO need lang?
         lang_color_terms = {}
@@ -517,13 +515,11 @@ class ProductPublicCategory(orm.Model):
                 lang_color_terms[lang] = {}
             lang_color_terms[lang][name] = record['id']
 
-        print lang_color_terms 
-        import pdb; pdb.set_trace()
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Brand Attribute)
         # ---------------------------------------------------------------------        
         lang_brand_terms = {} # not needed for now
-        brand_company_id = {} # Brand: Company reference (for MRP product)
+        #brand_company_id = {} # Brand: Company reference (for MRP product)
         
         call = 'products/attributes/%s/terms' % attribute_id['Brand']
         for record in wcapi.get(call).json():
@@ -535,10 +531,10 @@ class ProductPublicCategory(orm.Model):
                 lang_brand_terms[lang] = {}
                 
             lang_brand_terms[lang][name] = record_id
-            if brand_code == name and lang == default_lang:
-                brand_company_id = {
-                    lang: record_id,
-                    }
+            #if brand_code == name and lang == default_lang:
+            #    brand_company_id = {
+            #        lang: record_id,
+            #        }
 
         # ---------------------------------------------------------------------
         # Update / Create: (XXX only fabric?)
@@ -641,7 +637,6 @@ class ProductPublicCategory(orm.Model):
         context['log_excel'] = []
         context['override_sku'] = '' # SKU not present for product 
         
-        #for parent in product_db:
         for odoo_lang in sorted(product_db, key=lambda l: sort_lang(l)):
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
