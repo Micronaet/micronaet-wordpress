@@ -305,7 +305,7 @@ class ProductPublicCategory(orm.Model):
         # =====================================================================
         # Log operation on Excel file:
         # ---------------------------------------------------------------------
-        now = datetime.now()).replace('/', '').replace('-', '')[:30]
+        now = ('%s' % datetime.now()).replace('/', '').replace('-', '')[:30]
         ws_name = now
         excel_pool = self.pool.get('excel.writer')        
         excel_pool.create_worksheet(ws_name)
