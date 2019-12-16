@@ -346,7 +346,6 @@ class ProductPublicCategory(orm.Model):
         brand_code = server_proxy.brand_code
 
         # Read WP Category present:
-        import pdb; pdb.set_trace()
         wcapi = self.get_wp_connector(
             cr, uid, connector_id, context=context)
 
@@ -407,7 +406,6 @@ class ProductPublicCategory(orm.Model):
         #                     ATTRIBUTES: (need Tessuto, Brand)
         # ---------------------------------------------------------------------   
         call = 'products/attributes'
-        import pdb; pdb.set_trace()
         current_wp_attribute = wcapi.get(call).json()
         
         # =====================================================================
@@ -446,12 +444,12 @@ class ProductPublicCategory(orm.Model):
             # TODO Material, Certificate
             }
         _logger.warning('Searching attribute %s...' % (attribute_id.keys() ))
+        import pdb; pdb.set_trace()
         for record in current_wp_attribute:
             name = record['name']
             lang = record['lang']
             if record['name'] in attribute_id:
                 attribute_id[record['name']] = record['id']
-        import pdb; pdb.set_trace()
         if not all(attribute_id.values()):
             raise osv.except_osv(
                 _('Attribute error'), 
