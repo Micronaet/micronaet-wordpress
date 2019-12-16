@@ -216,7 +216,7 @@ class ProductProductWebCategory(orm.Model):
         '''
         line_pool = self.pool.get('product.product.web.server')
         
-        current = line_pool.browse(cr, uid, ids, context=context)[0]
+        current = self.browse(cr, uid, ids, context=context)[0]
         category_ids = [item.id for item in current.category_ids]
         
         line_ids = line_pool.search(cr, uid, [
