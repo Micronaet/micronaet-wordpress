@@ -388,14 +388,15 @@ class ProductPublicCategory(orm.Model):
                     product = variant.product_id
                     default_code = product.default_code or ''
                     color = variant.wp_color_id.name
-                    color += '-%s' % lang
+                    attribute += '-%s' % lang
                     
                     # Save color for attribute update
-                    if color not in lang_color_db[lang]:
-                        lang_color_db[lang].append(color)
+                    if attribute not in lang_color_db[lang]:
+                        lang_color_db[lang].append(attribute)
                         
                     # Save variant with color element: 
-                    product_db[odoo_lang][parent][1].append((variant, color))
+                    product_db[odoo_lang][parent][1].append(
+                        (variant, attribute))
 
                 # Save default color for lang product
                 product_default_color[(default_selected, lang)
@@ -950,7 +951,8 @@ class ProductPublicCategory(orm.Model):
                         try:
                             variant_id = res['id']
                             # Save for other lang:
-                            wp_variant_lang_ref[(variant_code, lang)] = variant_id
+                            wp_variant_lang_ref[
+                                (variant_code, lang)] = variant_id
                         except:
                             variant_id = '?'    
 
