@@ -229,11 +229,12 @@ class ConnectorProductColorDot(orm.Model):
         'not_active': fields.boolean('Not active'),
         'connector_id': fields.many2one(
             'connector.server', 'Server', required=True),
-        'name': fields.char('Code', size=64, required=True, translate=True,
-            help='Frame-Color used on web site for color'),             
+        'name': fields.char('Code', size=64, required=True,
+            help='Frame-Color used on web site for color (as key!)'),             
         'description': fields.char('Web description', size=80, translate=True),
         'hint': fields.char('Hint', size=80, translate=True,
             help='Tooltip text when mouse over image'),
+        'dropbox_image': fields.char('Dropbox link', size=180),
 
         # Image in particular folder   
         'image_name': fields.function(
@@ -246,22 +247,6 @@ class ConnectorProductColorDot(orm.Model):
             _get_image_name, method=True, multi=True,
             type='boolean', string='Image present'), 
         }
-
-'''
-class ProductProduct(orm.Model):
-    """ Model name: ProductProduct
-    """
-
-    _inherit = 'product.product'
-    
-    _columns = {
-        # TODO remove:
-        'wp_parent_template': fields.boolean(
-            'Template for variants', 
-            help='Product used as tempalte for variants (first six char of '
-                'code)'),
-        }
-'''
 
 class ProductPublicCategory(orm.Model):
     """ Model name: ProductProduct
