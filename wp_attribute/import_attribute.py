@@ -507,6 +507,7 @@ class ProductPublicCategory(orm.Model):
                 theres_data = False
         print current_wp_terms
         import pdb; pdb.set_trace()
+        
         # TODO need lang?
         lang_color_terms = {}
         for record in current_wp_terms:
@@ -516,6 +517,8 @@ class ProductPublicCategory(orm.Model):
                 lang_color_terms[lang] = {}
             lang_color_terms[lang][name] = record['id']
 
+        print lang_color_terms 
+        import pdb; pdb.set_trace()
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Brand Attribute)
         # ---------------------------------------------------------------------        
