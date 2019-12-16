@@ -454,7 +454,6 @@ class ProductPublicCategory(orm.Model):
                 _('Attribute error'), 
                 _('Cannot find some attribute terms %s!') % (attribute_id, ),
                 )        
-        import pdb; pdb.set_trace()
 
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Tessuto Attribute)
@@ -506,7 +505,8 @@ class ProductPublicCategory(orm.Model):
                 current_wp_terms.extend(res)
             else:
                 theres_data = False
-
+        print current_wp_terms
+        import pdb; pdb.set_trace()
         # TODO need lang?
         lang_color_terms = {}
         for record in current_wp_terms:
