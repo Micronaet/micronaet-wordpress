@@ -640,7 +640,7 @@ class ProductPublicCategory(orm.Model):
             lang = odoo_lang[:2]
             import pdb; pdb.set_trace()
             for parent in product_db[odoo_lang]:
-                master_record, lang_variants = product_db[odoo_lang][parent]
+                master_record, variants = product_db[odoo_lang][parent]
 
                 # -------------------------------------------------------------
                 # TEMPLATE PRODUCT: Upload product reference:
@@ -668,7 +668,6 @@ class ProductPublicCategory(orm.Model):
                 master_product = master_record.product_id
                 master_code = master_product.default_code
                 wp_variant_lang_ref = {}
-                variants = lang_variants.get(lang, [])
                 lang_product_default_color = product_default_color[
                     (master_record, lang)]
 
