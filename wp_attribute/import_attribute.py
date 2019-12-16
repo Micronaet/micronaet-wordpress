@@ -399,7 +399,7 @@ class ProductPublicCategory(orm.Model):
                 # Save default color for lang product
                 product_default_color[
                     (default_selected, lang),
-                    ] = default_selected.wp_color_id.name
+                    ] = default_selected.wp_color_id.name + '-it'
 
         _logger.warning('Parent found: %s' % parent_total)
 
@@ -638,7 +638,6 @@ class ProductPublicCategory(orm.Model):
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
             lang = odoo_lang[:2]
-            import pdb; pdb.set_trace()
             for parent in product_db[odoo_lang]:
                 master_record, variants = product_db[odoo_lang][parent]
 
@@ -668,6 +667,7 @@ class ProductPublicCategory(orm.Model):
                 master_product = master_record.product_id
                 master_code = master_product.default_code
                 wp_variant_lang_ref = {}
+                import pdb; pdb.set_trace()
                 lang_product_default_color = product_default_color[
                     (master_record, lang)]
 
