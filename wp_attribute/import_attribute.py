@@ -895,11 +895,11 @@ class ProductPublicCategory(orm.Model):
                     # ---------------------------------------------------------
                     # Images block:
                     # ---------------------------------------------------------
-                    image = [] 
-                    for image in line.wp_dropbox_images_ids:                  
-                        if image.dropbox_link:
+                    image = False
+                    for item in line.wp_dropbox_images_ids:                  
+                        if item.dropbox_link:
                             image = {
-                                'src': image.dropbox_link,
+                                'src': item.dropbox_link,
                                 }
                             break # Only one image in variant!    
                                 
