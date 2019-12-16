@@ -930,6 +930,7 @@ class ProductPublicCategory(orm.Model):
                         # =====================================================
 
                     else: # Create
+                        import pdb; pdb.set_trace()
                         operation = 'NEW'
                         call = 'products/%s/variations' % wp_id
                         res = wcapi.post(call, data).json()
