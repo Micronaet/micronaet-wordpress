@@ -635,6 +635,7 @@ class ProductPublicCategory(orm.Model):
         context['log_excel'] = []
         context['override_sku'] = '' # SKU not present for product 
         
+        wp_variant_lang_ref = {}
         for odoo_lang in sorted(product_db, key=lambda l: lang_sort(l)):
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
@@ -667,7 +668,6 @@ class ProductPublicCategory(orm.Model):
 
                 master_product = master_record.product_id
                 master_code = master_product.default_code
-                wp_variant_lang_ref = {}
                 lang_product_default_color = product_default_color[
                     (master_record, lang)]
 
