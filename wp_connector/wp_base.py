@@ -220,7 +220,7 @@ class ProductProductWebCategory(orm.Model):
         category_ids = [item.id for item in current.category_ids]
         
         line_ids = line_pool.search(cr, uid, [
-            ('connection_id', '=', current.connection_id.id),
+            ('connector_id', '=', current.connection_id.id),
             ('product_id.default_code', '=ilike', '%s%%' % current.name)
             ], context=context)
             
