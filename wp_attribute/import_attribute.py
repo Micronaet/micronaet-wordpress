@@ -559,7 +559,7 @@ class ProductPublicCategory(orm.Model):
                             })
                     else:
                         _logger.error('Attribute not found %s %s!' % (
-                            attribute,
+                            key,
                             lang,
                             ))
                         # TODO manage?
@@ -611,15 +611,15 @@ class ProductPublicCategory(orm.Model):
                     # ---------------------------------------------------------
                     # Save WP ID (only in dict not in ODOO Object)
                     # ---------------------------------------------------------
-                    import pdb; pdb.set_trace()
                     for record in res.get('create', ()):
+                        key = record['name'][:-3]
                         wp_id = record['id']
                         if not wp_id: # TODO manage error:
                             _logger.error('Not Updated wp_id for %s' % wp_id)
                             continue
 
                         # Update for language not IT (default):
-                        lang_color_terms[lang][record['name']] = wp_id 
+                        lang_color_terms[lang][key] = wp_id 
             except:
                 raise osv.except_osv(
                     _('Error'), 
