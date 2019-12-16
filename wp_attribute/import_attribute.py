@@ -639,7 +639,6 @@ class ProductPublicCategory(orm.Model):
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
             lang = odoo_lang[:2]
-            import pdb; pdb.set_trace()
             for parent in product_db[odoo_lang]:
                 master_record, variants = product_db[odoo_lang][parent]
 
@@ -836,6 +835,7 @@ class ProductPublicCategory(orm.Model):
                     variant_code = variant.default_code
                     variant_id = wp_variant_lang_ref.get(
                         (variant_code, lang), False)
+                    import pdb; pdb.set_trace()
                     variant_it_id = wp_variant_lang_ref.get(
                         (variant_code, default_lang), False)                    
 
