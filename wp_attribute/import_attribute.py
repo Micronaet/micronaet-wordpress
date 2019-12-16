@@ -621,7 +621,6 @@ class ProductPublicCategory(orm.Model):
         translation_lang = {}
         parent_unset = []
 
-        context_log_excel = {}
         context['override_sku'] = '' # SKU not present for product 
         
         wp_variant_lang_ref = {}
@@ -636,11 +635,8 @@ class ProductPublicCategory(orm.Model):
                 # -------------------------------------------------------------
                 # TEMPLATE PRODUCT: Upload product reference:
                 # -------------------------------------------------------------
-                context_key = (parent, lang)
-                context_log_excel[context_key] = []      
-                context['log_excel'] = context_log_excel[context_key]
-                
                 # 1. Call upload original procedure:
+                context['log_excel'] = []
                 translation_lang.update(
                     web_product_pool.publish_now(
                         cr, uid, [master_record.id], context=context))
@@ -654,7 +650,7 @@ class ProductPublicCategory(orm.Model):
                     'Pubblicazione prodotto base',
                     ], default_format=excel_format['title'])
 
-                for log in context['log_excel'][context_key]:
+                for log in context['log_excel']:
                     row += 1
                     excel_pool.write_xls_line(ws_name, row, log, 
                         default_format=excel_format['text'], col=1)
