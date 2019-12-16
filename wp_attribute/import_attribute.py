@@ -513,7 +513,7 @@ class ProductPublicCategory(orm.Model):
             lang = record['lang']
             if lang not in lang_color_terms:
                 lang_color_terms[lang] = {}
-            lang_color_terms[lang)][name] = record['id']
+            lang_color_terms[lang][name] = record['id']
 
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Brand Attribute)

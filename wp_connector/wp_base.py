@@ -212,7 +212,7 @@ class ProductProductWebCategory(orm.Model):
     _order = 'name'
     
     _columns = {
-        'name': fields.char('Codice padre', size=3, required=True),
+        'name': fields.char('Codice padre', size=20, required=True),
         'category_ids': fields.many2many(
             'product.public.category', 'template_web_category_rel', 
             'product_id', 'category_id', 
