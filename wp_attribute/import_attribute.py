@@ -301,10 +301,12 @@ class ProductPublicCategory(orm.Model):
             elif 'en' in lang:
                 return 2
           
+          
         # =====================================================================
         # Log operation on Excel file:
         # ---------------------------------------------------------------------
-        ws_name = 'Chiamate'
+        ws_name = ('Chiamate %s' % datetime.now()).replace('/', ' ').replace(
+            '-', ' ')
         excel_pool = self.pool.get('excel.writer')        
         excel_pool.create_worksheet(ws_name)
         excel_pool.set_format()
