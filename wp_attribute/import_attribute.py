@@ -534,6 +534,7 @@ class ProductPublicCategory(orm.Model):
         # Update / Create: (XXX only fabric?)
         # ---------------------------------------------------------------------
         # Start from IT (default) lang:
+        import pdb; pdb.set_trace()
         for lang in sorted(lang_color_db, key=lambda l: lang_sort(l)):
             # Clean every loop:
             data = {
