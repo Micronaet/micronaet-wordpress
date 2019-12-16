@@ -397,8 +397,7 @@ class ProductPublicCategory(orm.Model):
                     product_db[odoo_lang][parent][1].append((variant, color))
 
                 # Save default color for lang product
-                product_default_color[
-                    (default_selected, lang),
+                product_default_color[(default_selected, lang)
                     ] = default_selected.wp_color_id.name + '-it'
 
         _logger.warning('Parent found: %s' % parent_total)
