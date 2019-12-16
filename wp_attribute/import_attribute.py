@@ -346,6 +346,7 @@ class ProductPublicCategory(orm.Model):
         brand_code = server_proxy.brand_code
 
         # Read WP Category present:
+        import pdb; pdb.set_trace()
         wcapi = self.get_wp_connector(
             cr, uid, connector_id, context=context)
 
@@ -371,7 +372,7 @@ class ProductPublicCategory(orm.Model):
             context_lang['lang'] = odoo_lang
             
             # Start with lang level:
-            product_db[odoo_lang] = []
+            product_db[odoo_lang] = {}
             lang_color_db[lang] = []
             
             for parent in web_product_pool.browse(  # Default_selected product:
@@ -386,7 +387,7 @@ class ProductPublicCategory(orm.Model):
                     # Note: first variat is parent:                    
                     product = variant.product_id
                     default_code = product.default_code or ''
-                    color = recvariantord.color_id.name
+                    color = variant.wp_color_id.name
                     
                     # Save color for attribute update
                     if color not in lang_color_db[lang]:
@@ -397,8 +398,8 @@ class ProductPublicCategory(orm.Model):
 
                 # Save default color for lang product
                 product_default_color[
-                    (default_selected, lang)] = default_selected.color_id.name
-                
+                    (default_selected, lang),
+                    ] = default_selected.wp_color_id.name
 
         _logger.warning('Parent found: %s' % parent_total)
 
@@ -406,6 +407,7 @@ class ProductPublicCategory(orm.Model):
         #                     ATTRIBUTES: (need Tessuto, Brand)
         # ---------------------------------------------------------------------   
         call = 'products/attributes'
+        import pdb; pdb.set_trace()
         current_wp_attribute = wcapi.get(call).json()
         
         # =====================================================================
@@ -449,7 +451,7 @@ class ProductPublicCategory(orm.Model):
             lang = record['lang']
             if record['name'] in attribute_id:
                 attribute_id[record['name']] = record['id']
-        
+        import pdb; pdb.set_trace()
         if not all(attribute_id.values()):
             raise osv.except_osv(
                 _('Attribute error'), 
