@@ -514,8 +514,9 @@ class ProductPublicCategory(orm.Model):
             }
         for record in current_wp_terms:
             name = record['name']
+            key = name[:-3]
             lang = record['lang']
-            lang_color_terms[lang][name] = record['id']
+            lang_color_terms[lang][key] = record['id']
 
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Brand Attribute)
@@ -566,7 +567,7 @@ class ProductPublicCategory(orm.Model):
                         # TODO manage?
                         
                 # Only create:
-                if attribute not in lang_color_terms[lang]:
+                if key not in lang_color_terms[lang]:
                     data['create'].append(item)
 
             # -----------------------------------------------------------------
