@@ -626,6 +626,7 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------        
         #                       PRODUCT AND VARIATIONS:
         # ---------------------------------------------------------------------
+        import pdb; pdb.set_trace()
         translation_lang = {}
         parent_unset = []
 
