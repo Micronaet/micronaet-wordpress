@@ -358,6 +358,7 @@ class ProductPublicCategory(orm.Model):
             ('connector_id', '=', ids[0]),
             ('wp_parent_template', '=', True),
             ], context=context)
+        product_ids = product_ids[0:1]  # TODO remove!!!!!!!!!!!!!!!!!!!!!!!!!!
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
         product_db = {} # Master database for lang - parent - child
@@ -638,6 +639,7 @@ class ProductPublicCategory(orm.Model):
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
             lang = odoo_lang[:2]
+            import pdb; pdb.set_trace()
             for parent in product_db[odoo_lang]:
                 master_record, variants = product_db[odoo_lang][parent]
 
@@ -667,7 +669,6 @@ class ProductPublicCategory(orm.Model):
                 master_product = master_record.product_id
                 master_code = master_product.default_code
                 wp_variant_lang_ref = {}
-                import pdb; pdb.set_trace()
                 lang_product_default_color = product_default_color[
                     (master_record, lang)]
 
