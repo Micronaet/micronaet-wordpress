@@ -508,8 +508,6 @@ class ProductPublicCategory(orm.Model):
                 theres_data = False
         
         # TODO need lang?
-        print current_wp_terms
-        import pdb; pdb.set_trace()       
         lang_color_terms = {}
         for record in current_wp_terms:
             name = record['name']
@@ -546,6 +544,7 @@ class ProductPublicCategory(orm.Model):
                 'delete': [],
                 }
             for attribute in lang_color_db[lang]:
+                key = attribute[:-3] # Key element (without -it or -en)
                 item = {
                     'name': attribute,
                     'lang': lang,
@@ -553,7 +552,7 @@ class ProductPublicCategory(orm.Model):
                     
                 if lang != default_lang: # Different language:
                     # TODO correct 
-                    wp_it_id = lang_color_terms[default_lang].get(attribute)
+                    wp_it_id = lang_color_terms[default_lang].get(key)
                     if wp_it_id:
                         item.update({
                             'translations': {'it': wp_it_id}
