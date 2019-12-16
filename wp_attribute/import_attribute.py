@@ -769,7 +769,7 @@ class ProductPublicCategory(orm.Model):
                         _('Error'), 
                         _('Wordpress server not answer, timeout!'),
                         )
-                
+
                 # -------------------------------------------------------------
                 # Upload product variations:
                 # -------------------------------------------------------------

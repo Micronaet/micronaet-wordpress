@@ -35,8 +35,10 @@
             <field name="model">product.product.web.category</field>
             <field name="arch" type="xml">
                 <tree string="category" editable="bottom">
+                    <field name="connection_id" />
                     <field name="name" />
                     <field name="category_ids" widget="many2many_tags" />
+                    <button name="update_product_category" string="Aggiorna" type="object" icon="gtk-refresh" />
                 </tree>
             </field>
         </record>

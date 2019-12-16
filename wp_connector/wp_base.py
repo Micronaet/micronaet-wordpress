@@ -211,7 +211,15 @@ class ProductProductWebCategory(orm.Model):
     _description = 'Category template'
     _order = 'name'
     
+    def update_product_category(self, cr, uid, context=None):
+        ''' Update product category for all selected item of this connector
+        '''
+        
+        return True
+
     _columns = {
+        'connection_id': fields.many2one('connector.server', 'Server', 
+            required=True),
         'name': fields.char('Codice padre', size=20, required=True),
         'category_ids': fields.many2many(
             'product.public.category', 'template_web_category_rel', 
