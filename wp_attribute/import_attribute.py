@@ -636,7 +636,6 @@ class ProductPublicCategory(orm.Model):
         translation_lang = {}
         parent_unset = []
 
-        context['log_excel'] = []
         context['override_sku'] = '' # SKU not present for product 
         
         wp_variant_lang_ref = {}
@@ -644,6 +643,8 @@ class ProductPublicCategory(orm.Model):
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
             lang = odoo_lang[:2]
+
+            context['log_excel'] = []
             for parent in product_db[odoo_lang]:
                 master_record, variants = product_db[odoo_lang][parent]
 
