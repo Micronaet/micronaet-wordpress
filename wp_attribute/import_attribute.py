@@ -358,7 +358,7 @@ class ProductPublicCategory(orm.Model):
             ('connector_id', '=', ids[0]),
             ('wp_parent_template', '=', True),
             ], context=context)
-        product_ids = product_ids[0:1]  # TODO remove!!!!!!!!!!!!!!!!!!!!!!!!!!
+        product_ids = product_ids[0:5]  # TODO remove!!!!!!!!!!!!!!!!!!!!!!!!!!
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
         product_db = {} # Master database for lang - parent - child
