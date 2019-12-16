@@ -519,22 +519,16 @@ class ProductPublicCategory(orm.Model):
         #                        TERMS: (for Brand Attribute)
         # ---------------------------------------------------------------------        
         lang_brand_terms = {} # not needed for now
-        #brand_company_id = {} # Brand: Company reference (for MRP product)
         
         call = 'products/attributes/%s/terms' % attribute_id['Brand']
         for record in wcapi.get(call).json():
             lang = record['lang']
             name = record['name']
-            record_id = record['id']
 
             if lang not in lang_brand_terms:
                 lang_brand_terms[lang] = {}
                 
-            lang_brand_terms[lang][name] = record_id
-            #if brand_code == name and lang == default_lang:
-            #    brand_company_id = {
-            #        lang: record_id,
-            #        }
+            lang_brand_terms[lang][name] = record['id']
 
         # ---------------------------------------------------------------------
         # Update / Create: (XXX only fabric?)
