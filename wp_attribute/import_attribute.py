@@ -621,6 +621,7 @@ class ProductPublicCategory(orm.Model):
         translation_lang = {}
         parent_unset = []
 
+        context_log_excel = {}
         context['override_sku'] = '' # SKU not present for product 
         
         wp_variant_lang_ref = {}
@@ -628,14 +629,17 @@ class ProductPublicCategory(orm.Model):
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
             lang = odoo_lang[:2]
-
-            context['log_excel'] = []
+            
             for parent in product_db[odoo_lang]:
                 master_record, variants = product_db[odoo_lang][parent]
 
                 # -------------------------------------------------------------
                 # TEMPLATE PRODUCT: Upload product reference:
                 # -------------------------------------------------------------
+                context_key = (parent, lang)
+                context_log_excel[context_key] = []      
+                context['log_excel'] = context_log_excel[context_key]
+                
                 # 1. Call upload original procedure:
                 translation_lang.update(
                     web_product_pool.publish_now(
@@ -650,7 +654,7 @@ class ProductPublicCategory(orm.Model):
                     'Pubblicazione prodotto base',
                     ], default_format=excel_format['title'])
 
-                for log in context['log_excel']:
+                for log in context['log_excel'][context_key]:
                     row += 1
                     excel_pool.write_xls_line(ws_name, row, log, 
                         default_format=excel_format['text'], col=1)
