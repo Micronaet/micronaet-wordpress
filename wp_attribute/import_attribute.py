@@ -535,7 +535,6 @@ class ProductPublicCategory(orm.Model):
         # Update / Create: (XXX only fabric?)
         # ---------------------------------------------------------------------
         # Start from IT (default) lang:
-        import pdb; pdb.set_trace()
         for lang in sorted(lang_color_db, key=lambda l: lang_sort(l)):
             # Clean every loop:
             data = {
@@ -636,7 +635,7 @@ class ProductPublicCategory(orm.Model):
         context['log_excel'] = []
         context['override_sku'] = '' # SKU not present for product 
         
-        for odoo_lang in sorted(product_db, key=lambda l: sort_lang(l)):
+        for odoo_lang in sorted(product_db, key=lambda l: lang_sort(l)):
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
             lang = odoo_lang[:2]
