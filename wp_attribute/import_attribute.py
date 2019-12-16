@@ -508,6 +508,8 @@ class ProductPublicCategory(orm.Model):
                 theres_data = False
         
         # TODO need lang?
+        print current_wp_terms
+        import pdb; pdb.set_trace()       
         lang_color_terms = {}
         for record in current_wp_terms:
             name = record['name']
