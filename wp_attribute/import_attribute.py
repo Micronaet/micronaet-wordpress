@@ -628,7 +628,6 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------        
         #                       PRODUCT AND VARIATIONS:
         # ---------------------------------------------------------------------
-        import pdb; pdb.set_trace()
         translation_lang = {}
         parent_unset = []
 
@@ -639,6 +638,7 @@ class ProductPublicCategory(orm.Model):
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
             lang = odoo_lang[:2]
+            import pdb; pdb.set_trace()
             for master_record, lang_variants in product_db[odoo_lang]:
                 # -------------------------------------------------------------
                 # TEMPLATE PRODUCT: Upload product reference:
