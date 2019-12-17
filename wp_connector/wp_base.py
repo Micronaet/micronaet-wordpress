@@ -593,7 +593,7 @@ class ProductProductWebServer(orm.Model):
                     'weight': float(model.gross_weight),
                     'weight_net': float(model.net_weight),
 
-                    'q_x_pack': float(model.q_x_pack),
+                    'q_x_pack': float(model.pcs_box),
                     # pallet dimension
                     }
             else:
