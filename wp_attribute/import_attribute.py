@@ -632,6 +632,8 @@ class ProductPublicCategory(orm.Model):
             
             for parent in product_db[odoo_lang]:
                 master_record, variants = product_db[odoo_lang][parent]
+                master_product = master_record.product_id
+                master_code = master_product.default_code
 
                 # -------------------------------------------------------------
                 # TEMPLATE PRODUCT: Upload product reference:
@@ -648,7 +650,7 @@ class ProductPublicCategory(orm.Model):
                 # -------------------------------------------------------------
                 row += 1
                 excel_pool.write_xls_line(ws_name, row, [
-                    'Pubblicazione prodotto base',
+                    'Pubblicazione prodotto base: %s' % master_code,
                     ], default_format=excel_format['title'])
 
                 for log in context['log_excel']:
@@ -657,8 +659,6 @@ class ProductPublicCategory(orm.Model):
                         default_format=excel_format['text'], col=1)
                 # =============================================================
 
-                master_product = master_record.product_id
-                master_code = master_product.default_code
                 lang_product_default_color = product_default_color[
                     (master_record, lang)]
 
