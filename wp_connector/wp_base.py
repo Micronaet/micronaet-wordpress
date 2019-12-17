@@ -211,6 +211,9 @@ class ProductProductWebCategory(orm.Model):
     _description = 'Category template'
     _order = 'name'
     
+    # -------------------------------------------------------------------------
+    # Button event:
+    # -------------------------------------------------------------------------
     def update_product_category(self, cr, uid, ids, context=None):
         ''' Update product category for all selected item of this connector
         '''
