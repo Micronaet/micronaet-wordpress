@@ -602,14 +602,21 @@ class ProductPublicCategory(orm.Model):
                     # Save WP ID (only in dict not in ODOO Object)
                     # ---------------------------------------------------------
                     for record in res.get('create', ()):
-                        key = record['name'][:-3]
-                        wp_id = record['id']
-                        if not wp_id: # TODO manage error:
-                            _logger.error('Not Updated wp_id for %s' % wp_id)
+                        try:
+                            key = record['name'][:-3]
+                            
+                            wp_id = record['id']
+                            if not wp_id: # TODO manage error:
+                                _logger.error('Not Updated wp_id for %s' % wp_id)
+                                continue
+            
+                            # Update for language not IT (default):
+                            lang_color_terms[lang][key] = wp_id 
+                        except:
+                            _logger.error('No name in %s' % record)
+                            import pdb; pdb.set_trace()
                             continue
-
-                        # Update for language not IT (default):
-                        lang_color_terms[lang][key] = wp_id 
+                                
             except:
                 raise osv.except_osv(
                     _('Error'), 
