@@ -586,9 +586,9 @@ class ProductProductWebServer(orm.Model):
             model = product.model_package_id
             if model:
                 res[line.id] = {
-                    'pack_l': float(model.pack_width),
-                    'pack_h': float(model.pack_height),
-                    'pack_p': float(model.pack_depth),
+                    'pack_l': float(model.box_width),
+                    'pack_h': float(model.box_height),
+                    'pack_p': float(model.box_depth),
                     
                     'weight': float(model.gross_weight),
                     'weight_net': float(model.net_weight),
