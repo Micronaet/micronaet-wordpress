@@ -97,6 +97,10 @@ class ConnectorServer(orm.Model):
                 'text': excel_pool.get_format('bg_red'),
                 'number': excel_pool.get_format('bg_red_number'),
                 },
+            'yellow': {
+                'text': excel_pool.get_format('bg_yellow'),
+                'number': excel_pool.get_format('bg_yellow_number'),
+                },
             }
 
         # ---------------------------------------------------------------------
@@ -104,7 +108,7 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Width
         excel_pool.column_width(ws_name, [
-            15, 
+            5, 15, 
             30, 70, 
             30, 70,
             50, 10, 15,
@@ -118,7 +122,7 @@ class ConnectorServer(orm.Model):
         row = 0
         excel_pool.write_xls_line(
             ws_name, row, [
-            'Codice', 
+            'Pubbl.', 'Codice', 
             'Nome', 'Descrizione', 
             '(Name)', '(Description)',
             'Categorie', 'Mag.', 'Prezzo',
@@ -159,7 +163,10 @@ class ConnectorServer(orm.Model):
             stock = int(product.mx_net_mrp_qty)
             locked = int(product.mx_mrp_b_locked)
             net = stock - locked
-            if net <= 0:
+            published = 'X' if line.published else ''
+            if not published:
+                color_format = excel_format['yellow']                
+            elif net <= 0:
                 color_format = excel_format['red']
             else:    
                 color_format = excel_format['black']
@@ -190,6 +197,7 @@ class ConnectorServer(orm.Model):
                 
             excel_pool.write_xls_line(
                 ws_name, row, [
+                    published,
                     default_code,
                     short_description,  # product.name,
                     description,  # product.large_description or '',  
