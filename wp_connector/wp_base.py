@@ -435,7 +435,7 @@ class ProductProductWebServer(orm.Model):
                     if dropbox_link and dropbox_link.startswith('http'):                        
                         images.append({
                             'src': image.dropbox_link,
-                            }
+                            })
 
                 # -------------------------------------------------------------
                 # Category block:
