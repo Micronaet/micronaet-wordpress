@@ -98,7 +98,8 @@ class ConnectorServer(orm.Model):
             30, 70, 
             30, 70,
             50, 10, 15,
-            10, 10, 20, 
+            10, 10, 
+            5, 20, 
             20, 40,
             ])
             
@@ -110,7 +111,8 @@ class ConnectorServer(orm.Model):
             'Nome', 'Descrizione', 
             '(Name)', '(Description)',
             'Categorie', 'Mag.', 'Prezzo',
-            'Cat. Stat.', 'Peso', 'Dimensioni',
+            'Cat. Stat.', 'Peso', 
+            'Mod. imb.', 'Imballo',
             'Magazzino', 'Immagini'            
             ], default_format=excel_format['header'])
 
@@ -185,8 +187,9 @@ class ConnectorServer(orm.Model):
                     product.lst_price,
                     product.statistic_category or '',
                     product.weight,
+                    'X' if product.model_package_id else '',
                     '%s x %s x %s' % (
-                        product.width, product.length, product.height),
+                        product.pack_l, product.pack_h, product.pack_p),
                     '%s (M. %s - B. %s)' % (net, stock, locked),
                     image,
                     ], default_format=color_format['text'])

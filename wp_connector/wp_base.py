@@ -594,6 +594,7 @@ class ProductProductWebServer(orm.Model):
                     'weight_net': float(model.net_weight),
 
                     'q_x_pack': float(model.pcs_box),
+                    'lst_price': product.lst_price,
                     # pallet dimension
                     }
             else:
@@ -606,6 +607,7 @@ class ProductProductWebServer(orm.Model):
                     'weight_net': product.weight_net,
 
                     'q_x_pack': product.q_x_pack,
+                    'lst_price': product.lst_price,
                     }
         return res
 
@@ -655,6 +657,11 @@ class ProductProductWebServer(orm.Model):
         'weight_net': fields.function(
             _get_product_detail_items, method=True, readonly=1,
             type='float', string='Peso netto', multi=True, 
+            ), 
+
+        'lst_price': fields.function(
+            _get_product_detail_items, method=True, readonly=1,
+            type='float', string='Listino', multi=True, 
             ), 
 
         'q_x_pack': fields.function(
