@@ -25,69 +25,72 @@ import erppeek
 import ConfigParser
 import subprocess
 
-#album_id = 9
-#dropbox_path = '/home/thebrush/Dropbox/scambio/Wordpress'
-
 # -----------------------------------------------------------------------------
-# Read configuration parameter:
+# Read configuration parameter (2 Databases): 
 # -----------------------------------------------------------------------------
-# From config file:
-cfg_file = os.path.expanduser('../openerp.cfg')
+for config_file in ('../openerp.cfg', '../gpb.openerp.cfg'):
+    cfg_file = os.path.expanduser(config_file)
 
-config = ConfigParser.ConfigParser()
-config.read([cfg_file])
-dbname = config.get('dbaccess', 'dbname')
-user = config.get('dbaccess', 'user')
-pwd = config.get('dbaccess', 'pwd')
-server = config.get('dbaccess', 'server')
-port = config.get('dbaccess', 'port')   # verify if it's necessary: getint
+    config = ConfigParser.ConfigParser()
+    config.read([cfg_file])
+    dbname = config.get('dbaccess', 'dbname')
+    user = config.get('dbaccess', 'user')
+    pwd = config.get('dbaccess', 'pwd')
+    server = config.get('dbaccess', 'server')
+    port = config.get('dbaccess', 'port')   # verify if it's necessary: getint
 
-album_id = int(config.get('odoo', 'album_id'))
-dropbox_path = config.get('odoo', 'dropbox_path')
+    album_id = int(config.get('odoo', 'album_id'))
+    dropbox_path = config.get('odoo', 'dropbox_path')
 
-print 'Accesso: Server %s Database %s Read folder: %s [album: %s]' % (
-    server, dbname, dropbox_path, album_id)
+    print 'Accesso: Server %s Database %s Read folder: %s [album: %s]' % (
+        server, dbname, dropbox_path, album_id)
 
-# -----------------------------------------------------------------------------
-# Connect to ODOO:
-# -----------------------------------------------------------------------------
-odoo = erppeek.Client(
-    'http://%s:%s' % (
-        server, port), 
-    db=dbname,
-    user=user,
-    password=pwd,
-    )    
+    # -----------------------------------------------------------------------------
+    # Connect to ODOO:
+    # -----------------------------------------------------------------------------
+    odoo = erppeek.Client(
+        'http://%s:%s' % (
+            server, port), 
+        db=dbname,
+        user=user,
+        password=pwd,
+        )    
 
-# Pool used:
-image_pool = odoo.model('product.image.file')
-image_ids = image_pool.search([('album_id', '=', album_id)])
-if not image_ids:
-    print 'No image exit in folder, exit'
-    sys.exit()
+    # Pool used:
+    image_pool = odoo.model('product.image.file')
+    image_ids = image_pool.search([('album_id', '=', album_id)])
+    if not image_ids:
+        print 'No image exit in folder, exit'
+        sys.exit()
 
-print 'Found %s album image [ID %s]' % (len(image_ids), album_id)
-image_db = {}
-for image in image_pool.browse(image_ids):
-    image_db[image.filename] = image.id
+    print 'Found %s album image [ID %s]' % (len(image_ids), album_id)
+    image_db = {}
+    for image in image_pool.browse(image_ids):
+        image_db[image.filename] = image.id
 
-print 'Search image in path %s' % dropbox_path
-for root, folders, files in os.walk(dropbox_path):
-    os.chdir(root)
-    for f in files:
-        if f not in image_db:
-            print 'Not already loaded in ODOO: %s' % f
-            continue
+    print 'Search image in path %s' % dropbox_path
+    for root, folders, files in os.walk(dropbox_path):
+        os.chdir(root)
+        total = len(files)
+        i = 0
+        for f in files:
+            i += 1
+            if f not in image_db:
+                print 'Not present on this DB or not loaded in Album: %s' % f
+                continue
 
-        #fullname = os.path.join(root, f)    
-        command = ['dropbox.py', 'sharelink', f]#fullname]
-        try:
-            dropbox_link = subprocess.check_output(command)
-            image_pool.write([image_db[f]], {
-                'dropbox_link': dropbox_link.strip().rstrip('dl=0') + 'raw=1'
-                })
-            print '[INFO] Dropbox sharelink file %s' % f
-        except:
-            print '[ERROR] Cannot sharelink file %s' % f
-    break
+            #fullname = os.path.join(root, f)    
+            command = ['dropbox.py', 'sharelink', f]
+            try:
+                dropbox_link = subprocess.check_output(command)            
+                image_pool.write([image_db[f]], {
+                    'dropbox_link': 
+                        dropbox_link.strip().rstrip('dl=0') + 'raw=1'
+                    })
+                print '[INFO] Dropbox sharelink file %s [%s of %s]' % (
+                    f, i, total)
+            except:
+                print '[ERROR] Cannot sharelink file %s [%s of %s]' % (
+                    f, i, total)
+        break
 
