@@ -603,8 +603,7 @@ class ProductPublicCategory(orm.Model):
                     # ---------------------------------------------------------
                     for record in res.get('create', ()):
                         try:
-                            key = record['name'][:-3]
-                            
+                            key = record['name'][:-3]                            
                             wp_id = record['id']
                             if not wp_id: # TODO manage error:
                                 _logger.error('Not Updated wp_id for %s' % wp_id)

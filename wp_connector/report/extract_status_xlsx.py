@@ -108,7 +108,7 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Width
         excel_pool.column_width(ws_name, [
-            5, 15, 
+            5, 15, 20,
             30, 70, 
             30, 70,
             50, 10, 15,
@@ -122,8 +122,8 @@ class ConnectorServer(orm.Model):
         row = 0
         excel_pool.write_xls_line(
             ws_name, row, [
-            'Pubbl.', 'Codice', 
-            'Nome', 'Descrizione', 
+            'Pubbl.', 'Codice', 'Colore',
+            'Nome', 'Descrizione',  
             '(Name)', '(Description)',
             'Categorie', 'Mag.', 'Prezzo',
             'Cat. Stat.', 'Peso', 
