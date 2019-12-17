@@ -174,6 +174,7 @@
                                     </group>
                                 </page>
                             </notebook>
+                            <separator string="Wordpress link:" colspan="4"/>
                             <field name="wp_it_id" readonly="1"/>
                             <field name="wp_en_id" readonly="1"/>
                         </group>    
@@ -258,8 +259,8 @@
             <field name="res_model">product.product.web.server</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="wp_connectorview_product_product_web_server_wp_tree"/>
-            <field name="context">{'form_view_ref': 'view_product_product_web_server_wp_full_detail_form'}</field>
+            <field name="view_id" ref="wp_connector.view_product_product_web_server_wp_tree"/>
+            <field name="context">{'form_view_ref': 'wp_attribute.view_product_product_web_server_wp_full_detail_form'}</field>
             <field name="domain">[('connector_id.wordpress', '=', True)]</field>
         </record>
 

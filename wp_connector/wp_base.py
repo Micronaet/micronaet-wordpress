@@ -586,14 +586,14 @@ class ProductProductWebServer(orm.Model):
             model = product.model_package_id
             if model:
                 res[line.id] = {
-                    'pack_l': model.pack_width,
-                    'pack_h': model.pack_height,
-                    'pack_p': prmodeloduct.pack_depth,
+                    'pack_l': float(model.pack_width),
+                    'pack_h': float(model.pack_height),
+                    'pack_p': float(model.pack_depth),
                     
-                    'weight': model.gross_weight,
-                    'weight_net': model.net_weight,
+                    'weight': float(model.gross_weight),
+                    'weight_net': float(model.net_weight),
 
-                    'q_x_pack': model.q_x_pack,
+                    'q_x_pack': float(model.q_x_pack),
                     # pallet dimension
                     }
             else:
@@ -637,29 +637,29 @@ class ProductProductWebServer(orm.Model):
             
         'pack_l': fields.function(
             _get_product_detail_items, method=True, readonly=1,
-            type='float', string='L. Pack', 
+            type='float', string='L. Pack', multi=True,
             ), 
         'pack_h': fields.function(
             _get_product_detail_items, method=True, readonly=1,
-            type='float', string='H. Pack', 
+            type='float', string='H. Pack', multi=True,
             ), 
         'pack_p': fields.function(
             _get_product_detail_items, method=True, readonly=1,
-            type='float', string='P. Pack', 
+            type='float', string='P. Pack', multi=True, 
             ), 
 
         'weight': fields.function(
             _get_product_detail_items, method=True, readonly=1,
-            type='float', string='Peso lordo', 
+            type='float', string='Peso lordo', multi=True,
             ), 
         'weight_net': fields.function(
             _get_product_detail_items, method=True, readonly=1,
-            type='float', string='Peso netto', 
+            type='float', string='Peso netto', multi=True, 
             ), 
 
         'q_x_pack': fields.function(
             _get_product_detail_items, method=True, readonly=1,
-            type='float', string='Q. x Pack', 
+            type='float', string='Q. x Pack', multi=True,
             ), 
         # ---------------------------------------------------------------------
 
