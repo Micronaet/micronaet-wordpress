@@ -135,7 +135,6 @@ class ProductPublicCategory(orm.Model):
             'page': 0,
             }
         current_wp_category = []
-        import pdb; pdb.set_trace()
         while theres_data:
             parameter['page'] += 1
             call = 'products/categories'
@@ -174,7 +173,6 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------        
         # Loading used dict DB
         # ---------------------------------------------------------------------        
-        import pdb; pdb.set_trace()
         odoo_name2id = {} # (name, lang) > ID
         
         wp_id2name = {} # name > WP ID
@@ -191,7 +189,6 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         #                                Mode IN:
         # ---------------------------------------------------------------------
-        import pdb; pdb.set_trace()
         # TODO Language management!!!
         if server_proxy.wp_category == 'in':
             wp_id2odoo_id = {} # WP ID 2 ODOO ID (for fast information)
