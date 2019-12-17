@@ -472,7 +472,7 @@ class ProductProductWebServer(orm.Model):
                         #   'width': '%s' % product.width, 
                         #   'length': '%s' % product.length,
                         #   'height': '%s' % product.height,
-                           }, 
+                        #   }, 
                         })
                     if images:
                         data['images'] = images
