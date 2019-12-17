@@ -854,9 +854,9 @@ class ProductPublicCategory(orm.Model):
                         # stock_status
                         'weight': line.weight,
                         'dimensions': {
-                            'lenght': line.pack_l,
-                            'height': line.pack_h,
-                            'width': line.pack_p,
+                            'lenght': '%s' % line.pack_l,
+                            'height': '%s' % line.pack_h,
+                            'width': '%s' % line.pack_p,
                             },
                         'stock_quantity': 
                             web_product_pool.get_existence_for_product(
@@ -869,7 +869,7 @@ class ProductPublicCategory(orm.Model):
                             }]
                         }
                         
-                    data['sku'] = variant_code
+                    data['sku'] = variant_code # used always?
                     if default_lang == lang: # Add language default ref.
                         # data['sku'] = variant_code
                         pass

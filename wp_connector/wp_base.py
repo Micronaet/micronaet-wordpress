@@ -462,14 +462,16 @@ class ProductProductWebServer(orm.Model):
                         'sku': sku,
                         'regular_price': price,
                         # sale_price (discounted)
-                        'weight': weight,
                         'stock_quantity': stock_quantity,
                         'status': status,
                         'catalog_visibility': 'visible', #catalog  search  hidden
-                        'dimensions': {
-                           'width': '%s' % product.width, 
-                           'length': '%s' % product.length,
-                           'height': '%s' % product.height,
+                        
+                        # Forced in variant:
+                        #'weight': weight,
+                        #'dimensions': {
+                        #   'width': '%s' % product.width, 
+                        #   'length': '%s' % product.length,
+                        #   'height': '%s' % product.height,
                            }, 
                         })
                     if images:
