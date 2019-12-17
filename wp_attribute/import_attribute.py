@@ -852,7 +852,7 @@ class ProductPublicCategory(orm.Model):
                         # TODO
                         # stock_quantity
                         # stock_status
-                        'weight': line.weight,
+                        'weight': '%s' % line.weight,
                         'dimensions': {
                             'lenght': '%s' % line.pack_l,
                             'height': '%s' % line.pack_h,
