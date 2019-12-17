@@ -592,8 +592,8 @@ class ProductProductWebServer(orm.Model):
                     'pack_h': float(model.box_height),
                     'pack_p': float(model.box_depth),
                     
-                    'weight': float(model.gross_weight),
-                    'weight_net': float(model.net_weight),
+                    'weight': float(model.gross_weight / 1000.0),
+                    'weight_net': float(model.net_weight / 1000.0),
 
                     'q_x_pack': float(model.pcs_box),
                     'lst_price': product.lst_price,

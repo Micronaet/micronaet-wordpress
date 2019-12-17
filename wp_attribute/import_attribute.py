@@ -854,7 +854,7 @@ class ProductPublicCategory(orm.Model):
                         # stock_status
                         'weight': '%s' % line.weight,
                         'dimensions': {
-                            'lenght': '%s' % line.pack_l,
+                            'length': '%s' % line.pack_l,
                             'height': '%s' % line.pack_h,
                             'width': '%s' % line.pack_p,
                             },
