@@ -613,9 +613,7 @@ class ProductPublicCategory(orm.Model):
             except:
                 raise osv.except_osv(
                     _('Error'), 
-                    _('Wordpress server not answer, timeout! \n[%s]' % _
-                        sys.exc_info(),
-                        ),
+                    _('Wordpress server timeout! \n[%s]' % sys.exc_info(),
                     )
 
         # ---------------------------------------------------------------------        
