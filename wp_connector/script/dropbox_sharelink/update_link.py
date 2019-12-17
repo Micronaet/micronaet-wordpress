@@ -41,6 +41,10 @@ for config_file in ('../openerp.cfg', '../gpb.openerp.cfg'):
 
     album_id = int(config.get('odoo', 'album_id'))
     dropbox_path = config.get('odoo', 'dropbox_path')
+    try:
+        only_empty = eval(config.get('odoo', 'empty'))
+    except:
+        only_empty = False    
 
     print 'Accesso: Server %s Database %s Read folder: %s [album: %s]' % (
         server, dbname, dropbox_path, album_id)
@@ -58,7 +62,12 @@ for config_file in ('../openerp.cfg', '../gpb.openerp.cfg'):
 
     # Pool used:
     image_pool = odoo.model('product.image.file')
-    image_ids = image_pool.search([('album_id', '=', album_id)])
+    domain = [('album_id', '=', album_id)]
+    if only_empty:
+        domain.append(('dropbox_link', '=', False))
+
+    image_ids = image_pool.search(domain)
+    
     if not image_ids:
         print 'No image exit in folder, exit'
         sys.exit()
@@ -76,7 +85,7 @@ for config_file in ('../openerp.cfg', '../gpb.openerp.cfg'):
         for f in files:
             i += 1
             if f not in image_db:
-                print 'Not present on this DB or not loaded in Album: %s' % f
+                print 'Not present on DB, not empty, not load album: %s' % f
                 continue
 
             #fullname = os.path.join(root, f)    
