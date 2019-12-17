@@ -73,13 +73,14 @@ for image in image_pool.browse(image_ids):
 
 print 'Search image in path %s' % dropbox_path
 for root, folders, files in os.walk(dropbox_path):
+    os.chdir(root)
     for f in files:
         if f not in image_db:
             print 'Not already loaded in ODOO: %s' % f
             continue
 
         fullname = os.path.join(root, f)    
-        command = ['dropbox', 'sharelink', fullname]
+        command = ['dropbox.py', 'sharelink', f]#fullname]
         try:
             dropbox_link = subprocess.check_output(command)
             image_pool.write([image_db[f]], {
