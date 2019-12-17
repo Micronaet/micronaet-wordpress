@@ -28,9 +28,10 @@ import subprocess
 # -----------------------------------------------------------------------------
 # Read configuration parameter (2 Databases): 
 # -----------------------------------------------------------------------------
-for config_file in ('../openerp.cfg', '../gpb.openerp.cfg'):
+path = os.path.dirname(os.path.realpath(__file__))
+for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
+    cfg_file = os.path.expanduser(os.path.join(path, config_file))
     import pdb; pdb.set_trace()
-    cfg_file = os.path.expanduser(config_file)
 
     config = ConfigParser.ConfigParser()
     config.read([cfg_file])
