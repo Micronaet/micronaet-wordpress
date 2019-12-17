@@ -574,7 +574,7 @@ class ProductPublicCategory(orm.Model):
                 # =============================================================
                 # Excel log:
                 # -------------------------------------------------------------
-                row += 1
+                row += 1                
                 excel_pool.write_xls_line(ws_name, row, [
                     'Aggiornamento tessuti:',
                     ], default_format=excel_format['title'])
@@ -613,7 +613,9 @@ class ProductPublicCategory(orm.Model):
             except:
                 raise osv.except_osv(
                     _('Error'), 
-                    _('Wordpress server not answer, timeout!'),
+                    _('Wordpress server not answer, timeout! \n[%s]' % _
+                        sys.exc_info(),
+                        ),
                     )
 
         # ---------------------------------------------------------------------        
