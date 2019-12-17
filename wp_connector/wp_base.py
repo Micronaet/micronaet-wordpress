@@ -574,6 +574,41 @@ class ProductProductWebServer(orm.Model):
                     if image.album_id.id in server_album_ids]             
         return res
 
+    def _get_product_detail_items(
+            self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate 
+        '''    
+        res = {}
+        for line in self.browse(cr, uid, ids, context=context):
+            res[line.id] = {}
+
+            product = line.product_id
+            model = product.model_package_id
+            if model:
+                res[line.id] = {
+                    'pack_l': model.pack_width,
+                    'pack_h': model.pack_height,
+                    'pack_p': prmodeloduct.pack_depth,
+                    
+                    'weight': model.gross_weight,
+                    'weight_net': model.net_weight,
+
+                    'q_x_pack': model.q_x_pack,
+                    # pallet dimension
+                    }
+            else:
+                res[line.id] = {
+                    'pack_l': product.pack_l,
+                    'pack_h': product.pack_h,
+                    'pack_p': product.pack_p,
+                    
+                    'weight': product.weight,
+                    'weight_net': product.weight_net,
+
+                    'q_x_pack': product.q_x_pack,
+                    }
+        return res
+
     _columns = {
         'wp_it_id': fields.integer('WP it ID'),
         'wp_en_id': fields.integer('WP en ID'),
@@ -591,6 +626,43 @@ class ProductProductWebServer(orm.Model):
             type='boolean', string='Wordpress'),    
         #'lang_wp_ids': fields.one2many(
         #    'product.product.web.server.lang', 'web_id', 'WD ID'),
+        
+        # ---------------------------------------------------------------------
+        # Product related/linked fields:
+        # ---------------------------------------------------------------------
+        'model_package_id': fields.related(
+            'product_id', 'model_package_id', readonly=1,
+            type='many2one', relation='product.product.web.package', 
+            string='Modello imballo'),
+            
+        'pack_l': fields.function(
+            _get_product_detail_items, method=True, readonly=1,
+            type='float', string='L. Pack', 
+            ), 
+        'pack_h': fields.function(
+            _get_product_detail_items, method=True, readonly=1,
+            type='float', string='H. Pack', 
+            ), 
+        'pack_p': fields.function(
+            _get_product_detail_items, method=True, readonly=1,
+            type='float', string='P. Pack', 
+            ), 
+
+        'weight': fields.function(
+            _get_product_detail_items, method=True, readonly=1,
+            type='float', string='Peso lordo', 
+            ), 
+        'weight_net': fields.function(
+            _get_product_detail_items, method=True, readonly=1,
+            type='float', string='Peso netto', 
+            ), 
+
+        'q_x_pack': fields.function(
+            _get_product_detail_items, method=True, readonly=1,
+            type='float', string='Q. x Pack', 
+            ), 
+        # ---------------------------------------------------------------------
+
         'wp_type': fields.selection([
             ('simple', 'Simple product'),
             ('grouped', 'Grouped product'),
