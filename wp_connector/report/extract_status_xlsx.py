@@ -53,11 +53,21 @@ class ConnectorServer(orm.Model):
         def get_image_list(self, product, album_ids, context=None):
             ''' Fields function for calculate 
             '''     
+            if context is None:
+                context = {}
+            
+            image_mode = context.get('image_mode', 'filename')
+                
             res = ''
             for image in product.image_ids:
                 if image.album_id.id in album_ids:
-                    res += u'[%s: %s]' % (image.album_id.code, image.filename)
-            return res        
+                    if image_mode == 'filename':
+                        res += u'[%s: %s]' % (
+                            image.album_id.code, image.filename)
+                    else:        
+                        res += u'[%s: %s]' % (
+                            image.album_id.code, image.dropbox_link)                            
+            return res
         
         stock_status = True
 
@@ -100,7 +110,8 @@ class ConnectorServer(orm.Model):
             50, 10, 15,
             10, 10, 
             5, 20, 
-            20, 40,
+            20, 
+            40, 40, 
             ])
             
         # Print header
@@ -113,7 +124,7 @@ class ConnectorServer(orm.Model):
             'Categorie', 'Mag.', 'Prezzo',
             'Cat. Stat.', 'Peso', 
             'Mod. imb.', 'Imballo',
-            'Magazzino', 'Immagini'            
+            'Magazzino', 'Immagini', 'Link',
             ], default_format=excel_format['header'])
 
         line_ids = connector_pool.search(cr, uid, [
@@ -127,11 +138,11 @@ class ConnectorServer(orm.Model):
         selected = {}
         not_selected = []        
         for line in sorted(connector_pool.browse(
-                    cr, uid, line_ids, context=context), 
-                    key = lambda p: (
-                        p.product_id.default_code, 
-                        p.product_id.name),
-                    ):
+                cr, uid, line_ids, context=context), 
+                key = lambda p: (
+                    p.product_id.default_code, 
+                    p.product_id.name),
+                ):
             product = line.product_id
             default_code = product.default_code or ''
 
@@ -139,7 +150,10 @@ class ConnectorServer(orm.Model):
             # Parameters:
             # -----------------------------------------------------------------
             # Images:    
-            image = get_image_list(self, product, album_ids, context=context)
+            image = get_image_list(
+                self, product, album_ids, context=context)
+            dropbox_image = get_image_list(
+                self, product, album_ids, context={'image_mode': 'url'})
                     
             # Stock:        
             stock = int(product.mx_net_mrp_qty)
@@ -192,6 +206,7 @@ class ConnectorServer(orm.Model):
                         line.pack_l, line.pack_h, line.pack_p),
                     '%s (M. %s - B. %s)' % (net, stock, locked),
                     image,
+                    dropbox_image,
                     ], default_format=color_format['text'])
 
 
