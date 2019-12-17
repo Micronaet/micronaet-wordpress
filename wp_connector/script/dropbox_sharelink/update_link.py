@@ -86,7 +86,8 @@ for root, folders, files in os.walk(dropbox_path):
             image_pool.write([image_db[f]], {
                 'dropbox_link': dropbox_link.strip().rstrip('dl=0') + 'raw=1'
                 })
+            print '[INFO] Dropbox sharelink file %s' % fullname
         except:
-            print 'Cannot sharelink file %s' % fullname        
+            print '[ERROR] Cannot sharelink file %s' % fullname
     break
 
