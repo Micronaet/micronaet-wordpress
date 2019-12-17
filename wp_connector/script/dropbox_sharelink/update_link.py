@@ -79,9 +79,8 @@ for root, folders, files in os.walk(dropbox_path):
             print 'Not already loaded in ODOO: %s' % f
             continue
 
-        fullname = os.path.join(root, f)    
+        #fullname = os.path.join(root, f)    
         command = ['dropbox.py', 'sharelink', f]#fullname]
-        import pdb; pdb.set_trace()
         try:
             dropbox_link = subprocess.check_output(command)
             image_pool.write([image_db[f]], {
