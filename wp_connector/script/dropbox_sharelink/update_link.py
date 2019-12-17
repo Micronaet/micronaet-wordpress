@@ -66,7 +66,7 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
     image_pool = odoo.model('product.image.file')
     domain = [
         ('album_id', '=', album_id),
-        ('status', '!=', ('removed', 'product', 'format')), # Only OK!
+        #('status', '!=', ('removed', 'product', 'format')), # Only OK!
         ]
     if only_empty:
         domain.append(('dropbox_link', '=', False))
