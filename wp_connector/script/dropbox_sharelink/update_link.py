@@ -42,7 +42,7 @@ for config_file in ('../openerp.cfg', '../gpb.openerp.cfg'):
     album_id = int(config.get('odoo', 'album_id'))
     dropbox_path = config.get('odoo', 'dropbox_path')
     try:
-        only_empty = eval(config.get('odoo', 'empty'))
+        only_empty = eval(config.get('odoo', 'only_empty'))
     except:
         only_empty = False    
 
