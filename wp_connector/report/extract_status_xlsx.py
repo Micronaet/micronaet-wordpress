@@ -189,7 +189,7 @@ class ConnectorServer(orm.Model):
                     product.weight,
                     'X' if product.model_package_id else '',
                     '%s x %s x %s' % (
-                        product.pack_l, product.pack_h, product.pack_p),
+                        line.pack_l, line.pack_h, line.pack_p),
                     '%s (M. %s - B. %s)' % (net, stock, locked),
                     image,
                     ], default_format=color_format['text'])

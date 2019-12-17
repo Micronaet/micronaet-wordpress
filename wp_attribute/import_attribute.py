@@ -851,8 +851,12 @@ class ProductPublicCategory(orm.Model):
                         # TODO
                         # stock_quantity
                         # stock_status
-                        # weight
-                        # dimensions
+                        'weight': line.weight,
+                        'dimensions': {
+                            'lenght': line.pack_l,
+                            'height': line.pack_h,
+                            'width': line.pack_p,
+                            },
                         'stock_quantity': 
                             web_product_pool.get_existence_for_product(
                                 variant),
