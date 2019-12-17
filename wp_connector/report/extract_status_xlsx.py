@@ -199,6 +199,7 @@ class ConnectorServer(orm.Model):
                 ws_name, row, [
                     published,
                     default_code,
+                    line.wp_color_id.name or '',
                     short_description,  # product.name,
                     description,  # product.large_description or '',  
                     '', 
