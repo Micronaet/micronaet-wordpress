@@ -832,6 +832,7 @@ class ProductPublicCategory(orm.Model):
                 for line, fabric_code in variants:
                     variant = line.product_id
                     variant_code = variant.default_code
+                    import pdb; pdb.set_trace()
                     variant_id = wp_variant_lang_ref.get(
                         (variant_code, lang), False)
                     variant_it_id = wp_variant_lang_ref.get(
@@ -907,8 +908,6 @@ class ProductPublicCategory(orm.Model):
                     if image:
                         data['image'] = image
 
-                    #variant_id = variant_ids.get(
-                    #    (variant_code, lang), False)
                     if variant_id: # Update
                         operation = 'UPD'
                         call = 'products/%s/variations/%s' % (
