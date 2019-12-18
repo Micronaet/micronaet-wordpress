@@ -209,7 +209,7 @@ class ConnectorServer(orm.Model):
                     net,
                     product.lst_price,
                     product.statistic_category or '',
-                    product.weight,
+                    line.weight_net,
                     'X' if product.model_package_id else '',
                     '%s x %s x %s' % (
                         line.pack_l, line.pack_h, line.pack_p),
