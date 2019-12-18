@@ -74,7 +74,7 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
     image_ids = image_pool.search(domain)
     
     if not image_ids:
-        print 'No image exit in folder, exit'
+        print 'No image %s exit in folder, exit' % dbname
         sys.exit()
 
     print 'Found %s album image [ID %s]' % (len(image_ids), album_id)
@@ -82,7 +82,7 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
     for image in image_pool.browse(image_ids):
         image_db[image.filename] = image.id
 
-    print 'Search image in path %s' % dropbox_path
+    print '%s Search image in path %s' % (dbname, dropbox_path)
     for root, folders, files in os.walk(dropbox_path):
         os.chdir(root)
         total = len(files)
@@ -90,8 +90,8 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
         for f in files:
             i += 1
             if f not in image_db:
-                print 'Not on DB, not empty, not load album: %s [%s/%s]' % (
-                    f, i, total)
+                print '%s. Not on DB/not empty/not load album: %s [%s/%s]' % (
+                    dbname, f, i, total)
                 continue
 
             #fullname = os.path.join(root, f)    
@@ -99,18 +99,18 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
             try:
                 dropbox_link = subprocess.check_output(command)            
                 if 'responding' in dropbox_link:
-                    print '[ERROR] Dropbox not responding jump %s [%s/%s]' % (
-                        f, i, total)
+                    print '[ERR] %s Dropbox not responding jump %s [%s/%s]' % (
+                        dbname, f, i, total)
                     continue    
                     
                 image_pool.write([image_db[f]], {
                     'dropbox_link': 
                         dropbox_link.strip().rstrip('dl=0') + 'raw=1'
                     })
-                print '[INFO] Dropbox sharelink file %s [%s/%s]' % (
-                    f, i, total)
+                print '[INFO] %s Dropbox sharelink file %s [%s/%s]' % (
+                    dbname, f, i, total)
             except:
-                print '[ERROR] Cannot sharelink file %s [%s/%s]' % (
-                    f, i, total)
+                print '[ERR] %s Cannot sharelink file %s [%s/%s]' % (
+                    dbname, f, i, total)
         break
 
