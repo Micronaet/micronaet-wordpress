@@ -87,7 +87,6 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
     for image in image_pool.browse(image_ids):
         image_db[image.image_name] = image.id
 
-    import pdb; pdb.set_trace()
     print '%s Search image in path %s' % (dbname, dropbox_color_path)
     for root, folders, files in os.walk(dropbox_color_path):
         os.chdir(root)
