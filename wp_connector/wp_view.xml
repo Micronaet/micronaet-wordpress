@@ -16,6 +16,7 @@
                     <field name="box_depth" />
                     <field name="box_height" />
                     <field name="pallet_dimension" />
+                    <button name="auto_package_assign" string="Aggiorna" type="object" icon="gtk-refresh"/>
                 </tree>
             </field>
         </record>
