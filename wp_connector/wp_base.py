@@ -388,7 +388,7 @@ class ProductProductWebServer(orm.Model):
             price -= line.connector_id.discount * price
             
         price += line.connector_id.add_vat * price
-        if price < line.connector_id.min_price:
+        if price > line.connector_id.min_price:
             price = line.connector_id.min_price   
 
         # ADD approx?         
