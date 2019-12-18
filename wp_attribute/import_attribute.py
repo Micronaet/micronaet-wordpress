@@ -507,7 +507,6 @@ class ProductPublicCategory(orm.Model):
             key = name[:-3]
             lang = record['lang']
             lang_color_terms[lang][key] = record['id']
-        import pdb; pdb.set_trace()
 
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Brand Attribute)
@@ -633,6 +632,7 @@ class ProductPublicCategory(orm.Model):
         context['override_sku'] = '' # SKU not present for product 
         
         wp_variant_lang_ref = {}
+        import pdb; pdb.set_trace()
         for odoo_lang in sorted(product_db, key=lambda l: lang_sort(l)):
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
