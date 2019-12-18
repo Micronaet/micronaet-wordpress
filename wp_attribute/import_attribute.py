@@ -632,7 +632,6 @@ class ProductPublicCategory(orm.Model):
         context['override_sku'] = '' # SKU not present for product 
         
         wp_variant_lang_ref = {}
-        import pdb; pdb.set_trace()
         for odoo_lang in sorted(product_db, key=lambda l: lang_sort(l)):
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
@@ -792,7 +791,6 @@ class ProductPublicCategory(orm.Model):
                 #                       VARIANTS: Creation
                 # -------------------------------------------------------------
                 for item in res:
-                    import pdb; pdb.set_trace()
                     # No option
                     if not item['attributes'] or not item['attributes'][0][
                             'option']:
@@ -833,7 +831,6 @@ class ProductPublicCategory(orm.Model):
                 for line, fabric_code in variants:
                     variant = line.product_id
                     variant_code = variant.default_code
-                    import pdb; pdb.set_trace()
                     variant_id = wp_variant_lang_ref.get(
                         (variant_code, lang), False)
                     variant_it_id = wp_variant_lang_ref.get(
