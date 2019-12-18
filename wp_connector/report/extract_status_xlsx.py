@@ -111,7 +111,7 @@ class ConnectorServer(orm.Model):
             5, 15, 20,
             30, 70, 
             30, 70,
-            50, 10, 15,
+            50, 10, 15, 15, 
             10, 10, 
             5, 20, 
             20, 
@@ -125,7 +125,7 @@ class ConnectorServer(orm.Model):
             'Pubbl.', 'Codice', 'Colore',
             'Nome', 'Descrizione',  
             '(Name)', '(Description)',
-            'Categorie', 'Mag.', 'Prezzo',
+            'Categorie', 'Mag.', 'Prezzo ODOO', 'Prezzo WP',
             'Cat. Stat.', 'Peso', 
             'Mod. imb.', 'Imballo',
             'Magazzino', 'Immagini', 'Link',
@@ -194,7 +194,10 @@ class ConnectorServer(orm.Model):
             description = line.force_description or \
                 product.emotional_description or \
                 product.large_description or u''
-                
+            
+            odoo_price = item.force_price or product.lst_price
+            price = connector_pool.get_wp_price(item)
+    
             excel_pool.write_xls_line(
                 ws_name, row, [
                     published,
@@ -207,7 +210,9 @@ class ConnectorServer(orm.Model):
                     ', '.join(tuple(
                         [c.name for c in line.wordpress_categ_ids])),
                     net,
-                    product.lst_price,
+                    
+                    odoo_price,
+                    price,
                     product.statistic_category or '',
                     line.weight_net,
                     'X' if product.model_package_id else '',

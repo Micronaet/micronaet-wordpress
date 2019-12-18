@@ -377,6 +377,20 @@ class ProductProductWebServer(orm.Model):
         else: # odoo    
             return default_code.replace('&nbsp;', ' ')
 
+    def get_wp_price(self, line):
+        ''' Extract price depend on force, discount and VAT
+        '''
+        if item.force_price:
+            price = item.force_price
+        else:
+            price = product.lst_price
+            price -= item.connector_id.discount * price
+            
+        price += item.connector_id.add_vat * price
+        if price < item.connector_id.min_price:
+            price = item.connector_id.min_price            
+        return price
+ 
     def publish_now(self, cr, uid, ids, context=None):
         ''' Publish now button
             Used also for more than one elements (not only button click)
@@ -446,7 +460,7 @@ class ProductProductWebServer(orm.Model):
                 description = item.force_description or \
                     product.large_description or u''
                 short = name
-                price = u'%s' % (item.force_price or product.lst_price)
+                price = u'%s' % self.get_wp_price(item)
                 weight = u'%s' % product.weight
                 status = 'publish' if item.published else 'private'
                 stock_quantity = self.get_existence_for_product(product)
@@ -643,7 +657,6 @@ class ProductProductWebServer(orm.Model):
     _columns = {
         'wp_it_id': fields.integer('WP it ID'),
         'wp_en_id': fields.integer('WP en ID'),
-
         'wordpress_categ_ids': fields.many2many(
             'product.public.category', 'product_wp_rel', 
             'product_id', 'category_id', 
