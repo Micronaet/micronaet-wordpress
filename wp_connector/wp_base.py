@@ -300,7 +300,7 @@ class ProductProductWebServer(orm.Model):
         _logger.warning('Updating %s product...' % len(product_ids))
         return product_pool.write(cr, uid, product_ids, {
             'model_package_id': package_ids[0],
-            }, context=context)s
+            }, context=context)
     
     # -------------------------------------------------------------------------
     # Utility:
