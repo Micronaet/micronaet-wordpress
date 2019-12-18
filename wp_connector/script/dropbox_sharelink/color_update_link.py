@@ -55,7 +55,7 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
         verbose = False
 
     print 'Accesso: Server %s Database %s Read folder: %s [album: %s]' % (
-        server, dbname, dropbox_path, album_id)
+        server, dbname, dropbox_color_path, album_id)
 
     # -----------------------------------------------------------------------------
     # Connect to ODOO:
