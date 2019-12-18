@@ -195,8 +195,8 @@ class ConnectorServer(orm.Model):
                 product.emotional_description or \
                 product.large_description or u''
             
-            odoo_price = item.force_price or product.lst_price
-            price = connector_pool.get_wp_price(item)
+            odoo_price = line.force_price or product.lst_price
+            price = connector_pool.get_wp_price(line)
     
             excel_pool.write_xls_line(
                 ws_name, row, [
