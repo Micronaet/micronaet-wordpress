@@ -267,7 +267,7 @@ class ProductProductWebPackage(orm.Model):
         '''
         current = self.browse(cr, uid, ids, context=context)[0]
         
-        product_pool = self.pool.get('odoo.object')
+        product_pool = self.pool.get('product.product')
         product_ids = product_pool.search(cr, uid, [
             ('default_code', '=ilike', '%s%%' % current.name),
             ], context=context)
