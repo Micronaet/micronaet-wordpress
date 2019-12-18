@@ -41,7 +41,7 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
     server = config.get('dbaccess', 'server')
     port = config.get('dbaccess', 'port')   # verify if it's necessary: getint
 
-    album_id = int(config.get('odoo', 'album_id'))
+    connector_id = int(config.get('odoo', 'connector_id'))
     dropbox_color_path = config.get('odoo', 'dropbox_color_path')
     
     try:
@@ -71,7 +71,7 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
     import pdb; pdb.set_trace()
     image_pool = odoo.model('connector.product.color.dot')
     domain = [
-        ('album_id', '=', album_id),
+        ('connector_id', '=', connector_id),
         ]
 
     if only_empty:
@@ -83,7 +83,7 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
         print 'No image %s exit in folder, exit' % dbname
         sys.exit()
 
-    print 'Found %s album image [ID %s]' % (len(image_ids), album_id)
+    print 'Found %s connector image [ID %s]' % (len(image_ids), connector_id)
     image_db = {}
     for image in image_pool.browse(image_ids):
         image_db[image.filename] = image.id
@@ -97,7 +97,7 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
             i += 1
             if f not in image_db:
                 if verbose:
-                    print '%s. Not on DB/not empty/not load album: %s [%s/%s]' % (
+                    print '%s. Not on DB/not empty/not load connector: %s [%s/%s]' % (
                         dbname, f, i, total)
                 continue
 
