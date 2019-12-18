@@ -792,6 +792,7 @@ class ProductPublicCategory(orm.Model):
                 #                       VARIANTS: Creation
                 # -------------------------------------------------------------
                 for item in res:
+                    import pdb; pdb.set_trace()
                     # No option
                     if not item['attributes'] or not item['attributes'][0][
                             'option']:
