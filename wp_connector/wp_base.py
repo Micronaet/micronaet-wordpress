@@ -388,7 +388,9 @@ class ProductProductWebServer(orm.Model):
             
         price += item.connector_id.add_vat * price
         if price < item.connector_id.min_price:
-            price = item.connector_id.min_price            
+            price = item.connector_id.min_price   
+
+        # ADD approx?         
         return price
  
     def publish_now(self, cr, uid, ids, context=None):

@@ -840,6 +840,7 @@ class ProductPublicCategory(orm.Model):
                         (variant_code, default_lang), False)                    
 
                     # XXX Price for S (ingle)
+                    price = web_product_pool.get_wp_price(line)
 
                     # Description:
                     short_description = line.force_name or \
@@ -852,8 +853,7 @@ class ProductPublicCategory(orm.Model):
 
                     # Create or update variant:
                     data = {
-                        'regular_price': u'%s' % (
-                            line.force_price or variant.lst_price),
+                        'regular_price': u'%s' % price,
                         # sale_price (discounted)
                         'short_description': short_description,
                         'description': description,
