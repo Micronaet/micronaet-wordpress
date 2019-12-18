@@ -491,7 +491,6 @@ class ProductProductWebServer(orm.Model):
                 # -------------------------------------------------------------
                 #                         Update:
                 # -------------------------------------------------------------
-                print data
                 if wp_id:
                     try:
                         call = 'products/%s' % wp_id

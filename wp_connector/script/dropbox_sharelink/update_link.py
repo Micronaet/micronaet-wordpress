@@ -97,14 +97,19 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
             command = ['dropbox.py', 'sharelink', f]
             try:
                 dropbox_link = subprocess.check_output(command)            
+                if 'responding' in dropbox_link:
+                    print '[ERROR] Dropbox not responding jump %s [%s/%s]' % (
+                        f, i, total)
+                    continue    
+                    
                 image_pool.write([image_db[f]], {
                     'dropbox_link': 
                         dropbox_link.strip().rstrip('dl=0') + 'raw=1'
                     })
-                print '[INFO] Dropbox sharelink file %s [%s of %s]' % (
+                print '[INFO] Dropbox sharelink file %s [%s/%s]' % (
                     f, i, total)
             except:
-                print '[ERROR] Cannot sharelink file %s [%s of %s]' % (
+                print '[ERROR] Cannot sharelink file %s [%s/%s]' % (
                     f, i, total)
         break
 
