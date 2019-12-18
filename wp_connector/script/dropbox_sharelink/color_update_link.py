@@ -28,7 +28,6 @@ import subprocess
 # -----------------------------------------------------------------------------
 # Read configuration parameter (2 Databases): 
 # -----------------------------------------------------------------------------
-import pdb; pdb.set_trace()
 path = os.getcwd()
 #os.path.dirname(os.path.realpath(__file__))
 for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
@@ -69,6 +68,7 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
         )    
 
     # Pool used:
+    import pdb; pdb.set_trace()
     image_pool = odoo.model('connector.product.color.dot')
     domain = [
         ('album_id', '=', album_id),
