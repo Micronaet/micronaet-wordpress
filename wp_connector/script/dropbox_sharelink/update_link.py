@@ -90,7 +90,8 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
         for f in files:
             i += 1
             if f not in image_db:
-                print 'Not present on DB, not empty, not load album: %s' % f
+                print 'Not on DB, not empty, not load album: %s [%s/%s]' % (
+                    f, i, total)
                 continue
 
             #fullname = os.path.join(root, f)    
