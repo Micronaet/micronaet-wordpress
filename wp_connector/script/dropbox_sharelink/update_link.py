@@ -47,6 +47,10 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
         only_empty = eval(config.get('odoo', 'only_empty'))
     except:
         only_empty = False    
+    try:
+        verbose = eval(config.get('odoo', 'verbose'))
+    except:
+        verbose = False
 
     print 'Accesso: Server %s Database %s Read folder: %s [album: %s]' % (
         server, dbname, dropbox_path, album_id)
@@ -90,8 +94,9 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
         for f in files:
             i += 1
             if f not in image_db:
-                print '%s. Not on DB/not empty/not load album: %s [%s/%s]' % (
-                    dbname, f, i, total)
+                if verbose:
+                    print '%s. Not on DB/not empty/not load album: %s [%s/%s]' % (
+                        dbname, f, i, total)
                 continue
 
             #fullname = os.path.join(root, f)    
