@@ -800,8 +800,7 @@ class ProductPublicCategory(orm.Model):
                         wp_variant_lang_ref[(
                             web_product_pool.wp_clean_code(
                                 item['sku'], destination='odoo'), 
-                            item['lang'])] = item['id'],
-                            
+                            item['lang'])] = item['id']
                     
                         """
                         if lang == default_lang:
