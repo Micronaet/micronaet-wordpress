@@ -380,7 +380,6 @@ class ProductProductWebServer(orm.Model):
     def get_wp_price(self, line):
         ''' Extract price depend on force, discount and VAT
         '''
-        import pdb; pdb.set_trace()
         product = line.product_id
         if line.force_price:
             price = line.force_price
@@ -388,7 +387,7 @@ class ProductProductWebServer(orm.Model):
             price = product.lst_price * (
                 100.0 - line.connector_id.discount) / 100.0
             
-        price += (100.0 + line.connector_id.add_vat) * price / 100.0
+        price += line.connector_id.add_vat * price / 100.0
         if price < line.connector_id.min_price:
             price = line.connector_id.min_price   
 
