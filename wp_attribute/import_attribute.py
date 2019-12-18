@@ -876,9 +876,9 @@ class ProductPublicCategory(orm.Model):
                             }]
                         }
                         
-                    data['sku'] = variant_code # used always?
+                    data['sku'] = self.wp_clean_code(variant_code) # used always?
                     if default_lang == lang: # Add language default ref.
-                        # data['sku'] = variant_code
+                        # data['sku'] = self.wp_clean_code(variant_code)
                         pass
                     else:
                         if not variant_it_id:

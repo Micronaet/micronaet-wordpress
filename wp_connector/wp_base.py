@@ -349,6 +349,11 @@ class ProductProductWebServer(orm.Model):
             'nodestroy': False,
             }
 
+    def wp_clean_code(self, default_code):
+        ''' Return default code for Wordpress
+        '''
+        return default_code.replace(' ', '&nbsp;')
+
     def publish_now(self, cr, uid, ids, context=None):
         ''' Publish now button
             Used also for more than one elements (not only button click)
@@ -458,7 +463,7 @@ class ProductProductWebServer(orm.Model):
                     # Numeric data:
                     data.update({
                         'type': item.wp_type,
-                        'sku': sku,
+                        'sku': self.wp_clean_code(sku),
                         'regular_price': price,
                         # sale_price (discounted)
                         'stock_quantity': stock_quantity,
