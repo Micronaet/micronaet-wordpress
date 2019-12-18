@@ -68,7 +68,6 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
         )    
 
     # Pool used:
-    import pdb; pdb.set_trace()
     image_pool = odoo.model('connector.product.color.dot')
     domain = [
         ('connector_id', '=', connector_id),
@@ -83,11 +82,12 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
         print 'No image %s exit in folder, exit' % dbname
         sys.exit()
 
-    print 'Found %s connector image [ID %s]' % (len(image_ids), connector_id)
+    print 'Found %s connector [ID %s]' % (len(image_ids), connector_id)
     image_db = {}
     for image in image_pool.browse(image_ids):
-        image_db[image.filename] = image.id
+        image_db[image.image_name] = image.id
 
+    import pdb; pdb.set_trace()
     print '%s Search image in path %s' % (dbname, dropbox_color_path)
     for root, folders, files in os.walk(dropbox_color_path):
         os.chdir(root)
