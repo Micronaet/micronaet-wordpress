@@ -144,7 +144,7 @@ class ProductProduct(orm.Model):
                     }, context=context)    
 
                 _logger.warning('Code 6 "%s" found #%s !' % (
-                    search_code, len(package_ids))
+                    search_code, len(package_ids)))
                 continue
 
             # Mode 3:
@@ -158,7 +158,7 @@ class ProductProduct(orm.Model):
                     }, context=context)
                 _logger.warning(
                     'Auto assign package: Code 3 "%s" found #%s !' % (
-                        search_code, len(package_ids))
+                        search_code, len(package_ids)))
             else:    
                 _logger.error(
                     'Auto assign package: Code not found %s !' % default_code)
