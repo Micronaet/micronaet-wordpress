@@ -385,9 +385,9 @@ class ProductProductWebServer(orm.Model):
             price = line.force_price
         else:
             price = product.lst_price
-            price -= line.connector_id.discount * price
+            price -= line.connector_id.discount * price / 100.0
             
-        price += line.connector_id.add_vat * price
+        price += line.connector_id.add_vat * price / 100.0
         if price > line.connector_id.min_price:
             price = line.connector_id.min_price   
 
