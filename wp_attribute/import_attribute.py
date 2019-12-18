@@ -354,7 +354,6 @@ class ProductPublicCategory(orm.Model):
         lang_color_db = {} # Master list for color in default lang
         product_default_color = {} # First variant showed
 
-        import pdb; pdb.set_trace()
         parent_total = 0
         for odoo_lang in langs:
             lang = odoo_lang[:2]
@@ -508,6 +507,7 @@ class ProductPublicCategory(orm.Model):
             key = name[:-3]
             lang = record['lang']
             lang_color_terms[lang][key] = record['id']
+        import pdb; pdb.set_trace()
 
         # ---------------------------------------------------------------------        
         #                        TERMS: (for Brand Attribute)
