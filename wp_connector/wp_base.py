@@ -258,6 +258,23 @@ class ProductProductWebPackage(orm.Model):
     _name = 'product.product.web.package'
     _description = 'Package data'    
     _order = 'name'
+
+    # -------------------------------------------------------------------------
+    # Button:
+    # -------------------------------------------------------------------------
+    def auto_package_assign(self, cr, uid, ids, context=None):
+        ''' Auto assign code
+        '''
+        current = self.browse(cr, uid, ids, context=context)[0]
+        
+        product_pool = self.pool.get('odoo.object')
+        product_ids = product_pool.search(cr, uid, [
+            ('default_code', '=ilike', '%s%%' % current.name),
+            ], context=context)
+        _logger.warning('Updating %s product...' % len(product_ids))
+        return product_pool.write(cr, uid, product_ids, {
+            'model_package_id': package_ids[0],
+            }, context=context)
     
     _columns = {
         'name': fields.char('Codice padre', size=10, required=True),
@@ -284,23 +301,6 @@ class ProductProductWebServer(orm.Model):
     """
 
     _inherit = 'product.product.web.server'
-    
-    # -------------------------------------------------------------------------
-    # Button:
-    # -------------------------------------------------------------------------
-    def auto_package_assign(self, cr, uid, ids, context=None):
-        ''' Auto assign code
-        '''
-        current = self.browse(cr, uid, ids, context=context)[0]
-        
-        product_pool = self.pool.get('odoo.object')
-        product_ids = product_pool.search(cr, uid, [
-            ('default_code', '=ilike', '%s%%' % current.name),
-            ], context=context)
-        _logger.warning('Updating %s product...' % len(product_ids))
-        return product_pool.write(cr, uid, product_ids, {
-            'model_package_id': package_ids[0],
-            }, context=context)
     
     # -------------------------------------------------------------------------
     # Utility:
