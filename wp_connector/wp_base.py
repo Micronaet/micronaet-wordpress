@@ -349,10 +349,13 @@ class ProductProductWebServer(orm.Model):
             'nodestroy': False,
             }
 
-    def wp_clean_code(self, default_code):
+    def wp_clean_code(self, default_code, destination='wp'):
         ''' Return default code for Wordpress
         '''
-        return default_code.replace(' ', '&nbsp;')
+        if destination == 'wp':        
+            return default_code.replace(' ', '&nbsp;')
+        else: # odoo    
+            return default_code.replace('&nbsp;', ' ')
 
     def publish_now(self, cr, uid, ids, context=None):
         ''' Publish now button

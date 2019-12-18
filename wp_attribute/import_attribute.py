@@ -797,8 +797,11 @@ class ProductPublicCategory(orm.Model):
                         data['delete'].append(item['id'])
                     else:
                         # TODO TEST BETTER:
-                        wp_variant_lang_ref[
-                            (item['sku'], item['lang'])] = item['id']
+                        wp_variant_lang_ref[(
+                            web_product_pool.wp_clean_code(
+                                item['sku'], destination='odoo'), 
+                            item['lang'])] = item['id'],
+                            
                     
                         """
                         if lang == default_lang:
