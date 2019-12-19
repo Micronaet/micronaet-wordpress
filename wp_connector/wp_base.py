@@ -501,28 +501,27 @@ class ProductProductWebServer(orm.Model):
                 if images:
                     data['images'] = images
 
-                #if lang == default_lang:
-                # Numeric data:
-                data.update({
-                    'type': item.wp_type,
-                    'sku': self.wp_clean_code(sku),
-                    'regular_price': price,
-                    # sale_price (discounted)
-                    'stock_quantity': stock_quantity,
-                    'status': status,
-                    'catalog_visibility': 'visible', #catalog  search  hidden
-                    
-                    # Forced in variant:
-                    #'weight': weight,
-                    #'dimensions': {
-                    #   'width': '%s' % product.width, 
-                    #   'length': '%s' % product.length,
-                    #   'height': '%s' % product.height,
-                    #   }, 
-                    })
+                if lang == default_lang:
+                    # Numeric data:
+                    data.update({
+                        'type': item.wp_type,
+                        'sku': self.wp_clean_code(sku),
+                        'regular_price': price,
+                        # sale_price (discounted)
+                        'stock_quantity': stock_quantity,
+                        'status': status,
+                        'catalog_visibility': 'visible', #catalog  search  hidden
                         
-                if lang != default_lang:
-                #else: # Other lang (only translation
+                        # Forced in variant:
+                        #'weight': weight,
+                        #'dimensions': {
+                        #   'width': '%s' % product.width, 
+                        #   'length': '%s' % product.length,
+                        #   'height': '%s' % product.height,
+                        #   }, 
+                        })
+                        
+                else: # Other lang (only translation
                     if not wp_it_id: 
                         _logger.error(
                             'Product %s without default IT [%s]' % (
