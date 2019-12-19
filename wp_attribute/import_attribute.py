@@ -378,7 +378,7 @@ class ProductPublicCategory(orm.Model):
                     default_code = product.default_code or ''
                     color = variant.wp_color_id.name
                     attribute = color + '-' + lang
-                    fabric_color_odoo[attribute] = color
+                    fabric_color_odoo[attribute] = variant.wp_color_id
                     
                     # Save color for attribute update
                     if attribute not in lang_color_db[lang]:
