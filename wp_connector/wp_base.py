@@ -521,7 +521,8 @@ class ProductProductWebServer(orm.Model):
                     #   }, 
                     })
                         
-                else: # Other lang (only translation
+                if lang != default_lang:
+                #else: # Other lang (only translation
                     if not wp_it_id: 
                         _logger.error(
                             'Product %s without default IT [%s]' % (
