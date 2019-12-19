@@ -714,6 +714,26 @@ class ProductProductWebServer(orm.Model):
             _get_product_detail_items, method=True, readonly=1,
             type='float', string='Q. x Pack', multi=True,
             ), 
+
+        # ---------------------------------------------------------------------
+        # Link related to product
+        # ---------------------------------------------------------------------
+        'product_pack_l': fields.related(
+            'product_id', 'pack_l', type='float', string='Pack L prodotto'),
+        'product_pack_h': fields.related(
+            'product_id', 'pack_h', type='float', string='Pack H prodotto'),
+        'product_pack_p': fields.related(
+            'product_id', 'pack_p', type='float', string='Pack P prodotto'),
+
+        'product_weight': fields.related(
+            'product_id', 'weight', type='float', string='Peso netto prodotto'),
+        'product_weight_net': fields.related(
+            'product_id', 'weight_net', type='float', string='Peso lordo prodotto'),
+
+        'product_lst_price': fields.related(
+            'product_id', 'lst_price', type='float', string='Listino'),
+        'product_q_x_pack': fields.related(
+            'product_id', 'q_x_pack', type='float', string='Q x pack prodotto'),
         # ---------------------------------------------------------------------
 
         'wp_type': fields.selection([

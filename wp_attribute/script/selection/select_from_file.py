@@ -41,7 +41,7 @@ column = {
     'color': 5,
     }
     
-file_in = './product.xlsx'
+file_in = './SELEZIONE FIAM E INDOOR-3.xlsx'
 row_start = 1
 
 # -----------------------------------------------------------------------------
@@ -112,10 +112,10 @@ for row in range(row_start, WS.nrows):
     # -------------------------------------------------------------------------
     default_code = WS.cell(row, column['code']).value
     selection = (WS.cell(row, column['selection']).value or '').upper()
-    mrp = (WS.cell(row, column['mrp']).value or '').upper()
-    short_text = WS.cell(row, column['short']).value
-    long_text = WS.cell(row, column['long']).value
-    color = WS.cell(row, column['color']).value or 'NON SELEZIONABILE'
+    #mrp = (WS.cell(row, column['mrp']).value or '').upper()
+    #short_text = WS.cell(row, column['short']).value
+    #long_text = WS.cell(row, column['long']).value
+    #color = WS.cell(row, column['color']).value or 'NON SELEZIONABILE'
 
     if not default_code or selection not in ('X', 'O'):
         print '%s. Selezione non corretta: %s [%s]' % (
@@ -151,6 +151,10 @@ for row in range(row_start, WS.nrows):
         ])
     if product_ids:
         product_id = product_ids[0]
+    else:
+        print '%s. Non trovato: %s [%s]' % (
+            i, default_code, selection)
+        continue    
 
     # -------------------------------------------------------------------------
     #                         Product:
@@ -183,10 +187,12 @@ for row in range(row_start, WS.nrows):
             'wp_parent_template': True,
             'wp_parent_id': False,
             })
+        '''
         if mrp:
             data.update({
             'wp_parent_code': default_code[:6],
             })
+        '''    
         # XXX wp_it_id problem!
     else:  # Variation:
         data.update({

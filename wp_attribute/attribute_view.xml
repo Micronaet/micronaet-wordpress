@@ -153,6 +153,16 @@
                                     <group colspan="4" col="4">
                                         <field name="model_package_id" />
                                         <separator string="Da anagrafica prodotto:" colspan="4" /><!--attrs="{'invisible': [('model_package_id','!=',False)]}"-->
+                                        <field name="product_pack_l" />
+                                        <field name="product_pack_h" />
+                                        <field name="product_pack_p" />
+                                        
+                                        <field name="product_weight" />
+                                        <field name="product_weight_net" />
+                                        
+                                        <field name="product_q_x_pack" />                                        
+
+                                        <separator string="Preview del sito:" colspan="4" /><!--attrs="{'invisible': [('model_package_id','!=',False)]}"-->
                                         <field name="pack_l" />
                                         <field name="pack_h" />
                                         <field name="pack_p" />
