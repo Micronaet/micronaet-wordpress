@@ -498,28 +498,28 @@ class ProductProductWebServer(orm.Model):
                     'categories': categories,
                     'wp_type': item.wp_type,
                     }
+                if images:
+                    data['images'] = images
 
-                if lang == default_lang:
-                    # Numeric data:
-                    data.update({
-                        'type': item.wp_type,
-                        'sku': self.wp_clean_code(sku),
-                        'regular_price': price,
-                        # sale_price (discounted)
-                        'stock_quantity': stock_quantity,
-                        'status': status,
-                        'catalog_visibility': 'visible', #catalog  search  hidden
-                        
-                        # Forced in variant:
-                        #'weight': weight,
-                        #'dimensions': {
-                        #   'width': '%s' % product.width, 
-                        #   'length': '%s' % product.length,
-                        #   'height': '%s' % product.height,
-                        #   }, 
-                        })
-                    if images:
-                        data['images'] = images
+                #if lang == default_lang:
+                # Numeric data:
+                data.update({
+                    'type': item.wp_type,
+                    'sku': self.wp_clean_code(sku),
+                    'regular_price': price,
+                    # sale_price (discounted)
+                    'stock_quantity': stock_quantity,
+                    'status': status,
+                    'catalog_visibility': 'visible', #catalog  search  hidden
+                    
+                    # Forced in variant:
+                    #'weight': weight,
+                    #'dimensions': {
+                    #   'width': '%s' % product.width, 
+                    #   'length': '%s' % product.length,
+                    #   'height': '%s' % product.height,
+                    #   }, 
+                    })
                         
                 else: # Other lang (only translation
                     if not wp_it_id: 
