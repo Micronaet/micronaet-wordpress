@@ -344,13 +344,14 @@ class ProductPublicCategory(orm.Model):
         product_ids = web_product_pool.search(cr, uid, [
             ('connector_id', '=', ids[0]),
             ('wp_parent_template', '=', True),
-            #('product_id.default_code', '=ilike', '127   %'), # REMOVE XXX
+            ('product_id.default_code', '=ilike', '127   %'), # REMOVE XXX
             ], context=context)
         #product_ids = product_ids[:3]  # XXX remove!!!
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
         product_db = {} # Master database for lang - parent - child
         lang_color_db = {} # Master list for color in default lang
+        fabric_color_odoo = {} # Dropbox link for image
         product_default_color = {} # First variant showed
 
         parent_total = 0
@@ -362,7 +363,7 @@ class ProductPublicCategory(orm.Model):
             # Start with lang level:
             product_db[odoo_lang] = {}
             lang_color_db[lang] = []
-            
+
             for parent in web_product_pool.browse(  # Default_selected product:
                     cr, uid, product_ids, context=context_lang): 
                 parent_total += 1
@@ -377,6 +378,7 @@ class ProductPublicCategory(orm.Model):
                     default_code = product.default_code or ''
                     color = variant.wp_color_id.name
                     attribute = color + '-' + lang
+                    fabric_color_odoo[attribute] = color
                     
                     # Save color for attribute update
                     if attribute not in lang_color_db[lang]:
@@ -535,10 +537,16 @@ class ProductPublicCategory(orm.Model):
                 }
             for attribute in lang_color_db[lang]:
                 key = attribute[:-3] # Key element (without -it or -en)
+                odoo_color = fabric_color_odoo[attribute]
                 item = {
                     'name': attribute,
                     'lang': lang,
+                    'color_name': odoo_color.hint,
                     }
+
+                # Image part:
+                if odoo_color.dropbox_image:
+                    item['color_image'] = odoo_color.dropbox_image
                     
                 if lang != default_lang: # Different language:
                     # TODO correct 
