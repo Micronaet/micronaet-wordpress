@@ -563,7 +563,9 @@ class ProductPublicCategory(orm.Model):
                         # TODO manage?
                         
                 # Only create:
-                if key not in lang_color_terms[lang]:
+                if key in lang_color_terms[lang]:
+                    data['update'].append(item)
+                else:
                     data['create'].append(item)
 
             # -----------------------------------------------------------------
