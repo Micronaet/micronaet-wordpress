@@ -125,6 +125,7 @@ for row in range(row_start, WS.nrows):
     # -------------------------------------------------------------------------
     # Color:
     # -------------------------------------------------------------------------
+    '''
     if mrp:
         color = '%s-%s' % (
             default_code[6:8].strip().upper() or 'NE',  # XXX Neutro
@@ -143,6 +144,7 @@ for row in range(row_start, WS.nrows):
             'connector_id': connector_id,
             'name': color,
             }).id
+    '''
 
     product_ids = product_pool.search([
         ('default_code', '=', default_code),
@@ -153,6 +155,7 @@ for row in range(row_start, WS.nrows):
     # -------------------------------------------------------------------------
     #                         Product:
     # -------------------------------------------------------------------------
+    '''
     product_pool.write(product_ids, {
         'emotional_short_description': short_text,
         'emotional_description': long_text,
@@ -160,13 +163,16 @@ for row in range(row_start, WS.nrows):
 
     # Update package:
     product_pool.auto_package_assign(product_ids)
+    '''    
     
     # -------------------------------------------------------------------------
     #                         Web selection:
     # -------------------------------------------------------------------------
     data = {
         'connector_id': connector_id,
-        'wp_color_id': wp_color_id,
+        # Removed temporary
+        #'wp_color_id': wp_color_id,
+        
         'published': True,
         'product_id': product_id,             
         'wp_type': 'variable',
