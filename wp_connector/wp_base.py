@@ -492,7 +492,7 @@ class ProductProductWebServer(orm.Model):
                     'name': name,
                     'description': description,
                     'short_description': name,
-                    #'sku': default_code, # XXX not needed
+                    'sku': self.wp_clean_code(sku), # XXX not needed
                     'lang': lang,
                     # It doesn't update:
                     'categories': categories,
@@ -505,7 +505,7 @@ class ProductProductWebServer(orm.Model):
                     # Numeric data:
                     data.update({
                         'type': item.wp_type,
-                        'sku': self.wp_clean_code(sku),
+                        #'sku': self.wp_clean_code(sku),
                         'regular_price': price,
                         # sale_price (discounted)
                         'stock_quantity': stock_quantity,
