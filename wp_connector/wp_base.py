@@ -463,7 +463,7 @@ class ProductProductWebServer(orm.Model):
                 # Description: 
                 name = item.force_name or product.name or u''
                 description = item.force_description or \
-                    product.emotional_description or \                    
+                    product.emotional_description or \                 
                     product.large_description or u''
                 short = product.emotional_short_description or name or u''
 
