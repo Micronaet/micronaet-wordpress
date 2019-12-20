@@ -101,7 +101,7 @@
                     <field name="force_ean13"/>
                     <field name="force_price"/>
                     <field name="force_min_stock"/>-->
-                    <!--<button name="publish_now" string="Publish now" type="object"/>-->
+                    <button name="publish_master_now" string="Publish this now" type="object"/>
                 </tree>           
             </field>            
         </record>        
@@ -186,7 +186,8 @@
                                     </group>
                                 </page>
                             </notebook>
-                            <separator string="Wordpress link:" colspan="4"/>
+                            <separator string="Wordpress link:" colspan="3"/>
+                            <button name="clean_wp_reference" string="Clean" type="object" confirm="Clean WP reference only if this product is deleted from WP, confirm?" colspan="1"/>
                             <field name="wp_it_id" readonly="1"/>
                             <field name="wp_en_id" readonly="1"/>
                         </group>    

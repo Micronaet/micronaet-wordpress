@@ -52,6 +52,25 @@ class ProductProductWebServerIntegration(orm.Model):
     # -------------------------------------------------------------------------
     # Button event:
     # -------------------------------------------------------------------------
+    def clean_wp_reference(self, cr, uid, ids, context=None):
+        ''' Clean procedura for WP product deleted
+        '''
+        return self.write(cr, uid, ids, {
+            'wp_it_id': False,
+            'wp_en_id': False,
+            }, context=context)
+            
+    def publish_master_now(self, cr, uid, ids, context=None):
+        ''' Publish but only this
+        '''
+        if context is None:
+            context = {}        
+            
+        context['domain_extend'] = [
+            ('id', '=', ids[0]),
+            ]    
+        return self.publish_attribute_now(cr, uid, ids, context=context)    
+        
     def link_variant_now(self, cr, uid, ids, context=None):
         ''' Link all child variant
         '''
@@ -341,12 +360,15 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         #                          COLLECT DATA: 
         # ---------------------------------------------------------------------
-        product_ids = web_product_pool.search(cr, uid, [
+        domain = [
             ('connector_id', '=', ids[0]),
             ('wp_parent_template', '=', True),
-            ('product_id.default_code', '=', 'OM46116'), # REMOVE XXX
-            ], context=context)
-        #product_ids = product_ids[:10]  # XXX remove!!!
+            ]
+        domain_extend = context.get('domain_extend')    
+        if domain_extend:
+            domain.extend(domain_extend)
+            
+        product_ids = web_product_pool.search(cr, uid, domain, context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
         product_db = {} # Master database for lang - parent - child
