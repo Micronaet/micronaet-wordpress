@@ -344,7 +344,7 @@ class ProductPublicCategory(orm.Model):
         product_ids = web_product_pool.search(cr, uid, [
             ('connector_id', '=', ids[0]),
             ('wp_parent_template', '=', True),
-            ('product_id.default_code', '=ilike', '127   %'), # REMOVE XXX
+            #('product_id.default_code', '=ilike', '127   %'), # REMOVE XXX
             ], context=context)
         #product_ids = product_ids[:3]  # XXX remove!!!
         _logger.warning('Product for this connector: %s...' % len(product_ids))
