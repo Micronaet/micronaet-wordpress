@@ -63,13 +63,19 @@ class ProductProductWebServerIntegration(orm.Model):
     def publish_master_now(self, cr, uid, ids, context=None):
         ''' Publish but only this
         '''
+        connector_pool = self.pool.get('connector.server')
         if context is None:
             context = {}        
-            
+
+        
+        current = self.browse(cr, uid, ids, context=context)[0]    
+        connector_id = current.connector_id.id
+        
         context['domain_extend'] = [
             ('id', '=', ids[0]),
             ]    
-        return self.publish_attribute_now(cr, uid, ids, context=context)    
+        return connector_pool.publish_attribute_now(
+            cr, uid, [connector_id], context=context)    
         
     def link_variant_now(self, cr, uid, ids, context=None):
         ''' Link all child variant
