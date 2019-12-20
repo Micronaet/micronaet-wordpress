@@ -941,9 +941,8 @@ class ProductPublicCategory(orm.Model):
                                 }
                             break # Only one image in variant!    
                      
-                    # TODO remove:           
-                    #if image:
-                    #    data['image'] = image
+                    if image:
+                        data['image'] = image
 
                     if variant_id: # Update
                         operation = 'UPD'

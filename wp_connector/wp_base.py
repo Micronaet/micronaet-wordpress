@@ -479,12 +479,12 @@ class ProductProductWebServer(orm.Model):
                 # Images block:
                 # -------------------------------------------------------------
                 images = [] 
-                '''for image in item.wp_dropbox_images_ids:
+                for image in item.wp_dropbox_images_ids:
                     dropbox_link = image.dropbox_link
                     if dropbox_link and dropbox_link.startswith('http'):                        
                         images.append({
                             'src': image.dropbox_link,
-                            })'''
+                            })
 
                 # -------------------------------------------------------------
                 # Category block:
