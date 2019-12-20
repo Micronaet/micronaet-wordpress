@@ -367,6 +367,7 @@ class ProductPublicCategory(orm.Model):
         domain_extend = context.get('domain_extend')    
         if domain_extend:
             domain.extend(domain_extend)
+            _logger.warning('Domain extended: %s' % (domain, ))
             
         product_ids = web_product_pool.search(cr, uid, domain, context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
