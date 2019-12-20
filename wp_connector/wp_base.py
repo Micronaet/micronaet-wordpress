@@ -597,8 +597,6 @@ class ProductProductWebServer(orm.Model):
                             }, context=context)
 
                 # Save translation of ID (for language product)   
-                #if wp_id and lang == default_lang: 
-                #    translation_of[default_code] = wp_id        
                 if default_code not in translation_lang:
                     translation_lang[default_code] = {}
                 translation_lang[default_code][lang] = (wp_id, name)

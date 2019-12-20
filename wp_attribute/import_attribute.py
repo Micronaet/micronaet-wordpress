@@ -344,7 +344,7 @@ class ProductPublicCategory(orm.Model):
         product_ids = web_product_pool.search(cr, uid, [
             ('connector_id', '=', ids[0]),
             ('wp_parent_template', '=', True),
-            #('product_id.default_code', '=ilike', '127   %'), # REMOVE XXX
+            ('product_id.default_code', '=', 'OM46116'), # REMOVE XXX
             ], context=context)
         #product_ids = product_ids[:3]  # XXX remove!!!
         _logger.warning('Product for this connector: %s...' % len(product_ids))
@@ -637,8 +637,6 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         translation_lang = {}
         parent_unset = []
-
-        #context['override_sku'] = '' # SKU not present for product 
         
         wp_variant_lang_ref = {}
         for odoo_lang in sorted(product_db, key=lambda l: lang_sort(l)):
@@ -659,6 +657,7 @@ class ProductPublicCategory(orm.Model):
                 translation_lang.update(
                     web_product_pool.publish_now(
                         cr, uid, [master_record.id], context=context))
+                # TODO Launch only for default lang? (this run twice!)
                 # REMOVE: Update brand terms for product:
 
                 # =============================================================
