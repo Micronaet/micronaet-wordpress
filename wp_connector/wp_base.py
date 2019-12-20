@@ -62,7 +62,7 @@ class ConnectorServer(orm.Model):
     def get_wp_connector(self, cr, uid, ids, context=None):
         ''' Connect with Word Press API management
         '''        
-        timeout = 300 # TODO parametrize
+        timeout = 400 # TODO parametrize
 
         connector = self.browse(cr, uid, ids, context=context)[0]
         if not connector.wordpress:
