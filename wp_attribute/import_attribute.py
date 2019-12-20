@@ -879,13 +879,12 @@ class ProductPublicCategory(orm.Model):
                     price = web_product_pool.get_wp_price(line)
 
                     # Description:
-                    short_description = line.force_name or \
-                        variant.emotional_short_description or \
-                        variant.name or u''
-
+                    name = line.force_name or variant.name or u''
                     description = line.force_description or \
                         variant.emotional_description or \
                         variant.large_description or u''
+                    short_description = line.force_name or \
+                        variant.emotional_short_description or name
 
                     # Create or update variant:
                     data = {
@@ -941,9 +940,10 @@ class ProductPublicCategory(orm.Model):
                                 'src': item.dropbox_link,
                                 }
                             break # Only one image in variant!    
-                                
-                    if image:
-                        data['image'] = image
+                     
+                    # TODO remove:           
+                    #if image:
+                    #    data['image'] = image
 
                     if variant_id: # Update
                         operation = 'UPD'

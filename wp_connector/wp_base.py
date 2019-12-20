@@ -459,10 +459,14 @@ class ProductProductWebServer(orm.Model):
                     sku = default_code
                 else:    
                     sku = override_sku
+
+                # Description: 
                 name = item.force_name or product.name or u''
                 description = item.force_description or \
+                    product.emotional_description or \                    
                     product.large_description or u''
-                short = name
+                short = product.emotional_short_description or name or u''
+
                 price = u'%s' % self.get_wp_price(item)
                 weight = u'%s' % product.weight
                 status = 'publish' if item.published else 'private'
@@ -475,12 +479,12 @@ class ProductProductWebServer(orm.Model):
                 # Images block:
                 # -------------------------------------------------------------
                 images = [] 
-                for image in item.wp_dropbox_images_ids:
+                '''for image in item.wp_dropbox_images_ids:
                     dropbox_link = image.dropbox_link
                     if dropbox_link and dropbox_link.startswith('http'):                        
                         images.append({
                             'src': image.dropbox_link,
-                            })
+                            })'''
 
                 # -------------------------------------------------------------
                 # Category block:
@@ -491,7 +495,7 @@ class ProductProductWebServer(orm.Model):
                 data = {
                     'name': name,
                     'description': description,
-                    'short_description': name,
+                    'short_description': short,
                     'sku': self.wp_clean_code(sku), # XXX not needed
                     'lang': lang,
                     # It doesn't update:
