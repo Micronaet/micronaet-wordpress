@@ -344,9 +344,9 @@ class ProductPublicCategory(orm.Model):
         product_ids = web_product_pool.search(cr, uid, [
             ('connector_id', '=', ids[0]),
             ('wp_parent_template', '=', True),
-            ('product_id.default_code', '=', 'OM46116'), # REMOVE XXX
+            #('product_id.default_code', '=', 'OM46116'), # REMOVE XXX
             ], context=context)
-        #product_ids = product_ids[:10]  # XXX remove!!!
+        product_ids = product_ids[:10]  # XXX remove!!!
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
         product_db = {} # Master database for lang - parent - child
@@ -652,28 +652,27 @@ class ProductPublicCategory(orm.Model):
                 # -------------------------------------------------------------
                 # TEMPLATE PRODUCT: Upload product reference:
                 # -------------------------------------------------------------
-                if lang == default_lang:
-                    # 1. Call upload original procedure:
-                    context['log_excel'] = []                
-                    translation_lang.update(
-                        web_product_pool.publish_now(
-                            cr, uid, [master_record.id], context=context))
-                    # TODO Launch only for default lang? (this run twice!)
-                    # REMOVE: Update brand terms for product:
+                # 1. Call upload original procedure:
+                context['log_excel'] = []
+                translation_lang.update(
+                    web_product_pool.publish_now(
+                        cr, uid, [master_record.id], context=context))
+                # TODO Launch only for default lang? (this run twice!)
+                # REMOVE: Update brand terms for product:
 
-                    # =========================================================
-                    # Excel log:
-                    # ---------------------------------------------------------
+                # =============================================================
+                # Excel log:
+                # -------------------------------------------------------------
+                row += 1
+                excel_pool.write_xls_line(ws_name, row, [
+                    'Pubblicazione prodotto base: %s' % master_code,
+                    ], default_format=excel_format['title'])
+
+                for log in context['log_excel']:
                     row += 1
-                    excel_pool.write_xls_line(ws_name, row, [
-                        'Pubblicazione prodotto base: %s' % master_code,
-                        ], default_format=excel_format['title'])
-
-                    for log in context['log_excel']:
-                        row += 1
-                        excel_pool.write_xls_line(ws_name, row, log, 
-                            default_format=excel_format['text'], col=1)
-                    # =========================================================
+                    excel_pool.write_xls_line(ws_name, row, log, 
+                        default_format=excel_format['text'], col=1)
+                # =============================================================
 
                 lang_product_default_color = product_default_color[
                     (master_record, lang)]
