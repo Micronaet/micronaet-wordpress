@@ -119,7 +119,7 @@ class ProductProductWebServerIntegration(orm.Model):
             'wp_en_id': False,
             # TODO There's problem if product has no previous parent
             }, context=context)    
-
+        
     def set_as_master_product(self, cr, uid, ids, context=None):
         ''' Set as master product for this connection and remove if present
             previous
@@ -285,6 +285,66 @@ class ProductPublicCategory(orm.Model):
         'dot_image_path': fields.char('Color image', size=180, required=True,
             help='Color path for dot images, use ~ for home'),
         }
+
+    def external_get_wp_id(self, cr, uid, ids, context=None):
+        ''' External extract data to get Code - Lang: WP ID
+        '''
+        web_pool = self.pool.get('product.product.web.server')
+        connector_id = ids[0]
+        not_found = []
+        # TODO mangage not parent product!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        
+        # Read WP product:
+        wcapi = self.get_wp_connector(
+            cr, uid, connector_id, context=context)
+        _logger.warning('Read all product on wordpress:')
+
+        parameter = {'per_page': 10, 'page': 1}
+        theres_data = True
+        import pdb; pdb.set_trace()
+        while theres_data:
+            call = 'products'
+            reply = wcapi.get(call, params=parameter).json()
+            parameter['page'] += 1
+            
+            for item in reply:
+                wp_id = item['id']
+                lang = item['lang']
+                default_code = item['sku']
+                field = 'wp_%s_id' % lang
+                
+                if not default_code:
+                    not_found.append(wp_id)
+                    _logger.warning('Product not found: %s' % (
+                        default_code, lang))
+                    
+                web_ids = web_pool.search(cr, uid, [
+                    ('product_id.default_code', '=', default_code),
+                    ], context=context)
+                if not web_ids:
+                    not_found.append(wp_id)
+                    _logger.warning('Code: %s lang: %s not found on DB' % (
+                        default_code, lang))
+                    continue
+                    
+                if len(web_ids) > 1:
+                    import pdb; pdb.set_trace()
+                    
+                web_product = web_pool.browse(
+                    cr, uid, web_ids, context=context)[0]
+                this_wp_id = eval('web_product.%s' % field)
+                if this_wp_id != wp_id:
+                    not_found.append(wp_id)
+                    continue
+                    
+                # Update product reference:
+                if not this_wp_id:
+                    web_pool.write(cr, uid, web_ids, {
+                        field: wp_id,
+                        }, context=context)
+            break # TODO remove
+        return not_found
+        
         
     def publish_attribute_now(self, cr, uid, ids, context=None):
         ''' Publish now button
