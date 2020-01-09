@@ -484,7 +484,7 @@ class ProductProductWebServer(orm.Model):
                 # Images block:
                 # -------------------------------------------------------------
                 images = [] 
-                if 'image' in unpublished:
+                if 'image' not in unpublished:
                     for image in item.wp_dropbox_images_ids:
                         dropbox_link = image.dropbox_link
                         if dropbox_link and dropbox_link.startswith('http'):                        

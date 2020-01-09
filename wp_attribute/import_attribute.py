@@ -639,7 +639,7 @@ class ProductPublicCategory(orm.Model):
                     }
 
                 # Image part:
-                if 'image' in unpublished and odoo_color.dropbox_image:
+                if 'image' not in unpublished and odoo_color.dropbox_image:
                         item['color_image'] = odoo_color.dropbox_image
                     
                 if lang != default_lang: # Different language:
