@@ -409,6 +409,11 @@ class ProductPublicCategory(orm.Model):
         if context is None:    
             context = {}
 
+        # Data publish selection (remove this part from publish:
+        unpublished = [
+            'image', # TODO parametrize
+            ]
+
         # Pool used:
         web_product_pool = self.pool.get('product.product.web.server')
         dot_pool = self.pool.get('connector.product.color.dot')
@@ -634,8 +639,8 @@ class ProductPublicCategory(orm.Model):
                     }
 
                 # Image part:
-                if odoo_color.dropbox_image:
-                    item['color_image'] = odoo_color.dropbox_image
+                if 'image' in unpublished and odoo_color.dropbox_image:
+                        item['color_image'] = odoo_color.dropbox_image
                     
                 if lang != default_lang: # Different language:
                     # TODO correct 
