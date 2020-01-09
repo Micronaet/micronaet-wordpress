@@ -639,7 +639,7 @@ class ProductPublicCategory(orm.Model):
                     }
 
                 # Image part:
-                if 'image' not in unpublished and odoo_color.dropbox_image:
+                if odoo_color.dropbox_image:
                         item['color_image'] = odoo_color.dropbox_image
                     
                 if lang != default_lang: # Different language:
@@ -999,13 +999,14 @@ class ProductPublicCategory(orm.Model):
                     # Images block:
                     # ---------------------------------------------------------
                     image = False
-                    for item in line.wp_dropbox_images_ids:                  
-                        if item.dropbox_link:
-                            image = {
-                                'src': item.dropbox_link,
-                                }
-                            break # Only one image in variant!    
-                     
+                    if 'image' not in unpublished:
+                        for item in line.wp_dropbox_images_ids:                  
+                            if item.dropbox_link:
+                                image = {
+                                    'src': item.dropbox_link,
+                                    }
+                                break # Only one image in variant!    
+                         
                     if image:
                         data['image'] = image
 
