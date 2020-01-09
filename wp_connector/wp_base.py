@@ -74,7 +74,7 @@ class ConnectorServer(orm.Model):
             connector.wp_api,
             timeout,        
             ))
-        try:    
+        try:
             return woocommerce.API(
                 url=connector.wp_url,
                 consumer_key=connector.wp_key,
@@ -403,7 +403,7 @@ class ProductProductWebServer(orm.Model):
         
         # Data publish selection (remove this part from publish:
         unpublished = [
-            'image', # TODO parametrize
+            # 'image', # TODO parametrize
             ]
         
         if context is None:    
