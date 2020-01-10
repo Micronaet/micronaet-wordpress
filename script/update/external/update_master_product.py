@@ -10,12 +10,12 @@ import ConfigParser
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
 mode = 'openerp' # 'local'
-company_list = ['gpb'] #, 'fia']
+company_list = ['fia', 'gpb']
 lang_list = ['it_IT', 'en_US']
 connector_id = 0 # TODO?
 
 update = {
-    'images': False,
+    'images': True,
     'category': True,
     'price': True,
     'stock': True,
@@ -143,8 +143,6 @@ for company in company_list:
 
                 if data['categories']:
                     need_update = True
-                #else:
-                #    print 'No category present'    
 
             # -----------------------------------------------------------------
             # Master image:
@@ -157,15 +155,17 @@ for company in company_list:
                         data['images'].append({
                             'src': image.dropbox_link,
                             })
+                        need_update = True
                           
             # -----------------------------------------------------------------
             # Update master product:
             # -----------------------------------------------------------------
-            call = 'products/%s' % wp_id
-            reply = wcapi.put(call, data).json()    
-            print 'Company: %s [%s] wcapi.put(%s, %s)' % (
-                company, lang, call, data)
-            #print reply    
+            if need_update:
+                call = 'products/%s' % wp_id
+                reply = wcapi.put(call, data).json()    
+                print 'Company: %s [%s] wcapi.put(%s, %s)' % (
+                    company, lang, call, data)
+                #print reply    
             
 '''
 {'sku': u'7767936', 'lang': 'it', 'categories': [{'id': 571}, {'id': 547}, {'id': 593}, {'id': 549}, {'id': 635}, {'id': 555}], 'description': u"Vegas e' un tavolo da esterno allungabile in maniera telescopica, le gambe e il piano sono realizzate in polipropilene rinforzato in fibra di vetro  trattato anti-uv, colorato in massa. Il piano e' sorretto da barre in acciaio zincato. I piedini sono regolabili. Vegas dotato di una una prolunga esterna di 40 cm pu\xf2 raggiungere una lunghezza massima di 300 cm."}
