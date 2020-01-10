@@ -105,7 +105,7 @@ parameter = {'per_page': 10, 'page': 1}
 while True:
     reply = wcapi.get("products", params=parameter).json()
     parameter['page'] += 1    
-    print 'WP Page read: %s' % parameter['page']
+    print 'WP Page read: %s', parameter['page']
 
     try:
         if reply.get['data']['status'] >= 400:
