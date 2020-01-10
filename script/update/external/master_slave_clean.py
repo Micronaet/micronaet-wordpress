@@ -68,8 +68,12 @@ for company in company_list:
     web_product_ids = select_pool.search([
         ('wp_parent_template', '=', True), 
         ])
-    
+    total = len(web_product_ids)
+    i = 0
     for master in select_pool.browse(web_product_ids):
+        i += 1
+        if i % 50 == 0:
+            print 'Read %s product %s of %s' % (company, i, total)
         for wp_lang, wp_id in (
                 ('it', master.wp_it_id), ('en', master.wp_en_id)):     
             
