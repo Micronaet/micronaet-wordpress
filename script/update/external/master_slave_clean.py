@@ -131,7 +131,7 @@ while True:
         # TODO check variations:    
 
 # Unlink WP product master:        
-print ' Unlinking...', wp_unlink
+print 'Unlinking...', wp_unlink
 for wp_id in wp_unlink:
     print wcapi.delete('products/%s' % wp_id, params={'force': True}).json()
 
@@ -140,5 +140,6 @@ for odoo_id in set(odoo_product) - set(wp_all):
     print 'Not yet published', odoo_product[odoo_id][2], \
         odoo_product[odoo_id][1]
 
-
+    # TODO reset wp_it_id wp_en_id
+    # TODO Publish single 
 
