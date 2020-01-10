@@ -10,7 +10,7 @@ import ConfigParser
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
 mode = 'openerp' # 'local'
-company_list = ['fia', 'gpb']
+company_list = ['gpb'] #, 'fia']
 lang_list = ['it_IT', 'en_US']
 connector_id = 0 # TODO?
 
@@ -21,6 +21,7 @@ update = {
     'stock': True,
     'text': True,
     'dimension': True, # and weight
+    'status': True, # published, unpublished
     }
 
 pools = {}
@@ -105,7 +106,7 @@ for company in company_list:
     select_pool = pools[company][lang]['web_product']
     web_product_ids = select_pool.search([
         ('wp_it_id', '!=', False), 
-        ('product_id.default_code', '=', '7767936'), # TODO remove
+        #('product_id.default_code', '=', '7767936'), # TODO remove
         ])
     if not web_product_ids:
         continue
@@ -164,7 +165,7 @@ for company in company_list:
             reply = wcapi.put(call, data).json()    
             print 'Company: %s [%s] wcapi.put(%s, %s)' % (
                 company, lang, call, data)
-            print reply    
+            #print reply    
             
 '''
 {'sku': u'7767936', 'lang': 'it', 'categories': [{'id': 571}, {'id': 547}, {'id': 593}, {'id': 549}, {'id': 635}, {'id': 555}], 'description': u"Vegas e' un tavolo da esterno allungabile in maniera telescopica, le gambe e il piano sono realizzate in polipropilene rinforzato in fibra di vetro  trattato anti-uv, colorato in massa. Il piano e' sorretto da barre in acciaio zincato. I piedini sono regolabili. Vegas dotato di una una prolunga esterna di 40 cm pu\xf2 raggiungere una lunghezza massima di 300 cm."}
