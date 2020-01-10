@@ -15,8 +15,9 @@ lang_list = ['it_IT', 'en_US']
 connector_id = 0 # TODO?
 
 update = {
-    'images': False,
+    'images': True,
     'category': True,
+    
     'price': True,
     'stock': True,
     'text': True,
@@ -112,7 +113,7 @@ for company in company_list:
     select_pool = pools[company][lang]['web_product']
     web_product_ids = select_pool.search([
         ('wp_it_id', '!=', False), 
-        ('product_id.default_code', '=', 'CSSIMSEPL-GI--S'), # TODO remove
+        ('product_id.default_code', '=', 'SB00BG'), # TODO remove
         ])
     if not web_product_ids:
         continue

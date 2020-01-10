@@ -340,7 +340,7 @@ class ProductProductWebServer(orm.Model):
             wp_parent_id = eval('category.parent_id.wp_%s_id' % lang)
             if not wp_id:
                 continue
-            categories.append({'id': wp_id })
+            categories.append({'id': wp_id})
             if category.connector_id.wp_all_category and category.parent_id:                
                 categories.append({'id': wp_parent_id})
         return categories        
