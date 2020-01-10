@@ -15,8 +15,8 @@ lang_list = ['it_IT', 'en_US']
 connector_id = 0 # TODO?
 
 update = {
-    'images': False,
-    'category': True,
+    'images': True,
+    'category': False,
     'price': True,
     'stock': True,
     'text': True,
