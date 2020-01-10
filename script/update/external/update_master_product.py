@@ -161,10 +161,10 @@ for company in company_list:
             # Update master product:
             # -----------------------------------------------------------------
             call = 'products/%s' % wp_id
-            #reply = wcapi.put(call, data).json()    
+            reply = wcapi.put(call, data).json()    
             print 'Company: %s [%s] wcapi.put(%s, %s)' % (
                 company, lang, call, data)
-            #print reply    
+            print reply    
             
 '''
 {'sku': u'7767936', 'lang': 'it', 'categories': [{'id': 571}, {'id': 547}, {'id': 593}, {'id': 549}, {'id': 635}, {'id': 555}], 'description': u"Vegas e' un tavolo da esterno allungabile in maniera telescopica, le gambe e il piano sono realizzate in polipropilene rinforzato in fibra di vetro  trattato anti-uv, colorato in massa. Il piano e' sorretto da barre in acciaio zincato. I piedini sono regolabili. Vegas dotato di una una prolunga esterna di 40 cm pu\xf2 raggiungere una lunghezza massima di 300 cm."}
