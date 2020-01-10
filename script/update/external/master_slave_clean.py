@@ -129,13 +129,12 @@ while True:
 
 # Unlink WP product master:        
 print ' Unlinking...', wp_unlink
-import pdb; pdb.set_trace()
 for wp_id in wp_unlink:
     print wcapi.delete('products/%s' % wp_id, params={'force': True}).json()
 
 # Not found: 
-import pdb; pdb.set_trace()
 for odoo_id in set(odoo_product) - set(wp_all):
-    print odoo_product[odoo_id]
+    print 'Not yet published', odoo_product[odoo_id][1].default_code
+
 
 
