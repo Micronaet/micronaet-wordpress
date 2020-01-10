@@ -1,6 +1,26 @@
 <?xml version="1.0"?>
 <openerp>
     <data>    
+        <!--product.product.web.brand-->
+        <record model="ir.ui.view" id="view_product_product_web_brand_tree">
+            <field name="name">product.product.web.brand.tree</field>
+            <field name="model">product.product.web.brand</field>
+            <field name="arch" type="xml">
+                <tree string="Brand" editable="bottom">
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_product_product_web_brand">
+            <field name="name">Brand</field>
+            <field name="res_model">product.product.web.brand</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_product_product_web_brand_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+        
         <!--product.product.web.package-->
         <record model="ir.ui.view" id="view_product_product_web_package_tree">
             <field name="name">product.product.web.package.tree</field>
@@ -189,6 +209,7 @@
                             <field name="product_id" readonly="1" />
                             <field name="published" />
                             <field name="public_categ_id" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]"/>
+                            <field name="brand_id" />
                             
                             <separator string="Images:" colspan="4"/>
                             <field name="wp_dropbox_images_ids" editable="bottom" colspan="4" nolabel="1">
@@ -212,6 +233,7 @@
             <field name="inherit_id" ref="connector_web_product.view_product_web_server_publish_tree"/>
             <field name="arch" type="xml">
                 <button name="publish_now" position="before">
+                    <field name="brand_id" />
                     <field name="wordpress" invisible="1" />
                     <button name="open_image_list_product" string="Image" type="object" attrs="{'invisible': [('wordpress','=',False)]}" icon="terp-purchase"/>
                 </button>
@@ -228,6 +250,7 @@
                     <field name="published"/>
                     <field name="product_id" readonly="1" invisible="context.get('embedded_view', False)"/>
                     <field name="connector_id" />
+                    <field name="brand_id" />
                     <field name="wp_type" />
                     <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]"/>
                     <field name="force_name"/>
@@ -252,7 +275,7 @@
                     <sheet>
                         <group colspan="4" col="4">
                             <field name="connector_id" />  
-                            <newline/>
+                            <field name="brand_id" />
 
                             <field name="published"/>
                             <field name="wp_type" />
@@ -314,10 +337,18 @@
                 />
                 <menuitem 
                     parent="menu_connector_worppress_configuration" 
+                    id="menu_connector_worppress_configuration_brand" 
+                    action="action_product_product_web_brand"
+                    sequence="5"
+                    />
+
+                <menuitem 
+                    parent="menu_connector_worppress_configuration" 
                     id="menu_connector_worppress_configuration_package" 
                     action="action_product_product_web_package"
                     sequence="10"
                     />
+                    
                 <menuitem 
                     parent="menu_connector_worppress_configuration" 
                     id="menu_connector_worppress_configuration_category" 
