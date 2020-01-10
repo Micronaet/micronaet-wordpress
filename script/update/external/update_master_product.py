@@ -150,7 +150,7 @@ for company in company_list:
             # -----------------------------------------------------------------
             if update['images'] and wp_lang == 'it': # only Italy
                 data['images'] = []      
-                for image in web_product..wp_dropbox_images_ids:
+                for image in web_product.wp_dropbox_images_ids:
                     dropbox_link = image.dropbox_link
                     if dropbox_link and dropbox_link.startswith('http'):                        
                         images.append({
