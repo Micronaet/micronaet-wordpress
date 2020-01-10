@@ -28,8 +28,10 @@ import subprocess
 # -----------------------------------------------------------------------------
 # Read configuration parameter (2 Databases): 
 # -----------------------------------------------------------------------------
+# recheck_command = []
+
 path = os.getcwd()
-#os.path.dirname(os.path.realpath(__file__))
+# os.path.dirname(os.path.realpath(__file__))
 for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
     cfg_file = os.path.expanduser(os.path.join(path, '..', config_file))
 
@@ -104,6 +106,10 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
             try:
                 dropbox_link = subprocess.check_output(command)            
                 if 'responding' in dropbox_link:
+                    image_pool.write([image_db[f]], {
+                        'dropbox_link': False, # Reset link
+                        })
+
                     print '[ERR] %s Not responding jump %s [%s/%s]\n%s' % (
                         dbname, f, i, total, dropbox_link)
                     continue    
@@ -118,4 +124,11 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
                 print '[ERR] %s Cannot sharelink file %s [%s/%s]' % (
                     dbname, f, i, total)
         break
+
+# done_command = []
+# for command in recheck_command:
+#     dropbox_link = subprocess.check_output(command)            
+#     if 'responding' not in dropbox_link:
+#         done_command.append(command)
+    
 
