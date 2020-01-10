@@ -80,6 +80,7 @@ for company in company_list:
             odoo_product[wp_id] = [
                 wp_lang,
                 master.product_id.default_code,
+                company,
                 master.product_id,
                 master.variant_ids,
                 ]
@@ -135,7 +136,8 @@ for wp_id in wp_unlink:
 
 # Not found: 
 for odoo_id in set(odoo_product) - set(wp_all):
-    print 'Not yet published', odoo_product[odoo_id][1]
+    print 'Not yet published', odoo_product[odoo_id][0], \
+        odoo_product[odoo_id][1]
 
 
 
