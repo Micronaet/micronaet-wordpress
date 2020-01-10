@@ -112,7 +112,7 @@ for company in company_list:
     select_pool = pools[company][lang]['web_product']
     web_product_ids = select_pool.search([
         ('wp_it_id', '!=', False), 
-        ('product_id.default_code', '=', 'CITIMPFCP-BI--S3'), # TODO remove
+        ('product_id.default_code', '=', 'CSSIMSEPL-GI--S'), # TODO remove
         ])
     if not web_product_ids:
         continue
