@@ -104,8 +104,8 @@ for config_file in ('openerp.cfg', 'gpb.openerp.cfg'):
             try:
                 dropbox_link = subprocess.check_output(command)            
                 if 'responding' in dropbox_link:
-                    print '[ERR] %s Dropbox not responding jump %s [%s/%s]' % (
-                        dbname, f, i, total)
+                    print '[ERR] %s Not responding jump %s [%s/%s]\n%s' % (
+                        dbname, f, i, total, dropbox_link)
                     continue    
                     
                 image_pool.write([image_db[f]], {

@@ -18,6 +18,7 @@ update = {
     'images': True,
     'category': True,
     
+    'brand': True,
     'price': True,
     'stock': True,
     'text': True,
