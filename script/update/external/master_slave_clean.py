@@ -80,7 +80,7 @@ for company in company_list:
             odoo_product[wp_id] = [
                 wp_lang,
                 master.product_id.default_code,
-                master.product_id
+                master.product_id,
                 master.variant_ids,
                 ]
 
