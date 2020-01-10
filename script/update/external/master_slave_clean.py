@@ -104,7 +104,7 @@ wp_unlink = []
 parameter = {'per_page': 10, 'page': 1}
 while True:
     reply = wcapi.get("products", params=parameter).json()
-    print 'WP Page read: %s', parameter['page']
+    print 'WP Page read:', parameter['page']
     parameter['page'] += 1    
 
     try:
