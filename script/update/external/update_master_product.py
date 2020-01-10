@@ -24,6 +24,12 @@ update = {
     'status': True, # published, unpublished
     }
 
+# Log mode:
+option_log = 'Start options:'
+for option in update:
+    option_log += '\n%s: %s' % (option, update[option])
+print option_log
+
 pools = {}
 for company in company_list:
     pools[company] = {}
