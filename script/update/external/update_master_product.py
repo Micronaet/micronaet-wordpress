@@ -105,7 +105,7 @@ for company in company_list:
     select_pool = pools[company][lang]['web_product']
     web_product_ids = select_pool.search([
         ('wp_it_id', '!=', False), 
-        #('product_id.default_code', '=', '913006'), # TODO remove
+        ('product_id.default_code', '=', '7767936'), # TODO remove
         ])
     if not web_product_ids:
         continue
@@ -113,8 +113,6 @@ for company in company_list:
     for web_product in select_pool.browse(web_product_ids):        
         for lang in lang_list:            
             wp_lang = lang[:2]
-            if wp_lang != 'it':
-                continue # Store procedure update other lang!
 
             wp_id = eval('web_product.wp_%s_id' % wp_lang) 
                    
@@ -126,7 +124,7 @@ for company in company_list:
             # -----------------------------------------------------------------
             # Category:
             # -----------------------------------------------------------------
-            if update['category']: 
+            if update['category'] and wp_lang == 'it': # only Italy
                 data['categories'] = []                
                 for category in web_product.wordpress_categ_ids:
                     wp_category_id = eval(
@@ -150,15 +148,23 @@ for company in company_list:
             # -----------------------------------------------------------------
             # Master image:
             # -----------------------------------------------------------------
-            if update['images']: 
-                data['images'] = []                
+            if update['images'] and wp_lang == 'it': # only Italy
+                data['images'] = []      
+                for image in web_product..wp_dropbox_images_ids:
+                    dropbox_link = image.dropbox_link
+                    if dropbox_link and dropbox_link.startswith('http'):                        
+                        images.append({
+                            'src': image.dropbox_link,
+                            })
+                          
             # -----------------------------------------------------------------
             # Update master product:
             # -----------------------------------------------------------------
             call = 'products/%s' % wp_id
-            reply = wcapi.put(call, data).json()    
+            #reply = wcapi.put(call, data).json()    
             print 'Company: %s [%s] wcapi.put(%s, %s)' % (
                 company, lang, call, data)
+            #print reply    
             
 '''
 {'sku': u'7767936', 'lang': 'it', 'categories': [{'id': 571}, {'id': 547}, {'id': 593}, {'id': 549}, {'id': 635}, {'id': 555}], 'description': u"Vegas e' un tavolo da esterno allungabile in maniera telescopica, le gambe e il piano sono realizzate in polipropilene rinforzato in fibra di vetro  trattato anti-uv, colorato in massa. Il piano e' sorretto da barre in acciaio zincato. I piedini sono regolabili. Vegas dotato di una una prolunga esterna di 40 cm pu\xf2 raggiungere una lunghezza massima di 300 cm."}
