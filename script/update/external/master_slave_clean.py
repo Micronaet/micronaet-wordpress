@@ -116,10 +116,18 @@ while True:
     for record in reply:
         wp_id = record['id']
         lang = record['lang']
+        sku = record['sku']
         
         if wp_id not in odoo_product:
             wp_unlink.append(wp_id)
+            print 'To be unlinked: %s' % sku
 
         # TODO check variations:    
 
-print wp_unlink
+# Unlink WP product master:        
+print ' Unlinking...', wp_unlink
+import pdb; pdb.set_trace()
+for wp_id in wp_unlink:
+    print wcapi.delete('products/%s' % wp_id, params={'force': True}).json()
+
+
