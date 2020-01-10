@@ -56,7 +56,7 @@ class ProductProductWebBrand(orm.Model):
     _order = 'name'
     
     _columns = {
-        'name': fields.char('Brand', size=64, required=True),
+        'name': fields.char('Brand', size=64, required=True, translate=True),
         }
 
 class ConnectorServer(orm.Model):
@@ -417,7 +417,7 @@ class ProductProductWebServer(orm.Model):
         
         # Data publish selection (remove this part from publish:
         unpublished = [
-            'image', # TODO parametrize
+            #'image', # TODO parametrize
             ]
         
         if context is None:    
