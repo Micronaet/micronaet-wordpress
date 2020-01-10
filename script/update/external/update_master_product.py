@@ -114,21 +114,23 @@ for company in company_list:
     select_pool = pools[company][lang]['web_product']
     web_product_ids = select_pool.search([
         ('wp_it_id', '!=', False), 
-        #('product_id.default_code', '=', 'SB00BG'), # TODO remove
+        #('product_id.default_code', '=', '830TX ANBI'), # TODO remove
         ])
     if not web_product_ids:
         continue
 
     for web_product in select_pool.browse(web_product_ids):        
         for lang in lang_list:            
+            # -----------------------------------------------------------------
+            #                            MASTER:
+            # -----------------------------------------------------------------
             wp_lang = lang[:2]
-
             wp_id = eval('web_product.wp_%s_id' % wp_lang) 
+            need_update = False
                    
             data = {
                 'lang': wp_lang,
                 }
-            need_update = False
             
             # -----------------------------------------------------------------
             # Category:
@@ -168,31 +170,13 @@ for company in company_list:
             # -----------------------------------------------------------------
             # Update master product:
             # -----------------------------------------------------------------
-            if need_update:
-                call = 'products/%s' % wp_id
-                reply = wcapi.put(call, data).json()    
-                print 'Company: %s [%s] wcapi.put(%s, %s)' % (
-                    company, lang, call, data)
-                #print reply    
+            if not need_update:
+                continue
+                
+            call = 'products/%s' % wp_id
+            reply = wcapi.put(call, data).json()    
+            print 'Company: %s [%s] wcapi.put(%s, %s)' % (
+                company, lang, call, data)
+                
             
-'''
-{'sku': u'7767936', 'lang': 'it', 'categories': [{'id': 571}, {'id': 547}, {'id': 593}, {'id': 549}, {'id': 635}, {'id': 555}], 'description': u"Vegas e' un tavolo da esterno allungabile in maniera telescopica, le gambe e il piano sono realizzate in polipropilene rinforzato in fibra di vetro  trattato anti-uv, colorato in massa. Il piano e' sorretto da barre in acciaio zincato. I piedini sono regolabili. Vegas dotato di una una prolunga esterna di 40 cm pu\xf2 raggiungere una lunghezza massima di 300 cm."}
-
-call = 'products/18313'
-data = {
-    'sku': u'913006', 
-    'lang': 'it', 
-    'name': u'SEDIA FLASH', 
-    'regular_price': u'58.0', 
-    'status': 'publish', 
-    'catalog_visibility': 'visible', 
-    'short_description': u'SET 4 SEDIE IMPILABILI FLASH  IN POLICARBONATO', 
-    'stock_quantity': 8, 
-    'wp_type': u'variable', 
-    'type': u'variable', 
-    'categories': [{'id': 567}, {'id': 547}, {'id': 589}, {'id': 549}, {'id': 619}, {'id': 553}, {'id': 629}, {'id': 555}], 
-    'description': u'Flash \xe8 una sedia classica nella linea, resistente nel materiale (la seduta \xe8 in polipropilene  rinforzato con fibra di vetro e lo schienale in policarbonato), armoniosa nella proporzione,  che la rende perfetta per ambienti moderni e giovani. Il design rivisito in chiave moderno e tecnologico la forma armoniosa di una delle sedie pi\xf9 semplici ma pi\xf9 utilizzate di tutti i tempi, in un contrasto tra passato e presente che \xe8 la chiave di lettura di molti arredamenti contemporanei. Adatta a personalizzare ogni ambiente, leggera da spostare e impilabile se necessario, comoda e facile da adattare a tutti gli arredi,  Flash \xe8 una sedia molto resistente, idonea sia per uso domestico che per l\u2019uso contract, i materiali utilizzati per la sua costruzione sono idonei anche per l\u2019 uso in ambienti esterni.'
-    }
-'''
-
 

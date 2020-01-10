@@ -344,7 +344,7 @@ class ProductProductWebServer(orm.Model):
             if category.connector_id.wp_all_category and category.parent_id:                
                 categories.append({'id': wp_parent_id})
         return categories        
-        
+
     # -------------------------------------------------------------------------
     # Button event:
     # -------------------------------------------------------------------------
