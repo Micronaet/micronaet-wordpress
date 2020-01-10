@@ -45,6 +45,20 @@ from slugify import slugify
 
 _logger = logging.getLogger(__name__)
 
+
+class ProductProductWebBrand(orm.Model):
+    """ Model name: ProductProductWebBrand
+    """
+    
+    _name = 'product.product.web.brand'
+    _description = 'Web Brand'
+    _rec_name = 'name'
+    _order = 'name'
+    
+    _columns = {
+        'name': fields.char('Brand', size=64, required=True),
+        }
+
 class ConnectorServer(orm.Model):
     """ Model name: ConnectorServer
     """    
@@ -668,6 +682,13 @@ class ProductProductWebServer(orm.Model):
     _columns = {
         'wp_it_id': fields.integer('WP it ID'),
         'wp_en_id': fields.integer('WP en ID'),
+
+        'brand_id': fields.many2one('product.product.web.brand', 'Brand'),
+        
+        # Unit price modify:
+        'price_multi': fields.float('Multiplier', digits=(16, 2)),
+        'price_extra': fields.float('Price extra', digits=(16, 2)),
+        
         'wordpress_categ_ids': fields.many2many(
             'product.public.category', 'product_wp_rel', 
             'product_id', 'category_id', 
@@ -684,7 +705,7 @@ class ProductProductWebServer(orm.Model):
         
         # ---------------------------------------------------------------------
         # Product related/linked fields:
-        # ---------------------------------------------------------------------
+        # ---------------------------------------------------------------------        
         'model_package_id': fields.related(
             'product_id', 'model_package_id', readonly=1,
             type='many2one', relation='product.product.web.package', 
