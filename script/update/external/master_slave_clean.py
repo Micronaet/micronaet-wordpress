@@ -104,8 +104,8 @@ wp_unlink = []
 parameter = {'per_page': 10, 'page': 1}
 while True:
     reply = wcapi.get("products", params=parameter).json()
-    parameter['page'] += 1    
     print 'WP Page read: %s', parameter['page']
+    parameter['page'] += 1    
 
     try:
         if reply.get['data']['status'] >= 400:
@@ -137,7 +137,7 @@ for wp_id in wp_unlink:
 
 # Not found: 
 for odoo_id in set(odoo_product) - set(wp_all):
-    print 'Not yet published', odoo_product[odoo_id][0], \
+    print 'Not yet published', odoo_product[odoo_id][2], \
         odoo_product[odoo_id][1]
 
 
