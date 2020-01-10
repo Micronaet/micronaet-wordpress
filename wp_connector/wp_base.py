@@ -519,11 +519,14 @@ class ProductProductWebServer(orm.Model):
                     'sku': self.wp_clean_code(sku), # XXX not needed
                     'lang': lang,
                     # It doesn't update:
-                    'categories': categories,
                     'wp_type': item.wp_type,
                     }
+                    
                 if images:
                     data['images'] = images
+                
+                if categories:    
+                    data['categories'] = categories
 
                 if lang == default_lang:
                     # Numeric data:
@@ -534,7 +537,8 @@ class ProductProductWebServer(orm.Model):
                         # sale_price (discounted)
                         'stock_quantity': stock_quantity,
                         'status': status,
-                        'catalog_visibility': 'visible', #catalog  search  hidden
+                        'catalog_visibility': 'visible', 
+                        #catalog  search  hidden
                         
                         # Forced in variant:
                         #'weight': weight,
