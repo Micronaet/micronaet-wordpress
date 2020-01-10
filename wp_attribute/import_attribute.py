@@ -640,7 +640,7 @@ class ProductPublicCategory(orm.Model):
 
                 # Image part:
                 if odoo_color.dropbox_image:
-                        item['color_image'] = odoo_color.dropbox_image
+                    item['color_image'] = odoo_color.dropbox_image
                     
                 if lang != default_lang: # Different language:
                     # TODO correct 
@@ -685,6 +685,7 @@ class ProductPublicCategory(orm.Model):
                 # =============================================================
 
                 if any(data.values()): # only if one is present
+                    import pdb; pdb.set_trace()
                     call = 'products/attributes/%s/terms/batch' % \
                         attribute_id['Tessuto']
                     res = wcapi.post(call, data=data).json()
