@@ -33,6 +33,14 @@ for company in company_list:
         pools[company][lang]['web_product'] = {}
     
 config = ConfigParser.ConfigParser()
+
+# Worpress parameters:
+cfg_file = os.path.expanduser('../wordpress.cfg')
+config.read([cfg_file])
+wordpress_url = config.get('wordpress', 'url')
+consumer_key = config.get('wordpress', 'key')
+consumer_secret = config.get('wordpress', 'secret')
+
 for company in company_list: #['fia', 'gpb']:
     cfg_file = os.path.expanduser('../%s.%s.cfg' % (mode, company))
     config.read([cfg_file])
@@ -60,9 +68,9 @@ for company in company_list: #['fia', 'gpb']:
 
 # Spaziogiardino
 wcapi = woocommerce.API(
-    url='https://woocommerce-337019-1081765.cloudwaysapps.com',
-    consumer_key='ck_6e13eda68a7c2f449ce85db18c3abf76d00ce7eb',
-    consumer_secret='cs_c0337070ffd258baa363dbd4fbe5d319fce60a9a',
+    url=wordpress_url,
+    consumer_key=consumer_key,
+    consumer_secret=consumer_secret,
     wp_api=True,
     version='wc/v3',
     query_string_auth=True,
