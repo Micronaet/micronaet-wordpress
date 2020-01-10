@@ -97,6 +97,7 @@ wcapi = woocommerce.API(
     timeout=600,
     )
 
+wp_all = []
 wp_unlink = []
 parameter = {'per_page': 10, 'page': 1}
 while True:
@@ -118,7 +119,9 @@ while True:
         lang = record['lang']
         sku = record['sku']
         
-        if wp_id not in odoo_product:
+        if wp_id in odoo_product:
+            wp_all.append(wp_id)
+        else:
             wp_unlink.append(wp_id)
             print 'To be unlinked: %s' % sku
 
@@ -129,5 +132,10 @@ print ' Unlinking...', wp_unlink
 import pdb; pdb.set_trace()
 for wp_id in wp_unlink:
     print wcapi.delete('products/%s' % wp_id, params={'force': True}).json()
+
+# Not found: 
+import pdb; pdb.set_trace()
+for odoo_id in set(odoo_product) - set(wp_all):
+    print odoo_product[odoo_id]
 
 
