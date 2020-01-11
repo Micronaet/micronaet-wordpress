@@ -16,6 +16,7 @@ connector_id = 0 # TODO?
 
 update = {
     'images': False,
+    'variation_images': True,
     'category': True,
     
     'brand': True,
@@ -170,13 +171,50 @@ for company in company_list:
             # -----------------------------------------------------------------
             # Update master product:
             # -----------------------------------------------------------------
-            if not need_update:
-                continue
+            if need_update:                    
+                call = 'products/%s' % wp_id
+                reply = wcapi.put(call, data).json()    
+                print 'Company: %s [%s] wcapi.put(%s, %s)' % (
+                    company, lang, call, data)
+                            
+            # -----------------------------------------------------------------
+            # Slave image:
+            # -----------------------------------------------------------------
+            call = 'products/%s/variations' % wp_id
+            reply = wcapi.get(call).json()
+            for variation in reply:
+                variation_id = variation['id']
+                variation_sku = variation['sku'].replace('&nbsp;', ' ')
+                variation_lang = variation['lang']
                 
-            call = 'products/%s' % wp_id
-            reply = wcapi.put(call, data).json()    
-            print 'Company: %s [%s] wcapi.put(%s, %s)' % (
-                company, lang, call, data)
-                
-            
+                for company in company_list:    
+                    variation_pool = pools[company]['it_IT']['web_product'] 
+                    variation_ids = variation_pool.search([
+                        ('product_id.default_code', '=', variation_sku),
+                        ])
+                    if variation_ids:
+                        variation_odoo = variation_pool.browse(
+                            variation_ids)[0]
+                        
+                        data = {
+                            'lang': wp_lang,
+                            }
+                        variation_update = False
+                        if update['variation_images'] and wp_lang == 'it': # only Italy
+                            for image in variation_odoo.wp_dropbox_images_ids:
+                                dropbox_link = image.dropbox_link
+                                if dropbox_link and \
+                                        dropbox_link.startswith('http'):                        
+                                    data['image'] = [{
+                                        'src': image.dropbox_link,
+                                        }]
+                                    variation_update = True
+                                break # Only one image in variant!
+                        if not variation_update:
+                            print 'Variation no image in %s' % variation_sku
+                            continue
+
+                        reply = wcapi.put('products/%s/variations/%s' % (
+                            wp_id, variation_id), data).json()
+                        print 'Variation update image in %s' % variation_sku
 
