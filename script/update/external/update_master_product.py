@@ -186,6 +186,10 @@ for company in company_list:
                 variation_id = variation['id']
                 variation_sku = variation['sku'].replace('&nbsp;', ' ')
                 variation_lang = variation['lang']
+
+                # Only if lang:
+                if variation_lang != 'it':
+                    continue 
                 
                 for company in company_list:    
                     variation_pool = pools[company]['it_IT']['web_product'] 
