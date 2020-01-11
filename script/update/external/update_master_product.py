@@ -216,13 +216,13 @@ for company in company_list:
                                 break # Only one image in variant!
                                 
                         if not variation_update:
-                            print '  Variation no image in %s [%s]' % (
-                                variation_sku, variation_lang)
+                            print '  Variation no image in %s [%s] %s' % (
+                                variation_sku, variation_lang, data)
                             continue
 
                         reply = wcapi.put('products/%s/variations/%s' % (
                             wp_id, variation_id), data).json()
-                        print '  Variation update image in %s [%s]' % (
-                            variation_sku, variation_lang)
+                        print '  Variation update image in %s [%s] %s' % (
+                            variation_sku, variation_lang, data)
                         break # no other company
 
