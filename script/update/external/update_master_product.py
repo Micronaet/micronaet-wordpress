@@ -210,6 +210,7 @@ for company in company_list:
                                         }]
                                     variation_update = True
                                 break # Only one image in variant!
+                                
                         if not variation_update:
                             print '  Variation no image in %s [%s]' % (
                                 variation_sku, variation_lang)
