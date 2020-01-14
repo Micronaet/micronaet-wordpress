@@ -2,4 +2,4 @@
 access_product_product_web_package_user,product.product.web.package,model_product_product_web_package,base.group_user,1,1,1,1
 access_product_product_web_category_user,product.product.web.category,model_product_product_web_category,base.group_user,1,1,1,1
 access_product_product_web_brand_user,product.product.web.brand,model_product_product_web_brand,base.group_user,1,1,1,1
-
+access_product_product_web_material_user,product.product.web.material,model_product_product_web_material,base.group_user,1,1,1,1

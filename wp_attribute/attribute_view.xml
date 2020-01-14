@@ -149,6 +149,16 @@
                                         <field name="lst_price" />
                                     </group>
                                 </page>
+                                <page string="Linked">
+                                    <group colspan="4" col="4">
+                                        <field name="linked_ids" domain="[('id', '!=', active_id), ('connector_id', '=', connector_id)]" widget="many2many_tags"/>
+                                    </group>
+                                </page>
+                                <page string="Material">
+                                    <group colspan="4" col="4">
+                                        <field name="material_ids" widget="many2many_tags"/>
+                                    </group>
+                                </page>
                                 <page string="Package">
                                     <group colspan="4" col="4">
                                         <field name="model_package_id" />

@@ -59,6 +59,19 @@ class ProductProductWebBrand(orm.Model):
         'name': fields.char('Brand', size=64, required=True, translate=True),
         }
 
+class ProductProductWebMaterial(orm.Model):
+    """ Model name: ProductProductWebMaterial
+    """
+    
+    _name = 'product.product.web.material'
+    _description = 'Web material'
+    _rec_name = 'name'
+    _order = 'name'
+    
+    _columns = {
+        'name': fields.char('Material', size=64, required=True, translate=True),
+        }
+
 class ConnectorServer(orm.Model):
     """ Model name: ConnectorServer
     """    
@@ -747,6 +760,22 @@ class ProductProductWebServer(orm.Model):
             _get_product_detail_items, method=True, readonly=1,
             type='float', string='Q. x Pack', multi=True,
             ), 
+
+        # ---------------------------------------------------------------------
+        # Linked product
+        # ---------------------------------------------------------------------
+        'linked_ids': fields.many2many(
+            'product.product.web.server', 'web_server_linked_rel', 
+            'product_id', 'linked_id', 
+            'Linked'),
+
+        # ---------------------------------------------------------------------
+        # Material link
+        # ---------------------------------------------------------------------
+        'material_ids': fields.many2many(
+            'product.product.web.material', 'web_server_material_rel', 
+            'product_id', 'material_id', 
+            'Linked'),
 
         # ---------------------------------------------------------------------
         # Link related to product

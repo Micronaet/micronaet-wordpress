@@ -21,6 +21,26 @@
             <field name="domain">[]</field>
         </record>
         
+                <!--product.product.web.material-->
+        <record model="ir.ui.view" id="view_product_product_web_material_tree">
+            <field name="name">product.product.web.material.tree</field>
+            <field name="model">product.product.web.material</field>
+            <field name="arch" type="xml">
+                <tree string="Brand" editable="bottom">
+                    <field name="name" />
+                </tree>
+            </field>            
+        </record>        
+        <record model="ir.actions.act_window" id="action_product_product_web_material">
+            <field name="name">Material</field>
+            <field name="res_model">product.product.web.material</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_product_product_web_material_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+        
         <!--product.product.web.package-->
         <record model="ir.ui.view" id="view_product_product_web_package_tree">
             <field name="name">product.product.web.package.tree</field>
@@ -341,6 +361,12 @@
                     action="action_product_product_web_brand"
                     sequence="5"
                     />
+                <menuitem 
+                    parent="menu_connector_worppress_configuration" 
+                    id="menu_connector_worppress_configuration_material" 
+                    action="action_product_product_web_material"
+                    sequence="5"
+                    />
 
                 <menuitem 
                     parent="menu_connector_worppress_configuration" 
@@ -354,9 +380,6 @@
                     id="menu_connector_worppress_configuration_category" 
                     action="action_product_product_web_category"
                     sequence="20"
-                    />
-                
-                
-          
+                    />          
     </data>
 </openerp>
