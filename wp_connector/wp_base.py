@@ -446,7 +446,7 @@ class ProductProductWebServer(orm.Model):
         
         # Data publish selection (remove this part from publish:
         unpublished = [
-            #'image', # TODO parametrize
+            'image', # TODO parametrize
             ]
         
         if context is None:    
@@ -673,7 +673,7 @@ class ProductProductWebServer(orm.Model):
             res[current.id] = sorted([
                 image.id for image in current.product_id.image_ids \
                     if image.album_id.id in server_album_ids], 
-                        key=lambda x: x.name)      
+                        key=lambda x: '' if not x else x.name)      
         return res
 
     def _get_product_detail_items(
