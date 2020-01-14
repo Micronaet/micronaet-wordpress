@@ -17,7 +17,7 @@ connector_id = 0 # TODO?
 update = {
     'images': False,
     'variation_images': True,
-    'category': True,
+    'category': False,
     
     'brand': True,
     'price': True,
