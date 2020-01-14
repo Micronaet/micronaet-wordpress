@@ -412,6 +412,7 @@ class ProductProductWebServer(orm.Model):
         if line.force_price:
             price = line.force_price
         else:
+            import pdb; pdb.set_trace()
             product = line.product_id
             connector = line.connector_id
             price = product.lst_price
