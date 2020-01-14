@@ -212,8 +212,8 @@ class ConnectorServer(orm.Model):
                     net,
                     
                     odoo_price,
-                    line.extra_price,
-                    line.multi_price,
+                    line.price_extra,
+                    line.price_multi,
                     price,
                     product.statistic_category or '',
                     line.weight_net,
