@@ -412,7 +412,6 @@ class ProductProductWebServer(orm.Model):
         if line.force_price:
             price = line.force_price
         else:
-            import pdb; pdb.set_trace()
             product = line.product_id
             connector = line.connector_id
             price = product.lst_price
@@ -430,9 +429,8 @@ class ProductProductWebServer(orm.Model):
             price += connector.add_vat * price / 100.0
 
             # Approx:
-            if connector.approx:
-                price = round((price + gap), connector.approx)
-                # Use gap correction for float problem in python
+            price = round((price + gap), connector.approx)
+            # Use gap correction for float problem in python
 
             # After check min price:
             if price < line.connector_id.min_price:
