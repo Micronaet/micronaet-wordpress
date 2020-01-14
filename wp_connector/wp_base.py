@@ -69,7 +69,8 @@ class ProductProductWebMaterial(orm.Model):
     _order = 'name'
     
     _columns = {
-        'name': fields.char('Material', size=64, required=True, translate=True),
+        'name': fields.char(
+            'Material', size=64, required=True, translate=True),
         }
 
 class ConnectorServer(orm.Model):
@@ -407,18 +408,32 @@ class ProductProductWebServer(orm.Model):
     def get_wp_price(self, line):
         ''' Extract price depend on force, discount and VAT
         '''
-        product = line.product_id
+        gap = 0.00000001
         if line.force_price:
             price = line.force_price
         else:
-            price = product.lst_price * (
-                100.0 - line.connector_id.discount) / 100.0
+            product = line.product_id
+            connector = line.connector_id
+            price = product.lst_price
+            
+            # Correct price on product:
+            price_extra = product.price_extra or 0.0
+            price_multi = product.price_multi or 1.0
+            price = (price + price_extra) * price_multi
+            
+            # Correct price for this connector:
+            price = price * (
+                100.0 - connector.discount) / 100.0
+                
+            # Approx:
+            if connector.approx:
+                price = round((price + gap), connector.approx)
+                # Use gap correction for float problem in python
             
         price += line.connector_id.add_vat * price / 100.0
         if price < line.connector_id.min_price:
             price = line.connector_id.min_price   
 
-        # ADD approx?         
         return price
  
     def publish_now(self, cr, uid, ids, context=None):
