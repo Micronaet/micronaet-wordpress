@@ -424,16 +424,18 @@ class ProductProductWebServer(orm.Model):
             # Correct price for this connector:
             price = price * (
                 100.0 - connector.discount) / 100.0
-                
-            # Approx:
-            if connector.approx:
-                price = round((price + gap), connector.approx)
-                # Use gap correction for float problem in python
             
+        # Add extra VAT:    
         price += line.connector_id.add_vat * price / 100.0
+
+        # Approx:
+        if connector.approx:
+            price = round((price + gap), connector.approx)
+            # Use gap correction for float problem in python
+
+        # After check min price:
         if price < line.connector_id.min_price:
             price = line.connector_id.min_price   
-
         return price
  
     def publish_now(self, cr, uid, ids, context=None):
