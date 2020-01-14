@@ -417,8 +417,8 @@ class ProductProductWebServer(orm.Model):
             price = product.lst_price
             
             # Correct price on product:
-            price_extra = product.price_extra or 0.0
-            price_multi = product.price_multi or 1.0
+            price_extra = line.price_extra or 0.0
+            price_multi = line.price_multi or 1.0
             price = (price + price_extra) * price_multi
             
             # Correct price for this connector:
