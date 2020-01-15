@@ -243,8 +243,9 @@ class ConnectorServer(orm.Model):
             color_format = color_format_all[product.id]
 
             # Readability:
-            short_description = line.force_name or \
-                product.emotional_short_description or \
+            #line.force_name or \
+            # TODO problem when forced
+            short_description = product.emotional_short_description or \
                 product.name or u''
 
             description = line.force_description or \
@@ -255,7 +256,7 @@ class ConnectorServer(orm.Model):
                 ws_name, row, [
                     short_description,  # product.name,
                     description,  # product.large_description or '',  
-                    ], default_format=color_format['text'], col=3)
+                    ], default_format=color_format['text'], col=5)
 
         # ---------------------------------------------------------------------
         # Web Schema
