@@ -59,7 +59,6 @@ class ConnectorServer(orm.Model):
             image_mode = context.get('image_mode', 'filename')
                 
             res = ''
-            import pdb; pdb.set_trace()
             for image in sorted(product.image_ids, 
                     key=lambda x: x.filename[:-4]):
                 if image.album_id.id in album_ids:
