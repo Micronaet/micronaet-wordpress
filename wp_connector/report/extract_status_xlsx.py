@@ -142,6 +142,7 @@ class ConnectorServer(orm.Model):
         color_format_all = {}
         selected = {}
         not_selected = []        
+        import pdb; pdb.set_trace()
         for line in sorted(connector_pool.browse(
                 cr, uid, line_ids, context=context), 
                 key = lambda p: (
