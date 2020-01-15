@@ -59,7 +59,7 @@ class ConnectorServer(orm.Model):
             image_mode = context.get('image_mode', 'filename')
                 
             res = ''
-            for image in product.image_ids:
+            for image in sorted(product.image_ids, key=lambda x: x.filename):
                 if image.album_id.id in album_ids:
                     if image_mode == 'filename':
                         res += u'[%s: %s]' % (
