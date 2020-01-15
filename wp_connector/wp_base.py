@@ -673,7 +673,8 @@ class ProductProductWebServer(orm.Model):
             res[current.id] = []
             if current.product_id.image_ids:
                 for image in sorted(
-                        current.product_id.image_ids, key=lambda x: x.filename):
+                        current.product_id.image_ids, 
+                        key=lambda x: x.filename[:-4]):
                     if image.album_id.id in server_album_ids:   
                         res[current.id].append(image.id)
                     #image.id for image in current.product_id.image_ids \
