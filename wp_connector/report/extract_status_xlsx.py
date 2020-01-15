@@ -236,6 +236,7 @@ class ConnectorServer(orm.Model):
 
         ctx = context.copy()
         ctx['lang'] = 'en_US'
+        # TODO use line loop (for force name!!!)
         for product in product_pool.browse(
                 cr, uid, product_ids, context=ctx):
                 
