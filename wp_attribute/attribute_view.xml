@@ -151,8 +151,8 @@
                                         <field name="lst_price" />
                                         <newline/>
 
-                                        <field name="price_extra" />
                                         <field name="price_multi" />
+                                        <field name="price_extra" />
                                     </group>
                                 </page>
                                 <page string="Linked">

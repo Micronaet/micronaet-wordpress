@@ -417,9 +417,9 @@ class ProductProductWebServer(orm.Model):
             price = product.lst_price
             
             # Correct price on product:
-            price_extra = line.price_extra or 0.0
             price_multi = line.price_multi or 1.0
-            price = (price + price_extra) * price_multi
+            price_extra = line.price_extra * price_multi
+            price *= price_multi
             
             # Correct price for this connector:
             price = price * (
@@ -427,6 +427,9 @@ class ProductProductWebServer(orm.Model):
             
             # Add extra VAT:    
             price += connector.add_vat * price / 100.0
+
+            # Add unit extra:
+            price += price_extra
 
             # Approx:
             price = round((price + gap), connector.approx)
@@ -726,8 +729,10 @@ class ProductProductWebServer(orm.Model):
         'brand_id': fields.many2one('product.product.web.brand', 'Brand'),
         
         # Unit price modify:
-        'price_multi': fields.float('Multiplier', digits=(16, 2)),
-        'price_extra': fields.float('Price extra', digits=(16, 2)),
+        'price_multi': fields.float('Multiplier', digits=(16, 2), 
+            help='Moltiplica il prezzo di listino attuale'),
+        'price_extra': fields.float('Price extra (unit.)', digits=(16, 2), 
+            help='Aggiunto dopo lo sconto l\'extra (considerato al pezzo)'),
         
         'wordpress_categ_ids': fields.many2many(
             'product.public.category', 'product_wp_rel', 
