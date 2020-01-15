@@ -425,11 +425,11 @@ class ProductProductWebServer(orm.Model):
             price = price * (
                 100.0 - connector.discount) / 100.0
             
-            # Add extra VAT:    
-            price += connector.add_vat * price / 100.0
-
             # Add unit extra:
             price += price_extra
+
+            # Add extra VAT:    
+            price += connector.add_vat * price / 100.0
 
             # Approx:
             price = round((price + gap), connector.approx)
