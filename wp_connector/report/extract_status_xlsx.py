@@ -109,7 +109,7 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Width
         excel_pool.column_width(ws_name, [
-            5, 15, 20,
+            5, 15, 20, 15,
             30, 70, 
             30, 70,
             50, 10, 5, 5, 
@@ -124,7 +124,7 @@ class ConnectorServer(orm.Model):
         row = 0
         excel_pool.write_xls_line(
             ws_name, row, [
-            'Pubbl.', 'Codice', 'Colore',
+            'Pubbl.', 'Codice', 'Colore', 'Brand',
             'Nome', 'Descrizione',  
             '(Name)', '(Description)',
             'Categorie', 'Mag.', 'Extra', 'Molt.', 
@@ -207,6 +207,7 @@ class ConnectorServer(orm.Model):
                     published,
                     default_code,
                     line.wp_color_id.name or '',
+                    line.brand_id.name or '',
                     short_description,  # product.name,
                     description,  # product.large_description or '',  
                     '', 
