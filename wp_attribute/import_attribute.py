@@ -1016,7 +1016,6 @@ class ProductPublicCategory(orm.Model):
                             wp_id,
                             variant_id,
                             )
-                        import pdb; pdb.set_trace()    
                         res = wcapi.put(call, data).json()
                         #del(current_variant[fabric_code]) #for clean operat.
                         
