@@ -57,6 +57,11 @@ class ProductProductWebBrand(orm.Model):
     
     _columns = {
         'name': fields.char('Brand', size=64, required=True, translate=True),
+        'description': fields.text('Description for web', translate=True),
+
+        # Translate fields:
+        'wp_it_id': fields.integer('WP it ID'),
+        'wp_en_id': fields.integer('WP en ID'),
         }
 
 class ProductProductWebMaterial(orm.Model):

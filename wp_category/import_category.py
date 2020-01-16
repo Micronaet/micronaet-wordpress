@@ -80,7 +80,7 @@ class ProductPublicCategory(orm.Model):
             Used also for more than one elements (not only button click)
             Note all product must be published on the same web server!            
             '''
-        if context is None:    
+        if context is None:
             context = {}
 
         _logger.warning('Publish category all on wordpress:')
@@ -129,13 +129,12 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------        
         # Read all category:
         # ---------------------------------------------------------------------        
-        theres_data = True
         parameter = {
             'per_page': 10,
             'page': 0,
             }
         current_wp_category = []
-        while theres_data:
+        while True:
             parameter['page'] += 1
             call = 'products/categories'
             res = wcapi.get(call, params=parameter).json()
@@ -168,7 +167,7 @@ class ProductPublicCategory(orm.Model):
             if res:
                 current_wp_category.extend(res)
             else:
-                theres_data = False
+                break
 
         # ---------------------------------------------------------------------        
         # Loading used dict DB

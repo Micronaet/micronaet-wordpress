@@ -8,6 +8,9 @@
             <field name="arch" type="xml">
                 <tree string="Brand" editable="bottom">
                     <field name="name" />
+                    <field name="description" />
+                    <field name="wp_it_id" groups="wp_connector.group_wp_id_manager" />
+                    <field name="wp_en_id" groups="wp_connector.group_wp_id_manager" />
                 </tree>
             </field>
         </record>
