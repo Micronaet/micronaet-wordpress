@@ -420,7 +420,7 @@ class ProductPublicCategory(orm.Model):
 
         connector_id = ids[0]
         server_proxy = self.browse(cr, uid, connector_id, context=context)
-        brand_code = server_proxy.brand_code
+        #brand_code = server_proxy.brand_code # As default
 
         # Read WP Category present:
         wcapi = self.get_wp_connector(
@@ -832,12 +832,14 @@ class ProductPublicCategory(orm.Model):
                         }]}
 
                 # Second element for brand! (mandatory!)
-                data['attributes'].append({
-                    'id': attribute_id['Brand'], 
-                    'options': [brand_code],
-                    'variation': False,
-                    'visible': True,
-                    })
+                import pdb; pdb.set_trace()
+                if master_record.brand_id:                
+                    data['attributes'].append({
+                        'id': attribute_id['Brand'], 
+                        'options': [master_record.brand_id.name],
+                        'variation': False,
+                        'visible': True,
+                        })
 
                 # Upodate first element colors:
                 for line, variant_color in variants:
