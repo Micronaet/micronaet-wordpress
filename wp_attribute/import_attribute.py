@@ -832,7 +832,6 @@ class ProductPublicCategory(orm.Model):
                         }]}
 
                 # Second element for brand! (mandatory!)
-                import pdb; pdb.set_trace()
                 if master_record.brand_id:                
                     data['attributes'].append({
                         'id': attribute_id['Brand'], 
