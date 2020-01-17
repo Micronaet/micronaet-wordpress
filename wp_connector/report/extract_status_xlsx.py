@@ -116,7 +116,7 @@ class ConnectorServer(orm.Model):
             10, 10, 4,
             10, 10, 
             5, 20, 
-            20, 
+            20, 5,
             40, 40, 
             ])
             
@@ -131,7 +131,7 @@ class ConnectorServer(orm.Model):
             'Prezzo ODOO', 'Forz.', 'Prezzo WP',
             'Cat. Stat.', 'Peso', 
             'Mod. imb.', 'Imballo',
-            'Magazzino', 'Immagini', 'Link',
+            'Magazzino', 'Garanzia', 'Immagini', 'Link',
             ], default_format=excel_format['header'])
 
         line_ids = connector_pool.search(cr, uid, [
@@ -225,6 +225,7 @@ class ConnectorServer(orm.Model):
                     product.statistic_category or '',
                     line.weight_net,
                     'X' if product.model_package_id else '',
+                    'X' if line.lifetime_warranty else '',
                     '%s x %s x %s' % (
                         line.pack_l, line.pack_h, line.pack_p),
                     '%s (M. %s - B. %s)' % (net, stock, locked),
