@@ -738,6 +738,8 @@ class ProductProductWebServer(orm.Model):
 
         'brand_id': fields.many2one('product.product.web.brand', 'Brand'),
         
+        'lifetime_warranty': fields.boolean('Lifetime warranty'),
+
         # Unit price modify:
         'price_multi': fields.float('Multiplier', digits=(16, 2), 
             help='Moltiplica il prezzo di listino attuale'),
