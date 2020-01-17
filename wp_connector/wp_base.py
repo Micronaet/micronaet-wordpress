@@ -76,6 +76,7 @@ class ProductProductWebMaterial(orm.Model):
     _columns = {
         'name': fields.char(
             'Material', size=64, required=True, translate=True),
+        'description': fields.text('Description for web', translate=True),
         }
 
 class ConnectorServer(orm.Model):
