@@ -77,6 +77,10 @@ class ProductProductWebMaterial(orm.Model):
         'name': fields.char(
             'Material', size=64, required=True, translate=True),
         'description': fields.text('Description for web', translate=True),
+
+        # Translate fields:
+        'wp_it_id': fields.integer('WP it ID'),
+        'wp_en_id': fields.integer('WP en ID'),
         }
 
 class ConnectorServer(orm.Model):
