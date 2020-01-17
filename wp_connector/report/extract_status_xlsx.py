@@ -225,10 +225,10 @@ class ConnectorServer(orm.Model):
                     product.statistic_category or '',
                     line.weight_net,
                     'X' if product.model_package_id else '',
-                    'X' if line.lifetime_warranty else '',
                     '%s x %s x %s' % (
                         line.pack_l, line.pack_h, line.pack_p),
                     '%s (M. %s - B. %s)' % (net, stock, locked),
+                    'X' if line.lifetime_warranty else '',
                     image,
                     dropbox_image,
                     ], default_format=color_format['text'])
