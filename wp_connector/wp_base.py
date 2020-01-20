@@ -415,6 +415,19 @@ class ProductProductWebServer(orm.Model):
         else: # odoo    
             return default_code.replace('&nbsp;', ' ')
 
+    def get_wp_image(self, item, variant=False):
+        ''' Extract complete list of images (single if variant mode)
+        '''
+        images = []
+        for image in item.wp_dropbox_images_ids:
+            dropbox_link = image.dropbox_link
+            if dropbox_link and dropbox_link.startswith('http'):                        
+                src = {'src': image.dropbox_link, }
+                if variant:
+                    return src # Variant only one image!
+                images.append(src)
+        return images
+
     def get_wp_price(self, line):
         ''' Extract price depend on force, discount and VAT
         '''
@@ -539,14 +552,10 @@ class ProductProductWebServer(orm.Model):
                 # -------------------------------------------------------------
                 # Images block:
                 # -------------------------------------------------------------
-                images = [] 
                 if 'image' not in unpublished:
-                    for image in item.wp_dropbox_images_ids:
-                        dropbox_link = image.dropbox_link
-                        if dropbox_link and dropbox_link.startswith('http'):                        
-                            images.append({
-                                'src': image.dropbox_link,
-                                })
+                    images = self.get_wp_image(item)
+                else:                
+                    images = []
 
                 # -------------------------------------------------------------
                 # Category block:

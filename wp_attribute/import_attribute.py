@@ -1001,12 +1001,7 @@ class ProductPublicCategory(orm.Model):
                     # ---------------------------------------------------------
                     image = False
                     if 'image' not in unpublished:
-                        for item in line.wp_dropbox_images_ids:                  
-                            if item.dropbox_link:
-                                image = {
-                                    'src': item.dropbox_link,
-                                    }
-                                break # Only one image in variant!    
+                        image = self.get_wp_image(item)
                          
                     if image:
                         data['image'] = image
