@@ -155,11 +155,11 @@
                                         <field name="price_extra" />
                                     </group>
                                 </page>
-                                <page string="Linked">
+                                <!--<page string="Linked">
                                     <group colspan="4" col="4">
                                         <field name="linked_ids" domain="[('id', '!=', active_id), ('connector_id', '=', connector_id)]" widget="many2many_tags"/>
                                     </group>
-                                </page>
+                                </page>-->
                                 <page string="Material">
                                     <group colspan="4" col="4">
                                         <field name="material_ids" widget="many2many_tags"/>
@@ -245,17 +245,29 @@
                             <field name="force_price"/>
                             <field name="force_min_stock"/>-->
                             
-                            <separator string="Wordpress line:" colspan="4"/>
-                            <!--<button name="clean_reference" string="Clean reference" colspan="1" type="object" confirm="Do you want delete reference with Wordpress linked product?"/>-->
-                            <field name="variant_ids" colspan="4" nolabel="1" readonly="1">
-                                <tree string="Varianti" editable="bottom">
-                                    <field name="published" />
-                                    <field name="product_id" readonly="1" />
-                                    <field name="force_q_x_pack" readonly="1"/>
-                                    <field name="force_ean13" readonly="1"/>
-                                    <field name="force_price" readonly="1"/>                                    
-                                </tree>
-                            </field>
+                            <notebook colspan="4">
+                                <page string="Variations:">
+                                     <group colspan="4" col="4">
+                                        <separator string="Wordpress line:" colspan="4"/>
+                                        <!--<button name="clean_reference" string="Clean reference" colspan="1" type="object" confirm="Do you want delete reference with Wordpress linked product?"/>-->
+                                        <field name="variant_ids" colspan="4" nolabel="1" readonly="1">
+                                            <tree string="Varianti" editable="bottom">
+                                                <field name="published" />
+                                                <field name="product_id" readonly="1" />
+                                                <field name="force_q_x_pack" readonly="1"/>
+                                                <field name="force_ean13" readonly="1"/>
+                                                <field name="force_price" readonly="1"/>                                    
+                                            </tree>
+                                        </field>                                         
+                                     </group>
+                                </page>
+                                <page string="Linked:">
+                                     <group colspan="4" col="4">
+                                         <field name="linked_ids" domain="[('id', '!=', active_id), ('connector_id', '=', connector_id), ('wp_parent_template', '=', True)]" widget="many2many_tags"/>
+                                     </group>
+                                </page>
+                            </notebook>
+                            
                             <separator string="Wordpress link:" colspan="3"/>
                             <button name="clean_wp_reference" string="Clean" type="object" confirm="Clean WP reference only if this product is deleted from WP, confirm?" colspan="1"/>
                             <field name="wp_it_id" readonly="1"/>
