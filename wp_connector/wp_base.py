@@ -628,6 +628,7 @@ class ProductProductWebServer(orm.Model):
                         if log_excel != False:
                             log_excel.append(('put', call, u'%s' % (data), 
                                 u'%s' % (reply)))
+                        print call, data        
 
                         if reply.get('code') in (                        
                                 'product_invalid_sku',
