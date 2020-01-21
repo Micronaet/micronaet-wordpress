@@ -625,7 +625,10 @@ class ProductProductWebServer(orm.Model):
                     try:
                         call = 'products/%s' % wp_id
                         reply = wcapi.put(call, data).json()
-
+                        print call
+                        print data
+                        import pdb; pdb.set_trace()
+                        print reply
                         if log_excel != False:
                             log_excel.append(('put', call, u'%s' % (data), 
                                 u'%s' % (reply)))
