@@ -423,7 +423,7 @@ class ProductProductWebServer(orm.Model):
             #dropbox_link = image.dropbox_link
             #if dropbox_link and dropbox_link.startswith('http'):                        
             #src = {'src': image.dropbox_link, }
-            dropbox_link = 'http://my.fiam.it/upload/get_image.php?name=%s' % (
+            dropbox_link = 'https://my.fiam.it/upload/get_image.php?name=%s' % (
                 image.filename or '') 
             _logger.warning('Image: %s' % dropbox_link)
     
@@ -625,10 +625,6 @@ class ProductProductWebServer(orm.Model):
                     try:
                         call = 'products/%s' % wp_id
                         reply = wcapi.put(call, data).json()
-                        print call
-                        print data
-                        import pdb; pdb.set_trace()
-                        print reply
                         if log_excel != False:
                             log_excel.append(('put', call, u'%s' % (data), 
                                 u'%s' % (reply)))
