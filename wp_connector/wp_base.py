@@ -427,8 +427,7 @@ class ProductProductWebServer(orm.Model):
                 image.filename or '') 
             _logger.warning('Image: %s' % dropbox_link)
     
-            src = {
-                'src': dropbox_link, }
+            src = {'src': dropbox_link, }
             if variant:
                 return src # Variant only one image!
             images.append(src)
