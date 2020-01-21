@@ -477,7 +477,7 @@ class ProductProductWebServer(orm.Model):
         
         # Data publish selection (remove this part from publish:
         unpublished = [
-            'image', # TODO parametrize
+            #'image', # TODO parametrize
             ]
         
         if context is None:    
