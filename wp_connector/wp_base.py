@@ -424,7 +424,7 @@ class ProductProductWebServer(orm.Model):
             #if dropbox_link and dropbox_link.startswith('http'):                        
             #src = {'src': image.dropbox_link, }
             dropbox_link = 'http://my.fiam.it/upload/get_image.php?name=%s' % (
-                item.product_id.default_code or '') 
+                item.filename or '') 
             _logger.warning('Image: %s' % dropbox_link)
     
             src = {
