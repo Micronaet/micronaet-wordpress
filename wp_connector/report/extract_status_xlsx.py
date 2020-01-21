@@ -164,6 +164,7 @@ class ConnectorServer(orm.Model):
                 self, product, album_ids, context={'image_mode': 'url'})
                     
             # Stock:        
+            net = connector_pool.get_existence_for_product(product)
             stock = int(product.mx_net_mrp_qty)
             locked = int(product.mx_mrp_b_locked)
             net = stock - locked
