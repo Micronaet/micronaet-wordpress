@@ -423,10 +423,12 @@ class ProductProductWebServer(orm.Model):
             #dropbox_link = image.dropbox_link
             #if dropbox_link and dropbox_link.startswith('http'):                        
             #src = {'src': image.dropbox_link, }
+            dropbox_link = 'http://my.fiam.it/upload/get_image.php?name=%s' % (
+                item.product_id.default_code or '') 
+            _logger.warning('Image: %s' % dropbox_link)
+    
             src = {
-                'src': 'http://my.fiam.it/upload/get_image.php?name=%s' % (
-                    item.product_id.default_code or '',
-                    ) }
+                'src': dropbox_link, }
             if variant:
                 return src # Variant only one image!
             images.append(src)
