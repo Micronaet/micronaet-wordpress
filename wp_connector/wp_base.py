@@ -420,12 +420,17 @@ class ProductProductWebServer(orm.Model):
         '''
         images = []
         for image in item.wp_dropbox_images_ids:
-            dropbox_link = image.dropbox_link
-            if dropbox_link and dropbox_link.startswith('http'):                        
-                src = {'src': image.dropbox_link, }
-                if variant:
-                    return src # Variant only one image!
-                images.append(src)
+            #dropbox_link = image.dropbox_link
+            #if dropbox_link and dropbox_link.startswith('http'):                        
+            #src = {'src': image.dropbox_link, }
+            src = {
+                'src': 'http://my.fiam.it/upload/get_image.php?name=%s' % (
+                    item.product_id.default_code or '',
+                    ) }
+            if variant:
+                return src # Variant only one image!
+            images.append(src)
+
         return images
 
     def get_wp_price(self, line):
