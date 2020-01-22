@@ -381,7 +381,8 @@ class ProductProductWebServer(orm.Model):
         # TODO manage q x pack?
         #q_x_pack = product.q_x_pack or 1
         #stock_quantity //= q_x_pack
-
+        _logger.warning('Product %s stock status: %s' % (
+            product.default_code, stock_quantity))
         return stock_quantity, comment
     
     def get_category_block_for_publish(self, item, lang):
