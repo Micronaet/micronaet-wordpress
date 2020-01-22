@@ -116,11 +116,11 @@ class ConnectorServer(orm.Model):
             5, 15, 20, 15,
             30, 70, 
             30, 70,
-            50, 10, 5, 5, 
+            50, 10, 30, 5, 5, 
             10, 10, 4,
             10, 10, 
             5, 20, 
-            20, 5,
+            5,
             40, 40, 
             ])
             
@@ -131,11 +131,12 @@ class ConnectorServer(orm.Model):
             'Pubbl.', 'Codice', 'Colore', 'Brand',
             'Nome', 'Descrizione',  
             '(Name)', '(Description)',
-            'Categorie', 'Mag.', 'Extra', 'Molt.', 
+            'Categorie', 'Mag.', 'Dett. mag.', 'Extra', 'Molt.', 
             'Prezzo ODOO', 'Forz.', 'Prezzo WP',
             'Cat. Stat.', 'Peso', 
             'Mod. imb.', 'Imballo',
-            'Magazzino', 'Garanzia', 'Immagini', 'Link',
+            'Garanzia', 
+            'Immagini', 'Link',
             ], default_format=excel_format['header'])
 
         line_ids = connector_pool.search(cr, uid, [
@@ -220,6 +221,7 @@ class ConnectorServer(orm.Model):
                     ', '.join(tuple(
                         [c.name for c in line.wordpress_categ_ids])),
                     stock_qty,
+                    stock_comment,
                     
                     line.price_extra,
                     line.price_multi,
@@ -232,7 +234,6 @@ class ConnectorServer(orm.Model):
                     'X' if product.model_package_id else '',
                     '%s x %s x %s' % (
                         line.pack_l, line.pack_h, line.pack_p),
-                    stock_comment,
                     'X' if line.lifetime_warranty else '',
                     image,
                     dropbox_image,

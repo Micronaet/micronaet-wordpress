@@ -365,7 +365,7 @@ class ProductProductWebServer(orm.Model):
             stock_quantity = 0
         else:
             resetted = False    
-        comment = 'Netto + OC: %s + Prev.: %s = %s%s' % (
+        comment = 'Netto - OC: %s + Prev.: %s = %s%s' % (
             product.mx_lord_mrp_qty,
             product.mx_oc_out_prev,
             stock_quantity,
