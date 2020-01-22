@@ -344,10 +344,28 @@ class ProductProductWebServer(orm.Model):
     # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
-    def get_existence_for_product(self, product):
+    def get_existence_for_product(self, cr, uid, product, context=None):
         ''' Return real existence for web site
         '''
-        stock_quantity = int(product.mx_net_mrp_qty - product.mx_mrp_b_locked)
+        
+        sol_pool = self.pool.get('sale.order.line')
+        product_pool = self.pool.get('product.product')
+        
+        # ---------------------------------------------------------------------
+        # Call from external:
+        # ---------------------------------------------------------------------
+        if type(product) == int:
+            product = product_pool.browse(cr, uid, product, context=context)
+        
+        # ---------------------------------------------------------------------
+        # DB with MRP:
+        # ---------------------------------------------------------------------
+        if 'product_uom_maked_sync_qty' in sol_pool._columns: 
+            stock_quantity = int(
+                product.mx_net_mrp_qty - product.mx_mrp_b_locked)
+        else:    
+            stock_quantity = int(product.mx_lord_mrp_qty)
+
         # TODO manage q x pack?
         #q_x_pack = product.q_x_pack or 1
         #stock_quantity //= q_x_pack

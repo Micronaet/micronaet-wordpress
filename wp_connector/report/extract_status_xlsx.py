@@ -168,10 +168,8 @@ class ConnectorServer(orm.Model):
                 self, product, album_ids, context={'image_mode': 'url'})
                     
             # Stock:        
-            #net = connector_pool.get_existence_for_product(product)
-            stock = int(product.mx_net_mrp_qty)
-            locked = int(product.mx_mrp_b_locked)
-            net = stock - locked
+            net = connector_pool.get_existence_for_product(cr, uid, product, context=context)
+
             published = 'X' if line.published else ''
             if not published:
                 color_format = excel_format['yellow']                
@@ -232,7 +230,7 @@ class ConnectorServer(orm.Model):
                     'X' if product.model_package_id else '',
                     '%s x %s x %s' % (
                         line.pack_l, line.pack_h, line.pack_p),
-                    '%s (M. %s - B. %s)' % (net, stock, locked),
+                    net,
                     'X' if line.lifetime_warranty else '',
                     image,
                     dropbox_image,
