@@ -346,9 +346,8 @@ class ProductProductWebServer(orm.Model):
     # -------------------------------------------------------------------------
     def get_existence_for_product(self, cr, uid, product, context=None):
         ''' Return real existence for web site
-        '''
-        
-        sol_pool = self.pool.get('sale.order.line')
+        '''        
+        #sol_pool = self.pool.get('sale.order.line')
         product_pool = self.pool.get('product.product')
         
         # ---------------------------------------------------------------------
@@ -360,18 +359,30 @@ class ProductProductWebServer(orm.Model):
         # ---------------------------------------------------------------------
         # DB with MRP:
         # ---------------------------------------------------------------------
-        if 'product_uom_maked_sync_qty' in sol_pool._columns: 
-            stock_quantity = int(
-                product.mx_net_mrp_qty - product.mx_mrp_b_locked)
-        else:    
-            stock_quantity = int(product.mx_lord_mrp_qty)
+        stock_quantity = int(product.mx_lord_mrp_qty + product.mx_oc_out_prev)
+        if stock_quantity < 0:
+            resetted = True
+            stock_quantity = 0
+        else:
+            resetted = False    
+        comment = 'Netto + OC: %s + Prev.: %s = %s%s' % (
+            product.mx_lord_mrp_qty,
+            product.mx_oc_out_prev,
+            stock_quantity,
+            '*' if resetted else '',
+            )
+        
+        #if 'product_uom_maked_sync_qty' in sol_pool._columns: 
+        #    stock_quantity = int(
+        #        product.mx_net_mrp_qty - product.mx_mrp_b_locked)
+        #else:    
+        #    stock_quantity = int(product.mx_lord_mrp_qty)
 
         # TODO manage q x pack?
         #q_x_pack = product.q_x_pack or 1
         #stock_quantity //= q_x_pack
-        if stock_quantity < 0:
-            return 0
-        return stock_quantity
+
+        return stock_quantity, comment
     
     def get_category_block_for_publish(self, item, lang):
         ''' Get category block for data record WP
@@ -569,7 +580,8 @@ class ProductProductWebServer(orm.Model):
                 price = u'%s' % self.get_wp_price(item)
                 weight = u'%s' % product.weight
                 status = 'publish' if item.published else 'private'
-                stock_quantity = self.get_existence_for_product(product)
+                stock_quantity, stock_comment = \
+                    self.get_existence_for_product(product)
                 wp_id = eval('item.wp_%s_id' % lang)
                 wp_it_id = item.wp_it_id # Default product for language
                 # fabric, type_of_material

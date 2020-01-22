@@ -120,7 +120,7 @@ class ConnectorServer(orm.Model):
             10, 10, 4,
             10, 10, 
             5, 20, 
-            10, 5,
+            20, 5,
             40, 40, 
             ])
             
@@ -168,12 +168,14 @@ class ConnectorServer(orm.Model):
                 self, product, album_ids, context={'image_mode': 'url'})
                     
             # Stock:        
-            net = connector_pool.get_existence_for_product(cr, uid, product, context=context)
+            stock_qty, stock_comment = \
+                connector_pool.get_existence_for_product(
+                    cr, uid, product, context=context)
 
             published = 'X' if line.published else ''
             if not published:
                 color_format = excel_format['yellow']                
-            elif net <= 0:
+            elif stock_qty <= 0:
                 color_format = excel_format['red']
             else:    
                 color_format = excel_format['black']
@@ -217,7 +219,7 @@ class ConnectorServer(orm.Model):
                     '',     
                     ', '.join(tuple(
                         [c.name for c in line.wordpress_categ_ids])),
-                    net,
+                    stock_qty,
                     
                     line.price_extra,
                     line.price_multi,
@@ -230,7 +232,7 @@ class ConnectorServer(orm.Model):
                     'X' if product.model_package_id else '',
                     '%s x %s x %s' % (
                         line.pack_l, line.pack_h, line.pack_p),
-                    net,
+                    stock_comment,
                     'X' if line.lifetime_warranty else '',
                     image,
                     dropbox_image,
