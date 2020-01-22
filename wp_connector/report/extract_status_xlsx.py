@@ -67,7 +67,11 @@ class ConnectorServer(orm.Model):
                             image.album_id.code, image.filename)
                     else:        
                         res += u'[%s: %s]' % (
-                            image.album_id.code, image.dropbox_link)                            
+                            image.album_id.code, 
+                            'http://my.fiam.it/upload/images/%s' % (
+                                image.filename or ''),
+                            #image.dropbox_link,
+                            )                            
             return res
         
         stock_status = True
