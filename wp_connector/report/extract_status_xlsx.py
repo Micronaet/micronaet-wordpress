@@ -120,7 +120,7 @@ class ConnectorServer(orm.Model):
             10, 10, 4,
             10, 10, 
             5, 20, 
-            20, 5,
+            10, 5,
             40, 40, 
             ])
             
