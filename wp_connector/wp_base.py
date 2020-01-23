@@ -606,6 +606,9 @@ class ProductProductWebServer(orm.Model):
                     'sku': self.wp_clean_code(sku), # XXX not needed
                     'lang': lang,
                     'lifetime_warranty': lifetime_warranty,
+                    'multipack': 
+                        str(int(item.price_multi)) if item.price_multi else ''
+                    
                     # It doesn't update:
                     'wp_type': item.wp_type,
                     }
@@ -629,14 +632,6 @@ class ProductProductWebServer(orm.Model):
                         #catalog  search  hidden
                         
                         'weight_aditional_info': item.weight_aditional_info,
-                        
-                        # Forced in variant:
-                        #'weight': weight,
-                        #'dimensions': {
-                        #   'width': '%s' % product.width, 
-                        #   'length': '%s' % product.length,
-                        #   'height': '%s' % product.height,
-                        #   }, 
                         })
                         
                 else: # Other lang (only translation
