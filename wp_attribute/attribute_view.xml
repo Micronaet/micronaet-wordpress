@@ -179,11 +179,14 @@
                                         <field name="product_q_x_pack" />                                        
 
                                         <separator string="Preview del sito:" colspan="4" /><!--attrs="{'invisible': [('model_package_id','!=',False)]}"-->
+                                        <field name="weight_aditional_info" />
+                                        
                                         <field name="pack_l" />
                                         <field name="pack_h" />
                                         <field name="pack_p" />
                                         
                                         <field name="weight" />
+
                                         <field name="weight_net" />
                                         
                                         <field name="q_x_pack" />                                        

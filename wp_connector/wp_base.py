@@ -853,7 +853,7 @@ class ProductProductWebServer(orm.Model):
         'linked_ids': fields.many2many(
             'product.product.web.server', 'web_server_linked_rel', 
             'product_id', 'linked_id', 
-            'Linked'),
+            'Prodotti correlati'),
 
         # ---------------------------------------------------------------------
         # Material link
@@ -861,23 +861,29 @@ class ProductProductWebServer(orm.Model):
         'material_ids': fields.many2many(
             'product.product.web.material', 'web_server_material_rel', 
             'product_id', 'material_id', 
-            'Linked'),
+            'Materiali'),
 
         # ---------------------------------------------------------------------
         # Link related to product
         # ---------------------------------------------------------------------
+        'weight_aditional_info': fields.text('Peso e dimensioni', widget='html', 
+            help='Indicare dimensioni e peso articoli (testo libero)'),
+
+        # =====================================================================
+        # TODO remove product dimension and text:
         'product_pack_l': fields.related(
             'product_id', 'pack_l', type='float', string='Pack L prodotto'),
         'product_pack_h': fields.related(
             'product_id', 'pack_h', type='float', string='Pack H prodotto'),
         'product_pack_p': fields.related(
             'product_id', 'pack_p', type='float', string='Pack P prodotto'),
+        'product_weight_net': fields.related(
+            'product_id', 'weight_net', type='float', 
+            string='Peso lordo prodotto'),
+        # =====================================================================
 
         'product_weight': fields.related(
             'product_id', 'weight', type='float', string='Peso netto prodotto'),
-        'product_weight_net': fields.related(
-            'product_id', 'weight_net', type='float', string='Peso lordo prodotto'),
-
         'product_lst_price': fields.related(
             'product_id', 'lst_price', type='float', string='Listino'),
         'product_q_x_pack': fields.related(
