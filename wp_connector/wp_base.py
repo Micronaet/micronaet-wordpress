@@ -442,15 +442,11 @@ class ProductProductWebServer(orm.Model):
         '''
         images = []
         for image in item.wp_dropbox_images_ids:
-            #dropbox_link = image.dropbox_link
-            #if dropbox_link and dropbox_link.startswith('http'):                        
-            #src = {'src': image.dropbox_link, }
-            #dropbox_link = 'https://my.fiam.it/upload/get_image.php?name=%s' % (
-            dropbox_link = 'http://my.fiam.it/upload/images/%s' % (
+            link = 'http://my.fiam.it/upload/images/%s' % (
                 image.filename or '') 
-            _logger.warning('Image: %s' % dropbox_link)
+            _logger.warning('Image: %s' % link)
     
-            src = {'src': dropbox_link, }
+            src = {'src': link, }
             if variant:
                 return src # Variant only one image!
             images.append(src)
