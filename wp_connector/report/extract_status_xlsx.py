@@ -119,7 +119,7 @@ class ConnectorServer(orm.Model):
             50, 10, 30, 5, 5, 
             10, 10, 4,
             10, 10, 
-            5, 20, 
+            5, 20, 30,
             5,
             40, 40, 
             ])
@@ -134,7 +134,7 @@ class ConnectorServer(orm.Model):
             'Categorie', 'Mag.', 'Dett. mag.', 'Extra', 'Molt.', 
             'Prezzo ODOO', 'Forz.', 'Prezzo WP',
             'Cat. Stat.', 'Peso', 
-            'Mod. imb.', 'Imballo',
+            'Mod. imb.', 'Imballo', 'Dimensioni prodotto',
             'Garanzia', 
             'Immagini', 'Link',
             ], default_format=excel_format['header'])
@@ -230,10 +230,11 @@ class ConnectorServer(orm.Model):
                     'X' if line.force_price else '',
                     
                     product.statistic_category or '',
-                    line.weight_net,
+                    line.weight,
                     'X' if product.model_package_id else '',
                     '%s x %s x %s' % (
                         line.pack_l, line.pack_h, line.pack_p),
+                    line.weight_aditional_info,    
                     'X' if line.lifetime_warranty else '',
                     image,
                     dropbox_image,
