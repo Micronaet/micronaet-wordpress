@@ -964,11 +964,13 @@ class ProductPublicCategory(orm.Model):
                         # stock_quantity
                         # stock_status
                         'weight': '%s' % line.weight,
+                        
                         'dimensions': {
                             'length': '%s' % line.pack_l,
                             'height': '%s' % line.pack_h,
                             'width': '%s' % line.pack_p,
                             },
+                        
                         'stock_quantity': 
                             web_product_pool.get_existence_for_product(
                                 variant),
