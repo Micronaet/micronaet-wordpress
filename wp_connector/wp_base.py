@@ -832,10 +832,10 @@ class ProductProductWebServer(orm.Model):
             _get_product_detail_items, method=True, readonly=1,
             type='float', string='Peso lordo', multi=True,
             ), 
-        'weight_net': fields.function(
-            _get_product_detail_items, method=True, readonly=1,
-            type='float', string='Peso netto', multi=True, 
-            ), 
+        #'weight_net': fields.function(
+        #    _get_product_detail_items, method=True, readonly=1,
+        #    type='float', string='Peso netto', multi=True, 
+        #    ), 
 
         'lst_price': fields.function(
             _get_product_detail_items, method=True, readonly=1,
@@ -869,18 +869,16 @@ class ProductProductWebServer(orm.Model):
         'weight_aditional_info': fields.text('Peso e dimensioni', widget='html', 
             help='Indicare dimensioni e peso articoli (testo libero)'),
 
-        # =====================================================================
-        # TODO remove product dimension and text:
         'product_pack_l': fields.related(
             'product_id', 'pack_l', type='float', string='Pack L prodotto'),
         'product_pack_h': fields.related(
             'product_id', 'pack_h', type='float', string='Pack H prodotto'),
         'product_pack_p': fields.related(
             'product_id', 'pack_p', type='float', string='Pack P prodotto'),
-        'product_weight_net': fields.related(
-            'product_id', 'weight_net', type='float', 
-            string='Peso lordo prodotto'),
-        # =====================================================================
+
+        #'product_weight_net': fields.related(
+        #    'product_id', 'weight_net', type='float', 
+        #    string='Peso lordo prodotto'),
 
         'product_weight': fields.related(
             'product_id', 'weight', type='float', string='Peso netto prodotto'),
