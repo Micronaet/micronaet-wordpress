@@ -870,7 +870,8 @@ class ProductProductWebServer(orm.Model):
         # Link related to product
         # ---------------------------------------------------------------------
         'weight_aditional_info': fields.text('Peso e dimensioni', widget='html', 
-            help='Indicare dimensioni e peso articoli (testo libero)'),
+            help='Indicare dimensioni e peso articoli (testo libero)',
+            translate=True),
 
         'product_pack_l': fields.related(
             'product_id', 'pack_l', type='float', string='Pack L prodotto'),
