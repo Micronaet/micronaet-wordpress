@@ -372,17 +372,9 @@ class ProductProductWebServer(orm.Model):
             '*' if resetted else '',
             )
         
-        #if 'product_uom_maked_sync_qty' in sol_pool._columns: 
-        #    stock_quantity = int(
-        #        product.mx_net_mrp_qty - product.mx_mrp_b_locked)
-        #else:    
-        #    stock_quantity = int(product.mx_lord_mrp_qty)
-
         # TODO manage q x pack?
         #q_x_pack = product.q_x_pack or 1
         #stock_quantity //= q_x_pack
-        _logger.warning('Product %s stock status: %s' % (
-            product.default_code, stock_quantity))
         return stock_quantity, comment
     
     def get_category_block_for_publish(self, item, lang):
