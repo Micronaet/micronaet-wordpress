@@ -620,6 +620,9 @@ class ProductProductWebServer(orm.Model):
                 if categories:    
                     data['categories'] = categories
 
+                if wp_linked_ids:
+                    data['upsell_ids'] = wp_linked_ids
+                    
                 if lang == default_lang:
                     # Numeric data:
                     data.update({
