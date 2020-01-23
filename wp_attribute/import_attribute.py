@@ -951,7 +951,10 @@ class ProductPublicCategory(orm.Model):
                         variant.large_description or u''
                     short_description = line.force_name or \
                         variant.emotional_short_description or name
-
+                    stock_quantity, stock_comment = \
+                        self.get_existence_for_product(
+                            cr, uid, variant, context=context),
+                        
                     # Create or update variant:
                     data = {
                         'regular_price': u'%s' % price,
@@ -961,7 +964,6 @@ class ProductPublicCategory(orm.Model):
                         'lang': lang,    
                         #'slug': self.get_lang_slug(variant_code, lang),
                         # TODO
-                        # stock_quantity
                         # stock_status
                         'weight': '%s' % line.weight,
                         
@@ -971,9 +973,7 @@ class ProductPublicCategory(orm.Model):
                             'width': '%s' % line.pack_p,
                             },
                         
-                        'stock_quantity': 
-                            web_product_pool.get_existence_for_product(
-                                cr, uid, variant, context=context),
+                        'stock_quantity': stock_quantity,
                         'status': 'publish' if line.published else 'private',
                         
                         'attributes': [{
