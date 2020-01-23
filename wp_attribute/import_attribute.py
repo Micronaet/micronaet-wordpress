@@ -973,7 +973,7 @@ class ProductPublicCategory(orm.Model):
                         
                         'stock_quantity': 
                             web_product_pool.get_existence_for_product(
-                                variant),
+                                cr, uid, variant, context=context),
                         'status': 'publish' if line.published else 'private',
                         
                         'attributes': [{
