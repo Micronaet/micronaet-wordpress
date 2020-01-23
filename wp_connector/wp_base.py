@@ -565,6 +565,7 @@ class ProductProductWebServer(orm.Model):
                     product.emotional_description or \
                     product.large_description or u''
                 short = product.emotional_short_description or name or u''
+                lifetime_warranty = item.lifetime_warranty
 
                 price = u'%s' % self.get_wp_price(item)
                 weight = u'%s' % product.weight
@@ -604,6 +605,7 @@ class ProductProductWebServer(orm.Model):
                     'short_description': short,
                     'sku': self.wp_clean_code(sku), # XXX not needed
                     'lang': lang,
+                    'lifetime_warranty': lifetime_warranty,
                     # It doesn't update:
                     'wp_type': item.wp_type,
                     }
