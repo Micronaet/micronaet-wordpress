@@ -580,6 +580,15 @@ class ProductProductWebServer(orm.Model):
                 # fabric, type_of_material
 
                 # -------------------------------------------------------------
+                # Linked block:
+                # -------------------------------------------------------------
+                wp_linked_ids = []
+                for related in product.linked_ids:
+                    related_wp_id = eval('related.wp_%s_id' % lang)
+                    if related_wp_id:
+                        wp_linked_ids.append(related_wp_id)
+
+                # -------------------------------------------------------------
                 # Images block:
                 # -------------------------------------------------------------
                 if 'image' not in unpublished:
