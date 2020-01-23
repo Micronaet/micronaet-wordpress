@@ -571,7 +571,8 @@ class ProductProductWebServer(orm.Model):
                 weight = u'%s' % product.weight
                 status = 'publish' if item.published else 'private'
                 stock_quantity, stock_comment = \
-                    self.get_existence_for_product(product)
+                    self.get_existence_for_product(
+                        cr, uid, product, context=context)
                 wp_id = eval('item.wp_%s_id' % lang)
                 wp_it_id = item.wp_it_id # Default product for language
                 # fabric, type_of_material
