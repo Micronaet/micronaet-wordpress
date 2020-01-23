@@ -607,7 +607,7 @@ class ProductProductWebServer(orm.Model):
                     'lang': lang,
                     'lifetime_warranty': lifetime_warranty,
                     'multipack': 
-                        str(int(item.price_multi)) if item.price_multi else ''
+                        str(int(item.price_multi)) if item.price_multi else '',
                     
                     # It doesn't update:
                     'wp_type': item.wp_type,
