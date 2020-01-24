@@ -849,13 +849,12 @@ class ProductPublicCategory(orm.Model):
                 # -------------------------------------------------------------
                 # 3. Material: XXX facoltative
                 # -------------------------------------------------------------
-                if line.material_ids:
-                    data['attributes'].append({
-                        'id': attribute_id['Materiale'], 
-                        'options': [],
-                        'variation': False,
-                        'visible': True,
-                        })
+                data['attributes'].append({
+                    'id': attribute_id['Materiale'], 
+                    'options': [],
+                    'variation': False,
+                    'visible': True,
+                    })
 
                 # Upodate first element colors:
                 for line, variant_color in variants:
