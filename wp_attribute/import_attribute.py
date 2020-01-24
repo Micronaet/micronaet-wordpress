@@ -527,6 +527,7 @@ class ProductPublicCategory(orm.Model):
         attribute_id = {
             'Tessuto': False,
             'Brand': False,
+            'Materiale': False,
             # TODO Material, Certificate
             }
         _logger.warning('Searching attribute %s...' % (attribute_id.keys() ))
@@ -824,6 +825,9 @@ class ProductPublicCategory(orm.Model):
                     'lang': lang,
                     'name': lang_master_name,
 
+                    # -------------------------------------------------------------
+                    # 1. Fabric XXX mandatory!
+                    # -------------------------------------------------------------
                     'attributes': [{
                         'id': attribute_id['Tessuto'], 
                         'options': [],
@@ -831,7 +835,9 @@ class ProductPublicCategory(orm.Model):
                         'visible': True,
                         }]}
 
-                # Second element for brand! (mandatory!)
+                # -------------------------------------------------------------
+                # 2. Brand! (XXX mandatory!)
+                # -------------------------------------------------------------
                 if master_record.brand_id:                
                     data['attributes'].append({
                         'id': attribute_id['Brand'], 
@@ -840,9 +846,35 @@ class ProductPublicCategory(orm.Model):
                         'visible': True,
                         })
 
+                # -------------------------------------------------------------
+                # 3. Material: XXX facoltative
+                # -------------------------------------------------------------
+                if line.material_ids:
+                    data['attributes'].append({
+                        'id': attribute_id['Materiale'], 
+                        'options': [],
+                        'variation': False,
+                        'visible': True,
+                        })
+
                 # Upodate first element colors:
                 for line, variant_color in variants:
+                    # Get variant color:
                     data['attributes'][0]['options'].append(variant_color)
+                    
+                    # ---------------------------------------------------------
+                    # Update material block:
+                    # ---------------------------------------------------------
+                    import pdb; pdb.set_trace()
+                    for material in line.material_ids:
+                        material_wp_id = eval('material.wp_%s_id' % lang)
+                        if material_wp_id:
+                            data['attributes'][2]['options'].append(
+                                material.name)
+
+                for material in line.material_ids:
+                    if material_wp_id:
+                        wp_material_ids.append(material_wp_id)
                     
                 try:
                     call = 'products/%s' % wp_id
@@ -954,7 +986,7 @@ class ProductPublicCategory(orm.Model):
                     stock_quantity, stock_comment = \
                         web_product_pool.get_existence_for_product(
                             cr, uid, variant, context=context)
-                        
+                    
                     # Create or update variant:
                     data = {
                         'regular_price': u'%s' % price,
@@ -981,7 +1013,7 @@ class ProductPublicCategory(orm.Model):
                             'option': fabric_code,
                             }]
                         }
-                        
+
                     data['sku'] = web_product_pool.wp_clean_code(variant_code) # used always?
                     if default_lang == lang: # Add language default ref.
                         # data['sku'] = self.wp_clean_code(variant_code)
