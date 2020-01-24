@@ -864,16 +864,12 @@ class ProductPublicCategory(orm.Model):
                     # ---------------------------------------------------------
                     # Update material block:
                     # ---------------------------------------------------------
-                    import pdb; pdb.set_trace()
                     for material in line.material_ids:
                         material_wp_id = eval('material.wp_%s_id' % lang)
                         if material_wp_id:
                             data['attributes'][2]['options'].append(
                                 material.name)
-
-                for material in line.material_ids:
-                    if material_wp_id:
-                        wp_material_ids.append(material_wp_id)
+                    import pdb; pdb.set_trace()
                     
                 try:
                     call = 'products/%s' % wp_id
