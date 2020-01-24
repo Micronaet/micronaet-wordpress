@@ -866,10 +866,10 @@ class ProductPublicCategory(orm.Model):
                     # ---------------------------------------------------------
                     for material in line.material_ids:
                         material_wp_id = eval('material.wp_%s_id' % lang)
-                        if material_wp_id:
+                        if material_wp_id and material.name not in 
+                                data['attributes'][2]['options']:
                             data['attributes'][2]['options'].append(
                                 material.name)
-                    import pdb; pdb.set_trace()
                     
                 try:
                     call = 'products/%s' % wp_id
@@ -930,8 +930,7 @@ class ProductPublicCategory(orm.Model):
                         wp_variant_lang_ref[(
                             web_product_pool.wp_clean_code(
                                 item['sku'], destination='odoo'), 
-                            item['lang'])] = item['id']
-                    
+                            item['lang'])] = item['id']                    
                         """
                         if lang == default_lang:
                             wp_variant_lang_ref[
@@ -1006,8 +1005,32 @@ class ProductPublicCategory(orm.Model):
                         'attributes': [{
                             'id': attribute_id['Tessuto'], 
                             'option': fabric_code,
-                            }]
+                            },
+                            ]
                         }
+
+                    # ---------------------------------------------------------
+                    # Update material block:
+                    # ---------------------------------------------------------
+                    for material in line.material_ids:
+                        material_wp_id = eval('material.wp_%s_id' % lang)
+                        if material_wp_id:
+                            data['attributes'].append({
+                                'id': attribute_id['Materiale'], 
+                                'option': material.name,
+                                })
+
+
+
+
+
+
+
+
+
+
+
+
 
                     data['sku'] = web_product_pool.wp_clean_code(variant_code) # used always?
                     if default_lang == lang: # Add language default ref.
@@ -1035,6 +1058,7 @@ class ProductPublicCategory(orm.Model):
                     if image:
                         data['image'] = image
 
+                    import pdb; pdb.set_trace()
                     if variant_id: # Update
                         operation = 'UPD'
                         call = 'products/%s/variations/%s' % (
