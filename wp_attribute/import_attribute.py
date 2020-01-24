@@ -866,7 +866,7 @@ class ProductPublicCategory(orm.Model):
                     # ---------------------------------------------------------
                     for material in line.material_ids:
                         material_wp_id = eval('material.wp_%s_id' % lang)
-                        if material_wp_id and material.name not in 
+                        if material_wp_id and material.name not in \
                                 data['attributes'][2]['options']:
                             data['attributes'][2]['options'].append(
                                 material.name)
