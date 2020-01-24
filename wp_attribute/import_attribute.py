@@ -1058,7 +1058,6 @@ class ProductPublicCategory(orm.Model):
                     if image:
                         data['image'] = image
 
-                    import pdb; pdb.set_trace()
                     if variant_id: # Update
                         operation = 'UPD'
                         call = 'products/%s/variations/%s' % (
