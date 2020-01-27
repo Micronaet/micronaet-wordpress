@@ -999,6 +999,7 @@ class ProductPublicCategory(orm.Model):
                             'width': '%s' % line.pack_p,
                             },
                         
+                        'manage_stock': True,
                         'stock_quantity': stock_quantity,
                         'status': 'publish' if line.published else 'private',
                         
@@ -1010,28 +1011,8 @@ class ProductPublicCategory(orm.Model):
                         }
 
                     # ---------------------------------------------------------
-                    # Update material block:
+                    # Language block:
                     # ---------------------------------------------------------
-                    for material in line.material_ids:
-                        material_wp_id = eval('material.wp_%s_id' % lang)
-                        if material_wp_id:
-                            data['attributes'].append({
-                                'id': attribute_id['Materiale'], 
-                                'option': material.name,
-                                })
-
-
-
-
-
-
-
-
-
-
-
-
-
                     data['sku'] = web_product_pool.wp_clean_code(variant_code) # used always?
                     if default_lang == lang: # Add language default ref.
                         # data['sku'] = self.wp_clean_code(variant_code)
@@ -1047,7 +1028,18 @@ class ProductPublicCategory(orm.Model):
                         data['translations'] = {
                             'it': variant_it_id, # Created before
                             }
-                        
+
+                    # ---------------------------------------------------------
+                    # Material block terms:
+                    # ---------------------------------------------------------
+                    for material in line.material_ids:
+                        material_wp_id = eval('material.wp_%s_id' % lang)
+                        if material_wp_id:
+                            data['attributes'].append({
+                                'id': attribute_id['Materiale'], 
+                                'option': material.name,
+                                })
+
                     # ---------------------------------------------------------
                     # Images block:
                     # ---------------------------------------------------------
