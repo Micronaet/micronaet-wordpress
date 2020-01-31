@@ -1045,7 +1045,7 @@ class ProductPublicCategory(orm.Model):
                     image = False
                     if 'image' not in unpublished:
                         image = web_product_pool.get_wp_image(
-                            item, variant=True)
+                            line, variant=True)
                          
                     if image:
                         data['image'] = image
