@@ -143,7 +143,10 @@
                             <notebook colspan="4">
                                 <page string="Info">
                                     <group colspan="4" col="4">
-                                        <field name="wp_type" readonly="1"/>
+                                        <field name="wp_type" groups="wp_connector.group_wp_product_manager"/>
+                                        <field name="wp_parent_template" groups="wp_connector.group_wp_product_manager"/>
+
+                                        <field name="wp_parent_id" groups="wp_connector.group_wp_product_manager"/>
                                         <field name="wp_color_id" />
 
                                         <field name="wordpress_categ_ids" domain="[('connector_id','=',connector_id),('enabled','=',True)]" widget="many2many_tags" colspan="4"/>

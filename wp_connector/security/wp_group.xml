@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
    <data>
+        <record id="group_wp_product_manager" model="res.groups">
+            <field name="name">WP Site Product manager</field>
+        </record>
         <record id="group_wp_manager" model="res.groups">
             <field name="name">WP Site Manager</field>
         </record>
