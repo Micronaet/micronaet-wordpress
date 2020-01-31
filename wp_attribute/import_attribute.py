@@ -1044,6 +1044,7 @@ class ProductPublicCategory(orm.Model):
                     # Images block:
                     # ---------------------------------------------------------
                     image = False
+                    import pdb; pdb.set_trace()
                     if 'image' not in unpublished:
                         image = self.get_wp_image(item)
                          
