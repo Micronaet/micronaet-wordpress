@@ -589,7 +589,7 @@ class ProductProductWebServer(orm.Model):
                 # -------------------------------------------------------------
                 # Images block:
                 # -------------------------------------------------------------
-                import pdb; pdb.set_trace()
+                #import pdb; pdb.set_trace()
                 if 'image' not in unpublished:
                     images = self.get_wp_image(item)
                 else:                
