@@ -228,7 +228,7 @@
             <field name="model">product.product.web.server</field>
             <field name="priority" eval="40" />
             <field name="arch" type="xml">
-                <form string="String" version="7.0">        
+                <form string="Prodotti web" version="7.0">        
                     <sheet>
                         <group col="4" colspan="4">
                             <field name="connector_id" readonly="1"/>

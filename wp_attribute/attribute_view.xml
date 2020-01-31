@@ -139,6 +139,8 @@
 
                             <field name="product_id" required="1"/>
                             <field name="wp_parent_code" />
+                            
+                            <field name="brand_id" />
 
                             <notebook colspan="4">
                                 <page string="Info">
