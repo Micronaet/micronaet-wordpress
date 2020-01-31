@@ -589,7 +589,6 @@ class ProductProductWebServer(orm.Model):
                 # -------------------------------------------------------------
                 # Images block:
                 # -------------------------------------------------------------
-                import pdb; pdb.set_trace()
                 if 'image' not in unpublished:
                     images = self.get_wp_image(item)
                 else:                
@@ -727,6 +726,7 @@ class ProductProductWebServer(orm.Model):
         ''' Fields function for calculate 
         '''     
         res = {}
+        import pdb; pdb.set_trace()
         for current in self.browse(cr, uid, ids, context=context):
             server_album_ids = [
                 item.id for item in current.connector_id.album_ids]
