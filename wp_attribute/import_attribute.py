@@ -301,7 +301,6 @@ class ProductPublicCategory(orm.Model):
 
         parameter = {'per_page': 10, 'page': 1}
         theres_data = True
-        import pdb; pdb.set_trace()
         while theres_data:
             call = 'products'
             reply = wcapi.get(call, params=parameter).json()
@@ -1045,7 +1044,8 @@ class ProductPublicCategory(orm.Model):
                     # ---------------------------------------------------------
                     image = False
                     if 'image' not in unpublished:
-                        image = self.get_wp_image(item, variant=True)
+                        image = web_product_pool.get_wp_image(
+                            item, variant=True)
                          
                     if image:
                         data['image'] = image
