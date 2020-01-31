@@ -137,7 +137,7 @@
                             <field name="connector_id" />  
                             <field name="published" />
 
-                            <field name="product_id" />
+                            <field name="product_id" required="1"/>
                             <field name="wp_parent_code" />
 
                             <notebook colspan="4">
@@ -146,7 +146,7 @@
                                         <field name="wp_type" groups="wp_connector.group_wp_product_manager"/>
                                         <field name="wp_parent_template" groups="wp_connector.group_wp_product_manager"/>
 
-                                        <field name="wp_parent_id" groups="wp_connector.group_wp_product_manager"/>
+                                        <field name="wp_parent_id" groups="wp_connector.group_wp_product_manager" domain="[('connector_id','=',connector_id)]"/>
                                         <field name="wp_color_id" />
 
                                         <field name="wordpress_categ_ids" domain="[('connector_id','=',connector_id),('enabled','=',True)]" widget="many2many_tags" colspan="4"/>
