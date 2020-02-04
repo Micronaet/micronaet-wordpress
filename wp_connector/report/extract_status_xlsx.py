@@ -241,7 +241,7 @@ class ConnectorServer(orm.Model):
 
                     line.wp_type or '',
                     'X' if line.wp_parent_template else '',
-                    line.wp_parent_id.line.product_id.default_code or '',
+                    line.wp_parent_id.product_id.default_code or '',
                     line.wp_it_id,
                     line.wp_en_id,
 
