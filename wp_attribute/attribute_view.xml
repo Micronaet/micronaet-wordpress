@@ -33,14 +33,14 @@
             <field name="name">connector.product.color.dot.tree</field>
             <field name="model">connector.product.color.dot</field>
             <field name="arch" type="xml">
-                <tree string="String" colors="red:dropbox_image==False;grey:not_active==True">
+                <tree string="String" colors="grey:not_active==True">
                     <field name="connector_id" />
                     <field name="not_active" />                    
                     <field name="name" />
                     <!--<field name="description" />-->
                     <field name="hint" />
                     <field name="image_name" />
-                    <field name="dropbox_image" />
+                    <!--<field name="dropbox_image" />-->
                 </tree>
             </field>
         </record>
