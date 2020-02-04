@@ -121,6 +121,7 @@ class ConnectorServer(orm.Model):
             10, 10, 
             5, 20, 30,
             5,
+            10, 5, 15, 5, 5, 
             40, 40, 
             ])
             
@@ -136,6 +137,7 @@ class ConnectorServer(orm.Model):
             'Cat. Stat.', 'Peso', 
             'Mod. imb.', 'Imballo', 'Dimensioni prodotto',
             'Garanzia', 
+            'Tipo WP', 'Master', 'Padre', 'WP ID it.', 'WP ID en.',
             'Immagini', 'Link',
             ], default_format=excel_format['header'])
 
@@ -236,6 +238,13 @@ class ConnectorServer(orm.Model):
                         line.pack_l, line.pack_h, line.pack_p),
                     line.weight_aditional_info,    
                     'X' if line.lifetime_warranty else '',
+
+                    line.wp_type or '',
+                    'X' if line.wp_parent_template else '',
+                    line.wp_parent_id.line.product_id.default_code or '',
+                    line.wp_it_id,
+                    line.wp_en_id,
+
                     image,
                     dropbox_image,
                     ], default_format=color_format['text'])

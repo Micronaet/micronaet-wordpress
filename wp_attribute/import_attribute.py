@@ -410,7 +410,7 @@ class ProductPublicCategory(orm.Model):
 
         # Data publish selection (remove this part from publish:
         unpublished = [
-            #'image', # TODO parametrize
+            'image', # TODO parametrize
             ]
 
         # Pool used:
