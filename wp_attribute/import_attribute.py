@@ -546,7 +546,7 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------        
         current_wp_terms = []
         theres_data = True
-        parameter = {'per_page': 10, 'page': 1}
+        parameter = {'per_page': 30, 'page': 1}
         _logger.warning('Search all terms for attribute %s...' % (
             attribute_id.keys(), ))
 
@@ -564,7 +564,6 @@ class ProductPublicCategory(orm.Model):
             call = 'products/attributes/%s/terms' % attribute_id['Tessuto']
             res = wcapi.get(
                 call, params=parameter).json()
-            parameter['page'] += 1
             
             # =================================================================
             # Excel log:
@@ -578,6 +577,7 @@ class ProductPublicCategory(orm.Model):
                 u'%s' % (res, ),
                 ], default_format=excel_format['text'])
             # =================================================================
+            parameter['page'] += 1
 
             try:
                 if res.get['data']['status'] >= 400:
