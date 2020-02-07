@@ -95,6 +95,8 @@
                     <field name="wp_parent_code" />
                     <field name="variant_ids" />                    
                     <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]"/>
+                    <field name="wp_it_id" invisible="1"/>
+                    <field name="wp_en_id" invisible="1" />
                     <!--<field name="force_name"/>
                     <field name="force_description"/>
                     <field name="force_q_x_pack"/>
@@ -102,6 +104,7 @@
                     <field name="force_price"/>
                     <field name="force_min_stock"/>-->
                     <button name="publish_master_now" string="Publish this now" type="object" icon="gtk-refresh"/>
+                    <button name="publish_master_now" string="Non pubblicato" type="object" icon="gtk-new" attrs="{'invisible': ['|', ('wp_it_id', '!=', 0), ('wp_en_id', '!=', 0)]}"/>                    
                 </tree>           
             </field>            
         </record>        
