@@ -20,7 +20,7 @@ def log_activity(event, mode='info'):
     '''
     activity_f.write('%s [%s] %s\n' % (
         datetime.now(),
-        mode,
+        mode.upper(),
         event,
         ))
 
@@ -103,5 +103,5 @@ while True:
 pickle.dump(variant_db, open(pickle_file, 'wb'))
 
 log_activity('Update dump file [%s]' % pickle_file)
-log_activity('Start get Wordpress product status [%s]' % wordpress_url)
+log_activity('End get Wordpress product status [%s]' % wordpress_url)
 

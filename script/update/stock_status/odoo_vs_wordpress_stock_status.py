@@ -50,7 +50,7 @@ def log_activity(event, mode='info'):
     '''
     activity_f.write('%s [%s] %s\n' % (
         datetime.now(),
-        mode,
+        mode.upper(),
         event,
         ))
 
