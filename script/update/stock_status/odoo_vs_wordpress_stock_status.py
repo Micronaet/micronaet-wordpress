@@ -81,7 +81,6 @@ wcapi = woocommerce.API(
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
-import pdb; pdb.set_trace()
 for company in database:
     cfg_file = database[company]
     
@@ -156,6 +155,7 @@ for company in database:
                 # -------------------------------------------------------------
                 call = 'products/%s/variations/%s' % (
                     product_id, variation_id)
+                import pdb; pdb.set_trace()
                 reply = wcapi.put(call, data)
                 if reply.status_code >= 300:
                     print 'Error publish stock status: %s, [%s: %s]\n\n%s' % (
