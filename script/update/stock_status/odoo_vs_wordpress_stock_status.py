@@ -31,6 +31,7 @@ import slugify
 import pickle
 from datetime import datetime
 
+lang_db = ['it_IT', 'en_US']
 database = {}
 for root, folders, files in os.walk('./config'):
     for filename in files:
@@ -92,7 +93,7 @@ for company in database:
     pwd = config.get('dbaccess', 'pwd')
     server = config.get('dbaccess', 'server')
     port = config.get('dbaccess', 'port')  # verify if it's necessary: getint
-    connector_id = config.get('dbaccess', 'connector_id')
+    connector_id = eval(config.get('dbaccess', 'connector_id'))
 
     # -------------------------------------------------------------------------
     # Connect to ODOO:
