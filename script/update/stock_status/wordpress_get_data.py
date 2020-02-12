@@ -12,13 +12,8 @@ import pickle
 # -----------------------------------------------------------------------------
 pickle_file = './log/wp_data.p'
 
-company_list = ['fia', 'gpb']
-lang_list = ['it_IT', 'en_US']
-
-connector_id = 0 # TODO?
-config = ConfigParser.ConfigParser()
-
 # Worpress parameters:
+config = ConfigParser.ConfigParser()
 cfg_file = os.path.expanduser('./config/wordpress.cfg')
 config.read([cfg_file])
 wordpress_url = config.get('wordpress', 'url')
@@ -32,7 +27,6 @@ for root, folders, files in os.path('./config'):
         company = database.split('.')[0]       
         database[company] = os.path.join(root, filename)
     break    
-
 
 # -----------------------------------------------------------------------------
 # Spaziogiardino
@@ -51,7 +45,7 @@ wcapi = woocommerce.API(
 # Get product - variant status:
 # -----------------------------------------------------------------------------
 variant_db = {}
-parameter = {'per_page': 30, 'page': 1}
+parameter = {'per_page': 40, 'page': 1}
 total = 0
 while True:
     print 'Reading page %s [Block %s]' % (
