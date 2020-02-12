@@ -20,14 +20,6 @@ wordpress_url = config.get('wordpress', 'url')
 consumer_key = config.get('wordpress', 'key')
 consumer_secret = config.get('wordpress', 'secret')
 
-for root, folders, files in os.walk('./config'):
-    for filename in files:
-        if filename == 'wordpress.cfg':
-            continue
-        company = database.split('.')[0]       
-        database[company] = os.path.join(root, filename)
-    break
-
 # -----------------------------------------------------------------------------
 # Spaziogiardino
 # -----------------------------------------------------------------------------
