@@ -31,7 +31,7 @@ import slugify
 import pickle
 
 database = {}
-for root, folders, files in os.path('./config'):
+for root, folders, files in os.walk('./config'):
     for filename in files:
         if filename == 'wordpress.cfg':
             continue
@@ -64,6 +64,7 @@ config.read([cfg_file])
 wordpress_url = config.get('wordpress', 'url')
 consumer_key = config.get('wordpress', 'key')
 consumer_secret = config.get('wordpress', 'secret')
+log_activity('Start update stock in Wordpress [%s]' % wordpress_url)
 
 wcapi = woocommerce.API(
     url=wordpress_url,
@@ -161,4 +162,6 @@ for company in database:
                     print 'Update %s with stock status: %s [%s: %s]\n%s\n' % (
                         default_code, stock_quantity,  call, data, reply.text,
                         )
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
+log_activity('Start update stock in Wordpress [%s]' % wordpress_url)
+
