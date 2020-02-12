@@ -61,7 +61,7 @@ def log_activity(event, mode='info'):
 # -----------------------------------------------------------------------------
 # Worpress parameters:
 config = ConfigParser.ConfigParser()
-cfg_file = os.path.expanduser('../wordpress.cfg')
+cfg_file = os.path.expanduser('./config/wordpress.cfg')
 config.read([cfg_file])
 wordpress_url = config.get('wordpress', 'url')
 consumer_key = config.get('wordpress', 'key')
