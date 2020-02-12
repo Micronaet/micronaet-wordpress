@@ -23,7 +23,6 @@ def log_activity(event, mode='info'):
         mode,
         event,
         ))
-    
 
 # Worpress parameters:
 config = ConfigParser.ConfigParser()

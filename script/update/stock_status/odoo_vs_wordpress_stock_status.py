@@ -42,6 +42,18 @@ for root, folders, files in os.path('./config'):
 pickle_file = './log/wp_data.p'
 variant_db = pickle.load(open(pickle_file, 'rb'))
 
+activity_file = './log/activity.log'
+activity_f = open(activity_file, 'a')
+
+def log_activity(event, mode='info'):
+    ''' Log activity on file
+    '''
+    activity_f.write('%s [%s] %s\n' % (
+        datetime.now(),
+        mode,
+        event,
+        ))
+
 # -----------------------------------------------------------------------------
 # WP web read: Spaziogiardino
 # -----------------------------------------------------------------------------
@@ -66,6 +78,7 @@ wcapi = woocommerce.API(
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
+import pdb; pdb.set_trace()
 for company in database:
     cfg_file = database[company]
     
@@ -78,7 +91,6 @@ for company in database:
     server = config.get('dbaccess', 'server')
     port = config.get('dbaccess', 'port')  # verify if it's necessary: getint
     connector_id = config.get('dbaccess', 'connector_id')
-
 
     # -------------------------------------------------------------------------
     # Connect to ODOO:
