@@ -35,7 +35,7 @@ for root, folders, files in os.walk('./config'):
     for filename in files:
         if filename == 'wordpress.cfg':
             continue
-        company = database.split('.')[0]       
+        company = filename.split('.')[0]       
         database[company] = os.path.join(root, filename)
     break    
 
