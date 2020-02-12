@@ -6,11 +6,24 @@ import sys
 import erppeek
 import ConfigParser
 import pickle
+from datetime import datetime
 
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
 pickle_file = './log/wp_data.p'
+activity_file = './log/activity.log'
+activity_f = open(activity_file, 'a')
+
+def log_activity(event, mode='info'):
+    ''' Log activity on file
+    '''
+    activity_f.write('%s [%s] %s\n' % (
+        datetime.now(),
+        mode,
+        event,
+        )
+    
 
 # Worpress parameters:
 config = ConfigParser.ConfigParser()
@@ -19,6 +32,7 @@ config.read([cfg_file])
 wordpress_url = config.get('wordpress', 'url')
 consumer_key = config.get('wordpress', 'key')
 consumer_secret = config.get('wordpress', 'secret')
+log_activity('Start get Wordpress product status [%s]' % wordpress_url)
 
 # -----------------------------------------------------------------------------
 # Spaziogiardino
@@ -88,3 +102,7 @@ while True:
             # variant_db[lang][variation_sku]
 
 pickle.dump(variant_db, open(pickle_file, 'wb'))
+
+log_activity('Update dump file [%s]' % pickle_file)
+log_activity('Start get Wordpress product status [%s]' % wordpress_url)
+
