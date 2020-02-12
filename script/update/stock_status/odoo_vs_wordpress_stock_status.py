@@ -29,6 +29,7 @@ import woocommerce
 import ConfigParser
 import slugify
 import pickle
+from datetime import datetime
 
 database = {}
 for root, folders, files in os.walk('./config'):
