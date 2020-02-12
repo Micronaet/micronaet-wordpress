@@ -22,7 +22,7 @@ def log_activity(event, mode='info'):
         datetime.now(),
         mode,
         event,
-        )
+        ))
     
 
 # Worpress parameters:
