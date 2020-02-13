@@ -384,8 +384,8 @@ class ProductProductWebServer(orm.Model):
             
         else:
             # Net - ordered mode:
-            stock_quantity = int(
-                product.mx_lord_mrp_qty + product.mx_oc_out_prev)
+            stock_quantity = int(product.mx_lord_mrp_qty + \
+                product.mx_oc_out_prev - product.mx_of_in)
 
         #stock_quantity = int(product.mx_lord_mrp_qty + product.mx_oc_out_prev)
         if stock_quantity < 0:
