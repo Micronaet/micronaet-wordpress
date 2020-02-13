@@ -175,6 +175,10 @@ class ConnectorServer(orm.Model):
                 connector_pool.get_existence_for_product(
                     cr, uid, product, context=context)
 
+            multiplier = line.price_multi or 1
+            if multiplier > 1:
+                stock_qty = stock_qty // multiplier
+
             published = 'X' if line.published else ''
             if not published:
                 color_format = excel_format['yellow']                

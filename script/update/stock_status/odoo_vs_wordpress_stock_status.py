@@ -135,6 +135,11 @@ for company in database:
                 # XXX Problem with this:
                 stock_quantity, stock_comment = \
                     web_product_pool.get_existence_for_product(product.id)
+                    
+                multiplier = variation.price_multi or 1
+                if multiplier > 1:
+                    stock_quantity = stock_quantity // multiplier
+                
 
                 # -------------------------------------------------------------
                 # Stock data:
