@@ -335,6 +335,23 @@ class ProductProductWebPackage(orm.Model):
         ('name_uniq', 'unique (name)', 'Nome duplicato!'),
         ]
 
+class ResCompany(orm.Model):
+    """ Model name: Company parameters
+    """
+
+    _inherit = 'res.company'
+
+    _columns = {
+        'wp_existence_mode': fields.selection([
+            ('locked', 'Netto - Bloccati'),
+            ('ordered', 'Netto - Ordinati (non prev.)'),
+            ], 'WP stato prodotto'),
+        }
+
+    _defaults = {
+        'wp_existence_mode': lambda *x: 'locked',
+        }    
+
 class ProductProductWebServer(orm.Model):
     """ Model name: ProductProductWebServer
     """
