@@ -377,12 +377,10 @@ class ProductProductWebServer(orm.Model):
         # DB with MRP:
         # ---------------------------------------------------------------------
         company = product.company_id
-        if product.default_code.startswith('084'):
-            import pdb; pdb.set_trace()
         if company.wp_existence_mode == 'locked':
             # Net - locked mode:
             stock_quantity = int(
-                product.mx_lord_mrp_qty + product.mx_mrp_b_locked)
+                product.mx_net_mrp_qty - product.mx_mrp_b_locked)
             
         else:
             # Net - ordered mode:
