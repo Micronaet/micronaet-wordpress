@@ -359,12 +359,24 @@ class ProductProductWebServer(orm.Model):
         # ---------------------------------------------------------------------
         # DB with MRP:
         # ---------------------------------------------------------------------
-        stock_quantity = int(product.mx_lord_mrp_qty + product.mx_oc_out_prev)
+        company = product.company_id
+        if company.wp_existence_mode == 'locked':
+            # Net - locked mode:
+            stock_quantity = int(
+                product.mx_lord_mrp_qty + product.mx_mrp_b_locked)
+            
+        else:
+            # Net - ordered mode:
+            stock_quantity = int(
+                product.mx_lord_mrp_qty + product.mx_oc_out_prev)
+
+        #stock_quantity = int(product.mx_lord_mrp_qty + product.mx_oc_out_prev)
         if stock_quantity < 0:
             resetted = True
             stock_quantity = 0
         else:
             resetted = False    
+
         comment = 'Netto - OC: %s + Prev.: %s = %s%s' % (
             product.mx_lord_mrp_qty,
             product.mx_oc_out_prev,
