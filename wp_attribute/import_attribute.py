@@ -433,7 +433,7 @@ class ProductPublicCategory(orm.Model):
         domain = [
             ('connector_id', '=', ids[0]),
             ('wp_parent_template', '=', True),
-            # ('wp_it_id', '=', False),  # New master
+            ('wp_it_id', '=', False),  # New master
             ]
         domain_extend = context.get('domain_extend')    
         if domain_extend:
@@ -980,6 +980,10 @@ class ProductPublicCategory(orm.Model):
                     stock_quantity, stock_comment = \
                         web_product_pool.get_existence_for_product(
                             cr, uid, variant, context=context)
+
+                    multiplier = line.price_multi or 1
+                    if multiplier > 1:
+                        stock_quantity = stock_quantity // multiplier
                     
                     # Create or update variant:
                     data = {
