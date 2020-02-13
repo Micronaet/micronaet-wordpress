@@ -433,7 +433,7 @@ class ProductPublicCategory(orm.Model):
         domain = [
             ('connector_id', '=', ids[0]),
             ('wp_parent_template', '=', True),
-            ('wp_it_id', '=', False),  # New master
+            #('wp_it_id', '=', False),  # New master
             ]
         domain_extend = context.get('domain_extend')    
         if domain_extend:
@@ -442,7 +442,7 @@ class ProductPublicCategory(orm.Model):
             
         product_ids = web_product_pool.search(cr, uid, domain, context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
 
         product_db = {} # Master database for lang - parent - child
         lang_color_db = {} # Master list for color in default lang
