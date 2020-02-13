@@ -442,6 +442,7 @@ class ProductPublicCategory(orm.Model):
             
         product_ids = web_product_pool.search(cr, uid, domain, context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
+        import pdb; pdb.set_trace()
 
         product_db = {} # Master database for lang - parent - child
         lang_color_db = {} # Master list for color in default lang
