@@ -280,9 +280,9 @@
                             </notebook>
                             
                             <separator string="Wordpress link:" colspan="3"/>
-                            <button name="clean_wp_reference" string="Clean" type="object" confirm="Clean WP reference only if this product is deleted from WP, confirm?" colspan="1"/>
-                            <field name="wp_it_id" readonly="1"/>
-                            <field name="wp_en_id" readonly="1"/>
+                            <button name="clean_wp_reference" string="Clean" type="object" confirm="Clean WP reference only if this product is deleted from WP, confirm?" colspan="1" attrs="{'invisible': [('wp_it_id','=',0), ('wp_en_id','=',0)]}"/>
+                            <field name="wp_it_id" groups="wp_connector.group_wp_product_manager"/>
+                            <field name="wp_en_id" groups="wp_connector.group_wp_product_manager"/>
                         </group>    
                     </sheet>
                 </form>           

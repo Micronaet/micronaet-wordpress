@@ -31,6 +31,7 @@ import slugify
 import pickle
 from datetime import datetime
 
+verbose = False # Log with extra data
 lang_db = ['it_IT', 'en_US']
 database = {}
 for root, folders, files in os.walk('./config'):
@@ -164,11 +165,12 @@ for company in database:
                 reply = wcapi.put(call, data)
                 if reply.status_code >= 300:
                     print 'Error publish stock status: %s, [%s: %s]\n\n%s' % (
-                        default_code, call, data, reply.text)                    
+                        default_code, call, data, 
+                        reply.text if verbose else '')                     
                 else:
                     print 'Update %s with stock status: %s [%s: %s]\n%s\n' % (
-                        default_code, stock_quantity,  call, data, reply.text,
-                        )
+                        default_code, stock_quantity,  call, data, 
+                        reply.text if verbose else '')                     
 
 log_activity('Start update stock in Wordpress [%s]' % wordpress_url)
 
