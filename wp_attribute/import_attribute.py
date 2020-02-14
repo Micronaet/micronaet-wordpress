@@ -75,7 +75,7 @@ class ProductProductWebServerIntegration(orm.Model):
         new_context = context.copy()
         new_context['domain_extend'] = [
             ('id', 'in', tuple(master_ids)),
-            ],
+            ]
 
         return connector_pool.publish_attribute_now(
             cr, uid, [connector_id], context=new_context)    
@@ -445,7 +445,6 @@ class ProductPublicCategory(orm.Model):
             ]
         domain_extend = context.get('domain_extend')    
         if domain_extend:
-            import pdb; pdb.set_trace()
             domain.extend(domain_extend)
             _logger.warning('Domain extended: %s' % (domain, ))
             
