@@ -228,7 +228,7 @@ class ConnectorProductColorDot(orm.Model):
     def _get_image_name(self, cr, uid, ids, fields, args, context=None):
         ''' Fields function for calculate 
         '''
-        replace_char_with_blank = r'/\'
+        replace_char_with_blank = '/\\'
         
         res = {}        
         path = False
