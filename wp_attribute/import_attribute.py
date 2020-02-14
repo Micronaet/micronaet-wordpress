@@ -74,7 +74,7 @@ class ProductProductWebServerIntegration(orm.Model):
         _logger.warning('Publish master product: %s' % len(master_ids))
         new_context = context.copy()
         new_context['domain_extend'] = [
-            ('id', 'in', master_ids),
+            ('id', 'in', tuple(master_ids)),
             ],
 
         return connector_pool.publish_attribute_now(
@@ -438,7 +438,6 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         #                          COLLECT DATA: 
         # ---------------------------------------------------------------------
-        import pdb; pdb.set_trace()
         domain = [
             ('connector_id', '=', ids[0]),
             ('wp_parent_template', '=', True),
@@ -451,7 +450,6 @@ class ProductPublicCategory(orm.Model):
             
         product_ids = web_product_pool.search(cr, uid, domain, context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
-        #import pdb; pdb.set_trace()
 
         product_db = {} # Master database for lang - parent - child
         lang_color_db = {} # Master list for color in default lang
