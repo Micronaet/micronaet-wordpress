@@ -1,6 +1,15 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+         <!-- Server Action:-->
+         <record id="ir_publish_selected_master_product_wordpress_server_action" model="ir.actions.server">
+             <field name="name">Pubblica WP master</field>
+             <field name="type">ir.actions.server</field>
+             <field name="model_id" ref="model_product_product_web_server" />
+             <field name="binding_model_id" ref="model_product_product_web_server" />
+             <field name="state">code</field>
+             <field name="code">action = env['product.product.web.server'].publish_master_now()</field>
+         </record>
         <!--product.product.web.server
         <record model="ir.ui.view" id="view_product_product_web_server_wp_form">
             <field name="name">product.product.web.server.form</field>
