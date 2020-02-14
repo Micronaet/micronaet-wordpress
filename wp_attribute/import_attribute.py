@@ -240,7 +240,7 @@ class ConnectorProductColorDot(orm.Model):
             for char in replace_char_with_blank:
                 code = code.replace(char, ' ')
                     
-            name = '%s.png' % 
+            name = '%s.png' % code
             fullname = os.path.join(path, name)
             
             if with_check:
