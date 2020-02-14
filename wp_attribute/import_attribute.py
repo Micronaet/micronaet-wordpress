@@ -63,19 +63,22 @@ class ProductProductWebServerIntegration(orm.Model):
     def publish_master_now(self, cr, uid, ids, context=None):
         ''' Publish but only this
         '''
-        connector_pool = self.pool.get('connector.server')
         if context is None:
-            context = {}        
+            context = {}
+        master_ids = context.get('active_ids', False) or ids
 
-        
-        current = self.browse(cr, uid, ids, context=context)[0]    
+        connector_pool = self.pool.get('connector.server')
+        current = self.browse(cr, uid, master_ids, context=context)[0]    
         connector_id = current.connector_id.id
         
-        context['domain_extend'] = [
-            ('id', '=', ids[0]),
-            ]    
+        _logger.warning('Publish master product: %s' % len(master_ids))
+        new_context = context.copy()
+        new_context['domain_extend'] = [
+            ('id', 'in', master_ids),
+            ],
+
         return connector_pool.publish_attribute_now(
-            cr, uid, [connector_id], context=context)    
+            cr, uid, [connector_id], context=new_context)    
         
     def link_variant_now(self, cr, uid, ids, context=None):
         ''' Link all child variant
@@ -435,6 +438,7 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         #                          COLLECT DATA: 
         # ---------------------------------------------------------------------
+        import pdb; pdb.set_trace()
         domain = [
             ('connector_id', '=', ids[0]),
             ('wp_parent_template', '=', True),

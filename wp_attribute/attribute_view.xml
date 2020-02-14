@@ -10,6 +10,7 @@
              <field name="state">code</field>
              <field name="code">action = env['product.product.web.server'].publish_master_now()</field>
          </record>
+
         <!--product.product.web.server
         <record model="ir.ui.view" id="view_product_product_web_server_wp_form">
             <field name="name">product.product.web.server.form</field>
