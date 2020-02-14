@@ -228,14 +228,19 @@ class ConnectorProductColorDot(orm.Model):
     def _get_image_name(self, cr, uid, ids, fields, args, context=None):
         ''' Fields function for calculate 
         '''
+        replace_char_with_blank = r'/\'
+        
         res = {}        
         path = False
         with_check = len(ids) == 1
         for image in self.browse(cr, uid, ids, context=context):
             if not path:
                 path = os.path.expanduser(image.connector_id.dot_image_path)
-            
-            name = '%s.png' % image.name.upper()
+            code = image.name.upper()
+            for char in replace_char_with_blank:
+                code = code.replace(char, ' ')
+                    
+            name = '%s.png' % 
             fullname = os.path.join(path, name)
             
             if with_check:
