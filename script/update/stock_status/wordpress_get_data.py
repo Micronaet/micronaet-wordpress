@@ -100,8 +100,7 @@ while True:
             print '%s Variant loading ...' % total, 'Variation:', variation_sku
             # variant_db[lang][variation_sku]
 
-pickle.dump(variant_db, open(pickle_file, 'wb'))
-
 log_activity('Update dump file [%s]' % pickle_file)
+pickle.dump(variant_db, open(pickle_file, 'wb'))
 log_activity('End get Wordpress product status [%s]' % wordpress_url)
 

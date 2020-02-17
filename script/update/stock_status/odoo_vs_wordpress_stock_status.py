@@ -172,5 +172,5 @@ for company in database:
                         default_code, stock_quantity,  call, data, 
                         reply.text if verbose else '')                     
 
-log_activity('Start update stock in Wordpress [%s]' % wordpress_url)
+log_activity('End update stock in Wordpress [%s]' % wordpress_url)
 
