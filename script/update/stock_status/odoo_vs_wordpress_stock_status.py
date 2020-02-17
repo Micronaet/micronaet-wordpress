@@ -141,7 +141,7 @@ for company in database:
                 if multiplier > 1:
                     stock_quantity = stock_quantity // multiplier
                 
-                multipack = str(int(item.price_multi)) \
+                multipack = str(int(variation.price_multi)) \
                     if item.price_multi and item.price_multi > 1 else ''
 
                 # -------------------------------------------------------------
