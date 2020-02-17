@@ -141,6 +141,7 @@ for company in database:
                 if multiplier > 1:
                     stock_quantity = stock_quantity // multiplier
                 
+                # XXX Usually disabled:
                 multipack = str(int(variation.price_multi)) \
                     if variation.price_multi and variation.price_multi > 1 \
                         else ''
@@ -154,7 +155,7 @@ for company in database:
                     'manage_stock': True,
                     # Visibility:
                     'status': status,
-                    'multipack': multipack,
+                    #'multipack': multipack,
                     
                     #'stock_status': 'instock', 
                     # instock (def.), outofstock, onbackorder
