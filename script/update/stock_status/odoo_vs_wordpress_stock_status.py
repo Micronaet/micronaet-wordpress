@@ -116,6 +116,30 @@ for company in database:
             ])
                     
         for master in web_product_pool.browse(web_product_ids):
+            """
+            multipack = str(int(variation.price_multi)) \
+                if variation.price_multi and variation.price_multi > 1 \
+                    else ''
+                    
+            data = {
+                'lang': wp_lang,
+                'stock_quantity': stock_quantity,
+                'manage_stock': True,
+                # Visibility:
+                'status': status,
+                #'multipack': multipack,
+                
+                #'stock_status': 'instock', 
+                # instock (def.), outofstock, onbackorder
+                }                
+
+            # -------------------------------------------------------------
+            # Variation update:
+            # -------------------------------------------------------------
+            call = 'products/%s' % (product_id)
+
+            continue
+            """    
             for variation in master.variant_ids:
                 product = variation.product_id                
                 default_code = product.default_code #.replace(' ', '&nbsp;')
