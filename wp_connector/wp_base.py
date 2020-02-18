@@ -370,6 +370,7 @@ class ProductProductWebServer(orm.Model):
         # Call from external:
         # ---------------------------------------------------------------------
         if type(line) == int:
+            import pdb; pdb.set_trace()
             line = webproduct_pool.browse(cr, uid, line, context=context)
         product = line.product_id    
         
