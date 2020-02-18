@@ -158,6 +158,7 @@ for company in database:
                 variation_id = wp_data['variation_id']
                 
                 # XXX Problem with this:
+                import pdb; pdb.set_trace()
                 stock_quantity, stock_comment = \
                     web_product_pool.get_existence_for_product(variation.id)
                     
