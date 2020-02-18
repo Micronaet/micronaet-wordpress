@@ -388,7 +388,7 @@ class ProductProductWebServer(orm.Model):
                 product.mx_oc_out_prev - product.mx_of_in)
 
         #stock_quantity = int(product.mx_lord_mrp_qty + product.mx_oc_out_prev)
-        force_min_stock = line.force_min_stock
+        force_min_stock = int(line.force_min_stock)
         if force_min_stock and stock_quantity < force_min_stock:
             stock_quantity = force_min_stock
         
