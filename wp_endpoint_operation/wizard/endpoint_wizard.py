@@ -149,7 +149,7 @@ class ConnectorServer(orm.Model):
         item_ids = self.wp_get_all_selected(cr, uid, ids, context=context)
         for item in item_pool.browse(cr, uid, item_ids, context=context):
             product = item.product_id 
-            stock_quantity = item_pool.get_existence_for_product(product)   
+            stock_quantity = item_pool.get_existence_for_product(item)   
             for publish in item.lang_wp_ids: # Update for every lang
                 wp_id = publish.wp_id
                 reply = wcapi.put('products/%s' % wp_id, {

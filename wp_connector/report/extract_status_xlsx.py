@@ -173,7 +173,7 @@ class ConnectorServer(orm.Model):
             # Stock:        
             stock_qty, stock_comment = \
                 connector_pool.get_existence_for_product(
-                    cr, uid, product, context=context)
+                    cr, uid, line, context=context)
 
             multiplier = line.price_multi or 1
             if multiplier > 1:

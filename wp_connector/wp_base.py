@@ -361,17 +361,17 @@ class ProductProductWebServer(orm.Model):
     # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
-    def get_existence_for_product(self, cr, uid, product, context=None):
+    def get_existence_for_product(self, cr, uid, line, context=None):
         ''' Return real existence for web site
         '''        
-        #sol_pool = self.pool.get('sale.order.line')
-        product_pool = self.pool.get('product.product')
+        webproduct_pool = self.pool.get('product.product.server.web')
         
         # ---------------------------------------------------------------------
         # Call from external:
         # ---------------------------------------------------------------------
-        if type(product) == int:
-            product = product_pool.browse(cr, uid, product, context=context)
+        if type(line) == int:
+            line = webproduct_pool.browse(cr, uid, line, context=context)
+        product = line.product_id    
         
         # ---------------------------------------------------------------------
         # DB with MRP:
@@ -388,17 +388,22 @@ class ProductProductWebServer(orm.Model):
                 product.mx_oc_out_prev - product.mx_of_in)
 
         #stock_quantity = int(product.mx_lord_mrp_qty + product.mx_oc_out_prev)
+        force_min_stock = line.force_min_stock
+        if force_min_stock and stock_quantity < force_min_stock:
+            stock_quantity = force_min_stock
+        
         if stock_quantity < 0:
             resetted = True
             stock_quantity = 0
         else:
             resetted = False    
 
-        comment = 'Netto - OC: %s + Prev.: %s = %s%s' % (
+        comment = 'Netto - OC: %s + Prev.: %s = %s%s (min. %s)' % (
             product.mx_lord_mrp_qty,
             product.mx_oc_out_prev,
             stock_quantity,
             '*' if resetted else '',
+            force_min_stock,
             )
         
         # TODO manage q x pack?
@@ -601,7 +606,7 @@ class ProductProductWebServer(orm.Model):
                 status = 'publish' if item.published else 'private'
                 stock_quantity, stock_comment = \
                     self.get_existence_for_product(
-                        cr, uid, product, context=context)
+                        cr, uid, item, context=context)
                 wp_id = eval('item.wp_%s_id' % lang)
                 wp_it_id = item.wp_it_id # Default product for language
                 # fabric, type_of_material

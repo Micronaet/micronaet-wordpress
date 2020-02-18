@@ -159,7 +159,7 @@ for company in database:
                 
                 # XXX Problem with this:
                 stock_quantity, stock_comment = \
-                    web_product_pool.get_existence_for_product(product.id)
+                    web_product_pool.get_existence_for_product(variation.id)
                     
                 multiplier = variation.price_multi or 1
                 if multiplier > 1:
