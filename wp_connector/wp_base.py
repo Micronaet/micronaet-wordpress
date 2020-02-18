@@ -364,13 +364,12 @@ class ProductProductWebServer(orm.Model):
     def get_existence_for_product(self, cr, uid, line, context=None):
         ''' Return real existence for web site
         '''        
-        webproduct_pool = self.pool.get('product.product.server.web')
+        webproduct_pool = self.pool.get('product.product.web.server')
         
         # ---------------------------------------------------------------------
         # Call from external:
         # ---------------------------------------------------------------------
         if type(line) == int:
-            import pdb; pdb.set_trace()
             line = webproduct_pool.browse(cr, uid, line, context=context)
         product = line.product_id    
         
