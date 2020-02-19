@@ -477,7 +477,6 @@ class ProductPublicCategory(orm.Model):
                 for variant in parent.variant_ids:
                     # Note: first variat is parent:                    
                     product = variant.product_id
-                    import pdb; pdb.set_trace()
                     default_code = product.default_code or ''
                     color = variant.wp_color_id.name
                     attribute = color + '-' + lang
