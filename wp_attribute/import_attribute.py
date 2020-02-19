@@ -1086,6 +1086,13 @@ class ProductPublicCategory(orm.Model):
                         # =====================================================
 
                     else: # Create
+                        # TODO always pass image when new:
+                        if 'image' not in data:
+                            image = web_product_pool.get_wp_image(
+                                line, variant=True)
+                            if image:    
+                                data['image'] = image
+                            
                         operation = 'NEW'
                         call = 'products/%s/variations' % wp_id
                         res = wcapi.post(call, data).json()

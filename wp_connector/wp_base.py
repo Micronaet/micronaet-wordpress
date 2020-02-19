@@ -715,6 +715,11 @@ class ProductProductWebServer(orm.Model):
                 if not wp_id:
                     # Create (will update wp_id from now)
                     try:
+                        if 'image' not in data:
+                            images = self.get_wp_image(item)
+                        if images:
+                            data['images'] = images
+
                         call = 'products'
                         reply = wcapi.post(call, data).json()
                         if log_excel != False:
