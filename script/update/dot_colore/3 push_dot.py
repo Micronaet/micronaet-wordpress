@@ -113,7 +113,7 @@ parameter = {
     'per_page': 30,
     'page': 0,
     }
-import pdb; pdb.set_trace()
+
 while True:
     parameter['page'] += 1    
     call = 'products/attributes/%s/terms' % attribute_id    
