@@ -487,6 +487,12 @@ class ProductProductWebServer(orm.Model):
 
         return images
 
+    def get_wp_price_external(self, cr, uid, line_id, context=None):
+        ''' External call for price 
+        '''
+        return self.get_wp_price(
+            self.browse(cr, uid, line_id, context=context)
+            
     def get_wp_price(self, line):
         ''' Extract price depend on force, discount and VAT
         '''

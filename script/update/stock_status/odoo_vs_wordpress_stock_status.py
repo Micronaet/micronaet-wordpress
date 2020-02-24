@@ -82,6 +82,7 @@ wcapi = woocommerce.API(
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
+import pdb; pdb.set_trace()
 for company in database:
     cfg_file = database[company]
     
@@ -170,6 +171,9 @@ for company in database:
                     if variation.price_multi and variation.price_multi > 1 \
                         else ''
 
+                # Price part:
+                price = web_product_pool.get_wp_price_external(variation.id)
+                
                 # -------------------------------------------------------------
                 # Stock data:
                 # -------------------------------------------------------------
@@ -183,6 +187,8 @@ for company in database:
                     
                     #'stock_status': 'instock', 
                     # instock (def.), outofstock, onbackorder
+                    
+                    'regular_price': u'%s' % price,
                     }                
 
                 # -------------------------------------------------------------
