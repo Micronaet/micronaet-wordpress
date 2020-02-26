@@ -82,7 +82,6 @@ wcapi = woocommerce.API(
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
-import pdb; pdb.set_trace()
 for company in database:
     cfg_file = database[company]
     
