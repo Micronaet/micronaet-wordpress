@@ -989,10 +989,6 @@ class ProductPublicCategory(orm.Model):
                     stock_quantity, stock_comment = \
                         web_product_pool.get_existence_for_product(
                             cr, uid, line, context=context)
-
-
-                short = product.emotional_short_description or name or u''
-                
                 
                     multiplier = line.price_multi or 1
                     if multiplier > 1:
