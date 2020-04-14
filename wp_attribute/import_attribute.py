@@ -983,12 +983,17 @@ class ProductPublicCategory(orm.Model):
                     description = line.force_description or \
                         variant.emotional_description or \
                         variant.large_description or u''
-                    short_description = line.force_name or \
+                    #line.force_name or \    
+                    short_description = \
                         variant.emotional_short_description or name
                     stock_quantity, stock_comment = \
                         web_product_pool.get_existence_for_product(
                             cr, uid, line, context=context)
 
+
+                short = product.emotional_short_description or name or u''
+                
+                
                     multiplier = line.price_multi or 1
                     if multiplier > 1:
                         stock_quantity = stock_quantity // multiplier
