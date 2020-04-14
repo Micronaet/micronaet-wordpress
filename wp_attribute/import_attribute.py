@@ -983,7 +983,7 @@ class ProductPublicCategory(orm.Model):
                     description = line.force_description or \
                         variant.emotional_description or \
                         variant.large_description or u''
-                    #line.force_name or \    
+                    # before: line.force_name or \    
                     short_description = \
                         variant.emotional_short_description or name
                     stock_quantity, stock_comment = \
