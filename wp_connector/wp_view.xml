@@ -5,10 +5,9 @@
         <record model="ir.ui.view" id="view_connector_server_image_form">
             <field name="name">connector.server.image.form</field>
             <field name="model">connector.server</field>
-            <field name="arch" type="xml">
             <field name="inherit_id" ref="connector_web_base.view_connector_server_form"/>
             <field name="arch" type="xml">
-                <field name="login" position="after" >
+                <field name="password" position="after">
                     <field name="wp_publish_image" />
                 </field>
             </field>
@@ -24,7 +23,6 @@
 			        <page string="Wordpress">
 		                <group colspan="4" col="4">
 		                   <field name="wp_existence_mode" />
-		                   <field name="wp_publish_image" />
 		                </group>
 			        </page>		        
                 </xpath>
