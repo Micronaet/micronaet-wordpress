@@ -959,7 +959,7 @@ class ProductPublicCategory(orm.Model):
                                 
                             option = option[:-3].replace('-', '') # remove lang
                             wp_variant_lang_ref[(
-                                '%-6s%s' % (parent, option), # XXX 
+                                '%-6s%s' %parent, option), # XXX 
                                 lang,
                                 )] = item['id']
                         """
@@ -1060,6 +1060,7 @@ class ProductPublicCategory(orm.Model):
                     # Images block:
                     # ---------------------------------------------------------
                     image = False
+                    import pdb; pdb.set_trace()
                     if 'image' not in unpublished:
                         image = web_product_pool.get_wp_image(
                             line, variant=True)
