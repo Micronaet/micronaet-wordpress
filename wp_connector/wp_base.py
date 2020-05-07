@@ -335,6 +335,16 @@ class ProductProductWebPackage(orm.Model):
         ('name_uniq', 'unique (name)', 'Nome duplicato!'),
         ]
 
+class ConnectorServer(orm.Model):
+    """ Model name: Connector
+    """
+
+    _inherit = 'connector.server'
+
+    _columns = {
+        'wp_publish_image': fields.boolean('Pubblica immagini'),
+        }
+
 class ResCompany(orm.Model):
     """ Model name: Company parameters
     """
@@ -535,10 +545,8 @@ class ProductProductWebServer(orm.Model):
         '''    
         default_lang = 'it'
         
-        # Data publish selection (remove this part from publish:
-        unpublished = [
-            #'image', # TODO parametrize
-            ]
+        # Data publish selection (remove this part from publish:        
+        unpublished = []
         
         if context is None:    
             context = {}
@@ -548,15 +556,21 @@ class ProductProductWebServer(orm.Model):
         log_excel = context.get('log_excel', False)
         
         first_proxy = self.browse(cr, uid, ids, context=context)[0]    
-        if not first_proxy.connector_id.wordpress:
+        connector = first_proxy.connector_id
+        if not connector.wordpress:
             _logger.warning('Not a wordpress proxy, call other')
             return super(ProductProductWebServer, self).publish_now(
                 cr, uid, ids, context=context)
 
+        if connector.wp_publish_image:
+            _logger.warning('Publish all on wordpress with image')
+        else:       
+            unpublished.append('image')                
+            _logger.warning('Publish all on wordpress without image')
+            
         # ---------------------------------------------------------------------
         #                         WORDPRESS Publish:
         # ---------------------------------------------------------------------
-        _logger.warning('Publish all on wordpress:')
         product_pool = self.pool.get('product.product')
         server_pool = self.pool.get('connector.server')
         #lang_pool = self.pool.get('product.product.web.server.lang')

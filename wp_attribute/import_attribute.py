@@ -417,9 +417,7 @@ class ProductPublicCategory(orm.Model):
             context = {}
 
         # Data publish selection (remove this part from publish:
-        unpublished = [
-            #'image', # TODO parametrize
-            ]
+        unpublished = []
 
         # Pool used:
         web_product_pool = self.pool.get('product.product.web.server')
@@ -429,11 +427,16 @@ class ProductPublicCategory(orm.Model):
         server_proxy = self.browse(cr, uid, connector_id, context=context)
         #brand_code = server_proxy.brand_code # As default
 
+        if server_proxy.wp_publish_image:
+            _logger.warning('Publish attribute on wordpress with image')
+        else:       
+            unpublished.append('image')                
+            _logger.warning('Publish attribute on wordpress without image')
+
         # Read WP Category present:
         wcapi = self.get_wp_connector(
             cr, uid, connector_id, context=context)
 
-        _logger.warning('Publish attribute all on wordpress:')
 
         # ---------------------------------------------------------------------
         #                          COLLECT DATA: 
