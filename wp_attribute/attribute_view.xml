@@ -132,7 +132,7 @@
                     <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]" readonly="1" widget="many2many_tags"/>
                     <field name="wp_parent_id" readonly="1"/>
                     <field name="wp_parent_code" />
-                    <button name="set_as_master_product" string="Diventa master" type="object" attrs="{'invisible': [('wp_parent_code','=',True)]}"/>
+                    <!--<button name="set_as_master_product" string="Diventa master" type="object" attrs="{'invisible': [('wp_parent_code','=',True)]}"/>-->
                 </tree>           
             </field>            
         </record>        
