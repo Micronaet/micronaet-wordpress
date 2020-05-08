@@ -402,7 +402,7 @@ class ProductPublicCategory(orm.Model):
                 return 1
             elif 'en' in lang:
                 return 2
-          
+
         # =====================================================================
         # Log operation on Excel file:
         # ---------------------------------------------------------------------
@@ -431,6 +431,8 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Handle connector:
         # ---------------------------------------------------------------------
+        variation_parameters = {'per_page': 30, 'page': 1}
+
         # Sort order and list of languages:
         langs = [
             'it_IT', 
@@ -585,7 +587,6 @@ class ProductPublicCategory(orm.Model):
         current_wp_terms = []
         theres_data = True
         parameter = {'per_page': 30, 'page': 1}
-        variation_parameters = {'per_page': 30, 'page': 1}
         
         _logger.warning('Search all terms for attribute %s...' % (
             attribute_id.keys(), ))
