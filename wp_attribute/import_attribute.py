@@ -331,7 +331,8 @@ class ProductPublicCategory(orm.Model):
             cr, uid, connector_id, context=context)
         _logger.warning('Read all product on wordpress:')
 
-        parameter = {'per_page': 10, 'page': 1}
+        parameter = {'per_page': 20, 'page': 1}
+        variation_parameters = {'per_page': 30, 'page': 1}
         theres_data = True
         while theres_data:
             call = 'products'
@@ -527,7 +528,8 @@ class ProductPublicCategory(orm.Model):
         #                     ATTRIBUTES: (need Tessuto, Brand)
         # ---------------------------------------------------------------------   
         call = 'products/attributes'
-        current_wp_attribute = wcapi.get(call).json()
+        current_wp_attribute = wcapi.get(
+            call, params=variation_parameters).json()
         
         # =====================================================================
         # Excel log:
@@ -645,7 +647,8 @@ class ProductPublicCategory(orm.Model):
         lang_brand_terms = {} # not needed for now
         
         call = 'products/attributes/%s/terms' % attribute_id['Brand']
-        for record in wcapi.get(call).json():
+        for record in wcapi.get(
+                call, params=variation_parameters).json():
             lang = record['lang']
             name = record['name']
 
@@ -860,9 +863,9 @@ class ProductPublicCategory(orm.Model):
                     'lang': lang,
                     'name': lang_master_name,
 
-                    # -------------------------------------------------------------
+                    # ---------------------------------------------------------
                     # 1. Fabric XXX mandatory!
-                    # -------------------------------------------------------------
+                    # ---------------------------------------------------------
                     'attributes': [{
                         'id': attribute_id['Tessuto'], 
                         'options': [],
@@ -891,7 +894,7 @@ class ProductPublicCategory(orm.Model):
                     'visible': True,
                     })
 
-                # Upodate first element colors:
+                # Update first element colors:
                 for line, variant_color in variants:
                     # Get variant color:
                     data['attributes'][0]['options'].append(variant_color)
@@ -933,7 +936,7 @@ class ProductPublicCategory(orm.Model):
                 # Upload product variations:
                 # -------------------------------------------------------------
                 call = 'products/%s/variations' % wp_id
-                res = wcapi.get(call).json()
+                res = wcapi.get(call, params=variation_parameters).json()
                     
                 # =============================================================
                 # Excel log:
