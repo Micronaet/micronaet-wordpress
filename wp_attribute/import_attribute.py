@@ -585,6 +585,8 @@ class ProductPublicCategory(orm.Model):
         current_wp_terms = []
         theres_data = True
         parameter = {'per_page': 30, 'page': 1}
+        variation_parameters = {'per_page': 30, 'page': 1}
+        
         _logger.warning('Search all terms for attribute %s...' % (
             attribute_id.keys(), ))
 
