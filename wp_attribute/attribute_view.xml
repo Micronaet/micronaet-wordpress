@@ -91,6 +91,17 @@
         </record>
         
         <!--product.product.web.server-->
+        <record model="ir.ui.view" id="view_product_product_web_server_integration_search">
+            <field name="name">product.product.web.server.parent.search</field>
+            <field name="model">product.product.web.server</field>
+            <field name="inherit_id" ref="connector_web_product.view_product_web_server_search"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <field name="product_id" string="Codice" filter_domain="[('product_id.default_code','ilike',self)]"/>
+                </field>
+            </field>
+        </record>
+        
         <record model="ir.ui.view" id="view_product_product_web_server_wp_parent_tree">
             <field name="name">product.product.web.server.parent.tree</field>
             <field name="model">product.product.web.server</field>
