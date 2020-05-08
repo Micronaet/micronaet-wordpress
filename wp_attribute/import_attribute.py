@@ -214,6 +214,30 @@ class ProductProductWebServerRelation(orm.Model):
 
     _inherit = 'product.product.web.server'
 
+    def open_master_variant(self, cr, uid, ids, context=None):
+        """ Open variant form
+        """
+        model_pool = self.pool.get('ir.model.data')
+        view_id = model_pool.get_object_reference(
+            cr, uid, 
+            'wp_attribute', 
+            'view_product_product_web_server_wp_full_detail_form')[1]
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Variante'),
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            'res_id': ids[0],
+            'res_model': 'product.product.web.server',
+            'view_id': view_id,
+            'views': [(view_id, 'form'), (False, 'tree')],
+            'domain': [],
+            'context': context,
+            'target': 'current', # 'new'
+            'nodestroy': False,
+            }
+
     _columns = {
         'variant_ids': fields.one2many(
             'product.product.web.server', 'wp_parent_id', 'Varianti'),

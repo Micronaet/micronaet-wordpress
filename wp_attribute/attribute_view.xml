@@ -277,7 +277,8 @@
                                                 <field name="product_id" readonly="1" />
                                                 <field name="force_q_x_pack" readonly="1"/>
                                                 <field name="force_ean13" readonly="1"/>
-                                                <field name="force_price" readonly="1"/>                                    
+                                                <field name="force_price" readonly="1"/>  
+                                                <button name="open_master_variant" string="Apri" type="object" />                                  
                                             </tree>
                                         </field>                                         
                                      </group>
