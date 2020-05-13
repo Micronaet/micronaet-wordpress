@@ -153,7 +153,9 @@ while True:
         # ---------------------------------------------------------------------        
         term_id = record['id']
         name = record['name']
-        name = name[:-3] # no -it
+        name = name[:-3]  # no -it
+        odoo_name = name  # Name is this 
+        # Transfor for image name:
         name = name.strip()
         name = name.replace(' ', '%20')
         name = name.replace('.png', '')
@@ -170,14 +172,14 @@ while True:
         # ---------------------------------------------------------------------        
         # ODOO Data:
         # ---------------------------------------------------------------------   
-        odoo_ids = odoo_db[lang].search([('name', '=', name)])
+        odoo_ids = odoo_db[lang].search([('name', '=', odoo_name)])
         if odoo_ids:
             import pdb; pdb.set_trace()
             dot = odoo_db[lang].browse(odoo_ids)[0]
             hint = dot.hint
             if hint:
                 data.update({
-                    'name': name,
+                    'name': record['name'],
                     'lang': lang,
                     'color_name': hint,
                     })
