@@ -131,7 +131,7 @@ parameter = {
     'per_page': 30,
     'page': 0,
     }
-import pdb; pdb.set_trace()
+
 while True:
     parameter['page'] += 1    
     call = 'products/attributes/%s/terms' % attribute_id    
@@ -162,6 +162,7 @@ while True:
 
         image = record.get('color_image', False)
         if not image and lang == 'it':
+            print 'Update image'
             # Update image only if not present and it Lang!
             data.update({
                 'lang': 'it',
@@ -174,10 +175,10 @@ while True:
         # ---------------------------------------------------------------------   
         odoo_ids = odoo_lang[lang].search([('name', '=', odoo_name)])
         if odoo_ids:
-            import pdb; pdb.set_trace()
             dot = odoo_lang[lang].browse(odoo_ids)[0]
             hint = dot.hint
-            if hint:
+            if hint and hint != record['color_name']:
+                print 'Update hint' % hint
                 data.update({
                     'name': record['name'],
                     'lang': lang,
@@ -188,6 +189,7 @@ while True:
         # Update command:
         # ---------------------------------------------------------------------        
         if not data:
+            print 'Yet updated %s' % odoo_name
             continue
         
         call = 'products/attributes/%s/terms/%s' % (
@@ -195,6 +197,6 @@ while True:
             )
 
         reply = wcapi.put(call, data)
-        print 'wcapi.put(%s, %s) >> %s\n\n' % (call, data, reply.json())
+        #print 'wcapi.put(%s, %s) >> %s\n\n' % (call, data, reply.json())
+        print 'Updated %s' % odoo_name
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
