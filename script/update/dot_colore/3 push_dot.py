@@ -200,7 +200,8 @@ while True:
 
         reply = wcapi.put(call, data)
         #print 'wcapi.put(%s, %s) >> %s\n\n' % (call, data, reply.json())
-        print 'UPDATE WP |%s| ODOO |%s| >> HINT |%s| COMMENT: |%s|' % (
+        print 'UPDATE |%s| WP |%s| ODOO |%s| >> HINT |%s| COMMENT: |%s|' % (
+            lang
             record['name'],
             odoo_name, 
             hint,
