@@ -147,6 +147,7 @@ while True:
         item_id = record['id']
         lang = record['lang']
         data = {}
+        comment = ''
 
         # ---------------------------------------------------------------------        
         # Image data:    
@@ -162,7 +163,7 @@ while True:
 
         image = record.get('color_image', False)
         if not image and lang == 'it':
-            print 'Update image'
+            comment += '[Update image] '
             # Update image only if not present and it Lang!
             data.update({
                 'lang': 'it',
@@ -178,7 +179,7 @@ while True:
             dot = odoo_lang[lang].browse(odoo_ids)[0]
             hint = dot.hint
             if hint and hint != record['color_name']:
-                print 'Update hint' % hint
+                comment += '[Update hint %s]' % hint
                 data.update({
                     'name': record['name'],
                     'lang': lang,
@@ -198,5 +199,5 @@ while True:
 
         reply = wcapi.put(call, data)
         #print 'wcapi.put(%s, %s) >> %s\n\n' % (call, data, reply.json())
-        print 'Updated %s' % odoo_name
+        print 'Updated %s %s' % (odoo_name, comment)
 
