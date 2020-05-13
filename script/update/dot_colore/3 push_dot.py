@@ -191,7 +191,7 @@ while True:
                 odoo.context = {'lang': 'en_US'}
                 odoo_lang = odoo.model('connector.product.color.dot')
         
-            dot = odoo_langbrowse(odoo_ids)[0]
+            dot = odoo_lang.browse(odoo_ids)[0]
             hint = dot.hint
             if hint:# TODO  and hint != record['color_name']:
                 comment += '[Update hint %s]' % hint
