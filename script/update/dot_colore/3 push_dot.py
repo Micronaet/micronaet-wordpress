@@ -192,6 +192,8 @@ while True:
             if hint:# TODO  and hint != record['color_name']:
                 comment += '[Update hint %s]' % hint
                 data.update({
+                    'id': term_id,
+                    'description': '',
                     'name': record['name'],
                     'lang': lang,
                     'color_name': hint,
