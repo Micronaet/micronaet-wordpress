@@ -148,6 +148,7 @@ while True:
         lang = record['lang']
         data = {}
         comment = ''
+        hint = ''
 
         # ---------------------------------------------------------------------        
         # Image data:    
@@ -190,7 +191,7 @@ while True:
         # Update command:
         # ---------------------------------------------------------------------        
         if not data:
-            print 'Yet updated %s' % odoo_name
+            #print 'NOT updated %s' % odoo_name
             continue
         
         call = 'products/attributes/%s/terms/%s' % (
@@ -199,5 +200,10 @@ while True:
 
         reply = wcapi.put(call, data)
         #print 'wcapi.put(%s, %s) >> %s\n\n' % (call, data, reply.json())
-        print 'Updated %s %s' % (odoo_name, comment)
+        print 'Updated WP %s ODOO %s >> hint %s comment: %s' % (
+            record['name'],
+            odoo_name, 
+            hint,
+            comment,
+            )
 
