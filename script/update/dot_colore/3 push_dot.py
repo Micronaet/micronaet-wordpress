@@ -172,10 +172,10 @@ while True:
         # ---------------------------------------------------------------------        
         # ODOO Data:
         # ---------------------------------------------------------------------   
-        odoo_ids = odoo_db[lang].search([('name', '=', odoo_name)])
+        odoo_ids = odoo_lang[lang].search([('name', '=', odoo_name)])
         if odoo_ids:
             import pdb; pdb.set_trace()
-            dot = odoo_db[lang].browse(odoo_ids)[0]
+            dot = odoo_lang[lang].browse(odoo_ids)[0]
             hint = dot.hint
             if hint:
                 data.update({
