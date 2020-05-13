@@ -182,7 +182,7 @@ while True:
         # ---------------------------------------------------------------------        
         # ODOO Data:
         # ---------------------------------------------------------------------   
-        odoo_ids = odoo_lang[lang].search([('name', '=', odoo_name)])
+        odoo_ids = odoo_lang.search([('name', '=', odoo_name)])
         if odoo_ids:
             if lang == 'it':
                 odoo.context = {'lang': 'it_IT'}
