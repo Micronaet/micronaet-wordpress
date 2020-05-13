@@ -73,6 +73,24 @@ server = config.get('dbaccess', 'server')
 port = config.get('dbaccess', 'port')   # verify if it's necessary: getint
 
 # -----------------------------------------------------------------------------
+# Connect to ODOO:
+# -----------------------------------------------------------------------------
+odoo = erppeek.Client(
+    'http://%s:%s' % (
+        server, port), 
+    db=dbname,
+    user=user,
+    password=pwd,
+    )
+    
+# Pool used (in lang mode):
+odoo_lang = {}
+odoo.context = {'lang': 'it_IT'}
+odoo_lang['it'] = odoo.model('connector.product.image.dot')
+odoo.context = {'lang': 'en_US'}
+odoo_lang['en'] = odoo.model('connector.product.image.dot')
+
+# -----------------------------------------------------------------------------
 # WP web read: Spaziogiardino
 # -----------------------------------------------------------------------------
 wcapi = woocommerce.API(
@@ -113,7 +131,7 @@ parameter = {
     'per_page': 30,
     'page': 0,
     }
-
+import pdb; pdb.set_trace()
 while True:
     parameter['page'] += 1    
     call = 'products/attributes/%s/terms' % attribute_id    
@@ -128,29 +146,45 @@ while True:
     for record in records:
         item_id = record['id']
         lang = record['lang']
-        if lang != 'it':
-            continue # only italian!
+        data = {}
+
+        # ---------------------------------------------------------------------        
+        # Image data:    
+        # ---------------------------------------------------------------------        
         term_id = record['id']
         name = record['name']
         name = name[:-3] # no -it
         name = name.strip()
         name = name.replace(' ', '%20')
         name = name.replace('.png', '')
-        import pdb; pdb.set_trace()
 
         image = record.get('color_image', False)
-        data = {
-            #'name': attribute,
-            #'lang': lang,
-            #'color_name': odoo_color.hint,
-            }
-        if not image:
-            # Update image:        
+        if not image and lang == 'it':
+            # Update image only if not present and it Lang!
             data.update({
                 'lang': 'it',
                 'color_image': 
                     'http://my.fiam.it/upload/images/dot_point/%s.png' % name,
                 })
+
+        # ---------------------------------------------------------------------        
+        # ODOO Data:
+        # ---------------------------------------------------------------------   
+        odoo_ids = odoo_db[lang].search([('name', '=', name)])
+        if odoo_ids:
+            import pdb; pdb.set_trace()
+            dot = odoo_db[lang].browse(odoo_ids)[0]
+            hint = dot.hint
+            if hint:
+                data.update({
+                    'name': name,
+                    'lang': lang,
+                    'color_name': hint,
+                    })
+
+        # ---------------------------------------------------------------------        
+        # Update command:
+        # ---------------------------------------------------------------------        
         if not data:
             continue
         
