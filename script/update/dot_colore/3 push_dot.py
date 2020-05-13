@@ -217,6 +217,6 @@ while True:
             comment,
             )
         print 'wcapi.put(%s, %s) >> %s\n\n' % (call, data, reply.json())
-        if odoo_name = 'AN-BINE':
+        if odoo_name == 'AN-BINE':
             import pdb; pdb.set_trace()
 
