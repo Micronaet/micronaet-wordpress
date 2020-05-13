@@ -163,6 +163,8 @@ while True:
         name = name.replace('.png', '')
         if odoo_name == 'AL-AN':
             import pdb; pdb.set_trace()
+        else:
+            continue    
 
         image = record.get('color_image', False)
         if not image and lang == 'it':
@@ -179,7 +181,14 @@ while True:
         # ---------------------------------------------------------------------   
         odoo_ids = odoo_lang[lang].search([('name', '=', odoo_name)])
         if odoo_ids:
-            dot = odoo_lang[lang].browse(odoo_ids)[0]
+            if lang == 'it':
+                odoo.context = {'lang': 'it_IT'}
+                odoo_lang = odoo.model('connector.product.color.dot')
+            else:    
+                odoo.context = {'lang': 'en_US'}
+                odoo_lang = odoo.model('connector.product.color.dot')
+        
+            dot = odoo_langbrowse(odoo_ids)[0]
             hint = dot.hint
             if hint:# TODO  and hint != record['color_name']:
                 comment += '[Update hint %s]' % hint
