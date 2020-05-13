@@ -164,10 +164,6 @@ while True:
         name = name.strip()
         name = name.replace(' ', '%20')
         name = name.replace('.png', '')
-        if odoo_name == 'AL-AN':
-            import pdb; pdb.set_trace()
-        else:
-            continue    
 
         image = record.get('color_image', False)
         if not image and lang == 'it':
