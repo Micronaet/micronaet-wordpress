@@ -209,7 +209,6 @@ while True:
             )
 
         reply = wcapi.put(call, data)
-        #print 'wcapi.put(%s, %s) >> %s\n\n' % (call, data, reply.json())
         print 'UPDATE |%s| WP |%s| ODOO |%s| >> HINT |%s| COMMENT: |%s|' % (
             lang,
             record['name'],
@@ -217,4 +216,7 @@ while True:
             hint,
             comment,
             )
+        print 'wcapi.put(%s, %s) >> %s\n\n' % (call, data, reply.json())
+        if odoo_name = 'AN-BINE':
+            import pdb; pdb.set_trace()
 
