@@ -91,6 +91,7 @@ odoo_lang['it'] = odoo.model('connector.product.color.dot')
 odoo.context = {'lang': 'en_US'}
 odoo_lang['en'] = odoo.model('connector.product.color.dot')
 '''
+odoo_lang = odoo.model('connector.product.color.dot')
 
 # -----------------------------------------------------------------------------
 # WP web read: Spaziogiardino
