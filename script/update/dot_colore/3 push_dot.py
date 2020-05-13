@@ -189,7 +189,7 @@ while True:
         
             dot = odoo_lang.browse(odoo_ids)[0]
             hint = dot.hint
-            if hint:# TODO  and hint != record['color_name']:
+            if hint and hint != record['color_name']:
                 comment += '[Update hint %s]' % hint
                 data.update({
                     'id': term_id,
