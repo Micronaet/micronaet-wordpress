@@ -86,9 +86,9 @@ odoo = erppeek.Client(
 # Pool used (in lang mode):
 odoo_lang = {}
 odoo.context = {'lang': 'it_IT'}
-odoo_lang['it'] = odoo.model('connector.product.image.dot')
+odoo_lang['it'] = odoo.model('connector.product.color.dot')
 odoo.context = {'lang': 'en_US'}
-odoo_lang['en'] = odoo.model('connector.product.image.dot')
+odoo_lang['en'] = odoo.model('connector.product.color.dot')
 
 # -----------------------------------------------------------------------------
 # WP web read: Spaziogiardino
