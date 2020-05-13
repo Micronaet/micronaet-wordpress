@@ -32,6 +32,7 @@ import slugify
 attribute_name = 'Tessuto'
 lang_db = ['it_IT', 'en_US']
 default_lang = 'it'
+verbose = False
 
 # Fiam:
 connector_id = 5
@@ -218,7 +219,6 @@ while True:
             hint,
             comment,
             )
-        print 'wcapi.put(%s, %s) >> %s\n\n' % (call, data, reply.json())
-        if odoo_name == 'AN-BINE':
-            import pdb; pdb.set_trace()
+        if verbose:    
+            print 'wcapi.put(%s, %s) >> %s\n\n' % (call, data, reply.json())
 
