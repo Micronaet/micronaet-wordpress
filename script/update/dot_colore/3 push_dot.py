@@ -136,19 +136,24 @@ while True:
         name = name.strip()
         name = name.replace(' ', '%20')
         name = name.replace('.png', '')
+        import pdb; pdb.set_trace()
 
         image = record.get('color_image', False)
-        if image:
-            #print 'No need to update: %s' % name
-            pass # XXX continue            
-            continue
-            
-        # Update image:        
         data = {
-            'lang': 'it',
-            'color_image': 
-                'http://my.fiam.it/upload/images/dot_point/%s.png' % name,
+            #'name': attribute,
+            #'lang': lang,
+            #'color_name': odoo_color.hint,
             }
+        if not image:
+            # Update image:        
+            data.update({
+                'lang': 'it',
+                'color_image': 
+                    'http://my.fiam.it/upload/images/dot_point/%s.png' % name,
+                })
+        if not data:
+            continue
+        
         call = 'products/attributes/%s/terms/%s' % (
             attribute_id, term_id,                
             )
