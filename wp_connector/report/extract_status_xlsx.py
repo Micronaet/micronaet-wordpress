@@ -120,8 +120,8 @@ class ConnectorServer(orm.Model):
             10, 10, 4,
             10, 10, 
             5, 20, 30, 7,
-            5,
-            10, 5, 15, 5, 5, 
+            7,
+            10, 5, 15, 6, 6, 
             40, 40, 
             ])
             
@@ -137,7 +137,7 @@ class ConnectorServer(orm.Model):
             'Cat. Stat.', 'Peso', 
             'Mod. imb.', 'Imballo', 'Dimensioni prodotto', 'Vol.',
             'Garanzia', 
-            'Tipo WP', 'Master', 'Padre', 'WP ID it.', 'WP ID en.',
+            'Tipo WP', 'Master', 'Padre', 'WPID it.', 'WPID en.',
             'Immagini', 'Link',
             ], default_format=excel_format['header'])
 

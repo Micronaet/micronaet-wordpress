@@ -843,21 +843,36 @@ class ProductProductWebServer(orm.Model):
         """ Update volume field
         """
         for item in self.browse(cr, uid, ids, context=context):
-            l = item.pack_l
-            p = item.pack_p
-            h = item.pack_h
+            product = item.product_id
             q_x_pack = item.q_x_pack or 1
             multi = item.price_multi or 1
-            if not all((l, p, h)):
-                _logger.error(
-                    'No dimension for: %s' % item.product_id.default_code)
-                continue
-            volume = l * p * h / 1000000.0 / q_x_pack
+            
+            # Multipack:
+            if product.has_multipack:
+                volume = 0.0
+                for pack in product.multi_pack_ids:
+                    volume += pack.number * (
+                        pack.height * pack.width * pack.length) / 1000000.0
+                volume = volume / q_x_pack * multi        
+
+            # Single pack:    
+            else:    
+                l = item.pack_l
+                p = item.pack_p
+                h = item.pack_h
+                if not all((l, p, h)):
+                    _logger.error(
+                        'No dimension for: %s' % item.product_id.default_code)
+                    continue
+                    
+                volume = l * p * h 
+                
             self.write(cr, uid, [item.id], {
                 'wp_volume': volume,
                 }, context=context)
             _logger.error(
-                'Volume %s for: %s' % (volume, item.product_id.default_code))
+                'Volume %s for: %s' % (
+                    volume, item.product_id.default_code))
         
     _columns = {
         'wp_it_id': fields.integer('WP it ID'),
