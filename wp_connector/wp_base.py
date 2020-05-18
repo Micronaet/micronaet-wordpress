@@ -633,7 +633,8 @@ class ProductProductWebServer(orm.Model):
                 lifetime_warranty = item.lifetime_warranty
 
                 price = u'%s' % self.get_wp_price(item)
-                weight = u'%s' % product.weight
+                #weight = u'%s' % product.weight
+                weight = u'%s' % product.wp_volume  # X Used for volume manage
                 status = 'publish' if item.published else 'private'
                 stock_quantity, stock_comment = \
                     self.get_existence_for_product(

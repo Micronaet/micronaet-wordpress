@@ -1037,7 +1037,8 @@ class ProductPublicCategory(orm.Model):
                         #'slug': self.get_lang_slug(variant_code, lang),
                         # TODO
                         # stock_status
-                        'weight': '%s' % line.weight,
+                        #'weight': '%s' % line.weight,
+                        'weight': '%s' % line.wp_volume,  # X Used for volume 
                         
                         'dimensions': {
                             'length': '%s' % line.pack_l,
