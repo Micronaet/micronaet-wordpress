@@ -848,12 +848,16 @@ class ProductProductWebServer(orm.Model):
             multi = item.price_multi or 1
             
             # Multipack:
-            if product.has_multipack:
+            try:
+                has_multipack = product.has_multipack
+            except:
+                has_multipack = False
+
+            if has_multipack:
                 volume = 0.0
                 for pack in product.multi_pack_ids:
                     volume += pack.number * (
-                        pack.height * pack.width * pack.length) / 1000000.0
-                volume = volume / q_x_pack * multi        
+                        pack.height * pack.width * pack.length)
 
             # Single pack:    
             else:    
@@ -863,10 +867,10 @@ class ProductProductWebServer(orm.Model):
                 if not all((l, p, h)):
                     _logger.error(
                         'No dimension for: %s' % item.product_id.default_code)
-                    continue
-                    
+                    continue                    
                 volume = l * p * h 
-                
+            
+            volume = volume / 1000000.0 / q_x_pack * multi
             self.write(cr, uid, [item.id], {
                 'wp_volume': volume,
                 }, context=context)
