@@ -1090,8 +1090,8 @@ class ProductPublicCategory(orm.Model):
                     # Images block:
                     # ---------------------------------------------------------
                     image = False
-                    if 'VE' in variant_code:
-                        import pdb; pdb.set_trace()
+                    #if 'VE' in variant_code:
+                    #    import pdb; pdb.set_trace()
                     if 'image' not in unpublished:
                         image = web_product_pool.get_wp_image(
                             line, variant=True)
