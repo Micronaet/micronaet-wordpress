@@ -209,7 +209,7 @@ class ProductProduct(orm.Model):
                     'Auto assign package: Code 3 "%s" found #%s !' % (
                         search_code, len(package_ids)))
             else:    
-                _logger.error(
+                _logger.info(
                     'Auto assign package: Code not found %s !' % default_code)
         return True
 
