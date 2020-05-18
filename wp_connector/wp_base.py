@@ -634,7 +634,7 @@ class ProductProductWebServer(orm.Model):
 
                 price = u'%s' % self.get_wp_price(item)
                 #weight = u'%s' % product.weight
-                weight = u'%s' % product.wp_volume  # X Used for volume manage
+                weight = u'%s' % item.wp_volume  # X Used for volume manage
                 status = 'publish' if item.published else 'private'
                 stock_quantity, stock_comment = \
                     self.get_existence_for_product(
