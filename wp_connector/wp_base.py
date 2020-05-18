@@ -886,7 +886,7 @@ class ProductProductWebServer(orm.Model):
             self.write(cr, uid, [item.id], {
                 'wp_volume': volume,
                 }, context=context)
-            _logger.error(
+            _logger.info(
                 'Volume %s for: %s' % (
                     volume, item.product_id.default_code))
         
