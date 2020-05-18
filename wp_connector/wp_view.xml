@@ -7,6 +7,9 @@
             <field name="model">connector.server</field>
             <field name="inherit_id" ref="connector_web_base.view_connector_server_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//header/button[2]" position="after">
+                    <button name="update_wp_volume" string="Refresh volume" type="object" icon="gtk-refresh"/>
+                </xpath>
                 <field name="password" position="after">
                     <field name="wp_publish_image" />
                 </field>

@@ -124,6 +124,17 @@ class ConnectorServer(orm.Model):
         except:
             _logger.error('Cannot connect to Wordpress!!')        
 
+    def update_wp_volume(self, cr, uid, ids, context=None):
+        """ Update all product 
+        """
+        image_pool = self.pool.get('product.product.web.server')
+        image_ids = image_pool.search(cr, uid, [
+            ('connector_id', '=', ids[0]),
+            ], context=context)
+        _logger.info('Updating volume for %s product' % len(image_ids))    
+        return image_pool.update_wp_volume(
+           cr, uid, image_ids, context=context)    
+        
     _columns = {
         'wordpress': fields.boolean('Wordpress', help='Wordpress web server'),
 
@@ -844,7 +855,6 @@ class ProductProductWebServer(orm.Model):
         """
         for item in self.browse(cr, uid, ids, context=context):
             product = item.product_id
-            q_x_pack = item.q_x_pack or 1
             multi = item.price_multi or 1
             
             # Multipack:
@@ -854,6 +864,7 @@ class ProductProductWebServer(orm.Model):
                 has_multipack = False
 
             if has_multipack:
+                q_x_pack = 1  # alway 1 in multipack
                 volume = 0.0
                 for pack in product.multi_pack_ids:
                     volume += pack.number * (
@@ -861,6 +872,7 @@ class ProductProductWebServer(orm.Model):
 
             # Single pack:    
             else:    
+                q_x_pack = item.q_x_pack or 1
                 l = item.pack_l
                 p = item.pack_p
                 h = item.pack_h
