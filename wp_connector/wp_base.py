@@ -839,6 +839,26 @@ class ProductProductWebServer(orm.Model):
                     }
         return res
 
+    def update_wp_volume(self, cr, uid, ids, context=None):
+        """ Update volume field
+        """
+        for item in self.browse(cr, uid, ids, context=context):
+            l = item.pack_l
+            p = item.pack_p
+            h = item.pack_h
+            q_x_pack = item.q_x_pack or 1
+            multi = item.price_multi or 1
+            if not all((l, p, h)):
+                _logger.error(
+                    'No dimension for: %s' % item.product_id.default_code)
+                continue
+            volume = l * p * h / 1000000.0 / q_x_pack
+            self.write(cr, uid, [item.id], {
+                'wp_volume': volume,
+                }, context=context)
+            _logger.error(
+                'Volume %s for: %s' % (volume, item.product_id.default_code))
+        
     _columns = {
         'wp_it_id': fields.integer('WP it ID'),
         'wp_en_id': fields.integer('WP en ID'),
@@ -948,6 +968,11 @@ class ProductProductWebServer(orm.Model):
             'product_id', 'lst_price', type='float', string='Listino'),
         'product_q_x_pack': fields.related(
             'product_id', 'q_x_pack', type='float', string='Q x pack prodotto'),
+
+        'wp_volume': fields.float(
+            'Volume', digits=(16, 3), 
+            #required=True,
+            ),
         # ---------------------------------------------------------------------
 
         'wp_type': fields.selection([

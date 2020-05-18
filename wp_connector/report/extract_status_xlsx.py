@@ -119,7 +119,7 @@ class ConnectorServer(orm.Model):
             50, 10, 30, 5, 5, 
             10, 10, 4,
             10, 10, 
-            5, 20, 30,
+            5, 20, 30, 7,
             5,
             10, 5, 15, 5, 5, 
             40, 40, 
@@ -135,7 +135,7 @@ class ConnectorServer(orm.Model):
             'Categorie', 'Mag.', 'Dett. mag.', 'Extra', 'Molt.', 
             'Prezzo ODOO', 'Forz.', 'Prezzo WP',
             'Cat. Stat.', 'Peso', 
-            'Mod. imb.', 'Imballo', 'Dimensioni prodotto',
+            'Mod. imb.', 'Imballo', 'Dimensioni prodotto', 'Vol.',
             'Garanzia', 
             'Tipo WP', 'Master', 'Padre', 'WP ID it.', 'WP ID en.',
             'Immagini', 'Link',
@@ -241,6 +241,7 @@ class ConnectorServer(orm.Model):
                     '%s x %s x %s' % (
                         line.pack_l, line.pack_h, line.pack_p),
                     line.weight_aditional_info,    
+                    line.wp_volume,
                     'X' if line.lifetime_warranty else '',
 
                     line.wp_type or '',

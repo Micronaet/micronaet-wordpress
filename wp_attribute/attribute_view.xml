@@ -213,11 +213,13 @@
                                         <field name="pack_p" />
                                         <field name="weight" />
 
-                                        <separator string="Dimensioni prodotto" colspan="4" />
+                                        <separator string="Dimensioni prodotto" colspan="3" />
+                                        <button name="update_wp_volume" string="Refresh volume" type="object" colspan="1"/>
                                         <field name="weight_aditional_info" colspan="4" nolabel="1"/>
-                                        <!--<field name="weight_net" />-->
                                         
                                         <field name="q_x_pack" />                                        
+                                        <field name="wp_volume" />
+                                        <!--<field name="weight_net" />-->
 
                                     </group>
                                 </page>

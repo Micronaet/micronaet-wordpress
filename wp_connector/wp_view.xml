@@ -306,6 +306,7 @@
                     <field name="brand_id" />
                     <field name="wp_type" />
                     <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]"/>
+                    <field name="wp_volume" />
                     <field name="force_name"/>
                     <field name="force_description"/>
                     <field name="force_q_x_pack"/>
