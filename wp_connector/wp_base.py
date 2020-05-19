@@ -57,6 +57,8 @@ class ProductProductWebBrand(orm.Model):
     
     _columns = {
         'name': fields.char('Brand', size=64, required=True, translate=True),
+        'code': fields.char('Sigla', size=10, required=True,
+            help='Sigla utilizzata nelle importazioni'),             
         'description': fields.text('Description for web', translate=True),
 
         # Translate fields:
@@ -76,6 +78,8 @@ class ProductProductWebMaterial(orm.Model):
     _columns = {
         'name': fields.char(
             'Material', size=64, required=True, translate=True),
+        'code': fields.char('Sigla', size=10, required=True,
+            help='Sigla utilizzata nelle importazioni'),             
         'description': fields.text('Description for web', translate=True),
 
         # Translate fields:
@@ -290,6 +294,8 @@ class ProductProductWebCategory(orm.Model):
         'connection_id': fields.many2one('connector.server', 'Server', 
             required=True),
         'name': fields.char('Codice padre', size=20, required=True),
+        'code': fields.char('Sigla', size=10, required=True,
+            help='Sigla utilizzata nelle importazioni'),             
         'category_ids': fields.many2many(
             'product.public.category', 'template_web_category_rel', 
             'product_id', 'category_id', 

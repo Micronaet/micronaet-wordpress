@@ -38,6 +38,7 @@
             <field name="arch" type="xml">
                 <tree string="Brand" editable="bottom">
                     <field name="name" />
+                    <field name="code" />
                     <field name="description" />
                     <field name="wp_it_id" groups="wp_connector.group_wp_id_manager" />
                     <field name="wp_en_id" groups="wp_connector.group_wp_id_manager" />
@@ -61,6 +62,7 @@
             <field name="arch" type="xml">
                 <tree string="Brand" editable="bottom">
                     <field name="name" />
+                    <field name="code" />
                     <field name="description" />
                     <field name="wp_it_id" groups="wp_connector.group_wp_id_manager" />
                     <field name="wp_en_id" groups="wp_connector.group_wp_id_manager" />
@@ -114,6 +116,7 @@
                 <tree string="category" editable="bottom">
                     <field name="connection_id" domain="[('wordpress', '=', True)]"/>
                     <field name="name" />
+                    <field name="code" />
                     <field name="category_ids" widget="many2many_tags" />
                     <button name="update_product_category" string="Aggiorna" type="object" icon="gtk-refresh" />
                 </tree>

@@ -288,6 +288,8 @@ class ConnectorProductColorDot(orm.Model):
             'connector.server', 'Server', required=True),
         'name': fields.char('Code', size=64, required=True,
             help='Frame-Color used on web site for color (as key!)'),             
+        'code': fields.char('Sigla', size=10, required=True,
+            help='Sigla utilizzata nelle importazioni'),             
         'description': fields.char('Web description', size=80, translate=True),
         'hint': fields.char('Hint', size=80, translate=True,
             help='Tooltip text when mouse over image'),
