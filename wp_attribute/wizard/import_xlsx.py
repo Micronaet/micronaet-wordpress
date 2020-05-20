@@ -203,7 +203,7 @@ class ProductProductImportWorpdress(orm.Model):
             is_master = ws.cell(row, 0).value.upper() in 'SX'
             published = not(ws.cell(row, 1).value.strip())
             default_code = number_to_text(ws.cell(row, 2).value.upper())
-            ean = number_to_text(ws.cell(row, 3).value)
+            ean = ''  # TODO number_to_text(ws.cell(row, 3).value)
             lang_text[IT]['name'] = ws.cell(row, 4).value
             lang_text[EN]['name'] = ws.cell(row, 5).value \
                 or lang_text[IT]['name']
@@ -255,7 +255,6 @@ class ProductProductImportWorpdress(orm.Model):
                 continue
 
             # Calculated foreign keys:
-            import pdb; pdb.set_trace()
             category_ids = [(6, 0, get_category_ids(
                 cr, uid,
                 connector_id, category_code, category_cache, error_list,
