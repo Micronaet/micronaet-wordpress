@@ -65,19 +65,32 @@ class ProductProductImportWorpdress(orm.Model):
     def extract_line_in_tree(self, cr, uid, ids, context=None):
         """ Extract element in list
         """
+        model_pool = self.pool.get('ir.model.data')
+        tree_id = model_pool.get_object_reference(
+            cr, uid,
+            'wp_attribute',
+            'view_product_product_web_server_wp_parent_tree')[1]
+        form_id = model_pool.get_object_reference(
+            cr, uid,
+            'wp_attribute',
+            'view_product_product_web_server_wp_parent_form')[1]
+
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
         web_ids = [item.id for item in current_proxy.web_ids]
 
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Dettaglio prodotti web'),
+            'name': _('Dettaglio prodotti Master'),
             'view_type': 'form',
             'view_mode': 'tree,form',
             # 'res_id': 1,
             'res_model': 'product.product.web.server',
-            'view_id': False,
-            'views': [(False, 'tree'), (False, 'form')],
-            'domain': [('id', 'in', web_ids)],
+            'view_id': tree_id,
+            'views': [(tree_id, 'tree'), (form_id, 'form')],
+            'domain': [
+                ('wp_parent_template', '=', True),
+                ('id', 'in', web_ids),
+            ],
             'context': context,
             'target': 'current',  # 'new'
             'nodestroy': False,
