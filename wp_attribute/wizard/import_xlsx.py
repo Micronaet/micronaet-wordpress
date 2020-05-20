@@ -256,6 +256,7 @@ class ProductProductImportWorpdress(orm.Model):
                         lang_text[lang]['emotional_short_description'],
                     'emotional_description':
                         lang_text[lang]['emotional_description'],
+                    'weight_aditional_info': lang_text[lang]['box_dimension'],
                 })
                 if product_ids:  # Update record (if exist or for language)
                     product_pool.write(
@@ -296,7 +297,7 @@ class ProductProductImportWorpdress(orm.Model):
                 'weight_net': weight_net,  # No more used!
 
                 # Force:
-                'force_ean': force_ean,
+                'force_ean13': force_ean,
                 'force_q_x_pack': force_q_x_pack,
                 'force_price': force_price,
                 'force_min_stock': force_min_stock,
