@@ -164,21 +164,21 @@ class ProductProductImportWorpdress(orm.Model):
             brand_code = ws.cell(row, 6).value
             color_code = ws.cell(row, 7).value
             category_code = ws.cell(row, 8).value
-            pricelist = ws.cell(row, 9).value
-            lifetime_warranty = ws.cell(row, 10).value.upper()
-            multiply = ws.cell(row, 11).value
-            extra_price = ws.cell(row, 12).value
+            pricelist = ws.cell(row, 9).value or 0.0
+            lifetime_warranty = ws.cell(row, 10).value.upper() in 'SX'
+            multiply = ws.cell(row, 11).value or 1
+            extra_price = ws.cell(row, 12).value or 0.0
             material_code = ws.cell(row, 13).value
-            pack_l = ws.cell(row, 14).value
-            pack_h = ws.cell(row, 15).value
-            pack_p = ws.cell(row, 16).value
+            pack_l = ws.cell(row, 14).value or 0.0
+            pack_h = ws.cell(row, 15).value or 0.0
+            pack_p = ws.cell(row, 16).value or 0.0
             lang_text[IT]['box_dimension'] = ws.cell(row, 17).value
             lang_text[EN]['box_dimension'] = ws.cell(row, 18).value \
                 or lang_text[IT]['box_dimension']
 
-            weight = ws.cell(row, 19).value
-            weight_net = ws.cell(row, 20).value
-            q_x_pack = ws.cell(row, 21).value
+            weight = ws.cell(row, 19).value or 0.0
+            weight_net = ws.cell(row, 20).value or 0.0
+            q_x_pack = ws.cell(row, 21).value or 1
 
             # Force:
             lang_text[IT]['force_name'] = ws.cell(row, 22).value
@@ -187,10 +187,10 @@ class ProductProductImportWorpdress(orm.Model):
             lang_text[IT]['force_description'] = ws.cell(row, 24).value
             lang_text[EN]['force_description'] = ws.cell(row, 25).value \
                 or lang_text[IT]['force_description']
-            force_q_x_pack = ws.cell(row, 26).value
-            force_ean = number_to_text(ws.cell(row, 27).value)
-            force_price = ws.cell(row, 28).value
-            force_min_stock = ws.cell(row, 29).value
+            force_q_x_pack = ws.cell(row, 26).value or False
+            force_ean = number_to_text(ws.cell(row, 27).value) or ''
+            force_price = ws.cell(row, 28).value or 0.0
+            force_min_stock = ws.cell(row, 29).value or 0.0
 
             lang_text[IT]['large_description'] = ws.cell(row, 30).value
             lang_text[EN]['large_description'] = ws.cell(row, 31).value \
@@ -266,6 +266,8 @@ class ProductProductImportWorpdress(orm.Model):
             web_data = {
                 'connector_id': connector_id,
                 'product_id': product_id,
+                'xlsx_id': xlsx_id,
+
                 'wp_type': 'variable',
                 'published': published,
 
@@ -369,7 +371,7 @@ class ProductProductWordpress(orm.Model):
 
     _columns = {
         'xlsx_id': fields.many2one(
-            'product.product.import.wordpress.wizard', 'XLSX File'),
+            'product.product.import.wordpress', 'XLSX File'),
         }
 
 
@@ -381,7 +383,7 @@ class ProductProductWebServerWordpress(orm.Model):
 
     _columns = {
         'xlsx_id': fields.many2one(
-            'product.product.import.wordpress.wizard', 'XLSX File'),
+            'product.product.import.wordpress', 'XLSX File'),
         }
 
 
