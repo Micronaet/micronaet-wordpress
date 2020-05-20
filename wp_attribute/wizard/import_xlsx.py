@@ -112,6 +112,35 @@ class ProductProductImportWorpdress(orm.Model):
     def _import_xlsx_file(self, cr, uid, ids, check, context=None):
         """ Utility for import or simply check the file
         """
+
+        def get_category_ids(
+                cr, uid,
+                connector_id, category_code, category_cache, error_list,
+                context=None):
+            """ Extract category for category
+            """
+            category_pool = self.pool.get('product.public.category')
+            res = []
+            for code in category_code.split(','):
+                code = code.strip()
+                if not code:
+                    _logger.warning('Category code empty')
+                    continue
+
+                if code not in category_cache:
+                    category_ids = category_pool.search(cr, uid, [
+                        ('connector_id', '=', connector_id),
+                        ('code', '=', code),
+                        ], context=context)
+                    if not category_ids:
+                        error_list.append(
+                            'Codice categoria non trovato: %s' % code)
+                        continue
+
+                res.append(category_cache[code])
+                category_cache[code] = category_cache[code]
+            return res
+
         def number_to_text(value):
             """ Force text number in Excel
             """
@@ -126,6 +155,9 @@ class ProductProductImportWorpdress(orm.Model):
         IT = 'it_IT'
         EN = 'en_US'
         lang_list = (IT, EN)
+
+        # Cache DB:
+        category_cache = {}
 
         # Pool used:
         product_pool = self.pool.get('product.product')
@@ -221,6 +253,11 @@ class ProductProductImportWorpdress(orm.Model):
                 _logger.warning('Default code not found')
                 continue
 
+            # Calculated foreign keys:
+            category_ids = [(6, 0, get_category_ids(
+                cr, uid,
+                connector_id, category_code, category_cache, error_list,
+                context=None)
             # TODO check not file system char in default code
 
             # -----------------------------------------------------------------
