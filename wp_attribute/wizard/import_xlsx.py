@@ -256,7 +256,6 @@ class ProductProductImportWorpdress(orm.Model):
                         lang_text[lang]['emotional_short_description'],
                     'emotional_description':
                         lang_text[lang]['emotional_description'],
-                    'weight_aditional_info': lang_text[lang]['box_dimension'],
                 })
                 if product_ids:  # Update record (if exist or for language)
                     product_pool.write(
@@ -308,6 +307,7 @@ class ProductProductImportWorpdress(orm.Model):
                 web_data.update({
                     'force_name': lang_text[lang]['force_name'],
                     'force_description': lang_text[lang]['force_description'],
+                    'weight_aditional_info': lang_text[lang]['box_dimension'],
                 })
 
                 if web_ids:
