@@ -21,27 +21,12 @@
 #
 ###############################################################################
 
-import os
-import sys
 import logging
-import openerp
-import json
 import woocommerce
-import openerp.netsvc as netsvc
-import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from openerp import SUPERUSER_ID, api
-from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
-    DEFAULT_SERVER_DATETIME_FORMAT,
-    DATETIME_FORMATS_MAP,
-    float_compare)
 from slugify import slugify
-
 
 _logger = logging.getLogger(__name__)
 
@@ -56,8 +41,10 @@ class ProductProductWebBrand(orm.Model):
     _order = 'name'
 
     _columns = {
-        'name': fields.char('Brand', size=64, required=True, translate=True),
-        'code': fields.char('Sigla', size=10, required=True,
+        'name': fields.char(
+            'Brand', size=64, required=True, translate=True),
+        'code': fields.char(
+            'Sigla', size=10, required=True,
             help='Sigla utilizzata nelle importazioni'),
         'description': fields.text('Description for web', translate=True),
 
@@ -65,6 +52,7 @@ class ProductProductWebBrand(orm.Model):
         'wp_it_id': fields.integer('WP it ID'),
         'wp_en_id': fields.integer('WP en ID'),
         }
+
 
 class ProductProductWebMaterial(orm.Model):
     """ Model name: ProductProductWebMaterial
@@ -87,6 +75,7 @@ class ProductProductWebMaterial(orm.Model):
         'wp_en_id': fields.integer('WP en ID'),
         }
 
+
 class ConnectorServer(orm.Model):
     """ Model name: ConnectorServer
     """
@@ -96,14 +85,14 @@ class ConnectorServer(orm.Model):
     # Utility:
     # -------------------------------------------------------------------------
     def get_lang_slug(self, name, lang):
-        ''' Slug problem with lang
-        '''
+        """ Slug problem with lang
+        """
         slug = slugify(name)
         return slug + ('' if lang == 'it' else '-en')
 
     def get_wp_connector(self, cr, uid, ids, context=None):
-        ''' Connect with Word Press API management
-        '''
+        """ Connect with Word Press API management
+        """
         timeout = 600 # TODO parametrize
 
         connector = self.browse(cr, uid, ids, context=context)[0]
@@ -140,6 +129,7 @@ class ConnectorServer(orm.Model):
            cr, uid, image_ids, context=context)
 
     _columns = {
+        'wp_publish_image': fields.boolean('Pubblica immagini'),
         'wordpress': fields.boolean('Wordpress', help='Wordpress web server'),
 
         'wp_all_category': fields.boolean('All category',
@@ -167,6 +157,7 @@ class ConnectorServer(orm.Model):
         'wp_all_category': lambda *x: True,
         }
 
+
 class ProductProduct(orm.Model):
     """ Model name: ProductProduct
     """
@@ -174,8 +165,8 @@ class ProductProduct(orm.Model):
     _inherit = 'product.product'
 
     def auto_package_assign(self, cr, uid, ids, context=None):
-        ''' Auto assign code
-        '''
+        """ Auto assign code
+        """
         package_pool = self.pool.get('product.product.web.package')
         for product in self.browse(cr, uid, ids, context=context):
             default_code = product.default_code or ''
@@ -228,6 +219,7 @@ class ProductProduct(orm.Model):
             'product.product.web.package', 'Package'),
         }
 
+
 class ProductImageFile(orm.Model):
     """ Model name: ProductImageFile
     """
@@ -258,6 +250,7 @@ class ProductImageFile(orm.Model):
         }    
 '''
 
+
 class ProductProductWebCategory(orm.Model):
     """ Model name: ProductProductWebPackage
     """
@@ -270,8 +263,8 @@ class ProductProductWebCategory(orm.Model):
     # Button event:
     # -------------------------------------------------------------------------
     def update_product_category(self, cr, uid, ids, context=None):
-        ''' Update product category for all selected item of this connector
-        '''
+        """ Update product category for all selected item of this connector
+        """
         line_pool = self.pool.get('product.product.web.server')
 
         current = self.browse(cr, uid, ids, context=context)[0]
@@ -306,6 +299,7 @@ class ProductProductWebCategory(orm.Model):
         ('name_uniq', 'unique (name)', 'Nome duplicato!'),
         ]
 
+
 class ProductProductWebPackage(orm.Model):
     """ Model name: ProductProductWebPackage
     """
@@ -318,8 +312,8 @@ class ProductProductWebPackage(orm.Model):
     # Button:
     # -------------------------------------------------------------------------
     def auto_package_assign(self, cr, uid, ids, context=None):
-        ''' Auto assign code
-        '''
+        """ Auto assign code
+        """
         model_package_id = ids[0]
         current = self.browse(cr, uid, model_package_id, context=context)
 
@@ -352,15 +346,6 @@ class ProductProductWebPackage(orm.Model):
         ('name_uniq', 'unique (name)', 'Nome duplicato!'),
         ]
 
-class ConnectorServer(orm.Model):
-    """ Model name: Connector
-    """
-
-    _inherit = 'connector.server'
-
-    _columns = {
-        'wp_publish_image': fields.boolean('Pubblica immagini'),
-        }
 
 class ResCompany(orm.Model):
     """ Model name: Company parameters
@@ -379,6 +364,7 @@ class ResCompany(orm.Model):
         'wp_existence_mode': lambda *x: 'locked',
         }
 
+
 class ProductProductWebServer(orm.Model):
     """ Model name: ProductProductWebServer
     """
@@ -389,8 +375,8 @@ class ProductProductWebServer(orm.Model):
     # Utility:
     # -------------------------------------------------------------------------
     def get_existence_for_product(self, cr, uid, line, context=None):
-        ''' Return real existence for web site
-        '''
+        """ Return real existence for web site
+        """
         webproduct_pool = self.pool.get('product.product.web.server')
 
         # ---------------------------------------------------------------------
@@ -439,8 +425,8 @@ class ProductProductWebServer(orm.Model):
         return stock_quantity, comment
 
     def get_category_block_for_publish(self, item, lang):
-        ''' Get category block for data record WP
-        '''
+        """ Get category block for data record WP
+        """
         categories = []
         for category in item.wordpress_categ_ids:
             wp_id = eval('category.wp_%s_id' % lang)
@@ -468,8 +454,8 @@ class ProductProductWebServer(orm.Model):
         '''
 
     def open_image_list_product(self, cr, uid, ids, context=None):
-        '''
-        '''
+        """
+        """
         model_pool = self.pool.get('ir.model.data')
         view_id = model_pool.get_object_reference(
             cr, uid,
@@ -491,16 +477,16 @@ class ProductProductWebServer(orm.Model):
             }
 
     def wp_clean_code(self, default_code, destination='wp'):
-        ''' Return default code for Wordpress
-        '''
+        """ Return default code for Wordpress
+        """
         if destination == 'wp':
             return default_code.replace(' ', '&nbsp;')
         else: # odoo
             return default_code.replace('&nbsp;', ' ')
 
     def get_wp_image(self, item, variant=False):
-        ''' Extract complete list of images (single if variant mode)
-        '''
+        """ Extract complete list of images (single if variant mode)
+        """
         images = []
         for image in item.wp_dropbox_images_ids:
             link = 'http://my.fiam.it/upload/images/%s' % (
@@ -515,14 +501,14 @@ class ProductProductWebServer(orm.Model):
         return images
 
     def get_wp_price_external(self, cr, uid, line_id, context=None):
-        ''' External call for price
-        '''
+        """ External call for price
+        """
         return self.get_wp_price(
             self.browse(cr, uid, line_id, context=context))
 
     def get_wp_price(self, line):
-        ''' Extract price depend on force, discount and VAT
-        '''
+        """ Extract price depend on force, discount and VAT
+        """
         gap = 0.00000001
         if line.force_price:
             price = line.force_price
@@ -556,10 +542,10 @@ class ProductProductWebServer(orm.Model):
         return price
 
     def publish_now(self, cr, uid, ids, context=None):
-        ''' Publish now button
+        """ Publish now button
             Used also for more than one elements (not only button click)
             Note all product must be published on the same web server!
-        '''
+        """
         default_lang = 'it'
 
         # Data publish selection (remove this part from publish:
@@ -730,15 +716,17 @@ class ProductProductWebServer(orm.Model):
                         call = 'products/%s' % wp_id
                         reply = wcapi.put(call, data).json()
                         if log_excel != False:
-                            log_excel.append(('put', call, u'%s' % (data),
-                                u'%s' % (reply)))
-                        print call, data
+                            log_excel.append((
+                                'put', call, u'%s' % (data, ),
+                                u'%s' % (reply))
+                            )
+                        _logger.info('%s\n%s' % (call, data))
 
                         if reply.get('code') in (
                                 'product_invalid_sku',
                                 'woocommerce_rest_product_invalid_id'):
                             pass # TODO Manage this case?
-                            #wp_id = False # will be created after
+                            # wp_id = False # will be created after
                         else:
                             _logger.warning('Product %s lang %s updated!' % (
                                 wp_id, lang))
@@ -783,7 +771,7 @@ class ProductProductWebServer(orm.Model):
                             _('Error'),
                             _('Reply not managed: %s' % reply),
                             )
-                        continue
+                        # continue
 
                     if wp_id:
                         self.write(cr, uid, [item.id], {
@@ -800,8 +788,8 @@ class ProductProductWebServer(orm.Model):
     # Function fields:
     # -------------------------------------------------------------------------
     def _get_album_images(self, cr, uid, ids, fields, args, context=None):
-        ''' Fields function for calculate
-        '''
+        """ Fields function for calculate
+        """
         res = {}
         for current in self.browse(cr, uid, ids, context=context):
             server_album_ids = [
@@ -815,15 +803,15 @@ class ProductProductWebServer(orm.Model):
                     if image.status == 'ok' and \
                             image.album_id.id in server_album_ids:
                         res[current.id].append(image.id)
-                    #image.id for image in current.product_id.image_ids \
+                    # image.id for image in current.product_id.image_ids \
                     #    if image.album_id.id in server_album_ids],
                     #        key=lambda x: '' if not x else x.name)
         return res
 
     def _get_product_detail_items(
             self, cr, uid, ids, fields, args, context=None):
-        ''' Fields function for calculate
-        '''
+        """ Fields function for calculate
+        """
         res = {}
         for line in self.browse(cr, uid, ids, context=context):
             res[line.id] = {}
@@ -906,9 +894,11 @@ class ProductProductWebServer(orm.Model):
         'lifetime_warranty': fields.boolean('Lifetime warranty'),
 
         # Unit price modify:
-        'price_multi': fields.float('Multiplier', digits=(16, 2),
+        'price_multi': fields.float(
+            'Multiplier', digits=(16, 2),
             help='Moltiplica il prezzo di listino attuale'),
-        'price_extra': fields.float('Price extra (unit.)', digits=(16, 2),
+        'price_extra': fields.float(
+            'Price extra (unit.)', digits=(16, 2),
             help='Aggiunto dopo lo sconto l\'extra (considerato al pezzo)'),
 
         'wordpress_categ_ids': fields.many2many(
@@ -922,7 +912,7 @@ class ProductProductWebServer(orm.Model):
         'wordpress': fields.related(
             'connector_id', 'wordpress',
             type='boolean', string='Wordpress'),
-        #'lang_wp_ids': fields.one2many(
+        # 'lang_wp_ids': fields.one2many(
         #    'product.product.web.server.lang', 'web_id', 'WD ID'),
 
         # ---------------------------------------------------------------------
@@ -985,7 +975,8 @@ class ProductProductWebServer(orm.Model):
         # ---------------------------------------------------------------------
         # Link related to product
         # ---------------------------------------------------------------------
-        'weight_aditional_info': fields.text('Peso e dimensioni', widget='html',
+        'weight_aditional_info': fields.text(
+            'Peso e dimensioni', widget='html',
             help='Indicare dimensioni e peso articoli (testo libero)',
             translate=True),
 
@@ -1001,15 +992,17 @@ class ProductProductWebServer(orm.Model):
             string='Peso lordo prodotto'),
 
         'product_weight': fields.related(
-            'product_id', 'weight', type='float', string='Peso netto prodotto'),
+            'product_id', 'weight', type='float',
+            string='Peso netto prodotto'),
         'product_lst_price': fields.related(
             'product_id', 'lst_price', type='float', string='Listino'),
         'product_q_x_pack': fields.related(
-            'product_id', 'q_x_pack', type='float', string='Q x pack prodotto'),
+            'product_id', 'q_x_pack', type='float',
+            string='Q x pack prodotto'),
 
         'wp_volume': fields.float(
             'Volume', digits=(16, 3),
-            #required=True,
+            # required=True,
             ),
         # ---------------------------------------------------------------------
 
@@ -1020,4 +1013,3 @@ class ProductProductWebServer(orm.Model):
             ('variable', 'Variable product'),
             ], 'Wordpress type'),
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

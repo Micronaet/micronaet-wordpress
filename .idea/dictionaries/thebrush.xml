@@ -2,6 +2,8 @@
   <dictionary name="thebrush">
     <words>
       <w>odoo</w>
+      <w>woocommerce</w>
+      <w>wordpress</w>
     </words>
   </dictionary>
 </component>
