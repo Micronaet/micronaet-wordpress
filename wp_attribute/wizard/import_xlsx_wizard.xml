@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+       <!--product.product.import.wordpress-->
+       <record id="product_product_import_wordpress_tree_view" model="ir.ui.view">
+            <field name="name">Importazoni prodotti wordpress</field>
+            <field name="model">product.product.import.wordpress</field>
+            <field name="arch" type="xml">
+                <tree string="Import order">
+                     <field name="name" />
+                     <field name="mode" />
+                </tree>
+            </field>
+      </record>
+       <record id="product_product_import_wordpress_form_view" model="ir.ui.view">
+            <field name="name">Importazoni prodotti wordpress</field>
+            <field name="model">product.product.import.wordpress</field>
+            <field name="arch" type="xml">
+                <form string="Import order" version="7.0">
+                   <header>
+                       <button string="Cancel" special="cancel" />
+                       <button name="action_check_product_file" string="Controlla" type="object" icon="gtk-jump-to" class="oe_highlight" attrs="{'invisible': [('mode','!=','draft')]}"/>
+                       <button name="action_import_product" string="Importa prodotti" type="object" icon="gtk-jump-to" class="oe_highlight" attrs="{'invisible': [('mode','!=','imported')]}" assert="Delete if present previous order, will be generated again!"/>
+                   </header>
+                   <group colspan="4" col="4">
+                        <field name="file" colspan="4" attrs="{'invisible': [('mode','!=','draft')]}"/>
+                        <field name="mode" invisible="1" />
+
+                        <notebook colspan="4">
+                            <page string="Detttagli">
+                                <group colspan="4" col="4">
+                                    <separator string="Detttagli:" colspan="4"/>
+                                    <button name="extract_line_in_tree" string="Passa a lista" type="object" />
+                                    <field name="line_ids" colspan="4" nolabel="1">
+                                        <tree string="Prodotti:" editable="bottom">
+                                             <field name="default_code" />
+                                             <field name="name" />
+                                             <field name="uom_id" />
+                                             <field name="state" />
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                            <page string="Errori" attrs="{'invisible': [('error','=',False)]}">
+                                <group colspan="4" col="4">
+                                    <separator string="Errori:" colspan="4"/>
+                                    <field name="error" colspan="4" nolabel="1"/>
+                                </group>
+                            </page>
+                        </notebook>
+                   </group>
+                </form>
+            </field>
+      </record>
+      <record model="ir.actions.act_window" id="action_product_product_import_wordpress">
+          <field name="name">Importa prodotti WP</field>
+          <field name="res_model">product.product.import.wordpress</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">tree,form</field>
+          <field name="view_id" ref="product_product_import_wordpress_form_view"/>
+      </record>
+      <record model="ir.actions.act_window" id="action_product_product_import_wordpress_list">
+          <field name="name">Lista importazioni WP</field>
+          <field name="res_model">product.product.import.wordpress</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">tree,form</field>
+          <field name="view_id" ref="product_product_import_wordpress_form_view"/>
+      </record>
+      <menuitem
+          parent=""
+          id="menu_product_product_import_wordpress"
+          action="action_product_product_import_wordpress"
+          />
+      <menuitem
+          parent=""
+          id="menu_product_product_import_wordpress_list"
+          action="action_product_product_import_wordpress_list"
+          />
+    </data>
+</openerp>
