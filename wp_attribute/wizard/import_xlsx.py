@@ -138,9 +138,7 @@ class ProductProductImportWorpdress(orm.Model):
                         error_list.append(
                             'Codice categoria non trovato: %s' % code)
                         continue
-
                 res.append(category_cache[code])
-                category_cache[code] = category_cache[code]
             return res
 
         def number_to_text(value):
