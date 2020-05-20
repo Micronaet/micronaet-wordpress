@@ -121,7 +121,6 @@ class ProductProductImportWorpdress(orm.Model):
                 return value or ''
 
         # Parameters:
-        row_start = 2
         xlsx_id = ids[0]
 
         IT = 'it_IT'
@@ -134,6 +133,7 @@ class ProductProductImportWorpdress(orm.Model):
 
         current_proxy = self.browse(cr, uid, xlsx_id, context=context)
         connector_id = current_proxy.connector_id.id
+        row_start = current_proxy.from_line or 1
 
         # ---------------------------------------------------------------------
         # Save file passed:
@@ -357,7 +357,7 @@ class ProductProductImportWorpdress(orm.Model):
         'file': fields.binary('XLSX file', filters=None),
         'connector_id': fields.many2one(
             'connector.server', 'Connettore', required=True),
-        'from_line': fields.integer('Da riga'),
+        'from_line': fields.integer('Da riga', required=1),
         'mode': fields.selection([
             ('draft', 'Draft'),
             ('imported', 'Imported'),
