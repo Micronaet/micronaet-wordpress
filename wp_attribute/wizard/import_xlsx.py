@@ -149,11 +149,12 @@ class ProductProductImportWorpdress(orm.Model):
         ws = wb.sheet_by_index(0)
 
         error = ''
+        last_master_id = False  # ID of last master
         for row in range(row_start, ws.nrows):
             lang_text = {IT: {}, EN: {}}
 
             # Extract Excel columns:
-            parent_mode = ws.cell(row, 0).value.upper()
+            is_master = ws.cell(row, 0).value.upper() in 'SX'
             published = ws.cell(row, 1).value.upper() in 'SX'
             default_code = number_to_text(ws.cell(row, 2).value.upper())
             ean = number_to_text(ws.cell(row, 3).value)
@@ -268,13 +269,9 @@ class ProductProductImportWorpdress(orm.Model):
                 'wp_type': 'variable',
                 'published': published,
 
-                # Master management:
-                # 'wp_parent_template': False # Master
-                # 'wp_parent_id': False,
-
                 # Foreign keys:
-                #'wp_color_id'
-                #'wordpress_category_ids':
+                # 'wp_color_id'
+                # 'wordpress_category_ids':
                 # 'material_ids':
 
                 'lifetime_warranty': lifetime_warranty,
@@ -283,7 +280,6 @@ class ProductProductImportWorpdress(orm.Model):
 
                 'weight': weight,
                 'weight_new': weight_net,  # No more used!
-                # update_wp_volume
 
                 # Force:
                 'force_ean': force_ean,
@@ -291,7 +287,7 @@ class ProductProductImportWorpdress(orm.Model):
                 'force_price': force_price,
                 'force_min_stock': force_min_stock,
             }
-            # TODO update volume
+
             for lang in lang_list:
                 lang_context[lang] = lang
 
@@ -307,7 +303,23 @@ class ProductProductImportWorpdress(orm.Model):
                     web_ids = [web_pool.create(
                         cr, uid, web_data, context=lang_context)]
 
-            # Update data (procedure):
+            # -----------------------------------------------------------------
+            # Update web product data (procedure):
+            # -----------------------------------------------------------------
+            # 1. Master data:
+            if is_master:
+                last_master_id = web_ids[0]
+                web_pool.write(cr, uid, web_ids, {
+                    'wp_parent_template': True,
+                    'wp_parent_id': last_master_id,
+                }, context=context)
+            else:  # Slave:
+                web_pool.write(cr, uid, web_ids, {
+                    'wp_parent_template': False,
+                    'wp_parent_id': last_master_id,
+                }, context=context)
+
+            # 2. Volume calc:
             web_pool.update_wp_volume(cr, uid, web_ids, context=context)
 
         # ---------------------------------------------------------------------
