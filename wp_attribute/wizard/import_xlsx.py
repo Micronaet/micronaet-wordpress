@@ -323,7 +323,7 @@ class ProductProductImportWorpdress(orm.Model):
 
                 # Foreign keys:
                 # 'wp_color_id'
-                'wordpress_category_ids': category_ids,
+                'wordpress_categ_ids': category_ids,
                 # 'material_ids':
 
                 'lifetime_warranty': lifetime_warranty,
