@@ -298,18 +298,6 @@ class ProductProductWebCategory(orm.Model):
         ]
 
 
-class ProductPublicCategory(orm.Model):
-    """ Model name: ProductProductWebPackage
-    """
-    _inherit = 'product.public.category'
-
-    _columns = {
-        'code': fields.char(
-            'Sigla', size=10, required=True,
-            help='Sigla utilizzata nelle importazioni'),
-    }
-
-
 class ProductProductWebPackage(orm.Model):
     """ Model name: ProductProductWebPackage
     """

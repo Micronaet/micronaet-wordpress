@@ -212,6 +212,8 @@ class ProductProductImportWorpdress(orm.Model):
     _columns = {
         'name': fields.char('Name', size=64, required=True),
         'file': fields.binary('XLSX file', filters=None),
+        'connector_id': fields.many2one(
+            'connector.server', 'Connettore'),
         'mode': fields.selection([
             ('draft', 'Draft'),
             ('imported', 'Imported'),
@@ -225,8 +227,6 @@ class ProductProductImportWorpdress(orm.Model):
             lambda *a: _('Imported: %s') % datetime.now().strftime(
                 DEFAULT_SERVER_DATE_FORMAT),
         'mode': lambda *x: 'draft',
-        'connector_id': fields.many2one(
-            'connector.server', 'Connettore'),
         }
 
 

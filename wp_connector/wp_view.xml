@@ -1,28 +1,6 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-        <!--product.public.category-->
-        <record model="ir.ui.view" id="product_public_category_code_tree_view">
-            <field name="name">product.public.category.code.tree</field>
-            <field name="model">product.public.category</field>
-            <field name="inherit_id" ref="connector_web_product_category.product_public_category_tree_view"/>
-            <field name="arch" type="xml">
-                <field name="name" position="before">
-                    <field name="code" />
-                </field>
-            </field>
-        </record>
-        <record model="ir.ui.view" id="product_public_category_code_form_view">
-            <field name="name">product.public.category.code.form</field>
-            <field name="model">product.public.category</field>
-            <field name="inherit_id" ref="connector_web_product_category.product_public_category_form_view"/>
-            <field name="arch" type="xml">
-                <field name="name" position="before">
-                    <field name="code" />
-                </field>
-            </field>
-        </record>
-
         <!--connector.server-->
         <record model="ir.ui.view" id="view_connector_server_image_form">
             <field name="name">connector.server.image.form</field>
