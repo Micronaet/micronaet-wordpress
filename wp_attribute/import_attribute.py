@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001-2015 Micronaet S.r.l. (<https://micronaet.com>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -13,7 +13,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -36,12 +36,13 @@ from openerp import SUPERUSER_ID, api
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 _logger = logging.getLogger(__name__)
+
 
 class ProductProductWebServerIntegration(orm.Model):
     """ Model name: ProductProductWebServer
@@ -53,24 +54,24 @@ class ProductProductWebServerIntegration(orm.Model):
     # Button event:
     # -------------------------------------------------------------------------
     def clean_wp_reference(self, cr, uid, ids, context=None):
-        ''' Clean procedura for WP product deleted
-        '''
+        """ Clean procedura for WP product deleted
+        """
         return self.write(cr, uid, ids, {
             'wp_it_id': False,
             'wp_en_id': False,
             }, context=context)
-            
+
     def publish_master_now(self, cr, uid, ids, context=None):
-        ''' Publish but only this
-        '''
+        """ Publish but only this
+        """
         if context is None:
             context = {}
         master_ids = context.get('active_ids', False) or ids
 
         connector_pool = self.pool.get('connector.server')
-        current = self.browse(cr, uid, master_ids, context=context)[0]    
+        current = self.browse(cr, uid, master_ids, context=context)[0]
         connector_id = current.connector_id.id
-        
+
         _logger.warning('Publish master product: %s' % len(master_ids))
         new_context = context.copy()
         new_context['domain_extend'] = [
@@ -78,82 +79,81 @@ class ProductProductWebServerIntegration(orm.Model):
             ]
 
         return connector_pool.publish_attribute_now(
-            cr, uid, [connector_id], context=new_context)    
-        
+            cr, uid, [connector_id], context=new_context)
+
     def link_variant_now(self, cr, uid, ids, context=None):
-        ''' Link all child variant
-        '''
+        """ Link all child variant
+        """
         parent_id = ids[0]
         current_product = self.browse(cr, uid, parent_id, context=context)
         connector_id = current_product.connector_id.id
         wp_parent_code = current_product.wp_parent_code
         if not wp_parent_code:
             raise osv.except_osv(
-                _('Errore'), 
+                _('Errore'),
                 _('Non presente il codice da usare quindi non possibile!'),
                 )
-        
+
         child_ids = self.search(cr, uid, [
             # Parent code similar:
             ('product_id.default_code', '=ilike', '%s%%' % wp_parent_code),
-            
+
             ('wp_parent_template', '=', False),  # Not parent product
             ('id', '!=', parent_id),  # Not this
             ('connector_id', '=', connector_id),  # This connector
             ], context=context)
-        
+
         _logger.info('Updating %s product...' % len(child_ids))
         return self.write(cr, uid, child_ids, {
-            'wp_parent_id': parent_id,            
+            'wp_parent_id': parent_id,
             }, context=context)
 
     # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
     def reset_parent(self, cr, uid, parent_ids, context=None):
-        ''' Remove parent reference
-        '''
+        """ Remove parent reference
+        """
         return self.write(cr, uid, parent_ids, {
             'wp_parent_code': False,
-            'wp_parent_id': False, 
-            
+            'wp_parent_id': False,
+
             # XXX Lang reset:
             'wp_it_id': False,
             'wp_en_id': False,
             # TODO There's problem if product has no previous parent
-            }, context=context)    
-        
+            }, context=context)
+
     def set_as_master_product(self, cr, uid, ids, context=None):
-        ''' Set as master product for this connection and remove if present
+        """ Set as master product for this connection and remove if present
             previous
-        '''
-                
+        """
+
         current_id = ids[0]
         current_product = self.browse(cr, uid, current_id, context=context)
         connector_id = current_product.connector_id.id
         default_code = current_product.product_id.default_code
         wp_parent_code = current_product.wp_parent_code  # if auto master
         wp_parent_id = current_product.wp_parent_id  # Current master
-        
+
         # XXX Bad reference (when add new lang):
         wp_it_id = wp_en_id = False
         if wp_parent_id:
-            wp_it_id = wp_parent_id.wp_it_id 
-            wp_en_id = wp_parent_id.wp_en_id 
+            wp_it_id = wp_parent_id.wp_it_id
+            wp_en_id = wp_parent_id.wp_en_id
         elif wp_parent_code:
             find_parent_ids = self.search(cr, uid, [
                 ('wp_parent_code', '=', wp_parent_code),
                 ('id', '!=', current_id),
                 ('wp_parent_template', '=', True),
                 ], context=context)
-            if find_parent_ids:    
+            if find_parent_ids:
                 wp_parent_id = self.browse(
-                    cr, uid, find_parent_ids, context=context)[0]    
-                wp_it_id = wp_parent_id.wp_it_id 
-                wp_en_id = wp_parent_id.wp_en_id 
-        
+                    cr, uid, find_parent_ids, context=context)[0]
+                wp_it_id = wp_parent_id.wp_it_id
+                wp_en_id = wp_parent_id.wp_en_id
+
         if wp_parent_code:
-                
             # -----------------------------------------------------------------
             # Case: has parent code:
             # -----------------------------------------------------------------
@@ -162,26 +162,26 @@ class ProductProductWebServerIntegration(orm.Model):
                 ('wp_parent_code', '=', wp_parent_code),
                 ('id', '!=', current_id),
                 ], context=context)
-                
+
             # Remove previous situation:
             self.reset_parent(cr, uid, previous_ids, context=context)
-            
+
             # Force this master with code:
             self.link_variant_now(cr, uid, ids, context=context)
-               
-        elif wp_parent_id: 
+
+        elif wp_parent_id:
             # -----------------------------------------------------------------
             # Case: parent present:
             # -----------------------------------------------------------------
             # Remove previous situation:
             self.reset_parent(cr, uid, [wp_parent_id], context=context)
-            
-        else: 
+
+        else:
             # -----------------------------------------------------------------
             # Case: no parent no code:
             # -----------------------------------------------------------------
             pass # nothing to do
-        
+
         # ---------------------------------------------------------------------
         # Set this as parent
         # ---------------------------------------------------------------------
@@ -193,20 +193,21 @@ class ProductProductWebServerIntegration(orm.Model):
 
     _columns = {
         'wp_parent_template': fields.boolean(
-            'Prodotto master', 
+            'Prodotto master',
             help='Prodotto riferimento per raggruppare i prodotti dipendenti'),
-        'wp_parent_code': fields.char('Codice appartenenza', 
+        'wp_parent_code': fields.char('Codice appartenenza',
             help='Codice usato per calcolare appartenenza automatica'),
         'wp_parent_id': fields.many2one(
-            'product.product.web.server', 'Prodotto padre'),    
+            'product.product.web.server', 'Prodotto padre'),
         'wp_color_id': fields.many2one(
             'connector.product.color.dot', 'Colore'),
         }
 
     _sql_constraints = [
-        ('parent_code_uniq', 'unique (wp_parent_code)', 
-            'Il codice di appartenenza deve essere unico!'),        
-        ]    
+        ('parent_code_uniq', 'unique (wp_parent_code)',
+            'Il codice di appartenenza deve essere unico!'),
+        ]
+
 
 class ProductProductWebServerRelation(orm.Model):
     """ Model name: ProductProductWebServer
@@ -219,10 +220,10 @@ class ProductProductWebServerRelation(orm.Model):
         """
         model_pool = self.pool.get('ir.model.data')
         view_id = model_pool.get_object_reference(
-            cr, uid, 
-            'wp_attribute', 
+            cr, uid,
+            'wp_attribute',
             'view_product_product_web_server_wp_full_detail_form')[1]
-        
+
         return {
             'type': 'ir.actions.act_window',
             'name': _('Variante'),
@@ -243,36 +244,37 @@ class ProductProductWebServerRelation(orm.Model):
             'product.product.web.server', 'wp_parent_id', 'Varianti'),
         }
 
+
 class ConnectorProductColorDot(orm.Model):
     """ Model name: ConnectorProductColorDot
     """
-    
+
     _name = 'connector.product.color.dot'
     _description = 'Color dot'
     _rec_name = 'name'
     _order = 'name'
 
     def _get_image_name(self, cr, uid, ids, fields, args, context=None):
-        ''' Fields function for calculate 
-        '''
-        #replace_char_with_blank = '/\\'
-        
-        res = {}        
+        """ Fields function for calculate
+        """
+        # replace_char_with_blank = '/\\'
+
+        res = {}
         path = False
         with_check = len(ids) == 1
         for image in self.browse(cr, uid, ids, context=context):
             if not path:
                 path = os.path.expanduser(image.connector_id.dot_image_path)
             code = image.name.upper()
-            #for char in replace_char_with_blank:
-            #    code = code.replace(char, ' ')
-                    
+            # for char in replace_char_with_blank:
+            #     code = code.replace(char, ' ')
+
             name = '%s.png' % code
             fullname = os.path.join(path, name)
-            
+
             if with_check:
                 image_present = os.path.isfile(fullname)
-            else: 
+            else:
                 image_present = False
 
             res[image.id] = {
@@ -280,32 +282,36 @@ class ConnectorProductColorDot(orm.Model):
                 'image_fullname': fullname,
                 'image_present': image_present,
                 }
-        return res        
-        
+        return res
+
     _columns = {
         'not_active': fields.boolean('Not active'),
         'connector_id': fields.many2one(
             'connector.server', 'Server', required=True),
-        'name': fields.char('Code', size=64, required=True,
-            help='Frame-Color used on web site for color (as key!)'),             
-        'code': fields.char('Sigla', size=10, required=True,
-            help='Sigla utilizzata nelle importazioni'),             
+        'name': fields.char(
+            'Code', size=64, required=True,
+            help='Frame-Color used on web site for color (as key!)'),
+        'code': fields.char(
+            'Sigla', size=10, required=True,
+            help='Sigla utilizzata nelle importazioni'),
         'description': fields.char('Web description', size=80, translate=True),
-        'hint': fields.char('Hint', size=80, translate=True,
+        'hint': fields.char(
+            'Hint', size=80, translate=True,
             help='Tooltip text when mouse over image'),
         'dropbox_image': fields.char('Dropbox link', size=180),
 
-        # Image in particular folder   
+        # Image in particular folder
         'image_name': fields.function(
             _get_image_name, method=True, multi=True,
-            type='char', string='Image name',), 
+            type='char', string='Image name',),
         'image_fullname': fields.function(
             _get_image_name, method=True, multi=True,
-            type='char', string='Image fullname'), 
+            type='char', string='Image fullname'),
         'image_present': fields.function(
             _get_image_name, method=True, multi=True,
-            type='boolean', string='Image present'), 
+            type='boolean', string='Image present'),
         }
+
 
 class ProductPublicCategory(orm.Model):
     """ Model name: ProductProduct
@@ -314,20 +320,20 @@ class ProductPublicCategory(orm.Model):
     _inherit = 'connector.server'
 
     _columns = {
-        'brand_code': fields.char('Brand code', size=30, required=True, 
+        'brand_code': fields.char('Brand code', size=30, required=True,
             help='Brand used for attribute name for company product'),
         'dot_image_path': fields.char('Color image', size=180, required=True,
             help='Color path for dot images, use ~ for home'),
         }
 
     def external_get_wp_id(self, cr, uid, ids, context=None):
-        ''' External extract data to get Code - Lang: WP ID
-        '''
+        """ External extract data to get Code - Lang: WP ID
+        """
         web_pool = self.pool.get('product.product.web.server')
         connector_id = ids[0]
         not_found = []
         # TODO mangage not parent product!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        
+
         # Read WP product:
         wcapi = self.get_wp_connector(
             cr, uid, connector_id, context=context)
@@ -340,18 +346,18 @@ class ProductPublicCategory(orm.Model):
             call = 'products'
             reply = wcapi.get(call, params=parameter).json()
             parameter['page'] += 1
-            
+
             for item in reply:
                 wp_id = item['id']
                 lang = item['lang']
                 default_code = item['sku']
                 field = 'wp_%s_id' % lang
-                
+
                 if not default_code:
                     not_found.append(wp_id)
                     _logger.warning('Product not found: %s' % (
                         default_code, lang))
-                    
+
                 web_ids = web_pool.search(cr, uid, [
                     ('product_id.default_code', '=', default_code),
                     ], context=context)
@@ -360,17 +366,17 @@ class ProductPublicCategory(orm.Model):
                     _logger.warning('Code: %s lang: %s not found on DB' % (
                         default_code, lang))
                     continue
-                    
+
                 if len(web_ids) > 1:
                     import pdb; pdb.set_trace()
-                    
+
                 web_product = web_pool.browse(
                     cr, uid, web_ids, context=context)[0]
                 this_wp_id = eval('web_product.%s' % field)
                 if this_wp_id != wp_id:
                     not_found.append(wp_id)
                     continue
-                    
+
                 # Update product reference:
                 if not this_wp_id:
                     web_pool.write(cr, uid, web_ids, {
@@ -378,13 +384,12 @@ class ProductPublicCategory(orm.Model):
                         }, context=context)
             break # TODO remove
         return not_found
-        
-        
+
     def publish_attribute_now(self, cr, uid, ids, context=None):
-        ''' Publish now button
+        """ Publish now button
             Used also for more than one elements (not only button click)
-            Note all product must be published on the same web server!            
-            '''
+            Note all product must be published on the same web server!
+            """
         """def split_code(default_code, lang='it'):
             ''' Split 2 part of code
             '''   
@@ -397,9 +402,10 @@ class ProductPublicCategory(orm.Model):
                     lang.upper(),
                     ),
                 )"""
+
         def lang_sort(lang):
-            ''' Setup lang order
-            '''        
+            """ Setup lang order
+            """
             if 'it' in lang:
                 return 1
             elif 'en' in lang:
@@ -411,7 +417,7 @@ class ProductPublicCategory(orm.Model):
         now = ('%s' % datetime.now()).replace(
             '/', '').replace(':', '').replace('-', '')[:30]
         ws_name = now
-        excel_pool = self.pool.get('excel.writer')        
+        excel_pool = self.pool.get('excel.writer')
         excel_pool.create_worksheet(ws_name)
         excel_pool.set_format()
         excel_format = {
@@ -437,12 +443,12 @@ class ProductPublicCategory(orm.Model):
 
         # Sort order and list of languages:
         langs = [
-            'it_IT', 
+            'it_IT',
             'en_US',
             ]
         default_lang = 'it'
 
-        if context is None:    
+        if context is None:
             context = {}
 
         # Data publish selection (remove this part from publish:
@@ -454,32 +460,31 @@ class ProductPublicCategory(orm.Model):
 
         connector_id = ids[0]
         server_proxy = self.browse(cr, uid, connector_id, context=context)
-        #brand_code = server_proxy.brand_code # As default
+        # brand_code = server_proxy.brand_code # As default
 
         if server_proxy.wp_publish_image:
             _logger.warning('Publish attribute on wordpress with image')
-        else:       
-            unpublished.append('image')                
+        else:
+            unpublished.append('image')
             _logger.warning('Publish attribute on wordpress without image')
 
         # Read WP Category present:
         wcapi = self.get_wp_connector(
             cr, uid, connector_id, context=context)
 
-
         # ---------------------------------------------------------------------
-        #                          COLLECT DATA: 
+        #                          COLLECT DATA:
         # ---------------------------------------------------------------------
         domain = [
             ('connector_id', '=', ids[0]),
             ('wp_parent_template', '=', True),
-            #('wp_it_id', '=', False),  # New master
+            # ('wp_it_id', '=', False),  # New master
             ]
-        domain_extend = context.get('domain_extend')    
+        domain_extend = context.get('domain_extend')
         if domain_extend:
             domain.extend(domain_extend)
             _logger.warning('Domain extended: %s' % (domain, ))
-            
+
         product_ids = web_product_pool.search(cr, uid, domain, context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
@@ -493,32 +498,32 @@ class ProductPublicCategory(orm.Model):
             lang = odoo_lang[:2]
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
-            
+
             # Start with lang level:
             product_db[odoo_lang] = {}
             lang_color_db[lang] = []
 
             for parent in web_product_pool.browse(  # Default_selected product:
-                    cr, uid, product_ids, context=context_lang): 
+                    cr, uid, product_ids, context=context_lang):
                 parent_total += 1
-                    
-                # TODO default_selected is first element                
+
+                # TODO default_selected is first element
                 default_selected = parent # TODO Change during next loop:
-                product_db[odoo_lang][parent] = [default_selected, []] 
-                
+                product_db[odoo_lang][parent] = [default_selected, []]
+
                 for variant in parent.variant_ids:
-                    # Note: first variat is parent:                    
+                    # Note: first variat is parent:
                     product = variant.product_id
                     default_code = product.default_code or ''
                     color = variant.wp_color_id.name
                     attribute = color + '-' + lang
                     fabric_color_odoo[attribute] = variant.wp_color_id
-                    
+
                     # Save color for attribute update
                     if attribute not in lang_color_db[lang]:
                         lang_color_db[lang].append(attribute)
-                        
-                    # Save variant with color element: 
+
+                    # Save variant with color element:
                     product_db[odoo_lang][parent][1].append(
                         (variant, attribute))
 
@@ -528,16 +533,16 @@ class ProductPublicCategory(orm.Model):
 
         _logger.warning('Parent found: %s' % parent_total)
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         #                     ATTRIBUTES: (need Tessuto, Brand)
-        # ---------------------------------------------------------------------   
+        # ---------------------------------------------------------------------
         call = 'products/attributes'
         current_wp_attribute = wcapi.get(
             call, params=variation_parameters).json()
-        
+
         # =====================================================================
         # Excel log:
-        # ---------------------------------------------------------------------   
+        # ---------------------------------------------------------------------
         row += 1
         excel_pool.write_xls_line(ws_name, row, [
             'Richiesta elenco attributi:',
@@ -551,7 +556,7 @@ class ProductPublicCategory(orm.Model):
             u'%s' % (current_wp_attribute, ),
             ], default_format=excel_format['text'])
         # =====================================================================
-        
+
         error = ''
         try:
             if current_wp_attribute['data']['status'] >= 400:
@@ -559,12 +564,12 @@ class ProductPublicCategory(orm.Model):
         except:
             pass
 
-        if error:    
+        if error:
             raise osv.except_osv(_('Connection error:'), error)
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         # Search Master Attribute:
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         attribute_id = {
             'Tessuto': False,
             'Brand': False,
@@ -579,23 +584,23 @@ class ProductPublicCategory(orm.Model):
                 attribute_id[record['name']] = record['id']
         if not all(attribute_id.values()):
             raise osv.except_osv(
-                _('Attribute error'), 
+                _('Attribute error'),
                 _('Cannot find some attribute terms %s!') % (attribute_id, ),
-                )        
+                )
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         #                        TERMS: (for Tessuto Attribute)
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         current_wp_terms = []
         theres_data = True
         parameter = {'per_page': 30, 'page': 1}
-        
+
         _logger.warning('Search all terms for attribute %s...' % (
             attribute_id.keys(), ))
 
         # =====================================================================
         # Excel log:
-        # ---------------------------------------------------------------------   
+        # ---------------------------------------------------------------------
         row += 1
         excel_pool.write_xls_line(ws_name, row, [
             'Richiesta termini:',
@@ -607,7 +612,7 @@ class ProductPublicCategory(orm.Model):
             call = 'products/attributes/%s/terms' % attribute_id['Tessuto']
             res = wcapi.get(
                 call, params=parameter).json()
-            
+
             # =================================================================
             # Excel log:
             # -----------------------------------------------------------------
@@ -616,7 +621,7 @@ class ProductPublicCategory(orm.Model):
                 'Lettura attributi tessuto',
                 'get',
                 call,
-                u'%s' % (parameter),
+                u'%s' % (parameter, ),
                 u'%s' % (res, ),
                 ], default_format=excel_format['text'])
             # =================================================================
@@ -625,16 +630,16 @@ class ProductPublicCategory(orm.Model):
             try:
                 if res.get['data']['status'] >= 400:
                     raise osv.except_osv(
-                        _('Category error:'), 
-                        _('Error getting category list: %s' % (res, ) ),
+                        _('Category error:'),
+                        _('Error getting category list: %s' % (res, )),
                         )
             except:
-                pass # Records present            
+                pass # Records present
             if res:
                 current_wp_terms.extend(res)
             else:
                 theres_data = False
-        
+
         # TODO need lang?
         lang_color_terms = {
             'it': {},
@@ -646,11 +651,11 @@ class ProductPublicCategory(orm.Model):
             lang = record['lang']
             lang_color_terms[lang][key] = record['id']
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         #                        TERMS: (for Brand Attribute)
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         lang_brand_terms = {} # not needed for now
-        
+
         call = 'products/attributes/%s/terms' % attribute_id['Brand']
         for record in wcapi.get(
                 call, params=variation_parameters).json():
@@ -659,7 +664,7 @@ class ProductPublicCategory(orm.Model):
 
             if lang not in lang_brand_terms:
                 lang_brand_terms[lang] = {}
-                
+
             lang_brand_terms[lang][name] = record['id']
 
         # ---------------------------------------------------------------------
@@ -685,9 +690,9 @@ class ProductPublicCategory(orm.Model):
                 # Image part:
                 if odoo_color.dropbox_image:
                     item['color_image'] = odoo_color.dropbox_image
-                    
+
                 if lang != default_lang: # Different language:
-                    # TODO correct 
+                    # TODO correct
                     wp_it_id = lang_color_terms[default_lang].get(key)
                     if wp_it_id:
                         item.update({
@@ -699,7 +704,7 @@ class ProductPublicCategory(orm.Model):
                             lang,
                             ))
                         # TODO manage?
-                        
+
                 # Only create:
                 if key in lang_color_terms[lang]:
                     data['update'].append(item)
@@ -709,20 +714,20 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             # Delete:
             # -----------------------------------------------------------------
-            # XXX Not for now: 
+            # XXX Not for now:
             # TODO correct
-            #for name in lang_color_terms:
+            # for name in lang_color_terms:
             #    if name not in lang_color_db:
             #        data['delete'].append(lang_color_terms[name])
 
             # -----------------------------------------------------------------
             # Batch operation (fabric terms for attribute manage):
-            # -----------------------------------------------------------------            
+            # -----------------------------------------------------------------
             try:
                 # =============================================================
                 # Excel log:
                 # -------------------------------------------------------------
-                row += 1                
+                row += 1
                 excel_pool.write_xls_line(ws_name, row, [
                     'Aggiornamento tessuti:',
                     ], default_format=excel_format['title'])
@@ -745,43 +750,42 @@ class ProductPublicCategory(orm.Model):
                         u'%s' % (res, ),
                         ], default_format=excel_format['text'])
                     # =========================================================
-                    
+
                     # ---------------------------------------------------------
                     # Save WP ID (only in dict not in ODOO Object)
                     # ---------------------------------------------------------
                     for record in res.get('create', ()):
                         try:
-                            key = record['name'][:-3]                            
+                            key = record['name'][:-3]
                             wp_id = record['id']
-                            if not wp_id: # TODO manage error:
+                            if not wp_id:  # TODO manage error:
                                 _logger.error('Not Updated wp_id for %s' % wp_id)
                                 continue
-            
+
                             # Update for language not IT (default):
-                            lang_color_terms[lang][key] = wp_id 
+                            lang_color_terms[lang][key] = wp_id
                         except:
                             _logger.error('No name in %s' % record)
                             import pdb; pdb.set_trace()
                             continue
-                                
             except:
                 raise osv.except_osv(
-                    _('Error'), 
+                    _('Error'),
                     _('Wordpress server timeout! \n[%s]') % (sys.exc_info(), ),
                     )
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         #                       PRODUCT AND VARIATIONS:
         # ---------------------------------------------------------------------
         translation_lang = {}
         parent_unset = []
-        
+
         wp_variant_lang_ref = {}
         for odoo_lang in sorted(product_db, key=lambda l: lang_sort(l)):
             context_lang = context.copy()
             context_lang['lang'] = odoo_lang
             lang = odoo_lang[:2]
-            
+
             for parent in product_db[odoo_lang]:
                 master_record, variants = product_db[odoo_lang][parent]
                 master_product = master_record.product_id
@@ -808,7 +812,8 @@ class ProductPublicCategory(orm.Model):
 
                 for log in context['log_excel']:
                     row += 1
-                    excel_pool.write_xls_line(ws_name, row, log, 
+                    excel_pool.write_xls_line(
+                        ws_name, row, log,
                         default_format=excel_format['text'], col=1)
                 # =============================================================
 
@@ -829,18 +834,18 @@ class ProductPublicCategory(orm.Model):
 
                     # Write to force code in attribute:
                     'lang': lang,
-                    'name': lang_master_name,                    
+                    'name': lang_master_name,
                     }
 
                 call = 'products/%s' % wp_id
                 reply = wcapi.put(call, data).json()
-                
+
                 # =============================================================
                 # Excel log:
                 # -------------------------------------------------------------
                 row += 1
                 excel_pool.write_xls_line(ws_name, row, [
-                    'Pubblicazione varianti lingua %s' % lang ,
+                    'Pubblicazione varianti lingua %s' % lang,
                     ], default_format=excel_format['title'])
                 row += 1
                 excel_pool.write_xls_line(ws_name, row, [
@@ -851,13 +856,13 @@ class ProductPublicCategory(orm.Model):
                     u'%s' % (reply, ),
                     ], default_format=excel_format['text'])
                 # =============================================================
-                
+
                 if not wp_id:
                     _logger.error(
                         'Cannot found wp_id, code %s' % default_code)
                     # XXX Cannot update!
                     continue
-                
+
                 # -------------------------------------------------------------
                 #          VARIANTS: Setup color terms for product
                 # -------------------------------------------------------------
@@ -872,7 +877,7 @@ class ProductPublicCategory(orm.Model):
                     # 1. Fabric XXX mandatory!
                     # ---------------------------------------------------------
                     'attributes': [{
-                        'id': attribute_id['Tessuto'], 
+                        'id': attribute_id['Tessuto'],
                         'options': [],
                         'variation': True,
                         'visible': True,
@@ -881,9 +886,9 @@ class ProductPublicCategory(orm.Model):
                 # -------------------------------------------------------------
                 # 2. Brand! (XXX mandatory!)
                 # -------------------------------------------------------------
-                if master_record.brand_id:                
+                if master_record.brand_id:
                     data['attributes'].append({
-                        'id': attribute_id['Brand'], 
+                        'id': attribute_id['Brand'],
                         'options': [master_record.brand_id.name],
                         'variation': False,
                         'visible': True,
@@ -893,7 +898,7 @@ class ProductPublicCategory(orm.Model):
                 # 3. Material: XXX facoltative
                 # -------------------------------------------------------------
                 data['attributes'].append({
-                    'id': attribute_id['Materiale'], 
+                    'id': attribute_id['Materiale'],
                     'options': [],
                     'variation': False,
                     'visible': True,
@@ -903,7 +908,7 @@ class ProductPublicCategory(orm.Model):
                 for line, variant_color in variants:
                     # Get variant color:
                     data['attributes'][0]['options'].append(variant_color)
-                    
+
                     # ---------------------------------------------------------
                     # Update material block:
                     # ---------------------------------------------------------
@@ -913,11 +918,11 @@ class ProductPublicCategory(orm.Model):
                                 data['attributes'][2]['options']:
                             data['attributes'][2]['options'].append(
                                 material.name)
-                    
+
                 try:
                     call = 'products/%s' % wp_id
                     res = wcapi.post(call, data=data).json()
-                    
+
                     # =========================================================
                     # Excel log:
                     # ---------------------------------------------------------
@@ -930,10 +935,10 @@ class ProductPublicCategory(orm.Model):
                         u'%s' % (res, ),
                         ], default_format=excel_format['text'])
                     # =========================================================
-                    
+
                 except:
                     raise osv.except_osv(
-                        _('Error'), 
+                        _('Error'),
                         _('Wordpress server not answer, timeout!'),
                         )
 
@@ -942,14 +947,14 @@ class ProductPublicCategory(orm.Model):
                 # -------------------------------------------------------------
                 call = 'products/%s/variations' % wp_id
                 res = wcapi.get(call, params=variation_parameters).json()
-                    
+
                 # =============================================================
                 # Excel log:
                 # -------------------------------------------------------------
                 row += 1
                 excel_pool.write_xls_line(ws_name, row, [
                     'Lettura varianti attuali',
-                    'get',                    
+                    'get',
                     call,
                     u'',
                     u'%s' % (res, ),
@@ -972,8 +977,8 @@ class ProductPublicCategory(orm.Model):
                         # TODO TEST BETTER:
                         wp_variant_lang_ref[(
                             web_product_pool.wp_clean_code(
-                                item['sku'], destination='odoo'), 
-                            item['lang'])] = item['id']                    
+                                item['sku'], destination='odoo'),
+                            item['lang'])] = item['id']
                         """
                         if lang == default_lang:
                             wp_variant_lang_ref[
@@ -1008,7 +1013,7 @@ class ProductPublicCategory(orm.Model):
                     variant_id = wp_variant_lang_ref.get(
                         (variant_code, lang), False)
                     variant_it_id = wp_variant_lang_ref.get(
-                        (variant_code, default_lang), False)                    
+                        (variant_code, default_lang), False)
 
                     # XXX Price for S (ingle)
                     price = web_product_pool.get_wp_price(line)
@@ -1018,52 +1023,52 @@ class ProductPublicCategory(orm.Model):
                     description = line.force_description or \
                         variant.emotional_description or \
                         variant.large_description or u''
-                    # before: line.force_name or \    
+                    # before: line.force_name or \
                     short_description = \
                         variant.emotional_short_description or name
                     stock_quantity, stock_comment = \
                         web_product_pool.get_existence_for_product(
                             cr, uid, line, context=context)
-                
+
                     multiplier = line.price_multi or 1
                     if multiplier > 1:
                         stock_quantity = stock_quantity // multiplier
-                    
+
                     # Create or update variant:
                     data = {
                         'regular_price': u'%s' % price,
                         # sale_price (discounted)
                         'short_description': short_description,
                         'description': description,
-                        'lang': lang,    
-                        #'slug': self.get_lang_slug(variant_code, lang),
+                        'lang': lang,
+                        # 'slug': self.get_lang_slug(variant_code, lang),
                         # TODO
                         # stock_status
-                        #'weight': '%s' % line.weight,
-                        'weight': '%s' % line.wp_volume,  # X Used for volume 
-                        
+                        # 'weight': '%s' % line.weight,
+                        'weight': '%s' % line.wp_volume,  # X Used for volume
+
                         'dimensions': {
                             'length': '%s' % line.pack_l,
                             'height': '%s' % line.pack_h,
                             'width': '%s' % line.pack_p,
                             },
-                        
+
                         'manage_stock': True,
                         'stock_quantity': stock_quantity,
                         'status': 'publish' if line.published else 'private',
-                        
+
                         'attributes': [{
-                            'id': attribute_id['Tessuto'], 
+                            'id': attribute_id['Tessuto'],
                             'option': fabric_code,
-                            },
-                            ]
-                        }
+                        }],
+                    }
 
                     # ---------------------------------------------------------
                     # Language block:
                     # ---------------------------------------------------------
-                    data['sku'] = web_product_pool.wp_clean_code(variant_code) # used always?
-                    if default_lang == lang: # Add language default ref.
+                    # used always?:
+                    data['sku'] = web_product_pool.wp_clean_code(variant_code)
+                    if default_lang == lang:  # Add language default ref.
                         # data['sku'] = self.wp_clean_code(variant_code)
                         pass
                     else:
@@ -1072,10 +1077,10 @@ class ProductPublicCategory(orm.Model):
                                 'Cannot update variant in lang, no it: %s' % (
                                     variant_code
                                     ))
-                            continue # XXX test if correct!
-                            
+                            continue  # XXX test if correct!
+
                         data['translations'] = {
-                            'it': variant_it_id, # Created before
+                            'it': variant_it_id,  # Created before
                             }
 
                     # ---------------------------------------------------------
@@ -1085,7 +1090,7 @@ class ProductPublicCategory(orm.Model):
                         material_wp_id = eval('material.wp_%s_id' % lang)
                         if material_wp_id:
                             data['attributes'].append({
-                                'id': attribute_id['Materiale'], 
+                                'id': attribute_id['Materiale'],
                                 'option': material.name,
                                 })
 
@@ -1093,12 +1098,12 @@ class ProductPublicCategory(orm.Model):
                     # Images block:
                     # ---------------------------------------------------------
                     image = False
-                    #if 'VE' in variant_code:
+                    # if 'VE' in variant_code:
                     #    import pdb; pdb.set_trace()
                     if 'image' not in unpublished:
                         image = web_product_pool.get_wp_image(
                             line, variant=True)
-                         
+
                     if image:
                         data['image'] = image
 
@@ -1109,8 +1114,8 @@ class ProductPublicCategory(orm.Model):
                             variant_id,
                             )
                         res = wcapi.put(call, data).json()
-                        #del(current_variant[fabric_code]) #for clean operat.
-                        
+                        # del(current_variant[fabric_code]) #for clean operat.
+
                         # =====================================================
                         # Excel log:
                         # -----------------------------------------------------
@@ -1124,14 +1129,14 @@ class ProductPublicCategory(orm.Model):
                             ], default_format=excel_format['text'])
                         # =====================================================
 
-                    else: # Create
+                    else:  # Create
                         # TODO always pass image when new:
                         if 'image' not in data:
                             image = web_product_pool.get_wp_image(
                                 line, variant=True)
-                            if image:    
+                            if image:
                                 data['image'] = image
-                            
+
                         operation = 'NEW'
                         call = 'products/%s/variations' % wp_id
                         res = wcapi.post(call, data).json()
@@ -1155,37 +1160,36 @@ class ProductPublicCategory(orm.Model):
                             wp_variant_lang_ref[
                                 (variant_code, lang)] = variant_id
                         except:
-                            variant_id = '?'    
+                            variant_id = '?'
 
                     if res.get('data', {}).get('status', 0) >= 400:
                         _logger.error('%s Variant: %s [%s] >> %s [%s] %s' % (
                             operation,
-                            variant_code, 
+                            variant_code,
                             variant_id,
                             fabric_code,
-                            res.get('message', 'Error without comment'),                        
+                            res.get('message', 'Error without comment'),
                             wp_id,
                             ))
                     else:
                         _logger.info('%s Variant %s [%s] linked to %s' % (
                             operation,
-                            variant_code, 
+                            variant_code,
                             variant_id or 'NEW',
                             wp_id,
                             ))
                 # TODO Delete also remain
-                
+
         if parent_unset:
             _logger.error('Set parent for code start with: %s' % (
                 parent_unset))
-             
+
         # ---------------------------------------------------------------------
         # Attribute update ODOO VS WP:
         # ---------------------------------------------------------------------
-        # TODO 
+        # TODO
         # Update dot color images and records! (here?)
-            
-        # Rerturn log calls:        
+
+        # Return log calls:
         return excel_pool.return_attachment(
             cr, uid, 'Log call', name_of_file='call.xlsx', context=context)
-# vim:expandtab:smartindent:ltabstop=4:softtabstop=4:shiftwidth=4:
