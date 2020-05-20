@@ -17,26 +17,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
-import os
-import sys
 import logging
-import openerp
 import xlrd
+import xlsxwriter
 import base64
-import openerp.netsvc as netsvc
-import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from openerp import SUPERUSER_ID, api
-from openerp import tools
+from datetime import datetime
 from openerp.tools.translate import _
-from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+from openerp.tools import (
+    DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT,
     DATETIME_FORMATS_MAP,
     float_compare)
-
 
 _logger = logging.getLogger(__name__)
 
@@ -48,14 +40,12 @@ class ProductProductImportWorpdress(orm.Model):
     _description = 'Importazione prodotti per Wordpress'
     _order = 'name'
 
-    # --------------------
     # Button event:
-    # --------------------
     def extract_line_in_tree(self, cr, uid, ids, context=None):
         """ Extract element in list
         """
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
-        line_ids = [item.id for item in current_proxy.line_ids]
+        product_ids = [item.id for item in current_proxy.product_ids]
 
         return {
             'type': 'ir.actions.act_window',
@@ -66,26 +56,35 @@ class ProductProductImportWorpdress(orm.Model):
             'res_model': 'product.product',
             'view_id': False,
             'views': [(False, 'tree'), (False, 'form')],
-            'domain': [('id', 'in', line_ids)],
+            'domain': [('id', 'in', product_ids)],
             'context': context,
             'target': 'current',  # 'new'
             'nodestroy': False,
             }
 
     def action_check_product_file(self, cr, uid, ids, context=None):
-        #TODO
-        pass
+        """ Check file and return esit for importation
+        """
+        return self._import_xlsx_file(cr, uid, ids, check=True, context=None)
 
     def action_import_product(self, cr, uid, ids, context=None):
         """ Create purchase order:
+        """
+        return self._import_xlsx_file(cr, uid, ids, check=False, context=None)
+
+    # Utility:
+    def _import_xlsx_file(self, cr, uid, ids, check, context=None):
+        """ Utility for import or simply check the file
         """
         # Parameters:
         row_start = 1
 
         # Pool used:
         product_pool = self.pool.get('product.product')
+        web_pool = self.pool.get('product.product.web.server')
 
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
+        connector_id = self.connector_id.id
 
         # ---------------------------------------------------------------------
         # Save file passed:
@@ -117,12 +116,74 @@ class ProductProductImportWorpdress(orm.Model):
 
         error = ''
         for row in range(row_start, ws.nrows):
-            default_code = ''
+            lang_text = {
+                'it_IT': {},
+                'en_US': {},
+            }
+            parent_mode = ws.cell(row, 0).value
+            published = ws.cell(row, 1).value
+            default_code = ws.cell(row, 2).value
+            ean = ws.cell(row, 3).value
+            name_it = ws.cell(row, 4).value
+            name_en = ws.cell(row, 5).value or name_it
+            brand_code = ws.cell(row, 6).value
+            color_code = ws.cell(row, 7).value
+            category_code = ws.cell(row, 8).value
+            pricelist = ws.cell(row, 9).value
+            lifetime_warranty = ws.cell(row, 10).value
+            multiply = ws.cell(row, 11).value
+            extra_price = ws.cell(row, 12).value
+            material_code = ws.cell(row, 13).value
+            pack_l = ws.cell(row, 14).value
+            pack_h = ws.cell(row, 15).value
+            pack_p = ws.cell(row, 16).value
+            box_dimension_it = ws.cell(row, 17).value
+            box_dimension_en = ws.cell(row, 18).value or box_dimension_it
+            weight = ws.cell(row, 19).value
+            weight_net = ws.cell(row, 20).value
+            q_x_pack = ws.cell(row, 21).value
+
+            force_name_it = ws.cell(row, 22).value
+            force_name_en = ws.cell(row, 23).value
+            force_description_it = ws.cell(row, 24).value
+            force_description_en = ws.cell(row, 25).value
+            force_q_x_pack = ws.cell(row, 26).value
+            force_q_ean = ws.cell(row, 27).value
+            force_price = ws.cell(row, 28).value
+            force_min_stock = ws.cell(row, 29).value
+
+            extended_it = ws.cell(row, 30).value
+            extended_en = ws.cell(row, 31).value or extended_it
+            emotional_short_it = ws.cell(row, 32).value or emotional_short_it
+            emotional_short_en = ws.cell(row, 33).value
+            emotional_long_it = ws.cell(row, 34).value
+            emotional_long_en = ws.cell(row, 35).value or emotional_long_it
+
+            if not default_code:
+                _logger.warning('Default code not found')
+                continue
 
             # Search product:
             product_ids = product_pool.search(cr, uid, [
                 ('default_code', '=', default_code)
                 ], context=context)
+
+            if product_ids:
+                insert_mode = 'update'
+            else:
+                insert_mode = 'create'
+
+            # Product operation:
+            # TODO lang management
+            product_data = {
+                'default_code': default_code,
+                'name': name_it,
+                'q_x_pack': q_x_pack,
+                'web_description': extended_it,
+                'emotional_short_description': emotional_short_it,
+                'emotional_description': emotional_long_it,
+
+            }
 
             # Manage product error:
             if not product_ids:
@@ -134,11 +195,19 @@ class ProductProductImportWorpdress(orm.Model):
             product_id = product_ids[0]
 
         _logger.info('Imported: %s' % filename)
-        return self.write(cr, uid, ids, {
-            'mode': 'imported',
-            'file': False,  # reset file for clean database!
-            'error': error,
-            }, context=context)
+        if check:
+            if not error:  # if not error change state:
+                self.write(cr, uid, ids, {
+                    'mode': 'imported',
+                    'error': error,
+                }, context=context)
+        else:
+            self.write(cr, uid, ids, {
+                'mode': 'created',
+                'file': False,  # reset file for clean database!
+                'error': error,
+                }, context=context)
+        return True  # TODO return xlsx result file
 
     _columns = {
         'name': fields.char('Name', size=64, required=True),
@@ -156,6 +225,8 @@ class ProductProductImportWorpdress(orm.Model):
             lambda *a: _('Imported: %s') % datetime.now().strftime(
                 DEFAULT_SERVER_DATE_FORMAT),
         'mode': lambda *x: 'draft',
+        'connector_id': fields.many2one(
+            'connector.server', 'Connettore'),
         }
 
 

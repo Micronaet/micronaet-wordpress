@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001-2015 Micronaet S.r.l. (<https://micronaet.com>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -13,7 +13,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -36,25 +36,27 @@ from openerp import SUPERUSER_ID, api
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
 _logger = logging.getLogger(__name__)
+
 
 class ProductPublicCategory(orm.Model):
     """ Model name: ProductProduct
     """
 
     _inherit = 'product.public.category'
-    
+
     _columns = {
         #'wp_id': fields.integer('Worpress ID'), # replaced!
         'wp_en_id': fields.integer('Worpress ID en'),
         'wp_it_id': fields.integer('Worpress ID it'),
         }
+
 
 class ProductPublicCategory(orm.Model):
     """ Model name: ProductProduct
@@ -73,30 +75,30 @@ class ProductPublicCategory(orm.Model):
             'wp_it_id': False,
             'wp_en_id': False,
             }, context=context)
-        return self.publish_category_now(cr, uid, ids, context=context)            
+        return self.publish_category_now(cr, uid, ids, context=context)
 
     def publish_category_now(self, cr, uid, ids, context=None):
         ''' Publish now button
             Used also for more than one elements (not only button click)
-            Note all product must be published on the same web server!            
+            Note all product must be published on the same web server!
             '''
         if context is None:
             context = {}
 
         _logger.warning('Publish category all on wordpress:')
         default_lang = 'it'
-        
+
         # ---------------------------------------------------------------------
         #                         WORDPRESS Publish:
         # ---------------------------------------------------------------------
         server_pool = self.pool.get('connector.server')
         category_pool = self.pool.get('product.public.category')
-        
+
         # =====================================================================
         # Log operation on Excel file:
         # ---------------------------------------------------------------------
         ws_name = 'Chiamate'
-        excel_pool = self.pool.get('excel.writer')        
+        excel_pool = self.pool.get('excel.writer')
         excel_pool.create_worksheet(ws_name)
         excel_pool.set_format()
         excel_format = {
@@ -126,9 +128,9 @@ class ProductPublicCategory(orm.Model):
         wcapi = server_pool.get_wp_connector(
             cr, uid, connector_id, context=context)
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         # Read all category:
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         parameter = {
             'per_page': 10,
             'page': 0,
@@ -158,7 +160,7 @@ class ProductPublicCategory(orm.Model):
             try:
                 test_error = res['data']['status'] == 400
                 raise osv.except_osv(
-                    _('Category error:'), 
+                    _('Category error:'),
                     _('Error getting category list: %s' % (res, )),
                     )
             except:
@@ -169,18 +171,18 @@ class ProductPublicCategory(orm.Model):
             else:
                 break
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         # Loading used dict DB
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         odoo_name2id = {} # (name, lang) > ID
-        
+
         wp_id2name = {} # name > WP ID
         wp_name2id = {} # parent, name, lang > WP ID TODO manage!
-        
+
         for record in current_wp_category:
             wp_id2name[record['id']] = record['name']
             wp_name2id[(
-                record['parent'] or False, 
+                record['parent'] or False,
                 record['name'],
                 record['lang'],
                 )] = record['id']
@@ -200,22 +202,22 @@ class ProductPublicCategory(orm.Model):
                     'Wordpress category import Lang %s' % lang)
 
                 # Sorted so parent first:
-                for record in sorted(current_wp_category, 
-                        key=lambda x: x['parent']):                    
+                for record in sorted(current_wp_category,
+                        key=lambda x: x['parent']):
                     if lang != record['lang']:
                         continue
 
-                    # Readability:       
+                    # Readability:
                     wp_id = record['id']
                     wp_parent_id = record['parent'] or False
                     name = record['name']
-                    
+
                     # Save WP ID
                     if lang == default_lang:
                         wp_it_id = wp_id
-                    else:    
+                    else:
                         wp_it_id = record['translations'][default_lang]
-                    
+
                     category_ids = category_pool.search(cr, uid, [
                         ('connector_id', '=', connector_id),
                         ('wp_%s_id' % default_lang, '=', wp_it_id),
@@ -226,11 +228,11 @@ class ProductPublicCategory(orm.Model):
                             # No parent update for update (it was created)
                             #'parent_id': wp_id2odoo_id.get(
                             #    wp_parent_id, False),
-                            #'sequence': record['menu_order'], 
+                            #'sequence': record['menu_order'],
                             'name': name,
-                            }, context=context_lang)                    
-                        _logger.info('Update %s' % name)    
-                    else:                   
+                            }, context=context_lang)
+                        _logger.info('Update %s' % name)
+                    else:
                         odoo_id = category_pool.create(cr, uid, {
                             'enabled': True,
                             'connector_id': connector_id,
@@ -238,28 +240,28 @@ class ProductPublicCategory(orm.Model):
                             'parent_id': wp_id2odoo_id.get(
                                 wp_parent_id, False),
                             'name': name,
-                            'sequence': record['menu_order'], 
+                            'sequence': record['menu_order'],
                             }, context=context_lang)
-                        _logger.info('Create %s' % name)    
-                       
-                    # Save root parent ID: 
+                        _logger.info('Create %s' % name)
+
+                    # Save root parent ID:
                     wp_id2odoo_id[wp_id] = odoo_id
             return True
-                        
+
         # ---------------------------------------------------------------------
         #                                Mode OUT:
         # ---------------------------------------------------------------------
         # A. Read ODOO PARENT category:
         # ---------------------------------------------------------------------
         odoo_child = {}
-        
+
         for sign in ('=', '!='): # parent, child
             # -----------------------------------------------------------------
-            # Search category touched: 
+            # Search category touched:
             # -----------------------------------------------------------------
             category_ids = category_pool.search(cr, uid, [
                 ('connector_id', '=', connector_id),
-                ('parent_id', sign, False),                
+                ('parent_id', sign, False),
                 ], context=context)
 
             # Loop on language:
@@ -274,19 +276,19 @@ class ProductPublicCategory(orm.Model):
                         lang, 'parent' if sign == '=' else 'child'))
 
                 for category in category_pool.browse(
-                        cr, uid, category_ids, context=context_lang):    
+                        cr, uid, category_ids, context=context_lang):
                     # ---------------------------------------------------------
                     # Readability:
                     # ---------------------------------------------------------
                     odoo_id = category.id
-                    name = category.name 
+                    name = category.name
                     sequence = category.sequence
                     wp_id = eval('category.wp_%s_id' % lang) # current lang
                     wp_it_id = category.wp_it_id # reference lang
                     field_id = 'wp_%s_id' % lang # current field name
                     if sign == '=': # parent mode
                         parent_wp_id = False
-                    else:    
+                    else:
                         parent_wp_id = eval('category.parent_id.wp_%s_id' % (
                             lang))
 
@@ -303,16 +305,16 @@ class ProductPublicCategory(orm.Model):
                             'it': wp_it_id, # Created before
                             }
 
-                    # Check if present (same name or ID):            
+                    # Check if present (same name or ID):
                     key = (parent_wp_id, name, lang)
                     if key in wp_name2id: # check name if present (for use it)
                         wp_id = wp_name2id[key]
-                        
+
                         # Update this wp_id (same name)
                         category_pool.write(cr, uid, [category.id], {
                             field_id: wp_id,
                             }, context=context_lang)
-                        
+
                     if wp_id in wp_id2name: # Update (ID or Name present)
                         record_data['id'] = wp_id
                         data['update'].append(record_data)
@@ -320,7 +322,7 @@ class ProductPublicCategory(orm.Model):
                             del(wp_id2name[wp_id])
                         except:
                             pass # yet deleted (from Front end?)
-            
+
                     else: # Create:
                         data['create'].append(record_data)
                         odoo_name2id[(name, lang)] = odoo_id
@@ -330,7 +332,7 @@ class ProductPublicCategory(orm.Model):
                 # -------------------------------------------------------------
                 call = 'products/categories/batch'
                 res = wcapi.post(call, data).json()
-                
+
                 # =============================================================
                 # Excel log:
                 # -------------------------------------------------------------
@@ -353,13 +355,13 @@ class ProductPublicCategory(orm.Model):
                         # TODO manage error:
                         _logger.error('Not Updated wp_id for %s' % wp_id)
                         continue
-                    try:    
+                    try:
                         lang = record['lang']
                     except:
                         raise osv.except_osv(
-                            _('Wrong response'), 
+                            _('Wrong response'),
                             _('Record is error? [%s]' % record),
-                            )    
+                            )
 
                     name = record['name']
                     odoo_id = odoo_name2id.get((name, lang), False)
@@ -368,8 +370,8 @@ class ProductPublicCategory(orm.Model):
                         continue
 
                     field_id = 'wp_%s_id' % lang # current field name
-                        
-                    # Save WP ID in lang correct:    
+
+                    # Save WP ID in lang correct:
                     category_pool.write(cr, uid, odoo_id, {
                         field_id: wp_id,
                         }, context=context)
@@ -385,14 +387,14 @@ class ProductPublicCategory(orm.Model):
                         # TODO manage error:
                         _logger.error('Not Updated wp_id for %s' % wp_id)
                         continue
-                    
+
                     name = record['name']
-                        
+
                     odoo_id = odoo_name2id.get((name, lang), False)
                     if not odoo_id:
                         _logger.error('Not Updated wp_id for %s' % name)
                         continue
-                        
+
                     category_pool.write(cr, uid, odoo_id, {
                         'wp_%s_id' % lang: record['id'],
                         }, context=context)
@@ -427,13 +429,13 @@ class ProductPublicCategory(orm.Model):
 
             except:
                 raise osv.except_osv(
-                    _('Error'), 
+                    _('Error'),
                     _('Wordpress server not answer, timeout!'),
                     )
-        # Rerturn log calls:        
+        # Rerturn log calls:
         return excel_pool.return_attachment(
             cr, uid, 'Log call', name_of_file='call.xlsx', context=context)
-        # TODO      
+        # TODO
         # Check updated
         # Check deleted
         # Update product first category?

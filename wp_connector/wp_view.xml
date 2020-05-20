@@ -1,6 +1,28 @@
 <?xml version="1.0"?>
 <openerp>
-    <data>    
+    <data>
+        <!--product.public.category-->
+        <record model="ir.ui.view" id="product_public_category_code_tree_view">
+            <field name="name">product.public.category.code.tree</field>
+            <field name="model">product.public.category</field>
+            <field name="inherit_id" ref="connector_web_product_category.product_public_category_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="before">
+                    <field name="code" />
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="product_public_category_code_form_view">
+            <field name="name">product.public.category.code.form</field>
+            <field name="model">product.public.category</field>
+            <field name="inherit_id" ref="connector_web_product_category.product_public_category_form_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="before">
+                    <field name="code" />
+                </field>
+            </field>
+        </record>
+
         <!--connector.server-->
         <record model="ir.ui.view" id="view_connector_server_image_form">
             <field name="name">connector.server.image.form</field>
@@ -14,12 +36,12 @@
                     <field name="wp_publish_image" />
                 </field>
             </field>
-        </record>    
+        </record>
 
-        <!--res.company-->     
+        <!--res.company-->
         <record model="ir.ui.view" id="res_company_form_view_customize">
             <field name="name">Company SQL partner</field>
-            <field name="model">res.company</field>        
+            <field name="model">res.company</field>
             <field name="inherit_id" ref="base.view_company_form" />
             <field name="arch" type="xml">
                 <xpath expr="/form/sheet/notebook/page[@string='General Information']" position="after">
@@ -27,10 +49,10 @@
 		                <group colspan="4" col="4">
 		                   <field name="wp_existence_mode" />
 		                </group>
-			        </page>		        
+			        </page>
                 </xpath>
             </field>
-        </record>        
+        </record>
         <!--product.product.web.brand-->
         <record model="ir.ui.view" id="view_product_product_web_brand_tree">
             <field name="name">product.product.web.brand.tree</field>
@@ -54,7 +76,7 @@
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
-        
+
                 <!--product.product.web.material-->
         <record model="ir.ui.view" id="view_product_product_web_material_tree">
             <field name="name">product.product.web.material.tree</field>
@@ -67,8 +89,8 @@
                     <field name="wp_it_id" groups="wp_connector.group_wp_id_manager" />
                     <field name="wp_en_id" groups="wp_connector.group_wp_id_manager" />
                 </tree>
-            </field>            
-        </record>        
+            </field>
+        </record>
         <record model="ir.actions.act_window" id="action_product_product_web_material">
             <field name="name">Material</field>
             <field name="res_model">product.product.web.material</field>
@@ -78,7 +100,7 @@
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
-        
+
         <!--product.product.web.package-->
         <record model="ir.ui.view" id="view_product_product_web_package_tree">
             <field name="name">product.product.web.package.tree</field>
@@ -87,7 +109,7 @@
                 <tree string="Package" editable="bottom">
                     <field name="name" />
                     <field name="pcs_box" />
-                    <field name="pcs_pallet" />                    
+                    <field name="pcs_pallet" />
                     <field name="net_weight" />
                     <field name="gross_weight" />
                     <field name="box_width" />
@@ -116,7 +138,6 @@
                 <tree string="category" editable="bottom">
                     <field name="connection_id" domain="[('wordpress', '=', True)]"/>
                     <field name="name" />
-                    <field name="code" />
                     <field name="category_ids" widget="many2many_tags" />
                     <button name="update_product_category" string="Aggiorna" type="object" icon="gtk-refresh" />
                 </tree>
@@ -131,8 +152,8 @@
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
-        
-        
+
+
         <!--INHERIT product.product-->
         <record model="ir.ui.view" id="view_product_product_emotional_search">
             <field name="name">product.product.tree</field>
@@ -140,10 +161,10 @@
             <field name="priority" eval="40" />
             <field name="arch" type="xml">
                 <search string="Product" version="7.0">
-                    <field name="default_code" />        
+                    <field name="default_code" />
                     <field name="name" />
                     <field name="model_package_id" />
-                    
+
                     <!--<field name="partner_id" filter_domain="[('partner_id','=',self)]"/>-->
                     <filter name="has_emotional" string="Has emotional" domain="['|', ('emotional_short_description','!=',False), ('emotional_description','!=',False)]"/>
 
@@ -212,7 +233,7 @@
                     <attribute name="required">0</attribute>
                     <attribute name="attrs">{'required': [('wordpress', '=', False)], 'invisible': [('wordpress', '=', True)]}</attribute>
                 </field>
-                
+
                 <field name="database" position="attributes">
                     <attribute name="required">0</attribute>
                     <attribute name="attrs">{'required': [('wordpress', '=', False)], 'invisible': [('wordpress', '=', True)]}</attribute>
@@ -229,19 +250,19 @@
                     <attribute name="required">0</attribute>
                     <attribute name="attrs">{'required': [('wordpress', '=', False)], 'invisible': [('wordpress', '=', True)]}</attribute>
                 </field>
-                
+
                 <!--<button name="publish_all_connector" position="before">
                     <button name="wordpress_import_category" string="Load category" type="object" attrs="{'invisible': [('wordpress','=',False)]}"/>
                     <button name="wordpress_rsync_photo" string="Upload all photo" type="object" attrs="{'invisible': [('wordpress','=',False)]}"/>
                     <button name="auto_select_product_button" string="Select stock product" type="object" attrs="{'invisible': [('wordpress','=',False)]}"/>
                 </button>-->
 
-                <field name="password" position="after">                     
-                    <group colspan="4" col="4" attrs="{'invisible': [('wordpress','=',False)]}">                    
+                <field name="password" position="after">
+                    <group colspan="4" col="4" attrs="{'invisible': [('wordpress','=',False)]}">
                         <separator string="Wordpress block:" colspan="4"/>
                         <field name="wp_url" attrs="{'required': [('wordpress', '=', True)]}"/>
                         <field name="wp_key" attrs="{'required': [('wordpress', '=', True)]}"/>
-                        
+
                         <field name="wp_secret" attrs="{'required': [('wordpress', '=', True)]}"/>
                         <field name="wp_api" attrs="{'required': [('wordpress', '=', True)]}"/>
 
@@ -261,7 +282,7 @@
             <field name="model">product.product.web.server</field>
             <field name="priority" eval="40" />
             <field name="arch" type="xml">
-                <form string="Prodotti web" version="7.0">        
+                <form string="Prodotti web" version="7.0">
                     <sheet>
                         <group col="4" colspan="4">
                             <field name="connector_id" readonly="1"/>
@@ -269,7 +290,7 @@
                             <field name="published" />
                             <field name="public_categ_id" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]"/>
                             <field name="brand_id" />
-                            
+
                             <separator string="Images:" colspan="4"/>
                             <field name="wp_dropbox_images_ids" editable="bottom" colspan="4" nolabel="1">
                                 <tree string="Image album" colors="red:status=='product';grey:status=='removed';blue:status=='modify';green:status=='ok';brown:status=='format';black:variant==True" editable="bottom">
@@ -282,7 +303,7 @@
                                 </tree>
                             </field>
                         </group>
-                    </sheet>        
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -299,7 +320,7 @@
             </field>
         </record>
 
-        <!--CUSTOM: product.product.web.server-->        
+        <!--CUSTOM: product.product.web.server-->
         <record model="ir.ui.view" id="view_product_product_web_server_wp_tree">
             <field name="name">product.product.web.server.tree</field>
             <field name="model">product.product.web.server</field>
@@ -321,7 +342,7 @@
                     <field name="force_price"/>
                     <field name="force_min_stock"/>
                     <button name="publish_now" string="Publish now" type="object"/>
-                </tree>           
+                </tree>
             </field>
         </record>
         <record model="ir.ui.view" id="view_product_product_web_server_wp_form">
@@ -335,32 +356,32 @@
                     </header>
                     <sheet>
                         <group colspan="4" col="4">
-                            <field name="connector_id" />  
+                            <field name="connector_id" />
                             <field name="brand_id" />
 
                             <field name="published"/>
                             <field name="wp_type" />
-                                                  
+
                             <field name="product_id" readonly="1" invisible="context.get('embedded_view', False)"/>
                             <field name="wordpress_categ_ids" domain="[('connector_id','=',connector_id),('enabled','=',True)]" widget="many2many_tags"/>
 
                             <field name="force_name"/>
                             <field name="force_description"/>
-                            
+
                             <field name="force_q_x_pack"/>
                             <field name="force_ean13"/>
-                            
+
                             <field name="force_price"/>
                             <field name="force_min_stock"/>
-                            
+
                             <separator string="Wordpress line:" colspan="4"/>
                             <!--<button name="clean_reference" string="Clean reference" colspan="1" type="object" confirm="Do you want delete reference with Wordpress linked product?"/>-->
 
                             <field name="wp_it_id" readonly="1"/>
                             <field name="wp_en_id" readonly="1"/>
-                        </group>    
+                        </group>
                     </sheet>
-                </form>           
+                </form>
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_product_product_web_server_form">
@@ -372,55 +393,55 @@
             <field name="context">{'form_view_ref': 'wp_connector.view_product_product_web_server_wp_form'}</field>
             <field name="domain">[('connector_id.wordpress', '=', True)]</field>
         </record>
-        <menuitem 
-            parent="connector_web_base.menu_webserver_root" 
-            id="menu_connector_worppress_root" 
+        <menuitem
+            parent="connector_web_base.menu_webserver_root"
+            id="menu_connector_worppress_root"
             name="Manage Wordpress"
             sequence="20"
-            />            
-            <menuitem 
-                parent="menu_connector_worppress_root" 
-                id="menu_emotional_product" 
+            />
+            <menuitem
+                parent="menu_connector_worppress_root"
+                id="menu_emotional_product"
                 action="action_product_product_emotional"
                 sequence="10"
                 />
-            <menuitem 
-                parent="menu_connector_worppress_root" 
-                id="menu_connector_worppress_product" 
+            <menuitem
+                parent="menu_connector_worppress_root"
+                id="menu_connector_worppress_product"
                 action="action_product_product_web_server_form"
                 sequence="20"
                 />
-            <menuitem 
-                parent="menu_connector_worppress_root" 
-                id="menu_connector_worppress_configuration" 
+            <menuitem
+                parent="menu_connector_worppress_root"
+                id="menu_connector_worppress_configuration"
                 name="Configuration"
                 sequence="99"
                 />
-                <menuitem 
-                    parent="menu_connector_worppress_configuration" 
-                    id="menu_connector_worppress_configuration_brand" 
+                <menuitem
+                    parent="menu_connector_worppress_configuration"
+                    id="menu_connector_worppress_configuration_brand"
                     action="action_product_product_web_brand"
                     sequence="5"
                     />
-                <menuitem 
-                    parent="menu_connector_worppress_configuration" 
-                    id="menu_connector_worppress_configuration_material" 
+                <menuitem
+                    parent="menu_connector_worppress_configuration"
+                    id="menu_connector_worppress_configuration_material"
                     action="action_product_product_web_material"
                     sequence="5"
                     />
 
-                <menuitem 
-                    parent="menu_connector_worppress_configuration" 
-                    id="menu_connector_worppress_configuration_package" 
+                <menuitem
+                    parent="menu_connector_worppress_configuration"
+                    id="menu_connector_worppress_configuration_package"
                     action="action_product_product_web_package"
                     sequence="10"
                     />
-                    
-                <menuitem 
-                    parent="menu_connector_worppress_configuration" 
-                    id="menu_connector_worppress_configuration_category" 
+
+                <menuitem
+                    parent="menu_connector_worppress_configuration"
+                    id="menu_connector_worppress_configuration_category"
                     action="action_product_product_web_category"
                     sequence="20"
-                    />          
+                    />
     </data>
 </openerp>

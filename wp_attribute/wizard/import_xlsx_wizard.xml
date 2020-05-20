@@ -7,6 +7,7 @@
             <field name="model">product.product.import.wordpress</field>
             <field name="arch" type="xml">
                 <tree string="Import order">
+                     <field name="connector_id" />
                      <field name="name" />
                      <field name="mode" />
                 </tree>
@@ -23,15 +24,16 @@
                        <button name="action_import_product" string="Importa prodotti" type="object" icon="gtk-jump-to" class="oe_highlight" attrs="{'invisible': [('mode','!=','imported')]}" assert="Delete if present previous order, will be generated again!"/>
                    </header>
                    <group colspan="4" col="4">
-                        <field name="file" colspan="4" attrs="{'invisible': [('mode','!=','draft')]}"/>
+                        <field name="connector_id" />
                         <field name="mode" invisible="1" />
 
+                        <field name="file" colspan="4" attrs="{'invisible': [('mode','!=','draft')]}"/>
                         <notebook colspan="4">
                             <page string="Detttagli">
                                 <group colspan="4" col="4">
                                     <separator string="Detttagli:" colspan="4"/>
                                     <button name="extract_line_in_tree" string="Passa a lista" type="object" />
-                                    <field name="line_ids" colspan="4" nolabel="1">
+                                    <field name="product_ids" colspan="4" nolabel="1">
                                         <tree string="Prodotti:" editable="bottom">
                                              <field name="default_code" />
                                              <field name="name" />
@@ -59,22 +61,24 @@
           <field name="view_mode">tree,form</field>
           <field name="view_id" ref="product_product_import_wordpress_form_view"/>
       </record>
-      <record model="ir.actions.act_window" id="action_product_product_import_wordpress_list">
+      <record model="ir.actions.act_window" id="action_product_product_import_wordpress_tree">
           <field name="name">Lista importazioni WP</field>
           <field name="res_model">product.product.import.wordpress</field>
           <field name="view_type">form</field>
           <field name="view_mode">tree,form</field>
-          <field name="view_id" ref="product_product_import_wordpress_form_view"/>
+          <field name="view_id" ref="product_product_import_wordpress_tree_view"/>
       </record>
       <menuitem
-          parent=""
+          parent="wp_connector.menu_connector_worppress_configuration"
           id="menu_product_product_import_wordpress"
           action="action_product_product_import_wordpress"
+          sequence="60"
           />
       <menuitem
-          parent=""
+          parent="wp_connector.menu_connector_worppress_configuration"
           id="menu_product_product_import_wordpress_list"
-          action="action_product_product_import_wordpress_list"
+          action="action_product_product_import_wordpress_tree"
+          sequence="70"
           />
     </data>
 </openerp>

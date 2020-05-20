@@ -40,6 +40,8 @@
     'data': [
         'security/ir.model.access.csv',
         'attribute_view.xml',
+        
+        'wizard/import_xlsx_wizard.xml',
         ],
     'active': False,
     'installable': True,

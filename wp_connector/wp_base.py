@@ -287,8 +287,6 @@ class ProductProductWebCategory(orm.Model):
         'connection_id': fields.many2one('connector.server', 'Server',
             required=True),
         'name': fields.char('Codice padre', size=20, required=True),
-        'code': fields.char('Sigla', size=10, required=True,
-            help='Sigla utilizzata nelle importazioni'),
         'category_ids': fields.many2many(
             'product.public.category', 'template_web_category_rel',
             'product_id', 'category_id',
@@ -298,6 +296,18 @@ class ProductProductWebCategory(orm.Model):
     _sql_constraints = [
         ('name_uniq', 'unique (name)', 'Nome duplicato!'),
         ]
+
+
+class ProductPublicCategory(orm.Model):
+    """ Model name: ProductProductWebPackage
+    """
+    _inherit = 'product.public.category'
+
+    _columns = {
+        'code': fields.char(
+            'Sigla', size=10, required=True,
+            help='Sigla utilizzata nelle importazioni'),
+    }
 
 
 class ProductProductWebPackage(orm.Model):
