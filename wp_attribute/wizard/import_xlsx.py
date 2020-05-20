@@ -283,7 +283,7 @@ class ProductProductImportWorpdress(orm.Model):
                 'pack_h': pack_h,
                 'pack_p': pack_p,
                 'weight': weight,
-                'product_weight': weight_net,
+                'weight_net': weight_net,
             }
             lang_context = context.copy()
             for lang in lang_list:
