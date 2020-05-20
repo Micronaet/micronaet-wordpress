@@ -168,7 +168,9 @@ class ProductProductImportWorpdress(orm.Model):
 
             # Extract Excel columns:
             is_master = ws.cell(row, 0).value.upper() in 'SX'
-            published = ws.cell(row, 1).value.upper() in 'SX'
+            unpublished = ws.cell(row, 1).value.upper()
+            published = not(unpublished in 'SX')
+
             default_code = number_to_text(ws.cell(row, 2).value.upper())
             ean = number_to_text(ws.cell(row, 3).value)
             lang_text[IT]['name'] = ws.cell(row, 4).value
@@ -243,6 +245,7 @@ class ProductProductImportWorpdress(orm.Model):
                 'pack_l': pack_l,
                 'pack_h': pack_h,
                 'pack_p': pack_p,
+                'weight': weight,
             }
             lang_context = context.copy()
             for lang in lang_list:
@@ -291,7 +294,7 @@ class ProductProductImportWorpdress(orm.Model):
                 'price_extra': extra_price,
 
                 'weight': weight,
-                'weight_new': weight_net,  # No more used!
+                'weight_net': weight_net,  # No more used!
 
                 # Force:
                 'force_ean': force_ean,
@@ -299,9 +302,9 @@ class ProductProductImportWorpdress(orm.Model):
                 'force_price': force_price,
                 'force_min_stock': force_min_stock,
             }
-
+            import pdb; pdb.set_trace()
             for lang in lang_list:
-                lang_context[lang] = lang
+                lang_context['lang'] = lang
 
                 web_data.update({
                     'force_name': lang_text[lang]['force_name'],
