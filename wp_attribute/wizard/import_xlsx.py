@@ -113,33 +113,43 @@ class ProductProductImportWorpdress(orm.Model):
         """ Utility for import or simply check the file
         """
 
-        def get_category_ids(
-                cr, uid,
-                connector_id, category_code, category_cache, error_list,
+        def get_foreign_fields(
+                cr, uid, table, mode,
+                connector_id, fullcode, cache, error_list,
                 context=None):
             """ Extract category for category
             """
-            category_pool = self.pool.get('product.public.category')
+            foreign_pool = self.pool.get(table)
+            if table not in cache:
+                cache[table] = {}
+
             res = []
-            for code in category_code.split(','):
+            for code in fullcode.split(','):
                 code = code.strip()
                 if not code:
-                    _logger.warning('Category code empty')
+                    _logger.warning(_('Code %s not in %s') % (
+                        code, table))
                     continue
 
-                if code not in category_cache:
-                    category_ids = category_pool.search(cr, uid, [
+                if code not in cache[table]:
+                    item_ids = foreign_pool.search(cr, uid, [
                         ('connector_id', '=', connector_id),
                         ('code', '=', code),
                         ], context=context)
-                    if category_ids:
-                        category_cache[code] = category_ids[0]
+                    if item_ids:
+                        cache[table][code] = item_ids[0]
                     else:
                         error_list.append(
-                            'Codice categoria non trovato: %s' % code)
+                            'Codice %s non trovato in %s' % (code, table))
                         continue
-                res.append(category_cache[code])
-            return res
+                res.append(cache[table][code])
+
+            if not res:
+                return False
+            elif mode == '2m':
+                return [(6, 0, res)]
+            else:
+                return res[0]
 
         def number_to_text(value):
             """ Force text number in Excel
@@ -157,7 +167,7 @@ class ProductProductImportWorpdress(orm.Model):
         lang_list = (IT, EN)
 
         # Cache DB:
-        category_cache = {}
+        cache = {}
 
         # Pool used:
         product_pool = self.pool.get('product.product')
@@ -255,10 +265,26 @@ class ProductProductImportWorpdress(orm.Model):
                 continue
 
             # Calculated foreign keys:
-            category_ids = [(6, 0, get_category_ids(
-                cr, uid,
-                connector_id, category_code, category_cache, error_list,
-                context=None))]
+            category_ids = get_foreign_fields(
+                cr, uid, 'product.public.category', '2m',
+                connector_id, category_code, cache, error_list,
+                context=context)
+
+            color_id = get_foreign_fields(
+                cr, uid, 'connector.product.color.dot', '2o',
+                connector_id, color_code, cache, error_list,
+                context=context)
+
+            material_ids = get_foreign_fields(
+                cr, uid, 'product.product.web.material', '2m',
+                connector_id, material_code, cache, error_list,
+                context=context)
+
+            brand_id = get_foreign_fields(
+                cr, uid, 'product.product.web.brand', '2m',
+                connector_id, brand_code, cache, error_list,
+                context=context)
+
             # TODO check not file system char in default code
 
             # -----------------------------------------------------------------
@@ -322,9 +348,10 @@ class ProductProductImportWorpdress(orm.Model):
                 'published': published,
 
                 # Foreign keys:
-                # 'wp_color_id'
+                'wp_color_id': color_id,
                 'wordpress_categ_ids': category_ids,
-                # 'material_ids':
+                'material_ids': material_ids,
+                'brand_id': brand_id,
 
                 'lifetime_warranty': lifetime_warranty,
                 'price_multi': multiply,
