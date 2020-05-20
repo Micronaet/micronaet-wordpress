@@ -255,9 +255,6 @@ class ProductProductImportWorpdress(orm.Model):
             # -----------------------------------------------------------------
             #                     Web product operation:
             # -----------------------------------------------------------------
-            import pdb
-            pdb.set_trace()
-
             web_ids = web_pool.search(cr, uid, [
                 ('connector_id', '=', connector_id),
                 ('product_id', '=', product_id),
