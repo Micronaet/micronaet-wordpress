@@ -154,7 +154,7 @@ class ProductProductImportWorpdress(orm.Model):
 
             # Extract Excel columns:
             parent_mode = ws.cell(row, 0).value.upper()
-            published = ws.cell(row, 1).value.upper()
+            published = ws.cell(row, 1).value.upper() in 'SX'
             default_code = number_to_text(ws.cell(row, 2).value.upper())
             ean = number_to_text(ws.cell(row, 3).value)
             lang_text[IT]['name'] = ws.cell(row, 4).value
@@ -225,6 +225,10 @@ class ProductProductImportWorpdress(orm.Model):
                 'default_code': default_code,
                 'q_x_pack': q_x_pack,
                 'ean13': ean,
+                'lst_price': pricelist,
+                'pack_l': pack_l,
+                'pack_h': pack_h,
+                'pack_p': pack_p,
             }
             lang_context = context.copy()
             for lang in lang_list:
@@ -250,7 +254,7 @@ class ProductProductImportWorpdress(orm.Model):
             # -----------------------------------------------------------------
             #                     Web product operation:
             # -----------------------------------------------------------------
-            import pdb;
+            import pdb
             pdb.set_trace()
 
             web_ids = web_pool.search(cr, uid, [
@@ -265,8 +269,8 @@ class ProductProductImportWorpdress(orm.Model):
                 'published': published,
 
                 # Master management:
-                'wp_parent_template' # Master
-                'wp_parent_id': ,
+                # 'wp_parent_template': False # Master
+                # 'wp_parent_id': False,
 
                 # Foreign keys:
                 #'wp_color_id'
@@ -278,6 +282,7 @@ class ProductProductImportWorpdress(orm.Model):
                 'price_extra': extra_price,
 
                 'weight': weight,
+                'weight_new': weight_net,  # No more used!
                 # update_wp_volume
 
                 # Force:
@@ -285,8 +290,8 @@ class ProductProductImportWorpdress(orm.Model):
                 'force_q_x_pack': force_q_x_pack,
                 'force_price': force_price,
                 'force_min_stock': force_min_stock,
-
             }
+            # TODO update volume
             for lang in lang_list:
                 lang_context[lang] = lang
 
@@ -301,6 +306,9 @@ class ProductProductImportWorpdress(orm.Model):
                 else:
                     web_ids = [web_pool.create(
                         cr, uid, web_data, context=lang_context)]
+
+            # Update data (procedure):
+            web_pool.update_wp_volume(cr, uid, web_ids, context=context)
 
         # ---------------------------------------------------------------------
         #                       Closing operation:
