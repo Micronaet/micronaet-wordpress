@@ -283,7 +283,7 @@ class ProductProductImportWorpdress(orm.Model):
                 context=context)
 
             brand_id = get_foreign_fields(
-                cr, uid, 'product.product.web.brand', '2m',
+                cr, uid, 'product.product.web.brand', '2o',
                 False, brand_code, cache, error_list,
                 context=context)
 
