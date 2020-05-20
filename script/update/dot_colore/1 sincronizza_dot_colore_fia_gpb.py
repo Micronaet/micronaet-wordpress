@@ -98,6 +98,7 @@ for company in company_list:
                 'description': source_color.description,
                 'hint': source_color.hint,
                 'name': source_color.name.strip(),
+                'code': source_color.code.strip(),
                 'not_active': source_color.not_active,
                 }
                 
