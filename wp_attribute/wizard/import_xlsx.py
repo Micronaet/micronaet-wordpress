@@ -132,10 +132,12 @@ class ProductProductImportWorpdress(orm.Model):
                     continue
 
                 if code not in cache[table]:
-                    item_ids = foreign_pool.search(cr, uid, [
-                        ('connector_id', '=', connector_id),
-                        ('code', '=', code),
-                        ], context=context)
+                    domain = [('code', '=', code)]
+                    if connector_id:
+                        domain.append(
+                            ('connector_id', '=', connector_id))
+                    item_ids = foreign_pool.search(
+                        cr, uid, domain, context=context)
                     if item_ids:
                         cache[table][code] = item_ids[0]
                     else:
@@ -277,7 +279,7 @@ class ProductProductImportWorpdress(orm.Model):
 
             material_ids = get_foreign_fields(
                 cr, uid, 'product.product.web.material', '2m',
-                connector_id, material_code, cache, error_list,
+                False, material_code, cache, error_list,
                 context=context)
 
             brand_id = get_foreign_fields(
