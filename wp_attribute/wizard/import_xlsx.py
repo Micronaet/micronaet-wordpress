@@ -168,9 +168,7 @@ class ProductProductImportWorpdress(orm.Model):
 
             # Extract Excel columns:
             is_master = ws.cell(row, 0).value.upper() in 'SX'
-            unpublished = ws.cell(row, 1).value.upper()
-            published = not(unpublished in 'SX')
-
+            published = not(ws.cell(row, 1).value.strip())
             default_code = number_to_text(ws.cell(row, 2).value.upper())
             ean = number_to_text(ws.cell(row, 3).value)
             lang_text[IT]['name'] = ws.cell(row, 4).value
@@ -246,6 +244,7 @@ class ProductProductImportWorpdress(orm.Model):
                 'pack_h': pack_h,
                 'pack_p': pack_p,
                 'weight': weight,
+                'weight_net': weight_net,
             }
             lang_context = context.copy()
             for lang in lang_list:
