@@ -683,13 +683,13 @@ class ProductProductWebServer(orm.Model):
                     # Numeric data:
                     data.update({
                         'type': item.wp_type,
-                        #'sku': self.wp_clean_code(sku),
+                        # 'sku': self.wp_clean_code(sku),
                         'regular_price': price,
                         # sale_price (discounted)
                         'stock_quantity': stock_quantity,
                         'status': status,
                         'catalog_visibility': 'visible',
-                        #catalog  search  hidden
+                        # catalog  search  hidden
 
                         'weight_aditional_info': item.weight_aditional_info,
                         })
@@ -875,7 +875,7 @@ class ProductProductWebServer(orm.Model):
                     continue
                 volume = l * p * h
 
-            volume = volume / 1000000.0 / q_x_pack * multi
+            volume = volume / q_x_pack * multi # / 1000000.0
             self.write(cr, uid, [item.id], {
                 'wp_volume': volume,
                 }, context=context)
