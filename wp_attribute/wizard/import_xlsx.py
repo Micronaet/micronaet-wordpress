@@ -197,6 +197,7 @@ class ProductProductImportWorpdress(orm.Model):
         last_master_id = False  # ID of last master
         for row in range(row_start, ws.nrows):
             lang_text = {IT: {}, EN: {}}
+            error_list = []
 
             # Extract Excel columns:
             is_master = ws.cell(row, 0).value.upper() in 'SX'
@@ -254,10 +255,11 @@ class ProductProductImportWorpdress(orm.Model):
                 continue
 
             # Calculated foreign keys:
+            import pdb; pdb.set_trace()
             category_ids = [(6, 0, get_category_ids(
                 cr, uid,
                 connector_id, category_code, category_cache, error_list,
-                context=None)
+                context=None))]
             # TODO check not file system char in default code
 
             # -----------------------------------------------------------------
@@ -322,7 +324,7 @@ class ProductProductImportWorpdress(orm.Model):
 
                 # Foreign keys:
                 # 'wp_color_id'
-                # 'wordpress_category_ids':
+                'wordpress_category_ids': category_ids,
                 # 'material_ids':
 
                 'lifetime_warranty': lifetime_warranty,
