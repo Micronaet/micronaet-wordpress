@@ -65,19 +65,29 @@ class ProductProductImportWorpdress(orm.Model):
     def action_check_product_file(self, cr, uid, ids, context=None):
         """ Check file and return esit for importation
         """
-        return self._import_xlsx_file(cr, uid, ids, check=True, context=None)
+        return self._import_xlsx_file(
+            cr, uid, ids, check=True, context=context)
 
     def action_import_product(self, cr, uid, ids, context=None):
         """ Create purchase order:
         """
-        return self._import_xlsx_file(cr, uid, ids, check=False, context=None)
+        return self._import_xlsx_file(
+            cr, uid, ids, check=False, context=context)
 
     # Utility:
     def _import_xlsx_file(self, cr, uid, ids, check, context=None):
         """ Utility for import or simply check the file
         """
+        def number_to_text(value):
+            """ Force text number in Excel
+            """
+            if type(value) in (float, int ):
+                return '%s' % int(value)
+            else:
+                return value or ''
+
         # Parameters:
-        row_start = 1
+        row_start = 2
         xlsx_id = ids[0]
 
         IT = 'it_IT'
@@ -88,8 +98,8 @@ class ProductProductImportWorpdress(orm.Model):
         product_pool = self.pool.get('product.product')
         web_pool = self.pool.get('product.product.web.server')
 
-        current_proxy = self.browse(cr, uid, ids, context=context)[0]
-        connector_id = self.connector_id.id
+        current_proxy = self.browse(cr, uid, xlsx_id, context=context)
+        connector_id = current_proxy.connector_id.id
 
         # ---------------------------------------------------------------------
         # Save file passed:
@@ -100,8 +110,6 @@ class ProductProductImportWorpdress(orm.Model):
         f = open(filename, 'wb')
         f.write(b64_file)
         f.close()
-
-        xslx_id = current_proxy.id
 
         # ---------------------------------------------------------------------
         # Load force name (for web publish)
@@ -120,14 +128,15 @@ class ProductProductImportWorpdress(orm.Model):
         ws = wb.sheet_by_index(0)
 
         error = ''
+        import pdb; pdb.set_trace()
         for row in range(row_start, ws.nrows):
             lang_text = {IT: {}, EN: {}}
 
             # Extract Excel columns:
-            parent_mode = ws.cell(row, 0).value
-            published = ws.cell(row, 1).value
-            default_code = ws.cell(row, 2).value
-            ean = ws.cell(row, 3).value
+            parent_mode = ws.cell(row, 0).value.upper()
+            published = ws.cell(row, 1).value.upper()
+            default_code = number_to_text(ws.cell(row, 2).value.upper())
+            ean = number_to_text(ws.cell(row, 3).value)
             lang_text[IT]['name'] = ws.cell(row, 4).value
             lang_text[EN]['name'] = ws.cell(row, 5).value \
                 or lang_text[IT]['name']
@@ -135,7 +144,7 @@ class ProductProductImportWorpdress(orm.Model):
             color_code = ws.cell(row, 7).value
             category_code = ws.cell(row, 8).value
             pricelist = ws.cell(row, 9).value
-            lifetime_warranty = ws.cell(row, 10).value
+            lifetime_warranty = ws.cell(row, 10).value.upper()
             multiply = ws.cell(row, 11).value
             extra_price = ws.cell(row, 12).value
             material_code = ws.cell(row, 13).value
@@ -158,7 +167,7 @@ class ProductProductImportWorpdress(orm.Model):
             lang_text[EN]['force_description'] = ws.cell(row, 25).value \
                 or lang_text[IT]['force_description']
             force_q_x_pack = ws.cell(row, 26).value
-            force_ean = ws.cell(row, 27).value
+            force_ean = number_to_text(ws.cell(row, 27).value)
             force_price = ws.cell(row, 28).value
             force_min_stock = ws.cell(row, 29).value
 
@@ -218,10 +227,34 @@ class ProductProductImportWorpdress(orm.Model):
                         cr, uid, product_data, context=lang_context)]
             product_id = product_ids[0]
 
-        # -----------------------------------------------------------------
-        #                      Product operation:
-        # -----------------------------------------------------------------
+        # ---------------------------------------------------------------------
+        #                     Web product operation:
+        # ---------------------------------------------------------------------
+        web_ids = web_pool.search(cr, uid, [
+            ('connector_id', '=', connector_id),
+            ('product_id', '=', product_id),
+        ], context=context)
 
+        web_data = {
+
+        }
+        for lang in lang_list:
+            lang_context[lang] = lang
+
+            web_data.update({
+
+            })
+
+            if web_ids:
+                web_pool.write(
+                    cr, uid, web_ids, web_data, context=lang_context)
+            else:
+                web_ids = [web_pool.create(
+                    cr, uid, web_data, context=lang_context)]
+
+        # ---------------------------------------------------------------------
+        #                       Closing operation:
+        # ---------------------------------------------------------------------
         _logger.info('Imported: %s' % filename)
         if check:
             if not error:  # if not error change state:
@@ -241,7 +274,7 @@ class ProductProductImportWorpdress(orm.Model):
         'name': fields.char('Name', size=64, required=True),
         'file': fields.binary('XLSX file', filters=None),
         'connector_id': fields.many2one(
-            'connector.server', 'Connettore'),
+            'connector.server', 'Connettore', required=True),
         'mode': fields.selection([
             ('draft', 'Draft'),
             ('imported', 'Imported'),
@@ -270,6 +303,18 @@ class ProductProductWordpress(orm.Model):
         }
 
 
+class ProductProductWebServerWordpress(orm.Model):
+    """ Model name: Product for webserver
+    """
+
+    _inherit = 'product.product.web.server'
+
+    _columns = {
+        'xlsx_id': fields.many2one(
+            'product.product.import.wordpress.wizard', 'XLSX File'),
+        }
+
+
 class ProductProductImportWorpdressRelations(orm.Model):
     """ Model name: PurchaseOrderXLSX for relations
     """
@@ -278,4 +323,6 @@ class ProductProductImportWorpdressRelations(orm.Model):
     _columns = {
         'product_ids': fields.one2many(
             'product.product', 'xlsx_id', 'Prodotti'),
+        'web_ids': fields.one2many(
+            'product.product.web.server', 'xlsx_id', 'Prodotti web'),
         }
