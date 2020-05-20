@@ -1,2 +1,4 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 access_connector_product_color_dot_user,connector.product.color.dot,model_connector_product_color_dot,base.group_user,1,1,1,1
+access_product_product_import_wordpress_user,product.product.import.wordpress,model_product_product_import_wordpress,base.group_user,1,1,1,1
+

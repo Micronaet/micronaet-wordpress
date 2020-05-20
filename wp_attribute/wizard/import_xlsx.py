@@ -49,9 +49,9 @@ class ProductProductImportWorpdress(orm.Model):
 
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Righe'),
+            'name': _('Dettaglio prodotti'),
             'view_type': 'form',
-            'view_mode': 'tree',
+            'view_mode': 'tree,form',
             # 'res_id': 1,
             'res_model': 'product.product',
             'view_id': False,
@@ -78,6 +78,11 @@ class ProductProductImportWorpdress(orm.Model):
         """
         # Parameters:
         row_start = 1
+        xlsx_id = ids[0]
+
+        IT = 'it_IT'
+        EN = 'en_US'
+        lang_list = (IT, EN)
 
         # Pool used:
         product_pool = self.pool.get('product.product')
@@ -116,16 +121,16 @@ class ProductProductImportWorpdress(orm.Model):
 
         error = ''
         for row in range(row_start, ws.nrows):
-            lang_text = {
-                'it_IT': {},
-                'en_US': {},
-            }
+            lang_text = {IT: {}, EN: {}}
+
+            # Extract Excel columns:
             parent_mode = ws.cell(row, 0).value
             published = ws.cell(row, 1).value
             default_code = ws.cell(row, 2).value
             ean = ws.cell(row, 3).value
-            name_it = ws.cell(row, 4).value
-            name_en = ws.cell(row, 5).value or name_it
+            lang_text[IT]['name'] = ws.cell(row, 4).value
+            lang_text[EN]['name'] = ws.cell(row, 5).value \
+                or lang_text[IT]['name']
             brand_code = ws.cell(row, 6).value
             color_code = ws.cell(row, 7).value
             category_code = ws.cell(row, 8).value
@@ -137,62 +142,85 @@ class ProductProductImportWorpdress(orm.Model):
             pack_l = ws.cell(row, 14).value
             pack_h = ws.cell(row, 15).value
             pack_p = ws.cell(row, 16).value
-            box_dimension_it = ws.cell(row, 17).value
-            box_dimension_en = ws.cell(row, 18).value or box_dimension_it
+            lang_text[IT]['box_dimension'] = ws.cell(row, 17).value
+            lang_text[EN]['box_dimension'] = ws.cell(row, 18).value \
+                or lang_text[IT]['box_dimension']
+
             weight = ws.cell(row, 19).value
             weight_net = ws.cell(row, 20).value
             q_x_pack = ws.cell(row, 21).value
 
-            force_name_it = ws.cell(row, 22).value
-            force_name_en = ws.cell(row, 23).value
-            force_description_it = ws.cell(row, 24).value
-            force_description_en = ws.cell(row, 25).value
+            # Force:
+            lang_text[IT]['force_name'] = ws.cell(row, 22).value
+            lang_text[EN]['force_name'] = ws.cell(row, 23).value \
+                or lang_text[IT]['force_name']
+            lang_text[IT]['force_description'] = ws.cell(row, 24).value
+            lang_text[EN]['force_description'] = ws.cell(row, 25).value \
+                or lang_text[IT]['force_description']
             force_q_x_pack = ws.cell(row, 26).value
-            force_q_ean = ws.cell(row, 27).value
+            force_ean = ws.cell(row, 27).value
             force_price = ws.cell(row, 28).value
             force_min_stock = ws.cell(row, 29).value
 
-            extended_it = ws.cell(row, 30).value
-            extended_en = ws.cell(row, 31).value or extended_it
-            emotional_short_it = ws.cell(row, 32).value or emotional_short_it
-            emotional_short_en = ws.cell(row, 33).value
-            emotional_long_it = ws.cell(row, 34).value
-            emotional_long_en = ws.cell(row, 35).value or emotional_long_it
+            lang_text[IT]['large_description'] = ws.cell(row, 30).value
+            lang_text[EN]['large_description'] = ws.cell(row, 31).value \
+                or lang_text[IT]['large_description']
+            lang_text[IT]['emotional_short_description'] = \
+                ws.cell(row, 32).value
+            lang_text[EN]['emotional_short_description'] = \
+                ws.cell(row, 33).value or \
+                lang_text[IT]['emotional_short_description']
+            lang_text[IT]['emotional_description'] = ws.cell(row, 34).value
+            lang_text[EN]['emotional_description'] = ws.cell(row, 35).value \
+                or lang_text[IT]['emotional_description']
 
             if not default_code:
                 _logger.warning('Default code not found')
                 continue
 
+            # TODO check not file system char in default code
+
+            # -----------------------------------------------------------------
+            #                      Product operation:
+            # -----------------------------------------------------------------
             # Search product:
             product_ids = product_pool.search(cr, uid, [
                 ('default_code', '=', default_code)
                 ], context=context)
+            if len(product_ids) > 1:
+                _logger.warning('More material code: %s' % default_code)
 
-            if product_ids:
-                insert_mode = 'update'
-            else:
-                insert_mode = 'create'
-
-            # Product operation:
-            # TODO lang management
+            # Non text items:
             product_data = {
+                'xlsx_id': xlsx_id,
                 'default_code': default_code,
-                'name': name_it,
                 'q_x_pack': q_x_pack,
-                'web_description': extended_it,
-                'emotional_short_description': emotional_short_it,
-                'emotional_description': emotional_long_it,
-
+                'ean13': ean,
             }
-
-            # Manage product error:
-            if not product_ids:
-                _logger.error('No product with code: %s' % default_code)
-                continue
-
-            elif len(product_ids) > 1:
-                _logger.error('More material code: %s' % default_code)
+            lang_context = context.copy()
+            for lang in lang_list:
+                lang_context['lang'] = lang
+                product_data.update({
+                    'name': lang_text[lang]['name'],
+                    'large_description': lang_text[lang]['large_description'],
+                    'emotional_short_description':
+                        lang_text[lang]['emotional_short_description'],
+                    'emotional_description':
+                        lang_text[lang]['emotional_description'],
+                })
+                if product_ids:  # Update record (if exist or for language)
+                    product_pool.write(
+                        cr, uid, product_ids, product_data,
+                        context=lang_context)
+                else:
+                    # For next update:
+                    product_ids = [product_pool.create(
+                        cr, uid, product_data, context=lang_context)]
             product_id = product_ids[0]
+
+        # -----------------------------------------------------------------
+        #                      Product operation:
+        # -----------------------------------------------------------------
 
         _logger.info('Imported: %s' % filename)
         if check:
