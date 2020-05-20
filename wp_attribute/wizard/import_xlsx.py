@@ -284,7 +284,7 @@ class ProductProductImportWorpdress(orm.Model):
 
             brand_id = get_foreign_fields(
                 cr, uid, 'product.product.web.brand', '2m',
-                connector_id, brand_code, cache, error_list,
+                False, brand_code, cache, error_list,
                 context=context)
 
             # TODO check not file system char in default code
