@@ -357,6 +357,7 @@ class ProductProductImportWorpdress(orm.Model):
         'file': fields.binary('XLSX file', filters=None),
         'connector_id': fields.many2one(
             'connector.server', 'Connettore', required=True),
+        'from_line': fields.integer('Da riga'),
         'mode': fields.selection([
             ('draft', 'Draft'),
             ('imported', 'Imported'),
@@ -370,6 +371,7 @@ class ProductProductImportWorpdress(orm.Model):
             lambda *a: _('Imported: %s') % datetime.now().strftime(
                 DEFAULT_SERVER_DATE_FORMAT),
         'mode': lambda *x: 'draft',
+        'from_line': lambda *x: 1,
         }
 
 
