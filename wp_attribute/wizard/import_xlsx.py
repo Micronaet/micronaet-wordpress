@@ -302,7 +302,6 @@ class ProductProductImportWorpdress(orm.Model):
                 'force_price': force_price,
                 'force_min_stock': force_min_stock,
             }
-            import pdb; pdb.set_trace()
             for lang in lang_list:
                 lang_context['lang'] = lang
 
