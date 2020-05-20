@@ -132,7 +132,9 @@ class ProductProductImportWorpdress(orm.Model):
                         ('connector_id', '=', connector_id),
                         ('code', '=', code),
                         ], context=context)
-                    if not category_ids:
+                    if category_ids:
+                        category_cache[code] = category_ids[0]
+                    else:
                         error_list.append(
                             'Codice categoria non trovato: %s' % code)
                         continue
