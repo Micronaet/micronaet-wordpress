@@ -29,16 +29,31 @@
 
                         <field name="file" colspan="4" attrs="{'invisible': [('mode','!=','draft')]}"/>
                         <notebook colspan="4">
-                            <page string="Detttagli">
+                            <page string="Prodotti">
+
                                 <group colspan="4" col="4">
-                                    <separator string="Detttagli:" colspan="4"/>
-                                    <button name="extract_line_in_tree" string="Passa a lista" type="object" />
+                                    <separator string="Dettaglio:" colspan="4"/>
+                                    <button name="extract_product_in_tree" string="Passa a lista" type="object" />
                                     <field name="product_ids" colspan="4" nolabel="1">
                                         <tree string="Prodotti:" editable="bottom">
                                              <field name="default_code" />
                                              <field name="name" />
                                              <field name="uom_id" />
                                              <field name="state" />
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                            <page string="Prodotti web">
+                                <group colspan="4" col="4">
+                                    <separator string="Dettaglio:" colspan="4"/>
+                                    <button name="extract_line_in_tree" string="Passa a lista" type="object" />
+                                    <field name="web_ids" colspan="4" nolabel="1">
+                                        <tree string="Prodotti web:" editable="bottom">
+                                             <field name="product_id" />
+                                             <field name="force_name" />
+                                             <field name="force_description" />
+                                             <field name="force_ean" />
                                         </tree>
                                     </field>
                                 </group>

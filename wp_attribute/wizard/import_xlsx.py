@@ -41,7 +41,7 @@ class ProductProductImportWorpdress(orm.Model):
     _order = 'name'
 
     # Button event:
-    def extract_line_in_tree(self, cr, uid, ids, context=None):
+    def extract_product_in_tree(self, cr, uid, ids, context=None):
         """ Extract element in list
         """
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
@@ -57,6 +57,27 @@ class ProductProductImportWorpdress(orm.Model):
             'view_id': False,
             'views': [(False, 'tree'), (False, 'form')],
             'domain': [('id', 'in', product_ids)],
+            'context': context,
+            'target': 'current',  # 'new'
+            'nodestroy': False,
+            }
+
+    def extract_line_in_tree(self, cr, uid, ids, context=None):
+        """ Extract element in list
+        """
+        current_proxy = self.browse(cr, uid, ids, context=context)[0]
+        web_ids = [item.id for item in current_proxy.web_ids]
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Dettaglio prodotti web'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            # 'res_id': 1,
+            'res_model': 'product.product.web.server',
+            'view_id': False,
+            'views': [(False, 'tree'), (False, 'form')],
+            'domain': [('id', 'in', web_ids)],
             'context': context,
             'target': 'current',  # 'new'
             'nodestroy': False,
@@ -128,7 +149,6 @@ class ProductProductImportWorpdress(orm.Model):
         ws = wb.sheet_by_index(0)
 
         error = ''
-        import pdb; pdb.set_trace()
         for row in range(row_start, ws.nrows):
             lang_text = {IT: {}, EN: {}}
 
@@ -227,30 +247,60 @@ class ProductProductImportWorpdress(orm.Model):
                         cr, uid, product_data, context=lang_context)]
             product_id = product_ids[0]
 
-        # ---------------------------------------------------------------------
-        #                     Web product operation:
-        # ---------------------------------------------------------------------
-        web_ids = web_pool.search(cr, uid, [
-            ('connector_id', '=', connector_id),
-            ('product_id', '=', product_id),
-        ], context=context)
+            # -----------------------------------------------------------------
+            #                     Web product operation:
+            # -----------------------------------------------------------------
+            import pdb;
+            pdb.set_trace()
 
-        web_data = {
+            web_ids = web_pool.search(cr, uid, [
+                ('connector_id', '=', connector_id),
+                ('product_id', '=', product_id),
+            ], context=context)
 
-        }
-        for lang in lang_list:
-            lang_context[lang] = lang
+            web_data = {
+                'connector_id': connector_id,
+                'product_id': product_id,
+                'wp_type': 'variable',
+                'published': published,
 
-            web_data.update({
+                # Master management:
+                'wp_parent_template' # Master
+                'wp_parent_id': ,
 
-            })
+                # Foreign keys:
+                #'wp_color_id'
+                #'wordpress_category_ids':
+                # 'material_ids':
 
-            if web_ids:
-                web_pool.write(
-                    cr, uid, web_ids, web_data, context=lang_context)
-            else:
-                web_ids = [web_pool.create(
-                    cr, uid, web_data, context=lang_context)]
+                'lifetime_warranty': lifetime_warranty,
+                'price_multi': multiply,
+                'price_extra': extra_price,
+
+                'weight': weight,
+                # update_wp_volume
+
+                # Force:
+                'force_ean': force_ean,
+                'force_q_x_pack': force_q_x_pack,
+                'force_price': force_price,
+                'force_min_stock': force_min_stock,
+
+            }
+            for lang in lang_list:
+                lang_context[lang] = lang
+
+                web_data.update({
+                    'force_name': lang_text[lang]['force_name'],
+                    'force_description': lang_text[lang]['force_description'],
+                })
+
+                if web_ids:
+                    web_pool.write(
+                        cr, uid, web_ids, web_data, context=lang_context)
+                else:
+                    web_ids = [web_pool.create(
+                        cr, uid, web_data, context=lang_context)]
 
         # ---------------------------------------------------------------------
         #                       Closing operation:
