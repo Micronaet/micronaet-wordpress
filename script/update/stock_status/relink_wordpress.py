@@ -1,24 +1,8 @@
 #!/usr/bin/python
 # '*'coding: utf'8 '*'
 ###############################################################################
-#
-# ODOO (ex OpenERP)
-# Open Source Management Solution
 # Copyright (C) 2001'2015 Micronaet S.r.l. (<https://micronaet.com>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
 ###############################################################################
 
 import os
@@ -33,7 +17,6 @@ from datetime import datetime
 
 # Parameters:
 verbose = False  # Log with extra data
-lang_db = ['it_IT', 'en_US']
 
 # Load WP link DB:
 pickle_file = './log/wp_master_data.p'
@@ -60,7 +43,7 @@ def log_activity(event, mode='info'):
 # -----------------------------------------------------------------------------
 # ODOO entry point:
 # -----------------------------------------------------------------------------
-database = {}
+model_db = {}
 for root, folders, files in os.walk('./config'):
     for filename in files:
         if filename == 'wordpress.cfg':
@@ -87,9 +70,23 @@ for root, folders, files in os.walk('./config'):
             user=user,
             password=pwd,
             )
-
-        database[company] = odoo.model('product.product.web.server')
+        model_db[company] = odoo.model('product.product.web.server')
     break
+
+import pdb; pdb.set_trace()
+for lang in master_db:
+    for sku in master_db[lang]:
+        sku = sku.replace('&nbsp;', ' ')
+        wp_id = master_db[lang][sku]
+        field = 'wp_%s_id' % lang
+
+        for model in model_db:
+            web_ids = model.search([('default_code', '=', sku)])
+            if web_ids:
+                model.write(web_ids, {
+                    field: wp_id,
+                })
+
 
 log_activity('End update ODOO Deadlink ID')
 
