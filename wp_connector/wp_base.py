@@ -1078,7 +1078,7 @@ class ProductProductWebServer(orm.Model):
             'Volume', digits=(16, 3),
             # required=True,
             ),
-        'wp_manual_volume': fields.Boolean('Volume manuale'),
+        'wp_manual_volume': fields.boolean('Volume manuale'),
         # ---------------------------------------------------------------------
 
         'wp_type': fields.selection([
