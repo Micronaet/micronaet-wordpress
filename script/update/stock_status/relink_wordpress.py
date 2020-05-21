@@ -86,7 +86,7 @@ for lang in master_db:
             web_ids = model.search([
                 ('wp_parent_template', '=', True),
                 ('product_id.default_code', '=', sku),
-                (field, '=', wp_id),
+                (field, '!=', wp_id),
             ])
             if web_ids:
                 print '%s [%s]: Update %s with %s: %s' % (
