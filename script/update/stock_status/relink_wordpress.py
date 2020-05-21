@@ -44,7 +44,6 @@ def log_activity(event, mode='info'):
 # ODOO entry point:
 # -----------------------------------------------------------------------------
 model_db = {}
-import pdb; pdb.set_trace()
 for root, folders, files in os.walk('./config'):
     for filename in files:
         if filename == 'wordpress.cfg':
@@ -81,13 +80,19 @@ for lang in master_db:
         wp_id = master_db[lang][sku]
         field = 'wp_%s_id' % lang
 
-        for model in model_db:
-            web_ids = model.search([('default_code', '=', sku)])
+        for company in model_db:
+            model = model_db[company]
+            # Master with sku and WP ID different:
+            web_ids = model.search([
+                ('wp_parent_template', '=', True),
+                ('default_code', '=', sku),
+                (field, '=', wp_id),
+            ])
             if web_ids:
                 model.write(web_ids, {
                     field: wp_id,
                 })
-
+                break  # Exit loop when update
 
 log_activity('End update ODOO Deadlink ID')
 
