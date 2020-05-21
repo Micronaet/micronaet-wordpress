@@ -239,7 +239,7 @@
                                         <field name="pack_p" />
                                         <field name="weight" />
 
-                                        <separator string="Dimensioni prodotto" colspan="4" />
+                                        <separator string="Dimensioni prodotto" colspan="3" />
                                         <button name="update_wp_volume" string="Refresh volume" type="object" colspan="1"  attrs="{'invisible': [('wp_manual_volume', '=', True)]}"/>
                                         <field name="wp_manual_volume" />
                                         <field name="wp_volume" />
