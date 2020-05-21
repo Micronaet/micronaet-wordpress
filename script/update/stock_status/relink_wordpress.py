@@ -44,6 +44,7 @@ def log_activity(event, mode='info'):
 # ODOO entry point:
 # -----------------------------------------------------------------------------
 model_db = {}
+import pdb; pdb.set_trace()
 for root, folders, files in os.walk('./config'):
     for filename in files:
         if filename == 'wordpress.cfg':
