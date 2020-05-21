@@ -85,7 +85,7 @@ for lang in master_db:
             # Master with sku and WP ID different:
             web_ids = model.search([
                 ('wp_parent_template', '=', True),
-                ('default_code', '=', sku),
+                ('product_id.default_code', '=', sku),
                 (field, '=', wp_id),
             ])
             if web_ids:
