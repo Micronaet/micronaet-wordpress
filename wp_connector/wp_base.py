@@ -815,6 +815,7 @@ class ProductProductWebServer(orm.Model):
                             # -------------------------------------------------
                             # LOG on file WP ID for timeout problem
                             # -------------------------------------------------
+                            import pdb: pdb.set_trace()
                             if wp_id:
                                 wp_file.write('%s|%s|%s\n' % (
                                     item.id,
@@ -844,6 +845,7 @@ class ProductProductWebServer(orm.Model):
         # ---------------------------------------------------------------------
         # LOG cleaning operations: Clean all files updated and this log
         # ---------------------------------------------------------------------
+        import pdb; pdb.set_trace()
         wp_file.close()
         for fullname in wp_files:
             try:
