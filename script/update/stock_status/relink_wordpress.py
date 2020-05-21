@@ -17,7 +17,7 @@ from datetime import datetime
 
 # Parameters:
 verbose = False  # Log with extra data
-demo = True
+demo = False
 # Load WP link DB:
 pickle_file = './log/wp_master_data.p'
 master_db = pickle.load(open(pickle_file, 'rb'))
@@ -73,7 +73,6 @@ for root, folders, files in os.walk('./config'):
         model_db[company] = odoo.model('product.product.web.server')
     break
 
-import pdb; pdb.set_trace()
 total = 0
 for lang in master_db:
     for sku in master_db[lang]:
