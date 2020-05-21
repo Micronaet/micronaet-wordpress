@@ -90,14 +90,16 @@ for lang in master_db:
                 # (field, '!=', wp_id),
                 (field, '=', 0),
             ])
+            # TODO double?
             if web_ids:
                 total += 1
                 print '%s [%s]: Update %s with %s: %s' % (
                     company, lang, sku, field, wp_id,
                 )
-                #model.write(web_ids, {
-                #    field: wp_id,
-                #})
+
+                model.write(web_ids, {
+                    field: wp_id,
+                })
                 break  # Exit loop when update
 
 print('End update ODOO Deadlink ID: %s' % total)
