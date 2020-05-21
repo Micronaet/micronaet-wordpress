@@ -548,6 +548,7 @@ class ProductProductWebServer(orm.Model):
         """
         default_lang = 'it'
 
+        """
         # ---------------------------------------------------------------------
         # LOG WP ID bugfix WP Timeout:
         # ---------------------------------------------------------------------
@@ -591,6 +592,7 @@ class ProductProductWebServer(orm.Model):
         wp_files.append(wp_filename)  # Also this in remove list
         wp_file = open(wp_filename, 'w')
         # ---------------------------------------------------------------------
+        """
 
         # Data publish selection (remove this part from publish:
         unpublished = []
@@ -812,6 +814,7 @@ class ProductProductWebServer(orm.Model):
                             _logger.warning('Product %s lang %s created!' % (
                                 wp_id, lang))
 
+                            """
                             # -------------------------------------------------
                             # LOG on file WP ID for timeout problem
                             # -------------------------------------------------
@@ -824,7 +827,7 @@ class ProductProductWebServer(orm.Model):
                                 ))
                                 wp_file.flush()
                             # -------------------------------------------------
-
+                            """
                     except:
                         raise osv.except_osv(
                             _('Error'),
@@ -842,6 +845,7 @@ class ProductProductWebServer(orm.Model):
                     translation_lang[default_code] = {}
                 translation_lang[default_code][lang] = (wp_id, name)
 
+        """
         # ---------------------------------------------------------------------
         # LOG cleaning operations: Clean all files updated and this log
         # ---------------------------------------------------------------------
@@ -854,7 +858,7 @@ class ProductProductWebServer(orm.Model):
             except:
                 _logger.warning('Error cleaning files used: %s' % fullname)
         # ---------------------------------------------------------------------
-
+        """
         return translation_lang
 
     # -------------------------------------------------------------------------
