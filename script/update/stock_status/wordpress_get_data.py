@@ -52,9 +52,11 @@ wcapi = woocommerce.API(
 # -----------------------------------------------------------------------------
 variant_db = {}
 master_db = {}
+master_check_double = {}
+
 parameter = {'per_page': 40, 'page': 1}
 total = 0
-import pdb; pdb.set_trace()
+
 while True:
     print 'Reading page %s [Block %s]' % (
         parameter['page'], parameter['per_page'])
@@ -73,34 +75,38 @@ while True:
 
     for record in json_reply:
         product_id = record['id']
-        lang = record['lang'] 
-        sku = record['sku'].replace('&nbsp;', ' ') 
+        lang = record['lang']
+        sku = record['sku'].replace('&nbsp;', ' ')
         print '    - SKU:', sku, '    Lang:', lang
         images = record.get('images', False)
-        
+
         if lang not in variant_db:
              variant_db[lang] = {}
-             
+
         variation_parameter = {'per_page': 50, 'page': 1} # Only one call!
         call = 'products/%s/variations' % product_id
         variation_reply = wcapi.get(call, params=variation_parameter)
-        
+
+        # ---------------------------------------------------------------------
         # Master part:
+        # ---------------------------------------------------------------------
         if lang not in master_db:
              master_db[lang] = {}
+        if sku in master_db[lang]:  # Yet present
+            master_check_double.append((lang, sku))
         master_db[lang][sku] = product_id
-
+        continue  # TODO remove
         for variation in variation_reply.json():
             total += 1
             variation_id = variation['id']
 
-            variation_sku = variation['sku'].replace('&nbsp;', ' ') 
+            variation_sku = variation['sku'].replace('&nbsp;', ' ')
             variation_image = variation.get('image', False)
 
             variant_db[lang][variation_sku] = {
-                'product_id': product_id, 
+                'product_id': product_id,
                 'product_sku': sku,
-                'variation_id': variation_id,                
+                'variation_id': variation_id,
                 'vriation_sku': variation_sku,
                 'product_images': images,
                 'variation_image': variation_image,
@@ -115,3 +121,5 @@ log_activity('End get Wordpress product status [%s]' % wordpress_url)
 # Save master dump file:
 pickle.dump(master_db, open(pickle_master_file, 'wb'))
 
+print 'Doppioni:'
+print master_check_double
