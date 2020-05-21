@@ -52,7 +52,7 @@ wcapi = woocommerce.API(
 # -----------------------------------------------------------------------------
 variant_db = {}
 master_db = {}
-master_check_double = {}
+master_check_double = []
 
 parameter = {'per_page': 40, 'page': 1}
 total = 0
@@ -95,6 +95,7 @@ while True:
         if sku in master_db[lang]:  # Yet present
             master_check_double.append((lang, sku))
         master_db[lang][sku] = product_id
+        continue # TODO remove
         for variation in variation_reply.json():
             total += 1
             variation_id = variation['id']
@@ -121,4 +122,4 @@ log_activity('End get Wordpress product status [%s]' % wordpress_url)
 pickle.dump(master_db, open(pickle_master_file, 'wb'))
 
 print 'Doppioni:'
-print master_check_double
+print '%s' % (master_check_double, )
