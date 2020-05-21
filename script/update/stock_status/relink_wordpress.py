@@ -74,6 +74,7 @@ for root, folders, files in os.walk('./config'):
     break
 
 import pdb; pdb.set_trace()
+total = 0
 for lang in master_db:
     for sku in master_db[lang]:
         sku = sku.replace('&nbsp;', ' ')
@@ -86,9 +87,11 @@ for lang in master_db:
             web_ids = model.search([
                 ('wp_parent_template', '=', True),
                 ('product_id.default_code', '=', sku),
-                (field, '!=', wp_id),
+                # (field, '!=', wp_id),
+                (field, '=', 0),
             ])
             if web_ids:
+                total += 1
                 print '%s [%s]: Update %s with %s: %s' % (
                     company, lang, sku, field, wp_id,
                 )
@@ -97,5 +100,5 @@ for lang in master_db:
                 #})
                 break  # Exit loop when update
 
-log_activity('End update ODOO Deadlink ID')
+log_activity('End update ODOO Deadlink ID: %s' % total)
 
