@@ -55,6 +55,22 @@
                 </tree>
             </field>
         </record>
+        <record model="ir.ui.view" id="view_connector_product_color_dot_bottom_tree">
+            <field name="name">connector.product.color.dot.bottom.tree</field>
+            <field name="model">connector.product.color.dot</field>
+            <field name="arch" type="xml">
+                <tree string="String" colors="grey:not_active==True" editable="bottom">
+                    <field name="connector_id" />
+                    <field name="not_active" />                    
+                    <field name="name" />
+                    <field name="code" />
+                    <!--<field name="description" />-->
+                    <field name="hint" />
+                    <field name="image_name" />
+                    <!--<field name="dropbox_image" />-->
+                </tree>
+            </field>
+        </record>
         <record model="ir.ui.view" id="view_connector_product_color_dot_form">
             <field name="name">connector.product.color.dot.form</field>
             <field name="model">connector.product.color.dot</field>
@@ -87,6 +103,15 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_connector_product_color_dot_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+        <record model="ir.actions.act_window" id="action_connector_product_color_dot_bottom">
+            <field name="name">Dot colore lista</field>
+            <field name="res_model">connector.product.color.dot</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_connector_product_color_dot_bottom_tree"/>
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
@@ -359,6 +384,13 @@
             action="action_connector_product_color_dot"
             sequence="30"
             />
+            <menuitem 
+                parent="menu_action_connector_product_color_dot" 
+                id="menu_action_connector_product_color_dot_bottom" 
+                action="action_connector_product_color_dot_bottom"
+                sequence="10"
+                />
+            
         
     </data>
 </openerp>

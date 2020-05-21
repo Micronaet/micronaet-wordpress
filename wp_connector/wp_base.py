@@ -875,7 +875,7 @@ class ProductProductWebServer(orm.Model):
                     continue
                 volume = l * p * h
 
-            volume = volume / q_x_pack * multi # / 1000000.0
+            volume = volume / q_x_pack * multi  # / 1000000.0
             self.write(cr, uid, [item.id], {
                 'wp_volume': volume,
                 }, context=context)
