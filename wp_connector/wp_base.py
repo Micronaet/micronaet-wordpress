@@ -584,11 +584,11 @@ class ProductProductWebServer(orm.Model):
             _logger.info('Updating with: %s' % filename)
 
         # New log file for this session:
-        wp_files.append(wp_filename)  # Also this in remove list
         wp_filename = os.path.join(
             wp_path,
             ('%s.log' % datetime.now()).replace('-', '').replace(':', ''),
         )
+        wp_files.append(wp_filename)  # Also this in remove list
         wp_file = open(wp_filename, 'w')
         # ---------------------------------------------------------------------
 
