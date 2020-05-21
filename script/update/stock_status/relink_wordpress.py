@@ -101,4 +101,5 @@ for lang in master_db:
                 break  # Exit loop when update
 
 log_activity('End update ODOO Deadlink ID: %s' % total)
+print('End update ODOO Deadlink ID: %s' % total)
 
