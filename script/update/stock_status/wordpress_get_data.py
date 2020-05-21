@@ -54,6 +54,7 @@ variant_db = {}
 master_db = {}
 parameter = {'per_page': 40, 'page': 1}
 total = 0
+import pdb; pdb.set_trace()
 while True:
     print 'Reading page %s [Block %s]' % (
         parameter['page'], parameter['per_page'])
@@ -111,5 +112,6 @@ log_activity('Update dump file [%s]' % pickle_file)
 pickle.dump(variant_db, open(pickle_file, 'wb'))
 log_activity('End get Wordpress product status [%s]' % wordpress_url)
 
+# Save master dump file:
 pickle.dump(master_db, open(pickle_master_file, 'wb'))
 
