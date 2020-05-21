@@ -17,7 +17,7 @@ from datetime import datetime
 
 # Parameters:
 verbose = False  # Log with extra data
-
+demo = True
 # Load WP link DB:
 pickle_file = './log/wp_master_data.p'
 master_db = pickle.load(open(pickle_file, 'rb'))
@@ -87,8 +87,8 @@ for lang in master_db:
             web_ids = model.search([
                 ('wp_parent_template', '=', True),
                 ('product_id.default_code', '=', sku),
-                # (field, '!=', wp_id),
-                (field, '=', 0),
+                (field, '!=', wp_id),
+                #(field, '=', 0),
             ])
             # TODO double?
             if web_ids:
@@ -96,10 +96,10 @@ for lang in master_db:
                 print '%s [%s]: Update %s with %s: %s' % (
                     company, lang, sku, field, wp_id,
                 )
-
-                model.write(web_ids, {
-                    field: wp_id,
-                })
+                if not demo:
+                    model.write(web_ids, {
+                        field: wp_id,
+                    })
                 break  # Exit loop when update
 
 print('End update ODOO Deadlink ID: %s' % total)
