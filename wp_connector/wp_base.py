@@ -555,7 +555,7 @@ class ProductProductWebServer(orm.Model):
 
         # Prepare folder:
         wp_path = os.path.expanduser('~/wordpress/log')
-        os.system('mkdir -s %s' % wp_path)
+        os.system('mkdir -p %s' % wp_path)
 
         # Read fast all files:
         for root, folders, files in os.walk(wp_path):
@@ -741,7 +741,7 @@ class ProductProductWebServer(orm.Model):
                         'weight_aditional_info': item.weight_aditional_info,
                         })
 
-                else: # Other lang (only translation
+                else:  # Other lang (only translation
                     if not wp_it_id:
                         _logger.error(
                             'Product %s without default IT [%s]' % (
