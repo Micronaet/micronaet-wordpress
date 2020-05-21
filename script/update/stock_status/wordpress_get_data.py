@@ -123,3 +123,10 @@ pickle.dump(master_db, open(pickle_master_file, 'wb'))
 
 print 'Doppioni:'
 print '%s' % (master_check_double, )
+
+doppi = []
+for lang, sku in master_check_double:
+     if sku not in doppi:
+         doppi.append(sku)
+
+print doppi
