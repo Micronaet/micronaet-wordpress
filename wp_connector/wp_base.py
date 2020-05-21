@@ -1056,10 +1056,10 @@ class ProductProductWebServer(orm.Model):
 
         'emotional_short_description': fields.related(
             'product_id', 'emotional_short_description', type='text',
-            string='Emozionale breve'),
+            string='Emozionale breve', translate=True),
         'emotional_description': fields.related(
             'product_id', 'emotional_description', type='text',
-            string='Emozionale lunga'),
+            string='Emozionale lunga', translate=True),
 
         'product_weight_net': fields.related(
             'product_id', 'weight_net', type='float',

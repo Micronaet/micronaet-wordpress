@@ -266,7 +266,7 @@
                                     <group colspan="4" col="4">
                                         <separator string="Emozionale breve" colspan="4"/>
                                         <field name="emotional_short_description" colspan="4" nolabel="1"/>
-                                        <separator string="Emozionale lungha" colspan="4"/>
+                                        <separator string="Emozionale lunga" colspan="4"/>
                                         <field name="emotional_description" colspan="4" nolabel="1"/>
                                     </group>
                                 </page>
