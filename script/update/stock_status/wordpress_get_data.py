@@ -77,7 +77,7 @@ while True:
         product_id = record['id']
         lang = record['lang']
         sku = record['sku'].replace('&nbsp;', ' ')
-        print '    - SKU:', sku, '    Lang:', lang
+        print('    - SKU:', sku, '    Lang:', lang)
         images = record.get('images', False)
 
         if lang not in variant_db:
@@ -111,7 +111,8 @@ while True:
                 'product_images': images,
                 'variation_image': variation_image,
                 }
-            print '%s Variant loading ...' % total, 'Variation:', variation_sku
+            print(
+                '%s Variant loading ...' % total, 'Variation:', variation_sku)
             # variant_db[lang][variation_sku]
 
 log_activity('Update dump file [%s]' % pickle_file)
@@ -121,12 +122,12 @@ log_activity('End get Wordpress product status [%s]' % wordpress_url)
 # Save master dump file:
 pickle.dump(master_db, open(pickle_master_file, 'wb'))
 
-print 'Doppioni:'
-print '%s' % (master_check_double, )
+print('Doppioni:')
+print('%s' % (master_check_double, ))
 
 doppi = []
 for lang, sku in master_check_double:
      if sku not in doppi:
          doppi.append(sku)
 
-print doppi
+print(doppi)

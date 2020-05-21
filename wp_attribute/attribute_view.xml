@@ -17,7 +17,7 @@
             <field name="model">product.product.web.server</field>
             <field name="priority" eval="40"/>
             <field name="arch" type="xml">
-                
+
             </field>
         </record>-->
 
@@ -27,17 +27,17 @@
             <field name="inherit_id" ref="connector_web_base.view_connector_server_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//header/button" position="after">
-                    <button name="publish_attribute_now" string="Publish attribute" type="object" 
-                        confirm="Export product attribute where managed, confirm?" 
+                    <button name="publish_attribute_now" string="Publish attribute" type="object"
+                        confirm="Export product attribute where managed, confirm?"
                         class="oe_highlight" icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
-                </xpath>                
+                </xpath>
                 <field name="name" position="after">
                     <field name="brand_code" />
                     <field name="dot_image_path" colspan="4" />
-                </field>                
+                </field>
             </field>
-        </record>    
-        
+        </record>
+
         <!--connector.product.color.dot-->
         <record model="ir.ui.view" id="view_connector_product_color_dot_tree">
             <field name="name">connector.product.color.dot.tree</field>
@@ -45,7 +45,7 @@
             <field name="arch" type="xml">
                 <tree string="String" colors="grey:not_active==True">
                     <field name="connector_id" />
-                    <field name="not_active" />                    
+                    <field name="not_active" />
                     <field name="name" />
                     <field name="code" />
                     <!--<field name="description" />-->
@@ -61,7 +61,7 @@
             <field name="arch" type="xml">
                 <tree string="String" colors="grey:not_active==True" editable="bottom">
                     <field name="connector_id" />
-                    <field name="not_active" />                    
+                    <field name="not_active" />
                     <field name="name" />
                     <field name="code" />
                     <!--<field name="description" />-->
@@ -75,23 +75,23 @@
             <field name="name">connector.product.color.dot.form</field>
             <field name="model">connector.product.color.dot</field>
             <field name="arch" type="xml">
-                <form string="Colori Dot">                
-                    <sheet> 
-                        <group colspan="4" col="4">                
+                <form string="Colori Dot">
+                    <sheet>
+                        <group colspan="4" col="4">
                             <field name="connector_id" />
                             <field name="code" />
-                            
-                            <field name="not_active" />                    
+
+                            <field name="not_active" />
                             <field name="name" />
 
                             <field name="description" />
                             <field name="hint" />
-                            
+
                             <separator string="Image not present:" colspan="4" attrs="{'invisible': [('image_present','=',True)]}" />
                             <separator string="Image present:" colspan="4" attrs="{'invisible': [('image_present','=',False)]}" />
-                            <field name="image_name" />                    
-                            <field name="image_fullname" />                    
-                            <field name="image_present" invisible="1" />        
+                            <field name="image_name" />
+                            <field name="image_fullname" />
+                            <field name="image_present" invisible="1" />
                         </group>
                     </sheet>
                 </form>
@@ -115,7 +115,7 @@
             <field name="context">{}</field>
             <field name="domain">[]</field>
         </record>
-        
+
         <!--product.product.web.server-->
         <record model="ir.ui.view" id="view_product_product_web_server_integration_search">
             <field name="name">product.product.web.server.parent.search</field>
@@ -127,7 +127,7 @@
                 </field>
             </field>
         </record>
-        
+
         <record model="ir.ui.view" id="view_product_product_web_server_wp_parent_tree">
             <field name="name">product.product.web.server.parent.tree</field>
             <field name="model">product.product.web.server</field>
@@ -140,7 +140,7 @@
                     <field name="wp_color_id" />
                     <field name="wp_type" />
                     <field name="wp_parent_code" />
-                    <field name="variant_ids" />                    
+                    <field name="variant_ids" />
                     <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]"/>
                     <field name="wp_it_id" invisible="1"/>
                     <field name="wp_en_id" invisible="1" />
@@ -151,10 +151,10 @@
                     <field name="force_price"/>
                     <field name="force_min_stock"/>-->
                     <button name="publish_master_now" string="Publish this now" type="object" icon="gtk-refresh"/>
-                    <button name="publish_master_now" string="Non pubblicato" type="object" icon="gtk-new" attrs="{'invisible': ['|', ('wp_it_id', '!=', 0), ('wp_en_id', '!=', 0)]}"/>                    
-                </tree>           
-            </field>            
-        </record>        
+                    <button name="publish_master_now" string="Non pubblicato" type="object" icon="gtk-new" attrs="{'invisible': ['|', ('wp_it_id', '!=', 0), ('wp_en_id', '!=', 0)]}"/>
+                </tree>
+            </field>
+        </record>
         <record model="ir.ui.view" id="view_product_product_web_server_wp_variant_tree">
             <field name="name">product.product.web.server.variant.tree</field>
             <field name="model">product.product.web.server</field>
@@ -170,9 +170,9 @@
                     <field name="wp_parent_id" readonly="1"/>
                     <field name="wp_parent_code" />
                     <!--<button name="set_as_master_product" string="Diventa master" type="object" attrs="{'invisible': [('wp_parent_code','=',True)]}"/>-->
-                </tree>           
-            </field>            
-        </record>        
+                </tree>
+            </field>
+        </record>
 
         <record model="ir.ui.view" id="view_product_product_web_server_wp_full_detail_form">
             <field name="name">product.product.web.server.full.detail.form</field>
@@ -184,12 +184,12 @@
                     </header>
                     <sheet>
                         <group colspan="4" col="4">
-                            <field name="connector_id" />  
+                            <field name="connector_id" />
                             <field name="published" />
 
                             <field name="product_id" required="1"/>
                             <field name="wp_parent_code" />
-                            
+
                             <field name="brand_id" />
 
                             <notebook colspan="4">
@@ -202,7 +202,7 @@
                                         <field name="wp_color_id" />
 
                                         <field name="wordpress_categ_ids" domain="[('connector_id','=',connector_id),('enabled','=',True)]" widget="many2many_tags" colspan="4"/>
-                                        
+
                                         <field name="lst_price" />
                                         <field name="lifetime_warranty" />
 
@@ -227,11 +227,11 @@
                                         <field name="product_pack_l" />
                                         <field name="product_pack_h" />
                                         <field name="product_pack_p" />
-                                        
+
                                         <field name="product_weight" />
                                         <!--<field name="product_weight_net" />-->
-                                        
-                                        <field name="product_q_x_pack" />                                        
+
+                                        <field name="product_q_x_pack" />
 
                                         <separator string="Preview del sito:" colspan="4" /><!--attrs="{'invisible': [('model_package_id','!=',False)]}"-->
                                         <field name="pack_l" />
@@ -239,12 +239,13 @@
                                         <field name="pack_p" />
                                         <field name="weight" />
 
-                                        <separator string="Dimensioni prodotto" colspan="3" />
-                                        <button name="update_wp_volume" string="Refresh volume" type="object" colspan="1"/>
-                                        <field name="weight_aditional_info" colspan="4" nolabel="1"/>
-                                        
-                                        <field name="q_x_pack" />                                        
+                                        <separator string="Dimensioni prodotto" colspan="4" />
+                                        <button name="update_wp_volume" string="Refresh volume" type="object" colspan="1"  attrs="{'invisible': [('wp_manual_volume', '=', True)]}"/>
+                                        <field name="wp_manual_volume" />
                                         <field name="wp_volume" />
+                                        <field name="weight_aditional_info" colspan="4" nolabel="1"/>
+
+                                        <field name="q_x_pack" />
                                         <!--<field name="weight_net" />-->
 
                                     </group>
@@ -253,23 +254,32 @@
                                     <group colspan="4" col="4">
                                         <field name="force_name"/>
                                         <field name="force_description"/>
-                                        
+
                                         <field name="force_q_x_pack"/>
                                         <field name="force_ean13"/>
-                                        
+
                                         <field name="force_price"/>
                                         <field name="force_min_stock"/>
                                     </group>
                                 </page>
+                                <page string="Emozionali">
+                                    <group colspan="4" col="4">
+                                        <separator string="Emozionale breve" colspan="4"/>
+                                        <field name="emotional_short_description" colspan="4" nolabel="1"/>
+                                        <separator string="Emozionale lungha" colspan="4"/>
+                                        <field name="emotional_description" colspan="4" nolabel="1"/>
+                                    </group>
+                                </page>
                             </notebook>
+
                             <separator string="Wordpress link:" colspan="4"/>
                             <field name="wp_it_id" readonly="1"/>
                             <field name="wp_en_id" readonly="1"/>
-                        </group>    
+                        </group>
                     </sheet>
-                </form>           
+                </form>
             </field>
-        </record>        
+        </record>
         <record model="ir.ui.view" id="view_product_product_web_server_wp_parent_form">
             <field name="name">product.product.web.server.parent.form</field>
             <field name="model">product.product.web.server</field>
@@ -282,29 +292,29 @@
                     </header>
                     <sheet>
                         <group colspan="4" col="4">
-                            <field name="connector_id" readonly="1"/>  
+                            <field name="connector_id" readonly="1"/>
                             <newline/>
 
                             <field name="published" readonly="1"/>
                             <field name="wp_type" readonly="1"/>
-                                                  
+
                             <field name="product_id" readonly="1" />
                             <field name="wp_parent_code" />
 
                             <field name="wp_color_id" />
                             <newline/>
-                            
+
                             <field name="wordpress_categ_ids" domain="[('connector_id','=',connector_id),('enabled','=',True)]" widget="many2many_tags" colspan="4"/>
 
                             <!--<field name="force_name"/>
                             <field name="force_description"/>
-                            
+
                             <field name="force_q_x_pack"/>
                             <field name="force_ean13"/>
-                            
+
                             <field name="force_price"/>
                             <field name="force_min_stock"/>-->
-                            
+
                             <notebook colspan="4">
                                 <page string="Variations:">
                                      <group colspan="4" col="4">
@@ -316,10 +326,10 @@
                                                 <field name="product_id" readonly="1" />
                                                 <field name="force_q_x_pack" readonly="1"/>
                                                 <field name="force_ean13" readonly="1"/>
-                                                <field name="force_price" readonly="1"/>  
-                                                <button name="open_master_variant" string="Apri" type="object" />                                  
+                                                <field name="force_price" readonly="1"/>
+                                                <button name="open_master_variant" string="Apri" type="object" />
                                             </tree>
-                                        </field>                                         
+                                        </field>
                                      </group>
                                 </page>
                                 <page string="Linked:">
@@ -328,16 +338,16 @@
                                      </group>
                                 </page>
                             </notebook>
-                            
+
                             <separator string="Wordpress link:" colspan="3"/>
                             <button name="clean_wp_reference" string="Clean" type="object" confirm="Clean WP reference only if this product is deleted from WP, confirm?" colspan="1" attrs="{'invisible': [('wp_it_id','=',0), ('wp_en_id','=',0)]}"/>
                             <field name="wp_it_id" groups="wp_connector.group_wp_product_manager"/>
                             <field name="wp_en_id" groups="wp_connector.group_wp_product_manager"/>
-                        </group>    
+                        </group>
                     </sheet>
-                </form>           
+                </form>
             </field>
-        </record>        
+        </record>
         <record model="ir.actions.act_window" id="action_product_product_parent_tree">
             <field name="name">Prodotto master</field>
             <field name="res_model">product.product.web.server</field>
@@ -366,31 +376,31 @@
             <field name="domain">[('connector_id.wordpress', '=', True)]</field>
         </record>
 
-        <menuitem 
-            parent="wp_connector.menu_connector_worppress_root" 
-            id="menu_product_product_parent" 
+        <menuitem
+            parent="wp_connector.menu_connector_worppress_root"
+            id="menu_product_product_parent"
             action="action_product_product_parent_tree"
             sequence="10"
             />
-            <menuitem 
-                parent="menu_product_product_parent" 
-                id="menu_product_product_variant" 
+            <menuitem
+                parent="menu_product_product_parent"
+                id="menu_product_product_variant"
                 action="action_product_product_variant_tree"
                 sequence="10"
                 />
-        <menuitem 
-            parent="wp_connector.menu_connector_worppress_configuration" 
-            id="menu_action_connector_product_color_dot" 
+        <menuitem
+            parent="wp_connector.menu_connector_worppress_configuration"
+            id="menu_action_connector_product_color_dot"
             action="action_connector_product_color_dot"
             sequence="30"
             />
-            <menuitem 
-                parent="menu_action_connector_product_color_dot" 
-                id="menu_action_connector_product_color_dot_bottom" 
+            <menuitem
+                parent="menu_action_connector_product_color_dot"
+                id="menu_action_connector_product_color_dot_bottom"
                 action="action_connector_product_color_dot_bottom"
                 sequence="10"
                 />
-            
-        
+
+
     </data>
 </openerp>

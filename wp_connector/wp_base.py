@@ -845,20 +845,6 @@ class ProductProductWebServer(orm.Model):
                     translation_lang[default_code] = {}
                 translation_lang[default_code][lang] = (wp_id, name)
 
-        """
-        # ---------------------------------------------------------------------
-        # LOG cleaning operations: Clean all files updated and this log
-        # ---------------------------------------------------------------------
-        import pdb; pdb.set_trace()
-        wp_file.close()
-        for fullname in wp_files:
-            try:
-                os.remove(fullname)
-                _logger.warning('Clean files used: %s' % fullname)
-            except:
-                _logger.warning('Error cleaning files used: %s' % fullname)
-        # ---------------------------------------------------------------------
-        """
         return translation_lang
 
     # -------------------------------------------------------------------------
@@ -927,6 +913,10 @@ class ProductProductWebServer(orm.Model):
         """
         for item in self.browse(cr, uid, ids, context=context):
             product = item.product_id
+            if item.wp_manual_volume:
+                _logger.warning(
+                    'Manual volume not update: %s' % product.default_code)
+                continue
             multi = item.price_multi or 1
 
             # Multipack:
@@ -1064,6 +1054,13 @@ class ProductProductWebServer(orm.Model):
         'product_pack_p': fields.related(
             'product_id', 'pack_p', type='float', string='Pack P prodotto'),
 
+        'emotional_short_description': fields.related(
+            'product_id', 'emotional_short_description', type='text',
+            string='Emozionale breve'),
+        'emotional_description': fields.related(
+            'product_id', 'emotional_description', type='text',
+            string='Emozionale lunga'),
+
         'product_weight_net': fields.related(
             'product_id', 'weight_net', type='float',
             string='Peso lordo prodotto'),
@@ -1081,6 +1078,7 @@ class ProductProductWebServer(orm.Model):
             'Volume', digits=(16, 3),
             # required=True,
             ),
+        'wp_manual_volume': fields.Boolean('Volume manuale'),
         # ---------------------------------------------------------------------
 
         'wp_type': fields.selection([

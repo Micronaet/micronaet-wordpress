@@ -312,7 +312,8 @@
                     <field name="wp_type" />
                     <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]"/>
                     <field name="wp_volume" />
-                    <button name="update_wp_volume" string="Refresh volume" type="object" icon="gtk-refresh"/>
+                    <field name="wp_manual_volume" />
+                    <button name="update_wp_volume" string="Refresh volume" type="object" icon="gtk-refresh" attrs="{'invisible': [('wp_manual_volume', '=', True)]}"/>
                     <field name="force_name"/>
                     <field name="force_description"/>
                     <field name="force_q_x_pack"/>
