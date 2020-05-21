@@ -24,6 +24,7 @@
 import os
 import logging
 import woocommerce
+from datetime import datetime
 from openerp.osv import fields, osv, expression, orm
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
@@ -546,16 +547,49 @@ class ProductProductWebServer(orm.Model):
             Note all product must be published on the same web server!
         """
         default_lang = 'it'
-        wp_filename = os.path.expanduser('~/wp.log')
 
         # ---------------------------------------------------------------------
-        # LOG WP ID bugfix:
+        # LOG WP ID bugfix WP Timeout:
         # ---------------------------------------------------------------------
-        if os.path.isfile(wp_filename):
-            # Previous operation wont' ended correctly
-            for line in open(wp_filename, 'r'):
+        wp_files = []  # Used for delete (end of proc.) and fast read
+
+        # Prepare folder:
+        wp_path = os.path.expanduser('~/wordpress/log')
+        os.system('mkdir -s %s' % wp_path)
+
+        # Read fast all files:
+        for root, folders, files in os.walk(wp_path):
+            for filename in files:
+                if filename[-3:] != 'log':
+                    _logger.warning('No WP log file: %s [jump]' % filename)
+                wp_files.append(os.path.join(root, filename))
+            break  # only this folder
+
+        import pdb; pdb.set_trace()
+        # TODO manage externally not during thi operation?
+        for fullname in wp_files:
+            _logger.info('Updating with: %s' % filename)
+            this_log = open(fullname, 'r')
+            for line in this_log:
+                line = line.strip()
+                if not line:
+                    continue
+
+                # Update ID:
                 web_id, lang, wp_id = line.split('|')
-        wp_file = open('')
+                self.write(cr, uid, [int(web_id)], {
+                    'wp_%s_id' % lang: int(wp_id),
+                }, context=context)
+            this_log.close()
+            _logger.info('Updating with: %s' % filename)
+
+        # New log file for this session:
+        wp_files.append(wp_filename)  # Also this in remove list
+        wp_filename = os.path.join(
+            wp_path,
+            ('%s.log' % datetime.now()).replace('-', '').replace(':', ''),
+        )
+        wp_file = open(wp_filename, 'w')
         # ---------------------------------------------------------------------
 
         # Data publish selection (remove this part from publish:
@@ -777,8 +811,19 @@ class ProductProductWebServer(orm.Model):
                             wp_id = reply['id']
                             _logger.warning('Product %s lang %s created!' % (
                                 wp_id, lang))
+
+                            # -------------------------------------------------
                             # LOG on file WP ID for timeout problem
-                            wp_file.write('%s|%s|%s')
+                            # -------------------------------------------------
+                            if wp_id:
+                                wp_file.write('%s|%s|%s\n' % (
+                                    item.id,
+                                    lang,
+                                    wp_id,
+                                ))
+                                wp_file.flush()
+                            # -------------------------------------------------
+
                     except:
                         raise osv.except_osv(
                             _('Error'),
@@ -795,6 +840,19 @@ class ProductProductWebServer(orm.Model):
                 if default_code not in translation_lang:
                     translation_lang[default_code] = {}
                 translation_lang[default_code][lang] = (wp_id, name)
+
+        # ---------------------------------------------------------------------
+        # LOG cleaning operations: Clean all files updated and this log
+        # ---------------------------------------------------------------------
+        wp_file.close()
+        for fullname in wp_files:
+            try:
+                os.remove(fullname)
+                _logger.warning('Clean files used: %s' % fullname)
+            except:
+                _logger.warning('Error cleaning files used: %s' % fullname)
+        # ---------------------------------------------------------------------
+
         return translation_lang
 
     # -------------------------------------------------------------------------
