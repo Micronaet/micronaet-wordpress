@@ -12,6 +12,7 @@ from datetime import datetime
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
 pickle_file = './log/wp_data.p'
+pickle_master_file = './log/wp_master_data.p'
 activity_file = './log/activity.log'
 activity_f = open(activity_file, 'a')
 
@@ -50,6 +51,7 @@ wcapi = woocommerce.API(
 # Get product - variant status:
 # -----------------------------------------------------------------------------
 variant_db = {}
+master_db = {}
 parameter = {'per_page': 40, 'page': 1}
 total = 0
 while True:
@@ -82,6 +84,11 @@ while True:
         call = 'products/%s/variations' % product_id
         variation_reply = wcapi.get(call, params=variation_parameter)
         
+        # Master part:
+        if lang not in master_db:
+             master_db[lang] = {}
+        master_db[lang][sku] = product_id
+        
         for variation in variation_reply.json():
             total += 1
             variation_id = variation['id']
@@ -103,4 +110,6 @@ while True:
 log_activity('Update dump file [%s]' % pickle_file)
 pickle.dump(variant_db, open(pickle_file, 'wb'))
 log_activity('End get Wordpress product status [%s]' % wordpress_url)
+
+pickle.dump(master_db, open(pickle_master_file, 'wb'))
 
