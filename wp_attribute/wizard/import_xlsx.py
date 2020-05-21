@@ -438,7 +438,7 @@ class ProductProductImportWorpdress(orm.Model):
     _defaults = {
         'name':
             lambda *a: _('Imported: %s') % datetime.now().strftime(
-                DEFAULT_SERVER_DATE_FORMAT),
+                DEFAULT_SERVER_DATETIME_FORMAT),
         'mode': lambda *x: 'draft',
         'from_line': lambda *x: 1,
         }
