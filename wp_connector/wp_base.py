@@ -21,6 +21,7 @@
 #
 ###############################################################################
 
+import os
 import logging
 import woocommerce
 from openerp.osv import fields, osv, expression, orm
@@ -545,6 +546,17 @@ class ProductProductWebServer(orm.Model):
             Note all product must be published on the same web server!
         """
         default_lang = 'it'
+        wp_filename = os.path.expanduser('~/wp.log')
+
+        # ---------------------------------------------------------------------
+        # LOG WP ID bugfix:
+        # ---------------------------------------------------------------------
+        if os.path.isfile(wp_filename):
+            # Previous operation wont' ended correctly
+            for line in open(wp_filename, 'r'):
+                web_id, lang, wp_id = line.split('|')
+        wp_file = open('')
+        # ---------------------------------------------------------------------
 
         # Data publish selection (remove this part from publish:
         unpublished = []
@@ -553,7 +565,6 @@ class ProductProductWebServer(orm.Model):
             context = {}
 
         override_sku = context.get('override_sku', False)
-
         log_excel = context.get('log_excel', False)
 
         first_proxy = self.browse(cr, uid, ids, context=context)[0]
@@ -574,12 +585,12 @@ class ProductProductWebServer(orm.Model):
         # ---------------------------------------------------------------------
         product_pool = self.pool.get('product.product')
         server_pool = self.pool.get('connector.server')
-        #lang_pool = self.pool.get('product.product.web.server.lang')
+        # lang_pool = self.pool.get('product.product.web.server.lang')
 
         wcapi = server_pool.get_wp_connector(
             cr, uid, [first_proxy.connector_id.id], context=context)
 
-        #res = wcapi.get("products").json() # XXX list of all products
+        # res = wcapi.get("products").json() # XXX list of all products
 
         # Context used here:
         context_lang = context.copy()
@@ -599,9 +610,9 @@ class ProductProductWebServer(orm.Model):
         # ---------------------------------------------------------------------
         translation_lang = {}
 
-        # First lang = original, second traslate
+        # First lang = original, second translate
         for odoo_lang in ('it_IT', 'en_US'):
-            lang = odoo_lang[:2] # WP lang
+            lang = odoo_lang[:2]  # WP lang
             context_lang['lang'] = odoo_lang  # self._lang_db
 
             for item in self.browse(cr, uid, ids, context=context_lang):
@@ -630,7 +641,7 @@ class ProductProductWebServer(orm.Model):
                     self.get_existence_for_product(
                         cr, uid, item, context=context)
                 wp_id = eval('item.wp_%s_id' % lang)
-                wp_it_id = item.wp_it_id # Default product for language
+                wp_it_id = item.wp_it_id  # Default product for language
                 # fabric, type_of_material
 
                 # -------------------------------------------------------------
@@ -668,6 +679,8 @@ class ProductProductWebServer(orm.Model):
 
                     # It doesn't update:
                     'wp_type': item.wp_type,
+
+                    # TODO 'weight': weight,
                     }
 
                 if images:
@@ -749,7 +762,7 @@ class ProductProductWebServer(orm.Model):
                         if log_excel != False:
                             log_excel.append(('post', call, u'%s' % (data),
                                 u'%s' % (reply)))
-                    except: # Timeout on server:
+                    except:  # Timeout on server:
                         _logger.error('Server timeout: %s' % (data, ))
                         continue
 
@@ -764,6 +777,8 @@ class ProductProductWebServer(orm.Model):
                             wp_id = reply['id']
                             _logger.warning('Product %s lang %s created!' % (
                                 wp_id, lang))
+                            # LOG on file WP ID for timeout problem
+                            wp_file.write('%s|%s|%s')
                     except:
                         raise osv.except_osv(
                             _('Error'),
