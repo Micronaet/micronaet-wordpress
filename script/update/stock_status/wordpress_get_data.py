@@ -89,7 +89,7 @@ while True:
         if lang not in master_db:
              master_db[lang] = {}
         master_db[lang][sku] = product_id
-        
+        continue
         for variation in variation_reply.json():
             total += 1
             variation_id = variation['id']
