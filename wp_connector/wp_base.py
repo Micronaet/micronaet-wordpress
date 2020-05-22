@@ -913,13 +913,22 @@ class ProductProductWebServer(orm.Model):
         """
         for item in self.browse(cr, uid, ids, context=context):
             product = item.product_id
-            if item.wp_manual_volume:
-                _logger.warning(
-                    'Manual volume not update: %s' % product.default_code)
-                continue
             multi = item.price_multi or 1
 
-            # Multipack:
+            # A. Manual volume:
+            if item.wp_manual_volume:
+                volume = (
+                    item.manual_pack_l *
+                    item.pack_p *
+                    item.pack_h)
+                self.write(cr, uid, [item.id], {
+                    'wp_volume': volume,
+                }, context=context)
+                _logger.warning(
+                    'Manual volume updated: %s' % product.default_code)
+                continue
+
+            # B. Multipack:
             try:
                 has_multipack = product.has_multipack
             except:
@@ -932,7 +941,7 @@ class ProductProductWebServer(orm.Model):
                     volume += pack.number * (
                         pack.height * pack.width * pack.length)
 
-            # Single pack:
+            # C. Single pack / template:
             else:
                 q_x_pack = item.q_x_pack or 1
                 l = item.pack_l
