@@ -251,7 +251,6 @@
                                         <field name="weight" />
                                         <!--<field name="weight_net" />-->
 
-                                        <separator string="Dimensioni prodotto" colspan="4" />
                                         <field name="pack_l" />
                                         <field name="pack_h" />
                                         <field name="pack_p" />
