@@ -919,8 +919,8 @@ class ProductProductWebServer(orm.Model):
             if item.wp_manual_volume:
                 volume = (
                     item.manual_pack_l *
-                    item.pack_p *
-                    item.pack_h)
+                    item.manual_pack_p *
+                    item.manual_pack_h)
                 self.write(cr, uid, [item.id], {
                     'wp_volume': volume,
                 }, context=context)
