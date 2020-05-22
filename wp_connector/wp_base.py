@@ -1056,9 +1056,9 @@ class ProductProductWebServer(orm.Model):
             'product_id', 'pack_p', type='float', string='Pack P prodotto'),
 
         # Forced manual for volume:
-        'manual_pack_l': fields.float('L. pacco manuale', size=(10, 2)),
-        'manual_pack_h': fields.float('H. pacco manuale', size=(10, 2)),
-        'manual_pack_p': fields.float('P. pacco manuale', size=(10, 2)),
+        'manual_pack_l': fields.float('L. pacco manuale', digits=(10, 2)),
+        'manual_pack_h': fields.float('H. pacco manuale', digits=(10, 2)),
+        'manual_pack_p': fields.float('P. pacco manuale', digits=(10, 2)),
 
         'emotional_short_description': fields.related(
             'product_id', 'emotional_short_description', type='text',
