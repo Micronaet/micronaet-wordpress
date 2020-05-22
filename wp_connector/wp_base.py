@@ -922,7 +922,7 @@ class ProductProductWebServer(orm.Model):
                     item.manual_pack_p *
                     item.manual_pack_h)
                 self.write(cr, uid, [item.id], {
-                    'wp_volume': volume,
+                    'wp_volume': volume / 5000.0,
                 }, context=context)
                 _logger.warning(
                     'Manual volume updated: %s' % product.default_code)
@@ -955,7 +955,7 @@ class ProductProductWebServer(orm.Model):
 
             volume = volume / q_x_pack * multi  # / 1000000.0
             self.write(cr, uid, [item.id], {
-                'wp_volume': volume,
+                'wp_volume': volume / 5000.0,
                 }, context=context)
             _logger.info(
                 'Volume %s for: %s' % (
