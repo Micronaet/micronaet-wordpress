@@ -223,31 +223,40 @@
                                 <page string="Package">
                                     <group colspan="4" col="4">
                                         <field name="model_package_id" />
-                                        <separator string="Da anagrafica prodotto:" colspan="4" /><!--attrs="{'invisible': [('model_package_id','!=',False)]}"-->
+
+                                        <separator string="Da anagrafica prodotto:" colspan="4" />
+                                        <field name="product_q_x_pack" />
+                                        <field name="product_weight" />
+                                        <!--<field name="product_weight_net" />-->
+                                    </group>
+                                    <group colspan="4" col="4" attrs="{'invisible': [('wp_manual_volume', '=', True)]}">
                                         <field name="product_pack_l" />
                                         <field name="product_pack_h" />
                                         <field name="product_pack_p" />
+                                    </group>
 
-                                        <field name="product_weight" />
-                                        <!--<field name="product_weight_net" />-->
-
-                                        <field name="product_q_x_pack" />
-
+                                    <group colspan="4" col="4" attrs="{'invisible': [('wp_manual_volume', '=', False)]}">
+                                        <separator string="Dimensioni forzate per calcolo volume:" colspan="3" />
+                                        <button name="update_wp_volume" string="Refresh volume" type="object" colspan="1"  attrs="{'invisible': [('wp_manual_volume', '=', True)]}"/>
+                                        <field name="product_pack_l" />
+                                        <field name="product_pack_h" />
+                                        <field name="product_pack_p" />
+                                    </group>
+                                    <group colspan="4" col="4">
                                         <separator string="Preview del sito:" colspan="4" /><!--attrs="{'invisible': [('model_package_id','!=',False)]}"-->
+                                        <field name="wp_manual_volume" />
+                                        <field name="wp_volume" />
+
+                                        <field name="q_x_pack" />
+                                        <field name="weight" />
+                                        <!--<field name="weight_net" />-->
+
+                                        <separator string="Dimensioni prodotto" colspan="4" />
                                         <field name="pack_l" />
                                         <field name="pack_h" />
                                         <field name="pack_p" />
-                                        <field name="weight" />
 
-                                        <separator string="Dimensioni prodotto" colspan="3" />
-                                        <button name="update_wp_volume" string="Refresh volume" type="object" colspan="1"  attrs="{'invisible': [('wp_manual_volume', '=', True)]}"/>
-                                        <field name="wp_manual_volume" />
-                                        <field name="wp_volume" />
                                         <field name="weight_aditional_info" colspan="4" nolabel="1"/>
-
-                                        <field name="q_x_pack" />
-                                        <!--<field name="weight_net" />-->
-
                                     </group>
                                 </page>
                                 <page string="Forzature">

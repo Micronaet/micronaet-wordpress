@@ -1047,12 +1047,18 @@ class ProductProductWebServer(orm.Model):
             help='Indicare dimensioni e peso articoli (testo libero)',
             translate=True),
 
+        # Product dimension:
         'product_pack_l': fields.related(
             'product_id', 'pack_l', type='float', string='Pack L prodotto'),
         'product_pack_h': fields.related(
             'product_id', 'pack_h', type='float', string='Pack H prodotto'),
         'product_pack_p': fields.related(
             'product_id', 'pack_p', type='float', string='Pack P prodotto'),
+
+        # Forced manual for volume:
+        'manual_pack_l': fields.float('L. pacco manuale', size=(10, 2)),
+        'manual_pack_h': fields.float('H. pacco manuale', size=(10, 2)),
+        'manual_pack_p': fields.float('P. pacco manuale', size=(10, 2)),
 
         'emotional_short_description': fields.related(
             'product_id', 'emotional_short_description', type='text',
