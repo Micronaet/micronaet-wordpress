@@ -238,9 +238,9 @@
                                     <group colspan="4" col="4" attrs="{'invisible': [('wp_manual_volume', '=', False)]}">
                                         <separator string="Dimensioni forzate per calcolo volume:" colspan="3" />
                                         <button name="update_wp_volume" string="Refresh volume" type="object" colspan="1"  attrs="{'invisible': [('wp_manual_volume', '=', True)]}"/>
-                                        <field name="product_pack_l" />
-                                        <field name="product_pack_h" />
-                                        <field name="product_pack_p" />
+                                        <field name="manual_pack_l" />
+                                        <field name="manual_pack_h" />
+                                        <field name="manual_pack_p" />
                                     </group>
                                     <group colspan="4" col="4">
                                         <separator string="Preview del sito:" colspan="4" /><!--attrs="{'invisible': [('model_package_id','!=',False)]}"-->
