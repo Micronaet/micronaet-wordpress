@@ -225,8 +225,8 @@
                                         <field name="model_package_id" />
 
                                         <separator string="Da anagrafica prodotto:" colspan="4" />
-                                        <field name="product_q_x_pack" />
-                                        <field name="product_weight" />
+                                        <field name="product_q_x_pack" readonly="1"/>
+                                        <field name="product_weight" readonly="1"/>
                                         <!--<field name="product_weight_net" />-->
                                     </group>
                                     <group colspan="4" col="4" attrs="{'invisible': [('wp_manual_volume', '=', True)]}">
@@ -248,7 +248,7 @@
                                         <field name="wp_manual_volume" />
                                         <field name="wp_volume" />
 
-                                        <field name="q_x_pack" readonly="1"/>
+                                        <field name="q_x_pack" />
                                         <field name="weight" />
                                         <!--<field name="weight_net" />-->
 
