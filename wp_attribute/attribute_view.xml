@@ -230,9 +230,9 @@
                                         <!--<field name="product_weight_net" />-->
                                     </group>
                                     <group colspan="4" col="4" attrs="{'invisible': [('wp_manual_volume', '=', True)]}">
-                                        <field name="product_pack_l" />
-                                        <field name="product_pack_h" />
-                                        <field name="product_pack_p" />
+                                        <field name="product_pack_l" readonly="1"/>
+                                        <field name="product_pack_h" readonly="1"/>
+                                        <field name="product_pack_p" readonly="1"/>
                                     </group>
 
                                     <group colspan="4" col="4" attrs="{'invisible': [('wp_manual_volume', '=', False)]}">
@@ -248,7 +248,7 @@
                                         <field name="wp_manual_volume" />
                                         <field name="wp_volume" />
 
-                                        <field name="q_x_pack" />
+                                        <field name="q_x_pack" readonly="1"/>
                                         <field name="weight" />
                                         <!--<field name="weight_net" />-->
 
