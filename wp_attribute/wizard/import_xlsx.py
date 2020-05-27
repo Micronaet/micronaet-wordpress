@@ -325,10 +325,9 @@ class ProductProductImportWorpdress(orm.Model):
                 })
                 if product_ids:  # Update record (if exist or for language)
                     # Update only field present:
-                    for field in product_data:
-                        if field in ('xlsx_id', 'default_code'):
-                            continue
-                        # Remove filed in not present:    
+                    not_used_fields = [field for field in product_data if field not in ('xlsx_id', 'default_code')]
+                    
+                    for field in not_used_fields:
                         if not product_data[field]:
                             del product_data[field]
 
