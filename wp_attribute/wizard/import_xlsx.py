@@ -324,11 +324,19 @@ class ProductProductImportWorpdress(orm.Model):
                         lang_text[lang]['emotional_description'],
                 })
                 if product_ids:  # Update record (if exist or for language)
+                    # Update only field present:
+                    for field in product_data:
+                        if field in ('xlsx_id', 'default_code'):
+                            continue
+                        # Remove filed in not present:    
+                        if not product_data[field]:
+                            del product_data[field]
+
                     product_pool.write(
                         cr, uid, product_ids, product_data,
                         context=lang_context)
                 else:
-                    # For next update:
+                    # For next update save ID:
                     product_ids = [product_pool.create(
                         cr, uid, product_data, context=lang_context)]
             product_id = product_ids[0]
