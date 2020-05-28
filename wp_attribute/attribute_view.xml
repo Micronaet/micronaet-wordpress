@@ -262,15 +262,18 @@
                                 <page string="Forzature">
                                     <group colspan="4" col="4">
                                         <field name="force_name"/>
-                                        <field name="force_description"/>
-
-                                        <field name="force_q_x_pack"/>
                                         <field name="force_ean13"/>
 
-                                        <field name="force_price"/>
-                                        <field name="force_discounted"/>
+                                        <field name="force_description" colspan="4"/>
 
+                                        <field name="force_q_x_pack"/>
                                         <field name="force_min_stock"/>
+
+                                        <field name="force_price"/>
+                                        <field name="wp_web_pricelist"/>
+
+                                        <field name="force_discounted"/>
+                                        <field name="wp_web_discounted_vat"/>
                                     </group>
                                 </page>
                                 <page string="Emozionali">

@@ -232,6 +232,7 @@ class ProductImageFile(orm.Model):
         'dropbox_link': fields.char('Dropbox link', size=100),
         }
 
+
 '''class ProductProductWebServerLang(orm.Model):
     """ Model name: ProductProductWebServer ID for lang
     """

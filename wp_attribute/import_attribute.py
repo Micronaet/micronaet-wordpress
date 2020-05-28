@@ -191,6 +191,19 @@ class ProductProductWebServerIntegration(orm.Model):
             'wp_en_id': wp_en_id,
             }, context=context)
 
+    def _get_wp_pricelist_for_web(
+            self, cr, uid, ids, fields, args, context=None):
+        """ Fields function for calculate
+        """
+        vat_rate = 1.22
+        res = []
+        for web in self.browse(cr, uid, ids, context=context):
+            res[web.id] = {
+                'wp_web_pricelist': self.get_wp_price(web) * vat_rate,
+                'wp_web_discounted_vat': web.force_discounted * vat_rate,
+            }
+        return res
+
     _columns = {
         'wp_parent_template': fields.boolean(
             'Prodotto master',
@@ -201,6 +214,15 @@ class ProductProductWebServerIntegration(orm.Model):
             'product.product.web.server', 'Prodotto padre'),
         'wp_color_id': fields.many2one(
             'connector.product.color.dot', 'Colore'),
+
+        'wp_web_pricelist': fields.function(
+            _get_wp_pricelist_for_web, method=True, multi=True, readonly=True,
+            type='float', string='Prezzo listino web',
+            help='Prezzo esposto sul sito (barrato se scontato)'),
+        'wp_web_discounted_vat': fields.function(
+            _get_wp_pricelist_for_web, method=True, multi=True, readonly=True,
+            type='float', string='Prezzo scontato web',
+            help='Prezzo esposto sul sito come scontato'),
         }
 
     _sql_constraints = [
