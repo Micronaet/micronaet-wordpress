@@ -196,7 +196,7 @@ class ProductProductWebServerIntegration(orm.Model):
         """ Fields function for calculate
         """
         vat_rate = 1.22
-        res = []
+        res = {}
         for web in self.browse(cr, uid, ids, context=context):
             res[web.id] = {
                 'wp_web_pricelist': self.get_wp_price(web) * vat_rate,
