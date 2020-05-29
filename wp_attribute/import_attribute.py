@@ -1059,31 +1059,28 @@ class ProductPublicCategory(orm.Model):
                     # Create or update variant:
                     data = {
                         'regular_price': u'%s' % price,
-                        # sale_price (discounted)
+                        'sale_price': line.force_discounted,
                         'short_description': short_description,
                         'description': description,
                         'lang': lang,
-                        # 'slug': self.get_lang_slug(variant_code, lang),
-                        # TODO
-                        # stock_status
-                        # 'weight': '%s' % line.weight,
                         'weight': '%s' % line.wp_volume,  # X Used for volume
-
                         'dimensions': {
                             'length': '%s' % line.pack_l,
                             'height': '%s' % line.pack_h,
                             'width': '%s' % line.pack_p,
                             },
-
                         'manage_stock': True,
                         'stock_quantity': stock_quantity,
                         'status': 'publish' if line.published else 'private',
-
                         'attributes': [{
                             'id': attribute_id['Tessuto'],
                             'option': fabric_code,
                         }],
                     }
+                    # 'slug': self.get_lang_slug(variant_code, lang),
+                    # TODO
+                    # stock_status
+                    # 'weight': '%s' % line.weight,
 
                     # ---------------------------------------------------------
                     # Language block:
