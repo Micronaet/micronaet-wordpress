@@ -248,18 +248,19 @@ class ProductProductImportWorpdress(orm.Model):
             force_q_x_pack = ws.cell(row, 26).value or False
             force_ean = number_to_text(ws.cell(row, 27).value) or ''
             force_price = ws.cell(row, 28).value or 0.0
-            force_min_stock = ws.cell(row, 29).value or 0.0
+            force_discounted = ws.cell(row, 29).value or 0.0
+            force_min_stock = ws.cell(row, 30).value or 0.0
 
-            lang_text[IT]['large_description'] = ws.cell(row, 30).value
-            lang_text[EN]['large_description'] = ws.cell(row, 31).value \
+            lang_text[IT]['large_description'] = ws.cell(row, 31).value
+            lang_text[EN]['large_description'] = ws.cell(row, 32).value \
                 or lang_text[IT]['large_description']
             lang_text[IT]['emotional_short_description'] = \
-                ws.cell(row, 32).value
+                ws.cell(row, 33).value
             lang_text[EN]['emotional_short_description'] = \
-                ws.cell(row, 33).value or \
+                ws.cell(row, 34).value or \
                 lang_text[IT]['emotional_short_description']
-            lang_text[IT]['emotional_description'] = ws.cell(row, 34).value
-            lang_text[EN]['emotional_description'] = ws.cell(row, 35).value \
+            lang_text[IT]['emotional_description'] = ws.cell(row, 35).value
+            lang_text[EN]['emotional_description'] = ws.cell(row, 36).value \
                 or lang_text[IT]['emotional_description']
 
             if not default_code:
@@ -326,7 +327,7 @@ class ProductProductImportWorpdress(orm.Model):
                 if product_ids:  # Update record (if exist or for language)
                     # Update only field present:
                     not_used_fields = [field for field in product_data if field not in ('xlsx_id', 'default_code')]
-                    
+
                     for field in not_used_fields:
                         if not product_data[field]:
                             del product_data[field]
@@ -373,6 +374,7 @@ class ProductProductImportWorpdress(orm.Model):
                 'force_ean13': force_ean,
                 'force_q_x_pack': force_q_x_pack,
                 'force_price': force_price,
+                'force_discounted': force_discounted,
                 'force_min_stock': force_min_stock,
             }
             for lang in lang_list:
