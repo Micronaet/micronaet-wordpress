@@ -1039,7 +1039,7 @@ class ProductPublicCategory(orm.Model):
 
                     # XXX Price for S (ingle)
                     price = web_product_pool.get_wp_price(line)
-                    sale_price = u'%s' % (item.force_discounted or '')
+                    sale_price = u'%s' % (line.force_discounted or '')
 
                     # Description:
                     name = line.force_name or variant.name or u''
