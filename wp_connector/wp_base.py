@@ -671,6 +671,8 @@ class ProductProductWebServer(orm.Model):
                 lifetime_warranty = item.lifetime_warranty
 
                 price = u'%s' % self.get_wp_price(item)
+                sale_price = u'%s' % (item.force_discounted or '')
+
                 # weight = u'%s' % product.weight
                 weight = u'%s' % item.wp_volume  # X Used for volume manage
                 status = 'publish' if item.published else 'private'
@@ -735,7 +737,7 @@ class ProductProductWebServer(orm.Model):
                         'type': item.wp_type,
                         # 'sku': self.wp_clean_code(sku),
                         'regular_price': price,
-                        'sale_price': item.force_discounted,
+                        'sale_price': sale_price,
                         'stock_quantity': stock_quantity,
                         'status': status,
                         'catalog_visibility': 'visible',

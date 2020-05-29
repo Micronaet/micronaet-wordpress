@@ -1039,6 +1039,7 @@ class ProductPublicCategory(orm.Model):
 
                     # XXX Price for S (ingle)
                     price = web_product_pool.get_wp_price(line)
+                    sale_price = u'%s' % (item.force_discounted or '')
 
                     # Description:
                     name = line.force_name or variant.name or u''
@@ -1059,7 +1060,7 @@ class ProductPublicCategory(orm.Model):
                     # Create or update variant:
                     data = {
                         'regular_price': u'%s' % price,
-                        'sale_price': line.force_discounted,
+                        'sale_price': sale_price,
                         'short_description': short_description,
                         'description': description,
                         'lang': lang,
