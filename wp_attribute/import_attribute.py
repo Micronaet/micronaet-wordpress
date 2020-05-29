@@ -257,7 +257,7 @@ class ProductProductWebServerRelation(orm.Model):
             'views': [(view_id, 'form'), (False, 'tree')],
             'domain': [],
             'context': context,
-            'target': 'current', # 'new'
+            'target': 'current',  # 'new'
             'nodestroy': False,
             }
 
