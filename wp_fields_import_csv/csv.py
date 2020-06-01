@@ -38,7 +38,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
-class ProductProductImportationTraceColumn(orm.Model):
+class ProductProductImportationWPTraceColumn(orm.Model):
     ''' Importation log element trace of fields
     ''' 
     _inherit = 'product.product.importation.trace.column'
@@ -46,7 +46,7 @@ class ProductProductImportationTraceColumn(orm.Model):
     # Override function:
     def _get_field_list(self, cr, uid, context=None):
         res = super(
-            ProductProductImportationTraceColumn, self)._get_field_list(
+            ProductProductImportationWPTraceColumn, self)._get_field_list(
                 cr, uid, context=context)
         res.extend([
             ('emotional_short_description', 'Descrizione emozionale breve'),
