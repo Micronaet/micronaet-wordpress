@@ -32,6 +32,7 @@
         'csv_import_product',
         'inventory_transport_extra_field',
         'product',
+        'wp_connector',
         ],
     'init_xml': [],
     'demo': [],
