@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001-2015 Micronaet S.r.l. (<https://micronaet.com>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -13,7 +13,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -36,9 +36,9 @@ from openerp import SUPERUSER_ID, api
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
@@ -49,44 +49,45 @@ class ResPartner(orm.Model):
     """
 
     _inherit = 'res.partner'
-    
+
     # Button event:
     def partner_wordpress_invoice_on(self, cr, uid, ids, context=None):
-        ''' Invoice on
-        '''
+        """ Invoice on
+        """
         return self.write(cr, uid, ids, {
             'wordpress_invoice': True,
             }, context=context)
 
     def partner_wordpress_invoice_off(self, cr, uid, ids, context=None):
-        ''' Invoice on
-        '''
+        """ Invoice on
+        """
         return self.write(cr, uid, ids, {
             'wordpress_invoice': False,
             }, context=context)
-            
+
     _columns = {
         'wordpress': fields.boolean(
             'Wordpress', help='Created from wordpress order'),
         # TODO used?
         'wordpress_invoice': fields.boolean(
-            'Wordpress', help='Need invoice, istead of fees'),        
+            'Wordpress', help='Need invoice, istead of fees'),
         }
+
 
 class SaleOrder(orm.Model):
     """ Model name: Sale Order
     """
 
     _inherit = 'sale.order'
-    
+
     def button_wordpress_detail(self, cr, uid, ids, context=None):
-        ''' View metadata
-        '''        
+        """ View metadata
+        """
         model_pool = self.pool.get('ir.model.data')
         view_id = model_pool.get_object_reference(
-            cr, uid, 
+            cr, uid,
             'wp_order', 'view_sale_order_wordpress_metadata_form')[1]
-    
+
         return {
             'type': 'ir.actions.act_window',
             'name': _('Wordpress metadata'),
@@ -102,29 +103,29 @@ class SaleOrder(orm.Model):
             'nodestroy': False,
             }
     def dummy(self, cr, uid, ids, context=None):
-        ''' Do nothing (or save)
-        '''
+        """ Do nothing (or save)
+        """
         return True
-        
+
     def button_payment_confirmed(self, cr, uid, ids, context=None):
-        ''' Confirm manual payment
-        '''
+        """ Confirm manual payment
+        """
         order = self.browse(cr, uid, ids, context=context)[0]
         connector_id = order.connector_id.id
         wp_id = order.wp_id
 
         if not connector_id:
             raise osv.except_osv(
-                _('Error connector'), 
+                _('Error connector'),
                 _('Connector for web site not found on order'),
                 )
 
         #if not wp_id:
         #    raise osv.except_osv(
-        #        _('Error connector'), 
+        #        _('Error connector'),
         #        _('Wordpress order ID not found on ODOO order'),
         #        )
-                
+
         # ---------------------------------------------------------------------
         # Update status on wordpress site:
         # ---------------------------------------------------------------------
@@ -140,7 +141,7 @@ class SaleOrder(orm.Model):
         # Confirmed sale order workflow:
         # ---------------------------------------------------------------------
         self.signal_workflow(cr, uid, ids, 'order_confirm')
-        
+
         # ---------------------------------------------------------------------
         # Mark as confirmed:
         # ---------------------------------------------------------------------
@@ -149,24 +150,24 @@ class SaleOrder(orm.Model):
             }, context=context)
 
     def _get_corresponding_alert(self, cr, uid, ids, fields, args, context=None):
-        ''' Fields function for calculate 
-        '''    
+        """ Fields function for calculate
+        """
         res = {}
         if len(ids) == 1:
             res[ids[0]] = 'ORDINE WORDPRESS NON FARE FATTURA MA CORRISPETTIVO!'
         return res
-        
+
     _columns = {
         'wp_id': fields.integer('Worpress ID of order'),
-        'connector_id': fields.many2one('connector.server', 'Connector', 
+        'connector_id': fields.many2one('connector.server', 'Connector',
             help='Connector Marketplace, is the origin web site'),
         'worpress_record': fields.text('Worpress record'),
         'wp_payment_confirmed': fields.boolean('Payment confirmed'),
         'wordpress_invoice': fields.boolean(
-            'Wordpress', help='Need invoice, istead of fees'),        
+            'Wordpress', help='Need invoice, istead of fees'),
         'wordpress_alert': fields.function(
-            _get_corresponding_alert, method=True, 
-            type='char', string='Alert', store=False),                         
+            _get_corresponding_alert, method=True,
+            type='char', string='Alert', store=False),
         }
 
 class ConnectorServer(orm.Model):
@@ -176,18 +177,18 @@ class ConnectorServer(orm.Model):
     _inherit = 'connector.server'
 
     # TODO Schedule action!
-    
+
     # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
     def get_detail_id_from_code(self, cr, uid, pool, code, context=None):
-        ''' Return state or country ID
-        '''
+        """ Return state or country ID
+        """
         item_ids = pool.search(cr, uid, [
             ('code', '=', code),
             ], context=context)
         if item_ids:
-            return item_ids[0]    
+            return item_ids[0]
             _logger.info('Pool %s code exist: %s' % (pool, code))
         else:
             # TODO create?
@@ -195,12 +196,12 @@ class ConnectorServer(orm.Model):
             return False
 
     def get_product_id_wp_or_code(self, cr, uid, line, context=None):
-        ''' Get product ID, rules:
+        """ Get product ID, rules:
             Search wp_id for Wordpress ID
             Search default_code
             Search extra DB default_code
             Create if not present
-        '''
+        """
         product_pool = self.pool.get('product.product')
 
         # Parameters:
@@ -221,7 +222,7 @@ class ConnectorServer(orm.Model):
 
         # 2. Search with default_code
         if default_code:
-            _logger.warning('Lost WP id for product %s' % default_code)   
+            _logger.warning('Lost WP id for product %s' % default_code)
             product_ids = product_pool.search(cr, uid, [
                 ('default_code', '=', default_code),
                 ], context=context)
@@ -235,24 +236,24 @@ class ConnectorServer(orm.Model):
                 ], context=context)
             if product_ids:
                 return product_ids[0]
-       
+
             # 4. Create fast product (or import?):
-            _logger.warning('Create new product %s' % default_code)   
+            _logger.warning('Create new product %s' % default_code)
             return product_pool.create(cr, uid, {
                 'name': name,
                 'default_code': default_code, # Create with masked code!
-                'lst_price': price,                
+                'lst_price': price,
                 }, context=context)
 
         return False # If no code!
-    
+
     # -------------------------------------------------------------------------
     # Button event:
     # -------------------------------------------------------------------------
     def get_sale_order_now(self, cr, uid, ids, context=None):
-        ''' Get sale order list
-            '''
-        if context is None:    
+        """ Get sale order list
+            """
+        if context is None:
             context = {}
 
         # Pool used:
@@ -262,7 +263,7 @@ class ConnectorServer(orm.Model):
         partner_pool = self.pool.get('res.partner')
         state_pool = self.pool.get('res.country.state')
         country_pool = self.pool.get('res.country')
-        
+
         _logger.warning('Read order on wordpress:')
 
         # ---------------------------------------------------------------------
@@ -281,9 +282,9 @@ class ConnectorServer(orm.Model):
         wcapi = self.get_wp_connector(
             cr, uid, connector_id, context=context)
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         # Read all orders:
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         theres_data = True
         parameter = {
             'per_page': 20,
@@ -299,13 +300,13 @@ class ConnectorServer(orm.Model):
             try:
                 test_error = res['data']['status']
                 raise osv.except_osv(
-                    _('Order error:'), 
+                    _('Order error:'),
                     _('Error getting oredr list: %s' % (res, ) ),
                     )
             except:
                 pass # no error
-                
-                
+
+
             if res:
                 wp_order.extend(res)
             else:
@@ -479,38 +480,38 @@ class ConnectorServer(orm.Model):
             }
           ]
         }},                    
-        '''  
+        '''
         # ---------------------------------------------------------------------
         # Insert order
         # ---------------------------------------------------------------------
         # Sorted so parent first:
         new_order_ids = []
-        _logger.warning('Order found %s' % (len(wp_order), ))        
-        for record in sorted(wp_order, 
+        _logger.warning('Order found %s' % (len(wp_order), ))
+        for record in sorted(wp_order,
                 key=lambda x: x['date_created']):
             wp_id = record['id']
             name = record['number']
             date_order = record['date_created'][:10]
             payment_method = record['payment_method']
-            status = record['status']  
+            status = record['status']
             # XXX Status value:
             # pending In attesa di pagamento
             # on-hold Sospeso
             # processing In lavorazione
-            # processing In lavorazione, 
+            # processing In lavorazione,
             # completed Completo
             # failed Fallito
             # cancelled Cancellato
             # refunded Rimborsato
-            
-            
+
+
             # TODO Manage:
-            # -----------------------------------------------------------------            
+            # -----------------------------------------------------------------
             # Shipping add extra line with cost
-            # -----------------------------------------------------------------            
+            # -----------------------------------------------------------------
             #shipping_total
             #shipping_tax
-            
+
             # -----------------------------------------------------------------
             # Payment method to manage supended order
             # -----------------------------------------------------------------
@@ -520,29 +521,29 @@ class ConnectorServer(orm.Model):
                 wf_confirm = False
             else:
                 wp_payment_confirmed = True
-                new_status = 'suspended'    
+                new_status = 'suspended'
                 wf_confirm = True
 
-            # -----------------------------------------------------------------            
+            # -----------------------------------------------------------------
             # Discount add extra line with discount value
-            # -----------------------------------------------------------------            
+            # -----------------------------------------------------------------
             #discount_total
             #discount_tax
-            
+
             # Only on-hold status will be imported again:
-            if status not in ('on-hold', ): # TODO 
+            if status not in ('on-hold', ): # TODO
                 _logger.warning('[%s] Status: %s so jumped' % (
                     name, status))
                 continue
-            
+
             # -----------------------------------------------------------------
-            #                          ORDER HEADER: 
+            #                          ORDER HEADER:
             # -----------------------------------------------------------------
             order_ids = order_pool.search(cr, uid, [
                 ('connector_id', '=', connector_id),
                 ('wp_id', '=', wp_id),
                 ], context=context)
-                
+
             order_header = {
                 'connector_id': connector_id,
                 'wp_id': wp_id,
@@ -550,7 +551,7 @@ class ConnectorServer(orm.Model):
                 'date_order': date_order,
                 'worpress_record': record,
                 'wp_payment_confirmed': wp_payment_confirmed
-                }    
+                }
 
             if order_ids:
                 order_id = order_ids[0]
@@ -565,10 +566,10 @@ class ConnectorServer(orm.Model):
 
                 # Calculated data:
                 state_id = self.get_detail_id_from_code(
-                    cr, uid, state_pool, 
+                    cr, uid, state_pool,
                     record_partner['state'], context=context)
                 country_id = self.get_detail_id_from_code(
-                    cr, uid, country_pool, 
+                    cr, uid, country_pool,
                     record_partner['country'], context=context)
 
                 # -------------------------------------------------------------
@@ -583,7 +584,7 @@ class ConnectorServer(orm.Model):
                     'name': '%s %s %s' % (
                         record_partner['company'],
                         record_partner['first_name'],
-                        record_partner['last_name'],                                                
+                        record_partner['last_name'],
                         ),
                     'street': record_partner['address_1'],
                     'street2': record_partner['address_2'],
@@ -592,19 +593,19 @@ class ConnectorServer(orm.Model):
                     'email': record_partner['email'],
                     'phone': record_partner['phone'],
                     'state_id': state_id,
-                    'country_id': country_id,  
-                    
+                    'country_id': country_id,
+
                     # TODO evaluate fiscal position:
-                    'property_account_position': 
+                    'property_account_position':
                         company.partner_id.property_account_position.id,
                     'wordpress_invoice': wordpress_invoice,
-                    }    
+                    }
                 if partner_ids:
                     partner_id = partner_ids[0]
                     _logger.warning('Partner exist: %s' % email)
                     # TODO update?
-                else:                
-                    partner_data['wordpress'] = True                    
+                else:
+                    partner_data['wordpress'] = True
                     partner_id = partner_pool.create(
                         cr, uid, partner_data, context=context)
                     _logger.warning('Partner new: %s' % email)
@@ -615,7 +616,7 @@ class ConnectorServer(orm.Model):
                 order_header['wordpress_invoice'] = partner.wordpress_invoice
 
                 # -------------------------------------------------------------
-                # TODO Destination:                
+                # TODO Destination:
                 # -------------------------------------------------------------
                 destination_partner_id = False
 
@@ -625,27 +626,27 @@ class ConnectorServer(orm.Model):
                     record_destination = record_partner
                     _logger.warning(
                         'No partner shipping, using partner address')
-                    
+
                 # Extract data:
                 destination_name = '%s %s %s' % (
                     record_destination['company'],
                     record_destination['first_name'],
-                    record_destination['last_name'],                                                
+                    record_destination['last_name'],
                     )
-                
+
                 destination_street = record_destination['address_1']
                 destination_street2 = record_destination['address_2']
                 destination_city = record_destination['city']
                 destination_postcode = record_destination['postcode']
-                
+
                 # Calculated data:
                 state_id = self.get_detail_id_from_code(
-                    cr, uid, state_pool, 
+                    cr, uid, state_pool,
                     record_destination['state'], context=context)
                 country_id = self.get_detail_id_from_code(
-                    cr, uid, country_pool, 
+                    cr, uid, country_pool,
                     record_destination['country'], context=context)
-                
+
                 address_ids = partner_pool.search(cr, uid, [
                     ('parent_id', '=', partner_id),
                     ('name', '=', destination_name),
@@ -654,21 +655,21 @@ class ConnectorServer(orm.Model):
                     ('zip', '=', destination_postcode),
                     ], context=context)
                 if address_ids:
-                    destination_partner_id = address_ids[0]    
+                    destination_partner_id = address_ids[0]
                 else:
                     _logger.warning('New address created!')
                     destination_partner_id = partner_pool.create(
                         cr, uid, {
                             'wordpress': True,
-                            'is_address': True, 
+                            'is_address': True,
                             'parent_id': partner_id,
                             'name': destination_name,
                             'street': destination_street,
                             'street2': destination_street2,
                             'city': destination_city,
                             'zip': destination_postcode,
-                            }, context=context)    
-                        
+                            }, context=context)
+
                 order_header.update({
                     'partner_id': partner_id,
                     })
@@ -679,7 +680,7 @@ class ConnectorServer(orm.Model):
                 order_header.update(
                     order_pool.onchange_partner_id(
                         cr, uid, False, partner_id, context=context).get(
-                            'value', {}))    
+                            'value', {}))
 
                 order_header.update({ # before onchange will be deleted!)
                     'destination_partner_id': destination_partner_id,
@@ -690,13 +691,13 @@ class ConnectorServer(orm.Model):
                 # -------------------------------------------------------------
                 order_id = order_pool.create(
                     cr, uid, order_header, context=context)
-                # TODO Workflow trigger:    
-                _logger.info('Create %s' % name)    
+                # TODO Workflow trigger:
+                _logger.info('Create %s' % name)
                 _logger.warning('Order new %s' % name)
-                
+
             # -----------------------------------------------------------------
-            #                          ORDER DETAIL: 
-            # -----------------------------------------------------------------            
+            #                          ORDER DETAIL:
+            # -----------------------------------------------------------------
             order_proxy = order_pool.browse(cr, uid, order_id, context=context)
             wp_line = record['line_items']
             if order_proxy.order_line:
@@ -705,11 +706,11 @@ class ConnectorServer(orm.Model):
                     _logger.error('Line are yet loaded but different!')
                     #raise osv.except_osv(
                     #    _('Error order line'),
-                    #    _('Error importing line, yet present but different!'), 
+                    #    _('Error importing line, yet present but different!'),
                     #    )
                 else:
                     _logger.warning('Line are yet load!')
-                continue # yet load the lines        
+                continue # yet load the lines
 
             # Create the lines:
             partner = order_proxy.partner_id
@@ -719,7 +720,7 @@ class ConnectorServer(orm.Model):
                 total = line['total']
                 total_tax = line['total_tax']
                 price = line['price']
-                
+
                 product_id = self.get_product_id_wp_or_code(
                     cr, uid, line, context=context)
                 line_data = {
@@ -728,7 +729,7 @@ class ConnectorServer(orm.Model):
                     'product_uom_qty': quantity,
                     'product_id': product_id,
                     }
-                
+
                 # Update with onchange product event:
                 onchange = line_pool.product_id_change_with_wh(
                         cr, uid, False,
@@ -748,16 +749,16 @@ class ConnectorServer(orm.Model):
                         False, # Flag
                         False, # warehouse_id
                         context=context).get('value', {})
-                 
-                # Format correct fhe Tax relation:     
+
+                # Format correct fhe Tax relation:
                 if 'tax_id' in onchange:
                     onchange['tax_id'] = [(6, 0, onchange['tax_id'])]
                 line_data.update(onchange)
-                line_pool.create(cr, uid, line_data, context=context)        
+                line_pool.create(cr, uid, line_data, context=context)
 
-            # -----------------------------------------------------------------            
+            # -----------------------------------------------------------------
             # Change status:
-            # -----------------------------------------------------------------            
+            # -----------------------------------------------------------------
             # 1. Wordpress status:
             data = {
                 'status': new_status, #'processing' #completed
@@ -771,7 +772,7 @@ class ConnectorServer(orm.Model):
 
             # Update order list:
             new_order_ids.append(order_id)
-            
+
         return {
             'type': 'ir.actions.act_window',
             'name': _('New order'),
