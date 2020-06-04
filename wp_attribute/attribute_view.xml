@@ -352,7 +352,7 @@
                                      <group colspan="4" col="4">
                                         <separator string="Wordpress line:" colspan="4"/>
                                         <!--<button name="clean_reference" string="Clean reference" colspan="1" type="object" confirm="Do you want delete reference with Wordpress linked product?"/>-->
-                                        <field name="wp_default_choice_id" domain="[('wp_parent_id', '=', active_id), ('published', '=', True)]"/>
+                                        <field name="wp_default_choice_id" domain="[('wp_parent_id', '=', active_id), ('published', '=', True)]" widget="selection"/>
                                         <newline />
                                         <field name="variant_ids" colspan="4" nolabel="1" readonly="1">
                                             <tree string="Varianti" editable="bottom">

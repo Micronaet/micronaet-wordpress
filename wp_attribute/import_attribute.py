@@ -564,9 +564,13 @@ class ProductPublicCategory(orm.Model):
                         (variant, attribute))
 
                 # Save default color for lang product
+                wp_default_choice_id = \
+                    default_selected.wp_default_choice_id or default_selected
+
+                # Save default (changed) in master reference:
                 product_default_color[
                     (default_selected, lang)
-                    ] = default_selected.wp_color_id.name + '-' + lang
+                    ] = wp_default_choice_id.wp_color_id.name + '-' + lang
 
         _logger.warning('Parent found: %s' % parent_total)
 
