@@ -671,7 +671,7 @@ class ProductProductWebServer(orm.Model):
                 lifetime_warranty = item.lifetime_warranty
 
                 price = u'%s' % self.get_wp_price(item)
-                sale_price = u'%s' % (item.force_discounted or '')
+                sale_price = u'%s' % (item.force_discounted_net or '')
 
                 # weight = u'%s' % product.weight
                 weight = u'%s' % item.wp_volume  # X Used for volume manage

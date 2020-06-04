@@ -200,7 +200,7 @@ class ProductProductWebServerIntegration(orm.Model):
         for web in self.browse(cr, uid, ids, context=context):
             res[web.id] = {
                 'wp_web_pricelist': self.get_wp_price(web) * vat_rate,
-                'wp_web_discounted_vat': web.force_discounted * vat_rate,
+                'wp_web_discounted_net': web.force_discounted / vat_rate,
             }
         return res
 
@@ -219,7 +219,7 @@ class ProductProductWebServerIntegration(orm.Model):
             _get_wp_pricelist_for_web, method=True, multi=True, readonly=True,
             type='float', string='Prezzo listino web',
             help='Prezzo esposto sul sito (barrato se scontato)'),
-        'wp_web_discounted_vat': fields.function(
+        'wp_web_discounted_net': fields.function(
             _get_wp_pricelist_for_web, method=True, multi=True, readonly=True,
             type='float', string='Prezzo scontato web',
             help='Prezzo esposto sul sito come scontato'),
@@ -1039,7 +1039,7 @@ class ProductPublicCategory(orm.Model):
 
                     # XXX Price for S (ingle)
                     price = web_product_pool.get_wp_price(line)
-                    sale_price = u'%s' % (line.force_discounted or '')
+                    sale_price = u'%s' % (line.force_discounted_net or '')
 
                     # Description:
                     name = line.force_name or variant.name or u''
