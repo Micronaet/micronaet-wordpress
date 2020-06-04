@@ -430,7 +430,7 @@
                 />
             <menuitem
                 parent="menu_product_product_parent"
-                id="menu_product_product_variant"
+                id="menu_product_product_variant_price"
                 action="action_product_product_variant_price_force_tree"
                 sequence="20"
                 />
