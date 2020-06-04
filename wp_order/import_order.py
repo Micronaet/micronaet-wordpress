@@ -44,6 +44,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+
 class ResPartner(orm.Model):
     """ Model name: Res partner
     """
@@ -99,9 +100,10 @@ class SaleOrder(orm.Model):
             'views': [(view_id, 'form'), (False, 'tree')],
             'domain': [],
             'context': context,
-            'target': 'new',#'current',
+            'target': 'new',  # 'current',
             'nodestroy': False,
             }
+
     def dummy(self, cr, uid, ids, context=None):
         """ Do nothing (or save)
         """
@@ -120,7 +122,7 @@ class SaleOrder(orm.Model):
                 _('Connector for web site not found on order'),
                 )
 
-        #if not wp_id:
+        # if not wp_id:
         #    raise osv.except_osv(
         #        _('Error connector'),
         #        _('Wordpress order ID not found on ODOO order'),
@@ -133,7 +135,7 @@ class SaleOrder(orm.Model):
         wcapi = connector_pool.get_wp_connector(
             cr, uid, connector_id, context=context)
         data = {
-            'status': 'processing' #completed
+            'status': 'processing',  # completed
             }
         res = wcapi.put('orders/%s' % wp_id, data).json()
 
@@ -149,7 +151,8 @@ class SaleOrder(orm.Model):
             'wp_payment_confirmed': True,
             }, context=context)
 
-    def _get_corresponding_alert(self, cr, uid, ids, fields, args, context=None):
+    def _get_corresponding_alert(
+            self, cr, uid, ids, fields, args, context=None):
         """ Fields function for calculate
         """
         res = {}
@@ -169,6 +172,7 @@ class SaleOrder(orm.Model):
             _get_corresponding_alert, method=True,
             type='char', string='Alert', store=False),
         }
+
 
 class ConnectorServer(orm.Model):
     """ Model name: Worpdress Sale order
@@ -205,7 +209,7 @@ class ConnectorServer(orm.Model):
         product_pool = self.pool.get('product.product')
 
         # Parameters:
-        mask = 'C%s' # TODO create parameter
+        mask = 'C%s'  # TODO create parameter
         name = line['name']
         wp_id = line['product_id']
         default_code = line['sku'] # Mandatory!
@@ -245,7 +249,7 @@ class ConnectorServer(orm.Model):
                 'lst_price': price,
                 }, context=context)
 
-        return False # If no code!
+        return False  # If no code!
 
     # -------------------------------------------------------------------------
     # Button event:
@@ -267,7 +271,7 @@ class ConnectorServer(orm.Model):
         _logger.warning('Read order on wordpress:')
 
         # ---------------------------------------------------------------------
-        # Compnay reference:
+        # Company reference:
         # ---------------------------------------------------------------------
         company_id = company_pool.search(cr, uid, [], context=context)[0]
         company = company_pool.browse(cr, uid, company_id, context=context)
@@ -276,7 +280,6 @@ class ConnectorServer(orm.Model):
         #                        CREATE ORDERS OPERATION:
         # ---------------------------------------------------------------------
         connector_id = ids[0]
-        server_proxy = self.browse(cr, uid, connector_id, context=context)
 
         # Read WP Order present:
         wcapi = self.get_wp_connector(
@@ -301,11 +304,10 @@ class ConnectorServer(orm.Model):
                 test_error = res['data']['status']
                 raise osv.except_osv(
                     _('Order error:'),
-                    _('Error getting oredr list: %s' % (res, ) ),
+                    _('Error getting order list: %s' % (res, )),
                     )
             except:
-                pass # no error
-
+                pass  # no error
 
             if res:
                 wp_order.extend(res)
@@ -504,7 +506,6 @@ class ConnectorServer(orm.Model):
             # cancelled Cancellato
             # refunded Rimborsato
 
-
             # TODO Manage:
             # -----------------------------------------------------------------
             # Shipping add extra line with cost
@@ -513,9 +514,9 @@ class ConnectorServer(orm.Model):
             #shipping_tax
 
             # -----------------------------------------------------------------
-            # Payment method to manage supended order
+            # Payment method to manage suspended order
             # -----------------------------------------------------------------
-            if payment_method in ('bacs', ): # TODO add other pendin payment
+            if payment_method in ('bacs', ):  # TODO add other pending payment
                 wp_payment_confirmed = False
                 new_status = 'pending'
                 wf_confirm = False
@@ -527,11 +528,11 @@ class ConnectorServer(orm.Model):
             # -----------------------------------------------------------------
             # Discount add extra line with discount value
             # -----------------------------------------------------------------
-            #discount_total
-            #discount_tax
+            # discount_total
+            # discount_tax
 
             # Only on-hold status will be imported again:
-            if status not in ('on-hold', ): # TODO
+            if status not in ('on-hold', ):  # TODO
                 _logger.warning('[%s] Status: %s so jumped' % (
                     name, status))
                 continue
@@ -562,7 +563,7 @@ class ConnectorServer(orm.Model):
                 record_destination = record['shipping']
 
                 email = record_partner['email']
-                wordpress_invoice = False # TODO check if need invoice!!!!!!!!!
+                wordpress_invoice = False  # TODO check if need invoice!!!!!!
 
                 # Calculated data:
                 state_id = self.get_detail_id_from_code(
@@ -704,13 +705,13 @@ class ConnectorServer(orm.Model):
                 if len(order_proxy.order_line) != len(wp_line):
                     # TODO continue not raise!
                     _logger.error('Line are yet loaded but different!')
-                    #raise osv.except_osv(
+                    # raise osv.except_osv(
                     #    _('Error order line'),
                     #    _('Error importing line, yet present but different!'),
                     #    )
                 else:
                     _logger.warning('Line are yet load!')
-                continue # yet load the lines
+                continue  # yet load the lines
 
             # Create the lines:
             partner = order_proxy.partner_id
@@ -736,9 +737,9 @@ class ConnectorServer(orm.Model):
                         order_proxy.pricelist_id.id,
                         product_id,
                         quantity,
-                        False, # UOM;
+                        False,  # UOM;
                         quantity,
-                        False, # UOS;
+                        False,  # UOS;
                         name,
                         partner.id,
                         partner.lang,
@@ -761,7 +762,7 @@ class ConnectorServer(orm.Model):
             # -----------------------------------------------------------------
             # 1. Wordpress status:
             data = {
-                'status': new_status, #'processing' #completed
+                'status': new_status,  # 'processing' #completed
                 }
             res = wcapi.put('orders/%s' % wp_id, data).json()
 
@@ -778,7 +779,7 @@ class ConnectorServer(orm.Model):
             'name': _('New order'),
             'view_type': 'form',
             'view_mode': 'tree,form',
-            #'res_id': 1,
+            # 'res_id': 1,
             'res_model': 'sale.order',
             'view_id': False,
             'views': [(False, 'tree'), (False, 'form')],
@@ -787,4 +788,3 @@ class ConnectorServer(orm.Model):
             'target': 'current',
             'nodestroy': False,
             }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

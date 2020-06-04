@@ -196,7 +196,7 @@ class ProductProductWebServerIntegration(orm.Model):
     def _get_wp_pricelist_for_web(
             self, cr, uid, ids, fields, args, context=None):
         """ Fields function for calculate
-        """        
+        """
         res = {}
         for web in self.browse(cr, uid, ids, context=context):
             res[web.id] = {
@@ -208,12 +208,12 @@ class ProductProductWebServerIntegration(orm.Model):
     def onchange_force_vat_price(
             self, cr, uid, ids, force_vat_price, context=None):
         """
-        """    
+        """
         res = {'value': {}}
         if force_vat_price:
             res['value']['force_price'] = force_vat_price / vat_rate
-        return res    
-        
+        return res
+
     _columns = {
         'wp_parent_template': fields.boolean(
             'Prodotto master',

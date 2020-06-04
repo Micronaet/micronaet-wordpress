@@ -627,8 +627,6 @@ class ProductProductWebServer(orm.Model):
         wcapi = server_pool.get_wp_connector(
             cr, uid, [first_proxy.connector_id.id], context=context)
 
-        # res = wcapi.get("products").json() # XXX list of all products
-
         # Context used here:
         context_lang = context.copy()
 
