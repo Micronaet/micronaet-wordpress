@@ -21,16 +21,9 @@
 #
 ###############################################################################
 
-import os
-import sys
 import logging
 from openerp.osv import fields, osv, expression, orm
-from datetime import datetime, timedelta
 from openerp.tools.translate import _
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
-    DEFAULT_SERVER_DATETIME_FORMAT,
-    DATETIME_FORMATS_MAP,
-    float_compare)
 
 
 _logger = logging.getLogger(__name__)
