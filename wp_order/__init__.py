@@ -21,7 +21,7 @@
 #
 ###############################################################################
 
-from . import import_order
-
+# from . import import_order
+from . import import_order_wordpress
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

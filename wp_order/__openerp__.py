@@ -43,7 +43,8 @@
     'demo': [],
     'data': [
         #'security/ir.model.access.csv',
-        'order_view.xml',
+        #'order_view.xml',
+        'order_view_wordpress.xml',
         ],
     'active': False,
     'installable': True,

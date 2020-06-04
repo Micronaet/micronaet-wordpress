@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wordpress_connector_order_button_form">
+            <field name="name">connector.server.load.order.form</field>
+            <field name="model">connector.server</field>
+            <field name="inherit_id" ref="connector_web_base.view_connector_server_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header/button" position="after">
+                    <button name="get_sale_order_now" string="Load order" type="object"
+                        confirm="Load order procedure, confirm?"
+                        class="oe_highlight" icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
+                </xpath>
+            </field>
+        </record>
+
+        <menuitem
+            parent="wp_connector.menu_connector_worppress_root"
+            id="menu_connector_worppress_order"
+            name="Order"
+            sequence="20"
+            />
+            <!--<menuitem
+                parent="menu_connector_worppress_order"
+                id="menu_connector_worppress_partner"
+                action="action_res_partner_wp"
+                sequence="10"
+                />
+            <menuitem
+                parent="menu_connector_worppress_order"
+                id="menu_connector_worppress_partner_address"
+                action="action_res_partner_address_wp"
+                sequence="10"
+                />
+
+            <menuitem
+                parent="menu_connector_worppress_order"
+                id="menu_connector_worppress_order_all"
+                action="action_sale_order_wp"
+                sequence="20"
+                />
+            <menuitem
+                parent="menu_connector_worppress_order"
+                id="menu_connector_worppress_order_payment"
+                action="action_sale_order_wp_payment"
+                sequence="30"
+                />-->
+    </data>
+</openerp>
