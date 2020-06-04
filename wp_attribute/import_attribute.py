@@ -44,6 +44,8 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 
+vat_rate = 1.22
+
 class ProductProductWebServerIntegration(orm.Model):
     """ Model name: ProductProductWebServer
     """
@@ -194,8 +196,7 @@ class ProductProductWebServerIntegration(orm.Model):
     def _get_wp_pricelist_for_web(
             self, cr, uid, ids, fields, args, context=None):
         """ Fields function for calculate
-        """
-        vat_rate = 1.22
+        """        
         res = {}
         for web in self.browse(cr, uid, ids, context=context):
             res[web.id] = {
@@ -204,6 +205,15 @@ class ProductProductWebServerIntegration(orm.Model):
             }
         return res
 
+    def onchange_force_vat_price(
+            self, cr, uid, ids, force_vat_price, context=None):
+        """
+        """    
+        res = {'value': {}}
+        if force_vat_price:
+            res['value']['force_price'] = force_vat_price / vat_rate
+        return res    
+        
     _columns = {
         'wp_parent_template': fields.boolean(
             'Prodotto master',
@@ -215,6 +225,7 @@ class ProductProductWebServerIntegration(orm.Model):
         'wp_color_id': fields.many2one(
             'connector.product.color.dot', 'Colore'),
 
+        'force_vat_price': fields.float('Forza prezzo ivato', digits=(16, 2)),
         'wp_web_pricelist': fields.function(
             _get_wp_pricelist_for_web, method=True, multi=True, readonly=True,
             type='float', string='Prezzo listino web',

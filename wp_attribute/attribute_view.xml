@@ -182,6 +182,7 @@
             <field name="arch" type="xml">
                 <tree string="Imposta prezzi" editable="bottom">
                     <field name="product_id" readonly="1"/>
+                    <field name="force_vat_price" on_change="onchange_force_vat_price(force_vat_price)"/>
                     <field name="force_price" />
                     <field name="wp_web_pricelist" readonly="1"/>
 
