@@ -222,6 +222,9 @@ class ProductProductWebServerIntegration(orm.Model):
             help='Codice usato per calcolare appartenenza automatica'),
         'wp_parent_id': fields.many2one(
             'product.product.web.server', 'Prodotto padre'),
+        'wp_default_choice_id': fields.many2one(
+            'product.product.web.server', 'Scelta predefinita',
+            help='Se non indicato prende il master'),
         'wp_color_id': fields.many2one(
             'connector.product.color.dot', 'Colore'),
 
@@ -541,7 +544,7 @@ class ProductPublicCategory(orm.Model):
                 parent_total += 1
 
                 # TODO default_selected is first element
-                default_selected = parent # TODO Change during next loop:
+                default_selected = parent  # TODO Change during next loop:
                 product_db[odoo_lang][parent] = [default_selected, []]
 
                 for variant in parent.variant_ids:
@@ -561,7 +564,8 @@ class ProductPublicCategory(orm.Model):
                         (variant, attribute))
 
                 # Save default color for lang product
-                product_default_color[(default_selected, lang)
+                product_default_color[
+                    (default_selected, lang)
                     ] = default_selected.wp_color_id.name + '-' + lang
 
         _logger.warning('Parent found: %s' % parent_total)

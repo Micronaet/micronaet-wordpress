@@ -190,7 +190,7 @@
                     <field name="force_discounted"/>
                 </tree>
             </field>
-        </record>            
+        </record>
 
         <record model="ir.ui.view" id="view_product_product_web_server_wp_full_detail_form">
             <field name="name">product.product.web.server.full.detail.form</field>
@@ -352,6 +352,8 @@
                                      <group colspan="4" col="4">
                                         <separator string="Wordpress line:" colspan="4"/>
                                         <!--<button name="clean_reference" string="Clean reference" colspan="1" type="object" confirm="Do you want delete reference with Wordpress linked product?"/>-->
+                                        <field name="wp_default_choice_id"/>
+                                        <newline />
                                         <field name="variant_ids" colspan="4" nolabel="1" readonly="1">
                                             <tree string="Varianti" editable="bottom">
                                                 <field name="published" />
@@ -405,7 +407,7 @@
             <field name="view_id" ref="view_product_product_web_server_wp_price_tree"/>
             <field name="domain">[('connector_id.wordpress', '=', True)]</field>
         </record>
-        
+
         <!-- OVERRIDED: -->
         <record model="ir.actions.act_window" id="wp_connector.action_product_product_web_server_form">
             <field name="name">Product published</field>
@@ -435,7 +437,7 @@
                 action="action_product_product_variant_price_force_tree"
                 sequence="20"
                 />
-                
+
         <menuitem
             parent="wp_connector.menu_connector_worppress_configuration"
             id="menu_action_connector_product_color_dot"
