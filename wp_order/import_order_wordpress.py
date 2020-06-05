@@ -87,9 +87,9 @@ class WordpressSaleOrderLine(orm.Model):
 
     _columns = {
         'order_id': fields.many2one('wordpress.sale.order', 'Order'),
-        'name': fields.char('Order number'),
-        'wp_id': fields.integer('Worpress ID of order'),
-        'sku': fields.char('Order number'),
+        'name': fields.char('Name'),
+        'wp_id': fields.integer('Line ID'),
+        'sku': fields.char('SKU'),
         'product_id': fields.many2one('product.product', 'Product'),
         'quantity': fields.float('Q.', digits=(10, 2)),
         'price': fields.float('Price', digits=(10, 2)),
@@ -127,6 +127,7 @@ class ConnectorServer(orm.Model):
         # Pool used:
         order_pool = self.pool.get('wordpress.sale.order')
         line_pool = self.pool.get('wordpress.sale.order.line')
+        product_pool = self.pool.get('product.product')
 
         _logger.warning('Read order on wordpress:')
 
@@ -268,6 +269,15 @@ class ConnectorServer(orm.Model):
                 # Update
                 for line in record['line_items']:
                     name = line['name']
+                    sku = line['sku']  # TODO clean web space?
+                    product_id = False
+                    if sku:
+                        product_ids = product_pool.search(cr, uid, [
+                            ('default_code', '=', sku),
+                        ], context=context)
+                        if product_ids:
+                            product_id = product_ids[0]
+
                     order_line = {
                         'order_id': order_id,
                         'wp_id': line['id'],
@@ -276,7 +286,7 @@ class ConnectorServer(orm.Model):
                         'quantity': line['quantity'],
                         'price': line['price'],
                         'total': line['total'],
-                        # 'product_id': product_id,  # TODO search
+                        'product_id': product_id,
                         }
                     line_pool.create(cr, uid, order_line, context=context)
 
