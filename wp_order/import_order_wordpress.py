@@ -177,7 +177,7 @@ class ConnectorServer(orm.Model):
                     'date_order': date_order,
                     'wp_record': record,
                     'state': record['status'],
-                    'note': record['customer_note']
+                    'note': record['customer_note'],
                     'payment': record['payment_method_title'],
                     'total': record['total'],
                     # "date_created": "2017-03-22T16:28:02",
