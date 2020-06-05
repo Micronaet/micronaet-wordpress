@@ -205,6 +205,7 @@ class ConnectorServer(orm.Model):
 
                 if order_ids:  # XXX No update of header
                     order_id = order_ids[0]
+                    _logger.info('Yet found (update only line) %s' % name)
                 else:  # Read data:
                     # Address:
                     billing = record['billing']
