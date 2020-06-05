@@ -102,8 +102,10 @@ class WordpressSaleOrderRelation(orm.Model):
     _inherit = 'wordpress.sale.order'
 
     _columns = {
-        'line_ids': fields.one2many('wordpress.sale.order.line', 'order_id', 'Line'),
+        'line_ids': fields.one2many(
+            'wordpress.sale.order.line', 'order_id', 'Line'),
         }
+
 
 class ConnectorServer(orm.Model):
     """ Model name: Worpdress Sale order
@@ -163,7 +165,6 @@ class ConnectorServer(orm.Model):
         # Insert order
         # ---------------------------------------------------------------------
         # Sorted so parent first:
-        import pdb; pdb.set_trace()
         new_order_ids = []
         _logger.warning('Order found %s' % (len(wp_order), ))
         for record in wp_order:
@@ -244,38 +245,37 @@ class ConnectorServer(orm.Model):
                         'shipping_total': record['shipping_total'],
                     })
 
-                    # -------------------------------------------------------------
-                    # Order line:
-                    # -------------------------------------------------------------
-                    order_line = []
-                    for line in record['line_items']:
-                        name = line['name']
-                        quantity = line['quantity']
-                        total = line['total']
-                        price = line['price']
-                        order_line.append({
-                            'wp_id': line['id'],
-                            'name': line['name'],
-                            'sku': line['sku'],
-                            'quantity': line['quantity'],
-                            'price': line['price'],
-                            'total': line['total'],
-                            # 'product_id': product_id,
-                            })
-
-                    order_header.update({
-                        'line_ids': [(6, 0, order_line)]
-                    })
-
                     # ---------------------------------------------------------
                     # Order creation:
                     # ---------------------------------------------------------
                     order_id = order_pool.create(
                         cr, uid, order_header, context=context)
+                    new_order_ids.append(order_id)
                     _logger.info('Create %s' % name)
 
-                # Update order list:
-                new_order_ids.append(order_id)
+                # -------------------------------------------------------------
+                # Order line (delete and update:
+                # -------------------------------------------------------------
+                # Delete:
+                order_pool.write(
+                    cr, uid, [order_id], {
+                        'line_ids': [(6, 6, [])],
+                    }, context=context)
+                # Update
+                for line in record['line_items']:
+                    name = line['name']
+                    order_line = {
+                        'order_id': order_id,
+                        'wp_id': line['id'],
+                        'name': line['name'],
+                        'sku': line['sku'],
+                        'quantity': line['quantity'],
+                        'price': line['price'],
+                        'total': line['total'],
+                        # 'product_id': product_id,  # TODO search
+                        }
+                    line_pool.create(cr, uid, order_line, context=context)
+
             except:
                 _logger.error('Error creating order!')
                 continue

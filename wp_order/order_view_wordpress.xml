@@ -37,7 +37,7 @@
                             <field name="total"/>
                             <field name="currency"/>
 
-                            <notebook>
+                            <notebook colspan="4">
                                 <page name="order_detail" string="Detail">
                                     <group col="4">
                                         <separator string="Detail:" colspan="4"/>
