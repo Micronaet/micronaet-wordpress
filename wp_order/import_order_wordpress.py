@@ -163,6 +163,7 @@ class ConnectorServer(orm.Model):
         # Insert order
         # ---------------------------------------------------------------------
         # Sorted so parent first:
+        import pdb; pdb.set_trace()
         new_order_ids = []
         _logger.warning('Order found %s' % (len(wp_order), ))
         for record in wp_order:
@@ -263,7 +264,7 @@ class ConnectorServer(orm.Model):
                             })
 
                     order_header.update({
-                        'order_line': [(6, 0, order_line)]
+                        'line_ids': [(6, 0, order_line)]
                     })
 
                     # ---------------------------------------------------------
