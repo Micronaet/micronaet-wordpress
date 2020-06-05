@@ -14,36 +14,105 @@
             </field>
         </record>
 
+        <!--wordpress.sale.order-->
+        <record id="wordpress_sale_order_view_form" model="ir.ui.view">
+            <field name="name">wordpress.sale.order.form</field>
+            <field name="model">wordpress.sale.order</field>
+            <field name="arch" type="xml">
+                <form string="Wordpress Order">
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="key"/>
+                            <field name="date_order"/>
+                            <field name="partner_name"/>
+                            <field name="partner_email"/>
+                            <field name="partner_phone"/>
+
+                            <field name="payment"/>
+                            <field name="shipping_total"/>
+                            <field name="total"/>
+                            <field name="currency"/>
+
+                            <notebook>
+                                <page name="order_detail" string="Detail">
+                                    <group>
+                                        <separator string="Detail:" colspan="4"/>
+                                        <field name="line_ids" colspan="4" nolabel="1">
+                                            <tree string="Order line" editable="bottom">
+                                                <field name="wp_id"/>
+                                                <field name="sku"/>
+                                                <field name="name"/>
+                                                <field name="product_id"/>
+                                                <field name="quantity"/>
+                                                <field name="price"/>
+                                                <field name="total"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </page>
+                                <page name="order_extra" string="Extra">
+                                    <group>
+                                        <field name="billing"/>
+                                        <field name="shipping"/>
+                                        <field name="note"/>
+                                    </group>
+                                </page>
+                                <page name="order_detail" string="Techical">
+                                    <group>
+                                        <field name="wp_id"/>
+                                        <field name="connector_id"/>
+                                        <separator string="Record:" colspan="4"/>
+                                        <field name="wp_record" colspan="4" nolabel="1"/>
+                                    </group>
+                                </page>
+                            </notebook>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="wordpress_sale_order_view_tree" model="ir.ui.view">
+            <field name="name">wordpress.sale.order.tree</field>
+            <field name="model">wordpress.sale.order</field>
+            <field name="arch" type="xml">
+                <tree string="Wordpress Order">
+                    <field name="name"/>
+                    <field name="key"/>
+                    <field name="date_order"/>
+                    <field name="partner_name"/>
+                    <field name="partner_email"/>
+                    <field name="partner_phone"/>
+
+                    <field name="payment"/>
+                    <field name="shipping_total"/>
+                    <field name="total"/>
+                    <field name="currency"/>
+                    <field name="state" />
+                </tree>
+            </field>
+        </record>
+        <record id="wordpress_sale_order_view_action" model="ir.actions.act_window">
+            <field name="name">Wordpress order</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wordpress.sale.order</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
         <menuitem
-            parent="wp_connector.menu_connector_worppress_root"
-            id="menu_connector_worppress_order"
+            parent="wp_connector.menu_connector_wordppress_root"
+            id="menu_connector_wordpress_order"
             name="Order"
             sequence="20"
             />
-            <!--<menuitem
-                parent="menu_connector_worppress_order"
-                id="menu_connector_worppress_partner"
-                action="action_res_partner_wp"
+            <menuitem
+                parent="menu_connector_wordpress_order"
+                id="menu_wordpress_sale_order_view_action"
+                action="wordpress_sale_order_view_action"
                 sequence="10"
                 />
-            <menuitem
-                parent="menu_connector_worppress_order"
-                id="menu_connector_worppress_partner_address"
-                action="action_res_partner_address_wp"
-                sequence="10"
-                />
-
-            <menuitem
-                parent="menu_connector_worppress_order"
-                id="menu_connector_worppress_order_all"
-                action="action_sale_order_wp"
-                sequence="20"
-                />
-            <menuitem
-                parent="menu_connector_worppress_order"
-                id="menu_connector_worppress_order_payment"
-                action="action_sale_order_wp_payment"
-                sequence="30"
-                />-->
     </data>
 </openerp>
