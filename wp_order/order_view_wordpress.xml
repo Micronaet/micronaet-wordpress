@@ -15,6 +15,34 @@
         </record>
 
         <!--wordpress.sale.order-->
+        <record id="wordpress_sale_order_view_search" model="ir.ui.view">
+            <field name="name">wordpress.sale.order.search</field>
+            <field name="model">wordpress.sale.order</field>
+            <field name="arch" type="xml">
+                <search string="Search order" version="7.0">
+                    <field name="name" />
+                    <field name="key" />
+                    <field name="partner_name" />
+                    <field name="partner_email" />
+                    <field name="payment" />
+                    <field name="currency" />
+                    <!--<field name="partner_name" filter_domain="[('partner_id','=',self)]"/>-->
+
+                    <filter name="state_opened" string="Opened states" domain="[('state','in',('pending', 'processing', 'on-hold'))]"/>
+                    <filter name="state_closed" string="Closed states" domain="[('state','=','completed')]"/>
+                    <filter name="state_refunded" string="Refunded states" domain="[('state','=','refunded')]"/>
+                    <filter name="state_error" string="Error states" domain="[('state','in',('trash', 'cancelled', 'failed'))]"/>
+                    <group expand="0" string="Group By...">
+                        <filter name="group_partner_name" string="Partner" context="{'group_by': 'partner_name'}"/>
+                        <filter string="Connector" context="{'group_by': 'connector_id'}" />
+                        <filter string="Payment" context="{'group_by': 'payment'}" />
+                        <filter string="Date" context="{'group_by': 'date_order'}" />
+                        <filter string="Currency" context="{'group_by': 'currency'}" />
+                        <filter string="Status" context="{'group_by': 'state'}" />
+                    </group>
+                </search>
+            </field>
+        </record>
         <record id="wordpress_sale_order_view_form" model="ir.ui.view">
             <field name="name">wordpress.sale.order.form</field>
             <field name="model">wordpress.sale.order</field>
@@ -98,6 +126,7 @@
                 </tree>
             </field>
         </record>
+
         <record id="wordpress_sale_order_view_action" model="ir.actions.act_window">
             <field name="name">Wordpress order</field>
             <field name="type">ir.actions.act_window</field>
