@@ -1,0 +1,349 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* wp_order
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-06-05 16:51+0000\n"
+"PO-Revision-Date: 2020-06-05 16:51+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: wp_order
+#: field:wordpress.sale.order,billing:0
+msgid "Billing"
+msgstr "Fatturazione"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_form
+msgid "Billing:"
+msgstr "Fatturazione:"
+
+#. module: wp_order
+#: selection:wordpress.sale.order,state:0
+msgid "Cancelled"
+msgstr "Annullato"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_search
+msgid "Closed states"
+msgstr "Stato chiuso"
+
+#. module: wp_order
+#: selection:wordpress.sale.order,state:0
+msgid "Completed"
+msgstr "Completo"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_search
+#: field:wordpress.sale.order,connector_id:0
+msgid "Connector"
+msgstr "Connectore"
+
+#. module: wp_order
+#: help:wordpress.sale.order,connector_id:0
+msgid "Connector Marketplace, is the origin web site"
+msgstr "Marketplace, origine del sito internet"
+
+#. module: wp_order
+#: model:ir.model,name:wp_order.model_connector_server
+msgid "Connector Server"
+msgstr "Server connettore"
+
+#. module: wp_order
+#: field:wordpress.sale.order,create_uid:0
+#: field:wordpress.sale.order.line,create_uid:0
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: wp_order
+#: field:wordpress.sale.order,create_date:0
+#: field:wordpress.sale.order.line,create_date:0
+msgid "Created on"
+msgstr "Created il"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_search
+#: field:wordpress.sale.order,currency:0
+msgid "Currency"
+msgstr "Valuta"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_search
+msgid "Date"
+msgstr "Data"
+
+#. module: wp_order
+#: field:wordpress.sale.order,date_order:0
+msgid "Date order"
+msgstr "Data ordine"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_form
+msgid "Detail"
+msgstr "Dettagli"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_form
+msgid "Detail:"
+msgstr "Dettagli:"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_search
+msgid "Error states"
+msgstr "Stati con errore"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_form
+msgid "Extra"
+msgstr "Extra"
+
+#. module: wp_order
+#: selection:wordpress.sale.order,state:0
+msgid "Failed"
+msgstr "Fallito"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_search
+msgid "Group By..."
+msgstr "Raggruppa per..."
+
+#. module: wp_order
+#: field:wordpress.sale.order,id:0
+#: field:wordpress.sale.order.line,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: wp_order
+#: field:wordpress.sale.order,write_uid:0
+#: field:wordpress.sale.order.line,write_uid:0
+msgid "Last Updated by"
+msgstr "Aggiornato da"
+
+#. module: wp_order
+#: field:wordpress.sale.order,write_date:0
+#: field:wordpress.sale.order.line,write_date:0
+msgid "Last Updated on"
+msgstr "Aggiornato il"
+
+#. module: wp_order
+#: field:wordpress.sale.order,line_ids:0
+msgid "Line"
+msgstr "Linee"
+
+#. module: wp_order
+#: field:wordpress.sale.order.line,wp_id:0
+msgid "Line ID"
+msgstr "ID linea"
+
+#. module: wp_order
+#: view:connector.server:wp_order.view_wordpress_connector_order_button_form
+msgid "Load order"
+msgstr "Scarica ordini da WP"
+
+#. module: wp_order
+#: view:connector.server:wp_order.view_wordpress_connector_order_button_form
+msgid "Load order procedure, confirm?"
+msgstr "Avviare lo scaricamento degli ordini dal sito?"
+
+#. module: wp_order
+#: field:wordpress.sale.order.line,name:0
+msgid "Name"
+msgstr "Nome"
+
+#. module: wp_order
+#: field:wordpress.sale.order,note:0
+msgid "Note"
+msgstr "Note"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_form
+msgid "Note:"
+msgstr "Note:"
+
+#. module: wp_order
+#: selection:wordpress.sale.order,state:0
+msgid "On hold"
+msgstr "In sospeso"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_search
+msgid "Opened states"
+msgstr "Stati aperti"
+
+#. module: wp_order
+#: model:ir.ui.menu,name:wp_order.menu_connector_wordpress_order
+#: field:wordpress.sale.order.line,order_id:0
+msgid "Order"
+msgstr "Ordini"
+
+#. module: wp_order
+#: field:wordpress.sale.order,key:0
+msgid "Order key"
+msgstr "Chiave ordine"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_form
+msgid "Order line"
+msgstr "Righe ordine"
+
+#. module: wp_order
+#: field:wordpress.sale.order,name:0
+msgid "Order number"
+msgstr "Numero ordine"
+
+#. module: wp_order
+#: model:ir.model,name:wp_order.model_res_partner
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_search
+#: field:wordpress.sale.order,partner_name:0
+msgid "Partner"
+msgstr "Cliente"
+
+#. module: wp_order
+#: field:wordpress.sale.order,partner_email:0
+msgid "Partner email"
+msgstr "Email cliente"
+
+#. module: wp_order
+#: field:wordpress.sale.order,partner_phone:0
+msgid "Partner phone"
+msgstr "Telefono cliente"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_search
+#: field:wordpress.sale.order,payment:0
+msgid "Payment"
+msgstr "Pagamento"
+
+#. module: wp_order
+#: selection:wordpress.sale.order,state:0
+msgid "Pending"
+msgstr "Pendente"
+
+#. module: wp_order
+#: field:wordpress.sale.order.line,price:0
+msgid "Price"
+msgstr "Prezzo"
+
+#. module: wp_order
+#: selection:wordpress.sale.order,state:0
+msgid "Processing"
+msgstr "In avanzamento"
+
+#. module: wp_order
+#: field:wordpress.sale.order.line,product_id:0
+msgid "Product"
+msgstr "Prodotto"
+
+#. module: wp_order
+#: field:wordpress.sale.order.line,quantity:0
+msgid "Q."
+msgstr "Q."
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_form
+msgid "Record:"
+msgstr "Record:"
+
+#. module: wp_order
+#: selection:wordpress.sale.order,state:0
+msgid "Refunded"
+msgstr "Reso"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_search
+msgid "Refunded states"
+msgstr "Stato reso"
+
+#. module: wp_order
+#: field:wordpress.sale.order.line,sku:0
+msgid "SKU"
+msgstr "SKU"
+
+#. module: wp_order
+#: model:ir.model,name:wp_order.model_sale_order
+msgid "Sales Order"
+msgstr "Ordine di vendita"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_search
+msgid "Search order"
+msgstr "Ricerca ordine"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_tree
+#: field:wordpress.sale.order,shipping:0
+msgid "Shipping"
+msgstr "Consegna"
+
+#. module: wp_order
+#: field:wordpress.sale.order,shipping_total:0
+msgid "Shipping total"
+msgstr "Totale trasporto"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_form
+msgid "Shipping:"
+msgstr "Consegna:"
+
+#. module: wp_order
+#: field:wordpress.sale.order,state:0
+msgid "State"
+msgstr "Stato"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_search
+msgid "Status"
+msgstr "Stato"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_form
+msgid "Techical"
+msgstr "Dettaglio tecnico"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_tree
+#: field:wordpress.sale.order,total:0
+#: field:wordpress.sale.order.line,total:0
+msgid "Total"
+msgstr "Totale"
+
+#. module: wp_order
+#: selection:wordpress.sale.order,state:0
+msgid "Trash"
+msgstr "Cestinato"
+
+#. module: wp_order
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_form
+#: view:wordpress.sale.order:wp_order.wordpress_sale_order_view_tree
+msgid "Wordpress Order"
+msgstr "Ordine Wordpress"
+
+#. module: wp_order
+#: model:ir.actions.act_window,name:wp_order.wordpress_sale_order_view_action
+#: model:ir.model,name:wp_order.model_wordpress_sale_order
+#: model:ir.ui.menu,name:wp_order.menu_wordpress_sale_order_view_action
+msgid "Wordpress order"
+msgstr "Ordine Wordpress"
+
+#. module: wp_order
+#: model:ir.model,name:wp_order.model_wordpress_sale_order_line
+msgid "Wordpress order line"
+msgstr "Wordpress riga ordine"
+
+#. module: wp_order
+#: field:wordpress.sale.order,wp_id:0
+msgid "Worpress ID of order"
+msgstr "Wordpress ID ordine"
+
+#. module: wp_order
+#: field:wordpress.sale.order,wp_record:0
+msgid "Worpress record"
+msgstr "Wordpress record"
+
