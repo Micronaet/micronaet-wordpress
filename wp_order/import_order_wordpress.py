@@ -21,6 +21,7 @@
 #
 ###############################################################################
 
+import sys
 import logging
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
@@ -167,6 +168,7 @@ class ConnectorServer(orm.Model):
         # Sorted so parent first:
         new_order_ids = []
         _logger.warning('Order found %s' % (len(wp_order), ))
+        import pdb; pdb.set_trace()
         for record in wp_order:
             try:
                 wp_id = record['id']
@@ -250,8 +252,8 @@ class ConnectorServer(orm.Model):
                     # ---------------------------------------------------------
                     order_id = order_pool.create(
                         cr, uid, order_header, context=context)
-                    new_order_ids.append(order_id)
                     _logger.info('Create %s' % name)
+                new_order_ids.append(order_id)
 
                 # -------------------------------------------------------------
                 # Order line (delete and update:
@@ -277,7 +279,7 @@ class ConnectorServer(orm.Model):
                     line_pool.create(cr, uid, order_line, context=context)
 
             except:
-                _logger.error('Error creating order!')
+                _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
                 continue
 
         return {
