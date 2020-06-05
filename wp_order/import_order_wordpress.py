@@ -286,7 +286,7 @@ class ConnectorServer(orm.Model):
                         'order_id': order_id,
                         'wp_id': line['id'],
                         'name': name,
-                        'sku': line['sku'],
+                        'sku': sku,
                         'quantity': line['quantity'],
                         'price': line['price'],
                         'total': line['total'],
