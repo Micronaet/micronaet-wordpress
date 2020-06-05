@@ -23,13 +23,12 @@
 
 import logging
 from openerp.osv import fields, osv, expression, orm
+from datetime import datetime, timedelta
 from openerp.tools.translate import _
-
 
 _logger = logging.getLogger(__name__)
 
 
-'''
 class WordpressSaleOrder(orm.Model):
     """ Model name: Wordpress Sale Order
     """
@@ -41,16 +40,16 @@ class WordpressSaleOrder(orm.Model):
         'name': fields.char('Order number'),
         'key': fields.char('Order key'),
         'wp_id': fields.integer('Worpress ID of order'),
-        'total': fields.float('Total', size=(10, 2)),
-        'shipping_total': fields.float('Shipping total', size=(10, 2)),
+        'total': fields.float('Total', digits=(10, 2)),
+        'shipping_total': fields.float('Shipping total', digits=(10, 2)),
         'currency': fields.char('Currency'),
         'date_order': fields.datetime('Date order'),
 
-        'partner_name': fields.name('Partner', size=40),
-        'partner_email': fields.name('Partner email', size=40),
-        'partner_phone': fields.name('Partner phone', size=30),
+        'partner_name': fields.char('Partner', size=40),
+        'partner_email': fields.char('Partner email', size=40),
+        'partner_phone': fields.char('Partner phone', size=30),
 
-        'payment': fields.name('Payment', size=30),
+        'payment': fields.char('Payment', size=30),
         'billing': fields.text('Billing'),
         'shipping': fields.text('Shipping'),
 
@@ -85,16 +84,26 @@ class WordpressSaleOrderLine(orm.Model):
     _description = 'Wordpress order line'
 
     _columns = {
-        'order_id': fields.one2many('wordpress.sale.order', 'Order'),
+        'order_id': fields.many2one('wordpress.sale.order', 'Order'),
         'name': fields.char('Order number'),
         'wp_id': fields.integer('Worpress ID of order'),
         'sku': fields.char('Order number'),
-        'product_id': fields.one2many('product.product', 'Product'),
-        'quantity': fields.float('Q.', size=(10, 2)),
-        'price': fields.float('Price', size=(10, 2)),
-        'total': fields.float('Total', size=(10, 2)),
+        'product_id': fields.many2one('product.product', 'Product'),
+        'quantity': fields.float('Q.', digits=(10, 2)),
+        'price': fields.float('Price', digits=(10, 2)),
+        'total': fields.float('Total', digits=(10, 2)),
     }
 
+
+class WordpressSaleOrderRelation(orm.Model):
+    """ Model name: Wordpress Sale Order relation fields
+    """
+
+    _inherit = 'wordpress.sale.order'
+
+    _columns = {
+        'line_ids': fields.one2many('wordpress.sale.order.line', 'order_id', 'Line'),
+        }
 
 class ConnectorServer(orm.Model):
     """ Model name: Worpdress Sale order
@@ -283,4 +292,4 @@ class ConnectorServer(orm.Model):
             'context': context,
             'target': 'current',
             'nodestroy': False,
-            }'''
+            }
