@@ -118,6 +118,11 @@ class ConnectorServer(orm.Model):
     # -------------------------------------------------------------------------
     # Button event:
     # -------------------------------------------------------------------------
+    def wp_clean_code(self, code):
+        """ Clean code
+        """
+        return code.replace('&nbsp;', ' ')
+
     def get_sale_order_now(self, cr, uid, ids, context=None):
         """ Get sale order list
             """
@@ -269,7 +274,7 @@ class ConnectorServer(orm.Model):
                 # Update
                 for line in record['line_items']:
                     name = line['name']
-                    sku = line['sku']  # TODO clean web space?
+                    sku = self.wp_clean_code(line['sku'])
                     product_id = False
                     if sku:
                         product_ids = product_pool.search(cr, uid, [
@@ -281,7 +286,7 @@ class ConnectorServer(orm.Model):
                     order_line = {
                         'order_id': order_id,
                         'wp_id': line['id'],
-                        'name': line['name'],
+                        'name': name,
                         'sku': line['sku'],
                         'quantity': line['quantity'],
                         'price': line['price'],
