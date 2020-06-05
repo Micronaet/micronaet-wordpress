@@ -69,6 +69,7 @@ class WordpressSaleOrder(orm.Model):
             ('refunded', 'Refunded'),
             ('failed', 'Failed'),
             ('trash', 'Trash'),
+            ('cancelled', 'Cancelled'),
             ], 'State'),
         }
 
