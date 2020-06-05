@@ -182,11 +182,11 @@ class ConnectorServer(orm.Model):
                     ('connector_id', '=', connector_id),
                     ('wp_id', '=', wp_id),
                     ], context=context)
-
+                number = record['number']
                 order_header = {
                     'connector_id': connector_id,
                     'wp_id': wp_id,
-                    'name': record['number'],
+                    'name': number,
                     'currency': record['currency'],
                     'key': record['order_key'],
                     'date_order': date_order,
@@ -205,7 +205,7 @@ class ConnectorServer(orm.Model):
 
                 if order_ids:  # XXX No update of header
                     order_id = order_ids[0]
-                    _logger.info('Yet found (update only line) %s' % name)
+                    _logger.info('Yet found (update only line) %s' % number)
                 else:  # Read data:
                     # Address:
                     billing = record['billing']
@@ -254,7 +254,7 @@ class ConnectorServer(orm.Model):
                     # ---------------------------------------------------------
                     order_id = order_pool.create(
                         cr, uid, order_header, context=context)
-                    _logger.info('Create %s' % name)
+                    _logger.info('Create %s' % number)
                 new_order_ids.append(order_id)
 
                 # -------------------------------------------------------------
