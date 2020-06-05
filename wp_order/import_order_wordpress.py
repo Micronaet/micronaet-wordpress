@@ -29,6 +29,7 @@ from openerp.tools.translate import _
 _logger = logging.getLogger(__name__)
 
 
+'''
 class WordpressSaleOrder(orm.Model):
     """ Model name: Wordpress Sale Order
     """
@@ -282,4 +283,4 @@ class ConnectorServer(orm.Model):
             'context': context,
             'target': 'current',
             'nodestroy': False,
-            }
+            }'''
