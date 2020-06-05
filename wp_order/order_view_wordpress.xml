@@ -24,7 +24,7 @@
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-                        <group>
+                        <group col="4">
                             <field name="name"/>
                             <field name="key"/>
                             <field name="date_order"/>
@@ -39,7 +39,7 @@
 
                             <notebook>
                                 <page name="order_detail" string="Detail">
-                                    <group>
+                                    <group col="4">
                                         <separator string="Detail:" colspan="4"/>
                                         <field name="line_ids" colspan="4" nolabel="1">
                                             <tree string="Order line" editable="bottom">
@@ -55,14 +55,17 @@
                                     </group>
                                 </page>
                                 <page name="order_extra" string="Extra">
-                                    <group>
-                                        <field name="billing"/>
-                                        <field name="shipping"/>
-                                        <field name="note"/>
+                                    <group col="4">
+                                        <separator string="Billing:" colspan="4"/>
+                                        <field name="billing" colspan="4" nolabel="1"/>
+                                        <separator string="Shipping:" colspan="4"/>
+                                        <field name="shipping" colspan="4" nolabel="1"/>
+                                        <separator string="Note:" colspan="4"/>
+                                        <field name="note" colspan="4" nolabel="1"/>
                                     </group>
                                 </page>
                                 <page name="order_detail" string="Techical">
-                                    <group>
+                                    <group col="4">
                                         <field name="wp_id"/>
                                         <field name="connector_id"/>
                                         <separator string="Record:" colspan="4"/>
@@ -103,7 +106,7 @@
         </record>
 
         <menuitem
-            parent="wp_connector.menu_connector_wordppress_root"
+            parent="connector_web_base.menu_webserver_root"
             id="menu_connector_wordpress_order"
             name="Order"
             sequence="20"
