@@ -121,7 +121,7 @@ class ConnectorServer(orm.Model):
     def wp_clean_code(self, code):
         """ Clean code
         """
-        return code.replace('&nbsp;', ' ')
+        return (code or '').replace('&nbsp;', ' ')
 
     def get_sale_order_now(self, cr, uid, ids, context=None):
         """ Get sale order list

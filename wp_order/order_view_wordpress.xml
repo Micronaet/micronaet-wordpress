@@ -77,7 +77,7 @@
                                                 <field name="product_id"/>
                                                 <field name="quantity"/>
                                                 <field name="price"/>
-                                                <field name="total"/>
+                                                <field name="total" sum="total"/>
                                             </tree>
                                         </field>
                                     </group>
