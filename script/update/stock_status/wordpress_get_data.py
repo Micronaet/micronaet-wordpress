@@ -58,15 +58,15 @@ parameter = {'per_page': 40, 'page': 1}
 total = 0
 
 while True:
-    print 'Reading page %s [Block %s]' % (
-        parameter['page'], parameter['per_page'])
+    print('Reading page %s [Block %s]' % (
+        parameter['page'], parameter['per_page']))
 
     call = 'products'
     reply = wcapi.get(call, params=parameter)
     parameter['page'] += 1
 
     if reply.status_code >= 300:
-        print 'Error getting product list', reply.text
+        print('Error getting product list', reply.text)
         sys.exit()
 
     json_reply = reply.json()
@@ -95,7 +95,7 @@ while True:
         if sku in master_db[lang]:  # Yet present
             master_check_double.append((lang, sku))
         master_db[lang][sku] = product_id
-        continue # TODO remove
+
         for variation in variation_reply.json():
             total += 1
             variation_id = variation['id']

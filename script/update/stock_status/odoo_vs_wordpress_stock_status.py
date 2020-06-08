@@ -49,6 +49,7 @@ variant_db = pickle.load(open(pickle_file, 'rb'))
 activity_file = './log/activity.log'
 activity_f = open(activity_file, 'a')
 
+
 def log_activity(event, mode='info'):
     """ Log activity on file
     """
