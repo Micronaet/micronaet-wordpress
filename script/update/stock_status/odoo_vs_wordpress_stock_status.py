@@ -43,7 +43,6 @@ for root, folders, files in os.walk('./config'):
     break
 
 pickle_file = './log/wp_data.p'
-import pdb; pdb.set_trace()
 variant_db = pickle.load(open(pickle_file, 'rb'))
 
 activity_file = './log/activity.log'
@@ -145,8 +144,6 @@ for company in database:
             for variation in master.variant_ids:
                 product = variation.product_id
                 default_code = product.default_code  # .replace(' ', '&nbsp;')
-                if default_code == 'ST15GG':
-                    import pdb; pdb.set_trace()
                 if variation.published:
                     status = 'publish'
                 else:
