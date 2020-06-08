@@ -189,6 +189,7 @@ for company in database:
                     # instock (def.), outofstock, onbackorder
 
                     'regular_price': u'%s' % price,
+                    # TODO update more other things?
                     }
 
                 # -------------------------------------------------------------
