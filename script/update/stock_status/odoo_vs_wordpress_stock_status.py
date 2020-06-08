@@ -43,6 +43,7 @@ for root, folders, files in os.walk('./config'):
     break
 
 pickle_file = './log/wp_data.p'
+import pdb; pdb.set_trace()
 variant_db = pickle.load(open(pickle_file, 'rb'))
 
 activity_file = './log/activity.log'
