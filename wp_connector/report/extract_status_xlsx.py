@@ -42,17 +42,24 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+
 class ConnectorServer(orm.Model):
     """ Model name: ConnectorServer
     """
     _inherit = 'connector.server'
 
+    # Overridable function to get sold status
+    def sold_product_on_website(self, cr, uid, ids, context=None):
+        """ Return sold product for default_code
+        """
+        return {}
+
     def extract_wordpress_published_report(self, cr, uid, ids, context=None):
-        ''' Extract list of published elements:
-        '''
+        """ Extract list of published elements:
+        """
         def get_image_list(self, product, album_ids, context=None):
-            ''' Fields function for calculate
-            '''
+            """ Fields function for calculate
+            """
             if context is None:
                 context = {}
 
@@ -70,7 +77,7 @@ class ConnectorServer(orm.Model):
                             image.album_id.code,
                             'http://my.fiam.it/upload/images/%s' % (
                                 image.filename or ''),
-                            #image.dropbox_link,
+                            # image.dropbox_link,
                             )
             return res
 
@@ -80,6 +87,10 @@ class ConnectorServer(orm.Model):
         excel_pool = self.pool.get('excel.writer')
         product_pool = self.pool.get('product.product')
         connector_pool = self.pool.get('product.product.web.server')
+
+        # Get sold product database:
+        sold_product = self.sold_product_on_website(
+            cr, uid, ids, context=context)
 
         # ---------------------------------------------------------------------
         #                         Excel report:
@@ -117,6 +128,7 @@ class ConnectorServer(orm.Model):
             30, 70,
             30, 70,
             50, 10, 30, 5, 5,
+            10,  # Sold
             10, 10, 5, 10,
             10, 10,
             5, 20, 30, 7,
@@ -133,6 +145,7 @@ class ConnectorServer(orm.Model):
             'Nome', 'Descrizione',
             '(Name)', '(Description)',
             'Categorie', 'Mag.', 'Dett. mag.', 'Extra', 'Molt.',
+            'Venduto',
             'Prezzo ODOO', 'Forz.', 'Prezzo WP', 'Scontato',
             'Cat. Stat.', 'Peso',
             'Mod. imb.', 'Imballo', 'Dimensioni prodotto', 'Vol.',
@@ -160,6 +173,7 @@ class ConnectorServer(orm.Model):
                 ):
             product = line.product_id
             default_code = product.default_code or ''
+            sold = sold_product.get(default_code, '')
 
             # -----------------------------------------------------------------
             # Parameters:
@@ -199,7 +213,7 @@ class ConnectorServer(orm.Model):
                 grouped[default_code6].append(default_code[6:].strip())
 
             row += 1
-            selected[product.id] = row # To update english lang
+            selected[product.id] = row  # To update english lang
             color_format_all[product.id] = color_format
 
             # Readability:
@@ -231,6 +245,9 @@ class ConnectorServer(orm.Model):
 
                     line.price_extra,
                     line.price_multi,
+
+                    sold,
+
                     odoo_price,
                     price,
                     'X' if line.force_price else '',

@@ -115,6 +115,29 @@ class ConnectorServer(orm.Model):
 
     _inherit = 'connector.server'
 
+    # Override function to get sold status
+    def sold_product_on_website(self, cr, uid, ids, context=None):
+        """ Return sold product for default_code
+            ids = connector used
+        """
+        res = {}
+
+        line_pool = self.pool.get('wordpress.sale.order.line')
+        line_ids = line_pool.search(cr, uid, [
+            ('order_id.connector_id', 'in', ids),
+            ('order_id.state', 'in', (
+                'pending', 'processing', 'on-hold', 'completed',
+                # 'refunded', 'failed', 'trash',  'cancelled',
+            )),
+        ], context=context)
+        for line in line_pool.browse(cr, uid, line_ids, context=context):
+            sku = line.sku
+            if sku in res:
+                res[sku] += line.quantity
+            else:
+                res[sku] = line.quantity
+        return res
+
     # -------------------------------------------------------------------------
     # Button event:
     # -------------------------------------------------------------------------
