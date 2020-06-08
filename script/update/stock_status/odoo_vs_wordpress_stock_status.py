@@ -2,7 +2,7 @@
 # '*'coding: utf'8 '*'
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001'2015 Micronaet S.r.l. (<https://micronaet.com>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -13,7 +13,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -38,9 +38,9 @@ for root, folders, files in os.walk('./config'):
     for filename in files:
         if filename == 'wordpress.cfg':
             continue
-        company = filename.split('.')[0]       
+        company = filename.split('.')[0]
         database[company] = os.path.join(root, filename)
-    break    
+    break
 
 pickle_file = './log/wp_data.p'
 variant_db = pickle.load(open(pickle_file, 'rb'))
@@ -49,8 +49,8 @@ activity_file = './log/activity.log'
 activity_f = open(activity_file, 'a')
 
 def log_activity(event, mode='info'):
-    ''' Log activity on file
-    '''
+    """ Log activity on file
+    """
     activity_f.write('%s [%s] %s\n' % (
         datetime.now(),
         mode.upper(),
@@ -84,7 +84,7 @@ wcapi = woocommerce.API(
 # -----------------------------------------------------------------------------
 for company in database:
     cfg_file = database[company]
-    
+
     # From config file:
     config = ConfigParser.ConfigParser()
     config.read([cfg_file])
@@ -100,21 +100,21 @@ for company in database:
     # -------------------------------------------------------------------------
     odoo = erppeek.Client(
         'http://%s:%s' % (
-            server, port), 
+            server, port),
         db=dbname,
         user=user,
         password=pwd,
         )
-    
+
     for lang in lang_db:
         wp_lang = lang[:2]
         odoo.context = {'lang': lang}
         web_product_pool = odoo.model('product.product.web.server')
-    
+
         web_product_ids = web_product_pool.search([
             ('wp_parent_template', '=', True),
             ])
-                    
+
         for master in web_product_pool.browse(web_product_ids):
             """
             multipack = str(int(variation.price_multi)) \
@@ -139,32 +139,34 @@ for company in database:
             call = 'products/%s' % (product_id)
 
             continue
-            """    
+            """
             for variation in master.variant_ids:
-                product = variation.product_id                
-                default_code = product.default_code #.replace(' ', '&nbsp;')
+                product = variation.product_id
+                default_code = product.default_code  # .replace(' ', '&nbsp;')
+                if default_code == 'ST15GG':
+                    import pdb; pdb.set_trace()
                 if variation.published:
-                    status = 'publish'  
+                    status = 'publish'
                 else:
                     status = 'private'
-                    print 'Unpublished: %s' % default_code
-                
+                    print('Unpublished: %s' % default_code)
+
                 if default_code not in variant_db[wp_lang]:
-                    print 'Master code not found: %s' % default_code
+                    print('Master code not found: %s' % default_code)
                     continue
-    
+
                 wp_data = variant_db[wp_lang][default_code]
                 product_id = wp_data['product_id']
                 variation_id = wp_data['variation_id']
-                
+
                 # XXX Problem with this:
                 stock_quantity, stock_comment = \
                     web_product_pool.get_existence_for_product(variation.id)
-                    
+
                 multiplier = variation.price_multi or 1
                 if multiplier > 1:
                     stock_quantity = stock_quantity // multiplier
-                
+
                 # XXX Usually disabled:
                 multipack = str(int(variation.price_multi)) \
                     if variation.price_multi and variation.price_multi > 1 \
@@ -172,7 +174,7 @@ for company in database:
 
                 # Price part:
                 price = web_product_pool.get_wp_price_external(variation.id)
-                
+
                 # -------------------------------------------------------------
                 # Stock data:
                 # -------------------------------------------------------------
@@ -182,13 +184,13 @@ for company in database:
                     'manage_stock': True,
                     # Visibility:
                     'status': status,
-                    #'multipack': multipack,
-                    
-                    #'stock_status': 'instock', 
+                    # 'multipack': multipack,
+
+                    # 'stock_status': 'instock',
                     # instock (def.), outofstock, onbackorder
-                    
+
                     'regular_price': u'%s' % price,
-                    }                
+                    }
 
                 # -------------------------------------------------------------
                 # Variation update:
@@ -198,13 +200,13 @@ for company in database:
 
                 reply = wcapi.put(call, data)
                 if reply.status_code >= 300:
-                    print 'Error publish stock status: %s, [%s: %s]\n\n%s' % (
-                        default_code, call, data, 
-                        reply.text if verbose else '')                     
+                    print('Error publish stock status: %s, [%s: %s]\n\n%s' % (
+                        default_code, call, data,
+                        reply.text if verbose else ''))
                 else:
-                    print 'Update %s with stock status: %s [%s: %s]\n%s\n' % (
-                        default_code, stock_quantity,  call, data, 
-                        reply.text if verbose else '')                     
+                    print('Update %s with stock status: %s [%s: %s]\n%s\n' % (
+                        default_code, stock_quantity,  call, data,
+                        reply.text if verbose else ''))
 
 log_activity('End update stock in Wordpress [%s]' % wordpress_url)
 
