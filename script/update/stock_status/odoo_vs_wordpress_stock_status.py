@@ -173,11 +173,11 @@ for company in database:
 
                 # Price part:
                 price = web_product_pool.get_wp_price_external(variation.id)
+                sale_price = variation.wp_web_discounted_net or ''
 
                 # -------------------------------------------------------------
                 # Stock data:
                 # -------------------------------------------------------------
-                sale_price = u'%s' % (variation.wp_web_discounted_net or '')
                 data = {
                     'lang': wp_lang,
 
@@ -187,7 +187,7 @@ for company in database:
 
                     # Price:
                     'regular_price': u'%s' % price,
-                    'sale_price': sale_price,
+                    'sale_price': u'%s' % sale_price,
 
                     # Visibility:
                     'status': status,
