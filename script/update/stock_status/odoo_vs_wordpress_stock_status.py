@@ -180,18 +180,21 @@ for company in database:
                 sale_price = u'%s' % (variation.wp_web_discounted_net or '')
                 data = {
                     'lang': wp_lang,
+
+                    # Stock status:
                     'stock_quantity': stock_quantity,
                     'manage_stock': True,
-                    # Visibility:
-                    'status': status,
-                    # 'multipack': multipack,
-
-                    # 'stock_status': 'instock',
-                    # instock (def.), outofstock, onbackorder
 
                     # Price:
                     'regular_price': u'%s' % price,
                     'sale_price': sale_price,
+
+                    # Visibility:
+                    'status': status,
+                    # 'multipack': multipack,
+                    # 'stock_status': 'instock',
+                    # instock (def.), outofstock, onbackorder
+
                     # TODO update more other things?
                     }
 
