@@ -197,9 +197,6 @@ for company in database:
 
                     # TODO update more other things?
                     }
-                if sale_price:
-                    print('Update: %s %s %s' % (
-                        default_code, price, sale_price,))
 
                 # -------------------------------------------------------------
                 # Variation update:
