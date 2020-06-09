@@ -200,8 +200,8 @@ class ConnectorServer(orm.Model):
                 color_format = excel_format['red']
             else:
                 color_format = excel_format['black']
-                #not_selected.append((product, 'no stock'))
-                #continue
+                # not_selected.append((product, 'no stock'))
+                # continue
 
             # -----------------------------------------------------------------
             # Group data:
@@ -272,7 +272,6 @@ class ConnectorServer(orm.Model):
                     dropbox_image,
                     ], default_format=color_format['text'])
 
-
         # English report (integration):
         product_ids = product_pool.search(cr, uid, [
             ('id', 'in', selected.keys()),
@@ -289,7 +288,7 @@ class ConnectorServer(orm.Model):
             color_format = color_format_all[product.id]
 
             # Readability:
-            #line.force_name or \
+            # line.force_name or \
             # TODO problem when forced
             short_description = product.emotional_short_description or \
                 product.name or u''

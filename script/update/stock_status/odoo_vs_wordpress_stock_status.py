@@ -177,6 +177,7 @@ for company in database:
                 # -------------------------------------------------------------
                 # Stock data:
                 # -------------------------------------------------------------
+                sale_price = u'%s' % (variation.wp_web_discounted_net or '')
                 data = {
                     'lang': wp_lang,
                     'stock_quantity': stock_quantity,
@@ -188,7 +189,9 @@ for company in database:
                     # 'stock_status': 'instock',
                     # instock (def.), outofstock, onbackorder
 
+                    # Price:
                     'regular_price': u'%s' % price,
+                    'sale_price': sale_price,
                     # TODO update more other things?
                     }
 
