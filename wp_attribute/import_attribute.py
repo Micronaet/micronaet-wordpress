@@ -99,7 +99,6 @@ class ProductProductWebServerIntegration(orm.Model):
         forced_ids.union(new_ids)
         active_ids = tuple(forced_ids)
 
-        import pdb; pdb.set_trace()
         if not active_ids:
             _logger.warning('Wordpress product: No need to update')
             return False
