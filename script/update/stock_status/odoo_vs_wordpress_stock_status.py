@@ -31,7 +31,8 @@ import slugify
 import pickle
 from datetime import datetime
 
-verbose = False # Log with extra data
+verbose = False  # Log with extra data
+vat_rate = 1.22
 lang_db = ['it_IT', 'en_US']
 database = {}
 for root, folders, files in os.walk('./config'):
@@ -173,7 +174,10 @@ for company in database:
 
                 # Price part:
                 price = web_product_pool.get_wp_price_external(variation.id)
-                sale_price = variation.wp_web_discounted_net or ''
+                sale_price = u'%s' % (
+                        (variation.force_discounted / vat_rate) or '')
+                # TODO Always 0:
+                # sale_price = variation.wp_web_discounted_net or ''
 
                 # -------------------------------------------------------------
                 # Stock data:
