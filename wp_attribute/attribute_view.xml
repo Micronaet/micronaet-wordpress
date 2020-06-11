@@ -153,8 +153,8 @@
                     <button name="publish_master_now" string="Publish this now" type="object" icon="gtk-refresh"/>
 
                     <field name="need_update" invisible="1"/>
-                    <button name="mark_need_update" string="Aggiornare schedulato" type="object" icon="terp-calendar" attrs="{'invisible': [('need_update', '=', False)]}"/>
-                    <button name="unmark_need_update" string="Annulla aggiorna schedulato" type="object" icon="gtk-cancel" attrs="{'invisible': [('need_update', '=', True)]}"/>
+                    <button name="mark_need_update" string="Aggiornare schedulato" type="object" icon="terp-calendar" attrs="{'invisible': [('need_update', '=', True)]}"/>
+                    <button name="unmark_need_update" string="Annulla aggiorna schedulato" type="object" icon="gtk-cancel" attrs="{'invisible': [('need_update', '=', Falsegitf)]}"/>
 
                     <button name="publish_master_now" string="Non pubblicato" type="object" icon="gtk-new" attrs="{'invisible': ['|', ('wp_it_id', '!=', 0), ('wp_en_id', '!=', 0)]}"/>
 
