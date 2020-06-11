@@ -84,19 +84,19 @@ class ProductProductWebServerIntegration(orm.Model):
         if context is None:
             context = {}
 
-        forced_ids = self.search(cr, uid, [
+        forced_ids = set(self.search(cr, uid, [
             '&',
             ('need_update', '=', True),
             ('wp_parent_template', '=', True),
-        ], context=context)
+        ], context=context))
 
-        new_ids = self.search(cr, uid, [
+        new_ids = set(self.search(cr, uid, [
             '|',
             ('wp_it_id', '=', 0),
             ('wp_en_id', '=', 0),
-        ], context=context)
+        ], context=context))
 
-        forced_ids.add(new_ids)
+        forced_ids.union(new_ids)
         active_ids = tuple(forced_ids)
 
         import pdb; pdb.set_trace()
