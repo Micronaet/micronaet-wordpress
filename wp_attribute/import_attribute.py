@@ -84,6 +84,16 @@ class ProductProductWebServerIntegration(orm.Model):
         if context is None:
             context = {}
 
+        # No image publish:
+        connector_pool = self.pool.get('connector.server')
+        connector_ids = connector_pool.search(cr, uid, [
+            ('wordpress', '=', True),
+        ], context=context)
+        connector_pool.write(cr, uid, connector_ids, {
+            'wp_publish_image': False,
+        }, context=context)
+
+        # Select list:
         forced_ids = set(self.search(cr, uid, [
             '&',
             ('need_update', '=', True),
@@ -96,6 +106,7 @@ class ProductProductWebServerIntegration(orm.Model):
             ('wp_en_id', '=', 0),
         ], context=context))
 
+        # Union of new and forced:
         forced_ids.union(new_ids)
         active_ids = tuple(forced_ids)
 
