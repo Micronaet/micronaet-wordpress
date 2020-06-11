@@ -2,7 +2,7 @@
 <openerp>
 	<data noupdate="1">
 		<record id="ir_cron_scheduled_publish_master_selected_0" model="ir.cron">
-			<field eval="&quot;&quot;&quot;scheduled_publish_master_selectedr&quot;&quot;&quot;" name="function"/>
+			<field eval="&quot;&quot;&quot;scheduled_publish_master_selected&quot;&quot;&quot;" name="function"/>
 			<field eval="&quot;&quot;&quot;days&quot;&quot;&quot;" name="interval_type"/>
 			<field name="user_id" ref="base.user_root"/>
 			<field eval="&quot;&quot;&quot;Schedule: Update new wordpress product or forced&quot;&quot;&quot;" name="name"/>
