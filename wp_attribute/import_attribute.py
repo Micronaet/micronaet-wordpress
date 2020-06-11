@@ -79,20 +79,23 @@ class ProductProductWebServerIntegration(orm.Model):
 
     def scheduled_publish_master_selected(self, cr, uid, context=None):
         """ Schedule update for new or marked for update
+            Note: All connector update!
         """
         if context is None:
             context = {}
-        import pdb; pdb.set_trace()
-        active_ids = self.search(cr, uid, [
+        forced_ids = self.search(cr, uid, [
             '&',
             ('need_update', '=', True),
-            '&',
             ('wp_parent_template', '=', True),
+        ], context=context)
+        new_ids = self.search(cr, uid, [
             '|',
             ('wp_it_id', '=', 0),
             ('wp_en_id', '=', 0),
         ], context=context)
+        active_ids = tuple(set(forced_ids) + set(new_ids))
 
+        import pdb; pdb.set_trace()
         if not active_ids:
             _logger.warning('Wordpress product: No need to update')
             return False
