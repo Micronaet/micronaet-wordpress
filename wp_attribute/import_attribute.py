@@ -56,12 +56,43 @@ class ProductProductWebServerIntegration(orm.Model):
     # Button event:
     # -------------------------------------------------------------------------
     def clean_wp_reference(self, cr, uid, ids, context=None):
-        """ Clean procedura for WP product deleted
+        """ Clean procedure for WP product deleted
         """
         return self.write(cr, uid, ids, {
             'wp_it_id': False,
             'wp_en_id': False,
             }, context=context)
+
+    def scheduled_publish_master_selected(self, cr, uid, context=None):
+        """ Schedule update for new or marked for update
+        """
+        if context is None:
+            context = {}
+        import pdb; pdb.set_trace()
+        active_ids = self.search(cr, uid, [
+            '&',
+            ('need_update', '=', True),
+            '&',
+            ('wp_parent_template', '=', True),
+            '|',
+            ('wp_it_id', '=', 0),
+            ('wp_en_id', '=', 0),
+        ], context=context)
+
+        if not active_ids:
+            _logger.warning('Wordpress product: No need to update')
+            return False
+
+        context['active_ids'] = active_ids
+        _logger.info('Wordpress: Updating %s products' % len(active_ids))
+        res = self.publish_master_now(cr, uid, [], context=context)
+        _logger.info('Wordpress: Updated %s products' % len(active_ids))
+
+        # Clean selection when done:
+        self.write(cr, uid, active_ids, {
+            'need_update': False,
+        }, context=context)
+        return res  # Normal closing action
 
     def publish_master_now(self, cr, uid, ids, context=None):
         """ Publish but only this
@@ -182,7 +213,7 @@ class ProductProductWebServerIntegration(orm.Model):
             # -----------------------------------------------------------------
             # Case: no parent no code:
             # -----------------------------------------------------------------
-            pass # nothing to do
+            pass  # nothing to do
 
         # ---------------------------------------------------------------------
         # Set this as parent
@@ -215,6 +246,9 @@ class ProductProductWebServerIntegration(orm.Model):
         return res
 
     _columns = {
+        'need_update': fields.boolean(
+            'Aggiornare',
+            help='Viene aggiornato durante l\'operazione in notturna'),
         'wp_parent_template': fields.boolean(
             'Prodotto master',
             help='Prodotto riferimento per raggruppare i prodotti dipendenti'),
@@ -524,10 +558,10 @@ class ProductPublicCategory(orm.Model):
         product_ids = web_product_pool.search(cr, uid, domain, context=context)
         _logger.warning('Product for this connector: %s...' % len(product_ids))
 
-        product_db = {} # Master database for lang - parent - child
-        lang_color_db = {} # Master list for color in default lang
-        fabric_color_odoo = {} # Dropbox link for image
-        product_default_color = {} # First variant showed
+        product_db = {}  # Master database for lang - parent - child
+        lang_color_db = {}  # Master list for color in default lang
+        fabric_color_odoo = {}  # Dropbox link for image
+        product_default_color = {}  # First variant showed
 
         parent_total = 0
         for odoo_lang in langs:
@@ -548,7 +582,7 @@ class ProductPublicCategory(orm.Model):
                 product_db[odoo_lang][parent] = [default_selected, []]
 
                 for variant in parent.variant_ids:
-                    # Note: first variat is parent:
+                    # Note: first variant is parent:
                     product = variant.product_id
                     default_code = product.default_code or ''
                     color = variant.wp_color_id.name
