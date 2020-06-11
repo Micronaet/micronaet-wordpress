@@ -63,6 +63,20 @@ class ProductProductWebServerIntegration(orm.Model):
             'wp_en_id': False,
             }, context=context)
 
+    def unmark_need_update(self, cr, uid, ids, context=None):
+        """ Mark for scheduled update
+        """
+        return self.write(cr, uid, ids, {
+            'need_update': False,
+        }, context=context)
+
+    def mark_need_update(self, cr, uid, ids, context=None):
+        """ Mark for scheduled update
+        """
+        return self.write(cr, uid, ids, {
+            'need_update': True,
+        }, context=context)
+
     def scheduled_publish_master_selected(self, cr, uid, context=None):
         """ Schedule update for new or marked for update
         """
