@@ -1057,7 +1057,6 @@ class ProductPublicCategory(orm.Model):
                         (variant_code, default_lang), False)
 
                     # XXX Price for S (ingle)
-                    import pdb; pdb.set_trace()
                     price = web_product_pool.get_wp_price(line)
                     sale_price = u'%s' % (
                         (line.force_discounted / vat_rate) or '')
