@@ -194,7 +194,7 @@ class ProductProductWebServerIntegration(orm.Model):
             }, context=context)
 
     def _get_wp_pricelist_for_web(
-            self, cr, uid, ids, fields, args, context=None):
+            self, cr, uid, ids, fields=None, args=None, context=None):
         """ Fields function for calculate
         """
         res = {}
@@ -1059,7 +1059,10 @@ class ProductPublicCategory(orm.Model):
                     # XXX Price for S (ingle)
                     import pdb; pdb.set_trace()
                     price = web_product_pool.get_wp_price(line)
-                    sale_price = u'%s' % (line.wp_web_discounted_net or '')
+                    sale_price = u'%s' % (
+                        (line.force_discounted / vat_rate) or '')
+                    # TODO error: is always 0
+                    # sale_price = u'%s' % (line.wp_web_discounted_net or '')
 
                     # Description:
                     name = line.force_name or variant.name or u''
