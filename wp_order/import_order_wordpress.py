@@ -127,6 +127,50 @@ class ConnectorServer(orm.Model):
         excel_pool = self.pool.get('excel.writer')
         line_pool = self.pool.get('wordpress.sale.order.line')
 
+        # Utility:
+        def get_standard_data_line(line):
+            """ Return list of fields for this line
+            """
+            order = line.order_id
+            shipping = order.shipping_total
+            total = order.total
+            net = total - shipping
+            state = order.state
+
+            # Color setup:
+            if state in ('trash', 'failed', 'cancelled'):
+                color = excel_format['red']
+            elif state in ('refunded', ):
+                color = excel_format['orange']
+            elif state in ('pending', 'on-hold'):
+                color = excel_format['yellow']
+            elif state in ('processing', ):
+                color = excel_format['blue']
+            elif state in ('completed', ):
+                color = excel_format['green']
+            else:
+                color = excel_format['white']
+
+            return [
+                line.sku,
+                line.name,
+
+                (line.quantity, color['number']),
+                (line.price, color['number']),
+                (line.total, color['number']),
+
+                order.date_order,
+                order.name,
+                order.partner_name or '',
+                order.payment or '',
+                state,
+
+                order.currency,
+                (shipping, color['number']),
+                (total, color['number']),
+                (net, color['number']),  # TODO check VAT!
+                ], color
+
         # ---------------------------------------------------------------------
         # Collect data:
         # ---------------------------------------------------------------------
@@ -135,9 +179,15 @@ class ConnectorServer(orm.Model):
         ], context=context)
         report_data = {
             'all': [],
+            'completed': [],  # today
         }
+        today = ('%s' % datetime.now())[:10]
         for line in line_pool.browse(cr, uid, line_ids, context=context):
+            order = line.order_id
             report_data['all'].append(line)
+            completed = (order.wp_date_completed or '')[:10]
+            if completed and completed == today:
+                report_data['completed'].append(line)
 
         # ---------------------------------------------------------------------
         # Completed order:
@@ -206,49 +256,41 @@ class ConnectorServer(orm.Model):
 
         for line in sorted(report_data['all'],
                            key=lambda x: (x.order_id.name, x.wp_id)):
-            order = line.order_id
-            shipping = order.shipping_total
-            total = order.total
-            net = total - shipping
-            state = order.state
-
-            # Color setup:
-            if state in ('trash', 'failed', 'cancelled'):
-                color = excel_format['red']
-            elif state in ('refunded', ):
-                color = excel_format['orange']
-            elif state in ('pending', 'on-hold'):
-                color = excel_format['yellow']
-            elif state in ('processing', ):
-                color = excel_format['blue']
-            elif state in ('completed', ):
-                color = excel_format['green']
-            else:
-                color = excel_format['white']
-
-            data = [
-                line.sku,
-                line.name,
-
-                (line.quantity, color['number']),
-                (line.price, color['number']),
-                (line.total, color['number']),
-
-                order.date_order,
-                order.name,
-                order.partner_name or '',
-                order.payment or '',
-                state,
-
-                order.currency,
-                (shipping, color['number']),
-                (total, color['number']),
-                (net, color['number']),  # TODO check VAT!
-                ]
-
+            data, color = get_standard_data_line(line)
             excel_pool.write_xls_line(
                 ws_name, row, data, default_format=color['text'])
             row += 1
+
+        # ---------------------------------------------------------------------
+        # Completed order:
+        # ---------------------------------------------------------------------
+        ws_name = 'Ordini chiusi oggi'
+        excel_pool.create_worksheet(ws_name)
+        row = 0
+        excel_pool.column_width(ws_name, width)
+
+        # 1 Title
+        excel_pool.write_xls_line(
+            ws_name, row, [
+                'Elenco righe ordine chiusi oggi'],
+            default_format=excel_format['title'])
+        row += 2
+
+        # 2 Header
+        excel_pool.write_xls_line(
+            ws_name, row, header, default_format=excel_format['header'])
+        excel_pool.autofilter(ws_name, row, 0, row, len(width) - 1)
+        row += 1
+
+        for line in sorted(report_data['completed'],
+                           key=lambda x: (x.order_id.name, x.wp_id)):
+            data, color = get_standard_data_line(line)
+            excel_pool.write_xls_line(
+                ws_name, row, data, default_format=color['text'])
+            row += 1
+
+        # ---------------------------------------------------------------------
+        # Return excel file:
         return excel_pool.return_attachment(cr, uid, 'wordpress_order')
 
     # Override function to get sold status
