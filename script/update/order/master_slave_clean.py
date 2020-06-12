@@ -6,7 +6,7 @@ import ConfigParser
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
-for root, folders, files in os.path('../'):
+for root, folders, files in os.walk('..'):
     for cfg_file in files:
         if not cfg_file.startswith('openerp'):
             print('Not a config file: %s' % cfg_file)
