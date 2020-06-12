@@ -268,6 +268,9 @@ class ConnectorServer(orm.Model):
             ws_name, row, [
                 'Totale ordini arrivati esplosi per articolo'],
             default_format=excel_format['title'])
+        excel_pool.write_comment(
+            ws_name, row, len(width) - 1,
+            u'Il netto è presente per gli ordini completi o confermati')
         row += 2
 
         # 2 Header
