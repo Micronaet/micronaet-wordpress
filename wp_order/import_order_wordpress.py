@@ -206,7 +206,6 @@ class ConnectorServer(orm.Model):
         for record in wp_order:
             try:
                 wp_id = record['id']
-                import pdb; pdb.set_trace()
                 wp_date_created = record['date_created'].replace('T', ' ')
                 date_order = wp_date_created[:10]
                 wp_date_modify = record['date_modify'].replace('T', ' ')
