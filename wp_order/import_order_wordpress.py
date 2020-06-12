@@ -167,13 +167,15 @@ class ConnectorServer(orm.Model):
 
         if context is None:
             context = {}
+        from_yesterday = context.get('from_yesterday')
 
         # Pool used:
         order_pool = self.pool.get('wordpress.sale.order')
         line_pool = self.pool.get('wordpress.sale.order.line')
         product_pool = self.pool.get('product.product')
 
-        _logger.warning('Read order on wordpress:')
+        _logger.warning('Read order on wordpress [from_yesterday = %s]' %
+                        from_yesterday)
 
         # ---------------------------------------------------------------------
         #                        CREATE ORDERS OPERATION:
@@ -193,7 +195,7 @@ class ConnectorServer(orm.Model):
             'page': 0,
             # TODO 'after': '2019-05-01T00:00:00' Add clause from search
             }
-        if context.get('from_yesterday'):
+        if from_yesterday:
             parameter['after'] = (
                 datetime.now() - timedelta(days=1)).strftime(
                     '%Y-%m-%dT00:00:00')

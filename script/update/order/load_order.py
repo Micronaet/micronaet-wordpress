@@ -32,9 +32,12 @@ for root, folders, files in os.walk('..'):
         import pdb; pdb.set_trace()
         argv = sys.argv
         if len(argv) != 2:
-            print('Call python ./master_slave_cle')
+            print('Call python ./load_order.py [all or yesterday]')
+            sys.exit()
+
         # Called without all parameter:
-        odoo.context = {'from_yesterday': True}
+        if argv[1].lower == 'yesterday':
+            odoo.context = {'from_yesterday': True}
 
         connector_pool = odoo.model('connector.server')
         connector_pool.get_sale_order_now([connector_id])
