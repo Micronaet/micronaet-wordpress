@@ -268,7 +268,7 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Completed order:
         # ---------------------------------------------------------------------
-        ws_name = 'Ordini chiusi oggi'
+        ws_name = 'Ordini chiusi da ieri'
         excel_pool.create_worksheet(ws_name)
         row = 0
         excel_pool.column_width(ws_name, width)
@@ -276,7 +276,7 @@ class ConnectorServer(orm.Model):
         # 1 Title
         excel_pool.write_xls_line(
             ws_name, row, [
-                'Elenco righe ordine chiusi oggi'],
+                'Elenco righe ordine chiusi da ieri'],
             default_format=excel_format['title'])
         row += 2
 
