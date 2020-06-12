@@ -154,6 +154,15 @@ class ConnectorServer(orm.Model):
     def get_sale_order_now(self, cr, uid, ids, context=None):
         """ Get sale order list
             """
+        # Utility:
+        def get_clean_date(record_field):
+            """ Clean date
+            """
+            try:
+                return record_field.replace('T', ' ')
+            except:
+                return ''
+
         if context is None:
             context = {}
 
@@ -206,11 +215,12 @@ class ConnectorServer(orm.Model):
         for record in wp_order:
             try:
                 wp_id = record['id']
-                wp_date_created = record['date_created'].replace('T', ' ')
+
+                wp_date_created = get_clean_date(record['date_created'])
                 date_order = wp_date_created[:10]
-                wp_date_modified = record['date_modified'].replace('T', ' ')
-                wp_date_paid = record['date_paid'].replace('T', ' ')
-                wp_date_completed = record['date_completed'].replace('T', ' ')
+                wp_date_modified = get_clean_date(record['date_modified'])
+                wp_date_paid = get_clean_date(record['date_paid'])
+                wp_date_completed = get_clean_date(record['date_completed'])
 
                 # -------------------------------------------------------------
                 #                          ORDER HEADER:
