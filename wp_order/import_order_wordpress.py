@@ -91,7 +91,8 @@ class WordpressSaleOrderLine(orm.Model):
     _description = 'Wordpress order line'
 
     _columns = {
-        'order_id': fields.many2one('wordpress.sale.order', 'Order'),
+        'order_id': fields.many2one(
+            'wordpress.sale.order', 'Order', ondelete='cascade'),
         'name': fields.char('Name'),
         'wp_id': fields.integer('Line ID'),
         'sku': fields.char('SKU'),
@@ -248,17 +249,9 @@ class ConnectorServer(orm.Model):
                     'note': record['customer_note'],
                     'payment': record['payment_method_title'],
                     'total': record['total'],
-                    # "date_created": "2017-03-22T16:28:02",
-                    # "date_modified": "2017-03-22T16:28:08",
-                    # "date_paid": "2017-03-22T16:28:08",
-                    # "date_paid_gmt": "2017-03-22T19:28:08",
-                    # "date_completed": null,
-                    # "date_completed_gmt": null,
                 }
                 if order_ids:  # XXX No update of header
                     order_id = order_ids[0]
-                    order_pool.write(
-                        cr, uid, order_ids, order_header, context=context)
                     _logger.info('Yet found (update only line) %s' % number)
                 else:  # Read data:
                     # Address:
