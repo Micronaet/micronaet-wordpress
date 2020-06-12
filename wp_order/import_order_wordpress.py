@@ -128,7 +128,7 @@ class ConnectorServer(orm.Model):
         line_pool = self.pool.get('wordpress.sale.order.line')
 
         # Utility:
-        def get_standard_data_line(line):
+        def get_standard_data_line(excel_pool, ws_name, row, line):
             """ Return list of fields for this line
             """
             order = line.order_id
@@ -138,15 +138,16 @@ class ConnectorServer(orm.Model):
             state = order.state
 
             # Color setup:
+            write_comment = True
             if state in ('trash', 'failed', 'cancelled'):
                 color = excel_format['red']
-                net = 0
+                net = write_comment = False
             elif state in ('refunded', ):
                 color = excel_format['orange']
-                net = 0
+                net = write_comment = False
             elif state in ('pending', 'on-hold'):
                 color = excel_format['yellow']
-                net = 0
+                net = write_comment = False
             elif state in ('processing', ):
                 color = excel_format['blue']
             elif state in ('completed', ):
@@ -154,7 +155,7 @@ class ConnectorServer(orm.Model):
             else:
                 color = excel_format['white']
 
-            return [
+            data = [
                 line.sku,
                 line.name,
 
@@ -174,7 +175,16 @@ class ConnectorServer(orm.Model):
                 (shipping, color['number']),
                 (total, color['number']),
                 (net, color['number']),  # TODO check VAT!
-                ], color
+                ]
+            # Write line:
+            excel_pool.write_xls_line(
+                ws_name, row, data, default_format=color['text'])
+
+            # Add comment:
+            if write_comment:
+                excel_pool.write_comment(
+                    ws_name, row, len(data) - 1,
+                    u'Il netto è presente per gli ordini completi/confermati')
 
         # ---------------------------------------------------------------------
         # Collect data:
@@ -268,9 +278,6 @@ class ConnectorServer(orm.Model):
             ws_name, row, [
                 'Totale ordini arrivati esplosi per articolo'],
             default_format=excel_format['title'])
-        excel_pool.write_comment(
-            ws_name, row, len(width) - 1,
-            u'Il netto è presente per gli ordini completi o confermati')
         row += 2
 
         # 2 Header
@@ -281,9 +288,7 @@ class ConnectorServer(orm.Model):
 
         for line in sorted(report_data['all'],
                            key=lambda x: (x.order_id.name, x.wp_id)):
-            data, color = get_standard_data_line(line)
-            excel_pool.write_xls_line(
-                ws_name, row, data, default_format=color['text'])
+            get_standard_data_line(excel_pool, ws_name, row, line)
             row += 1
 
         # ---------------------------------------------------------------------
@@ -310,9 +315,7 @@ class ConnectorServer(orm.Model):
         for line in sorted(report_data['completed'],
                            key=lambda x: (
                                 x.order_id.wp_date_completed, x.wp_id)):
-            data, color = get_standard_data_line(line)
-            excel_pool.write_xls_line(
-                ws_name, row, data, default_format=color['text'])
+            get_standard_data_line(excel_pool, ws_name, row, line)
             row += 1
 
         # ---------------------------------------------------------------------
@@ -339,9 +342,7 @@ class ConnectorServer(orm.Model):
         for line in sorted(report_data['waiting'],
                            key=lambda x: (
                                 x.order_id.name, x.wp_id)):
-            data, color = get_standard_data_line(line)
-            excel_pool.write_xls_line(
-                ws_name, row, data, default_format=color['text'])
+            get_standard_data_line(excel_pool, ws_name, row, line)
             row += 1
 
         # ---------------------------------------------------------------------
@@ -368,9 +369,7 @@ class ConnectorServer(orm.Model):
         for line in sorted(report_data['working'],
                            key=lambda x: (
                                 x.order_id.name, x.wp_id)):
-            data, color = get_standard_data_line(line)
-            excel_pool.write_xls_line(
-                ws_name, row, data, default_format=color['text'])
+            get_standard_data_line(excel_pool, ws_name, row, line)
             row += 1
 
         # ---------------------------------------------------------------------
@@ -397,9 +396,7 @@ class ConnectorServer(orm.Model):
         for line in sorted(report_data['shipping'],
                            key=lambda x: (
                                 x.order_id.name, x.wp_id)):
-            data, color = get_standard_data_line(line)
-            excel_pool.write_xls_line(
-                ws_name, row, data, default_format=color['text'])
+            get_standard_data_line(excel_pool, ws_name, row, line)
             row += 1
 
         # ---------------------------------------------------------------------
