@@ -337,6 +337,7 @@ class ConnectorServer(orm.Model):
                     line_pool.create(cr, uid, order_line, context=context)
 
             except:
+                import pdb; pdb.set_trace()
                 _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
                 continue
 
