@@ -17,6 +17,7 @@ def log_message(log_file, message, mode='info', verbose=True):
     if verbose:
         print(message.strip())
 
+
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
