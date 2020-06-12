@@ -247,7 +247,7 @@ class ConnectorServer(orm.Model):
             'SKU', 'Prodotto',
             'Q.', 'Prezzo', 'Subtotale',
 
-            'Data', 'Pagato', 'Completo' 
+            'Data', 'Pagato', 'Completo',
             'Ordine', 'Cliente', 'Pagamento', 'Stato',
             'Val.', 'Trasporto', 'Totale', 'Netto',
             ]
