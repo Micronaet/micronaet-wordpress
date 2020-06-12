@@ -253,7 +253,7 @@ class ConnectorServer(orm.Model):
                 }
                 if order_ids:  # XXX No update of header
                     order_id = order_ids[0]
-                    order_pool.create(
+                    order_pool.write(
                         cr, uid, order_ids, order_header, context=context)
                     _logger.info('Yet found (update only line) %s' % number)
                 else:  # Read data:
