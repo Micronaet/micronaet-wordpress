@@ -47,7 +47,7 @@ class WordpressSaleOrder(orm.Model):
         'date_order': fields.datetime('Date order'),
 
         'wp_date_created': fields.datetime('Date created'),
-        'wp_date_modify': fields.datetime('Date modify'),
+        'wp_date_modified': fields.datetime('Date modify'),
         'wp_date_paid': fields.datetime('Date paid'),
         'wp_date_completed': fields.datetime('Date completed'),
 
@@ -208,7 +208,7 @@ class ConnectorServer(orm.Model):
                 wp_id = record['id']
                 wp_date_created = record['date_created'].replace('T', ' ')
                 date_order = wp_date_created[:10]
-                wp_date_modify = record['date_modify'].replace('T', ' ')
+                wp_date_modified = record['date_modified'].replace('T', ' ')
                 wp_date_paid = record['date_paid'].replace('T', ' ')
                 wp_date_completed = record['date_completed'].replace('T', ' ')
 
@@ -229,7 +229,7 @@ class ConnectorServer(orm.Model):
 
                     'date_order': date_order,
                     'wp_date_created': wp_date_created,
-                    'wp_date_modify': wp_date_modify,
+                    'wp_date_modified': wp_date_modified,
                     'wp_date_paid': wp_date_paid,
                     'wp_date_completed': wp_date_completed,
 
