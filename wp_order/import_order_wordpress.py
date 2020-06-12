@@ -157,13 +157,13 @@ class ConnectorServer(orm.Model):
             'Q.', 'Prezzo', 'Subtotale',
 
             'Data', 'Ordine', 'Cliente', 'Pagamento', 'Stato',
-            'Valuta', 'Trasporto', 'Totale', 'Netto',
+            'Val.', 'Trasporto', 'Totale', 'Netto',
             ]
         width = [
-            10, 30,
-            10, 10, 12,
-            10, 8, 30, 15, 18,
-            3, 10, 10, 10,
+            16, 40,
+            6, 6, 8,
+            9, 7, 25, 20, 18,
+            4, 10, 10, 10,
         ]
         excel_pool.column_width(ws_name, width)
 
@@ -172,11 +172,12 @@ class ConnectorServer(orm.Model):
             ws_name, row, [
                 'Totale ordini arrivati esplosi per articolo'],
             default_format=f_title)
-        row += 1
+        row += 2
 
         # 2 Header
         excel_pool.write_xls_line(
             ws_name, row, header, default_format=f_header)
+        excel_pool.autofilter(ws_name, row, 0, row, len(width) - 1)
         row += 1
 
         for line in sorted(report_data['all'],
