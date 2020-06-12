@@ -38,10 +38,10 @@
                         <filter string="Connector" context="{'group_by': 'connector_id'}" />
                         <filter string="Payment" context="{'group_by': 'payment'}" />
                         <filter string="Date" context="{'group_by': 'date_order'}" />
-                        <filter string="Created" context="{'group_by': 'date_created'}" />
-                        <filter string="Modify" context="{'group_by': 'date_modify'}" />
-                        <filter string="Paid" context="{'group_by': 'date_paid'}" />
-                        <filter string="Completed" context="{'group_by': 'date_completed'}" />
+                        <filter string="Created" context="{'group_by': 'wp_date_created'}" />
+                        <filter string="Modify" context="{'group_by': 'wp_date_modify'}" />
+                        <filter string="Paid" context="{'group_by': 'wp_date_paid'}" />
+                        <filter string="Completed" context="{'group_by': 'wp_date_completed'}" />
                         <filter string="Currency" context="{'group_by': 'currency'}" />
                         <filter string="Status" context="{'group_by': 'state'}" />
                     </group>
@@ -60,11 +60,11 @@
                         <group col="4">
                             <field name="name"/>
                             <field name="key"/>
-                            <field name="date_created" invisible="1"/>
-                            <field name="date_modify" invisible="1"/>
+                            <field name="wp_date_created" invisible="1"/>
+                            <field name="wp_date_modify" invisible="1"/>
                             <field name="date_order"/>
-                            <field name="date_paid"/>
-                            <field name="date_completed" />
+                            <field name="wp_date_paid"/>
+                            <field name="wp_date_completed" />
                             <field name="partner_name"/>
                             <field name="partner_email"/>
                             <field name="partner_phone"/>
