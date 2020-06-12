@@ -11,7 +11,7 @@ for root, folders, files in os.walk('..'):
         if not cfg_file.startswith('openerp'):
             print('Not a config file: %s' % cfg_file)
         print('Updating order for %s company' % cfg_file.split('.')[1])
-        cfg_file = os.path.expanduser('../', cfg_file)
+        cfg_file = os.path.expanduser(os.path.join('../', cfg_file))
         config = ConfigParser.ConfigParser()
         config.read([cfg_file])
         dbname = config.get('dbaccess', 'dbname')
