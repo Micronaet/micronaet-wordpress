@@ -10,6 +10,8 @@
                     <button name="get_sale_order_now" string="Load order" type="object"
                         confirm="Load order procedure, confirm?"
                         class="oe_highlight" icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
+                    <button name="status_wordpress_order_report" string="Order report Excel" type="object"
+                        class="oe_highlight" icon="gtk-print" attrs="{'invisible': [('wordpress','=',False)]}" />
                 </xpath>
             </field>
         </record>
