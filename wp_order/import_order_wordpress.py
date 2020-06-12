@@ -131,7 +131,7 @@ class ConnectorServer(orm.Model):
         # Collect data:
         # ---------------------------------------------------------------------
         line_ids = line_pool.search(cr, uid, [
-            'connector_id', '=', ids[0],
+            'order_id.connector_id', '=', ids[0],
         ], context=context)
         report_data = {
             'all': [],
