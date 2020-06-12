@@ -120,7 +120,7 @@
             <field name="name">wordpress.sale.order.tree</field>
             <field name="model">wordpress.sale.order</field>
             <field name="arch" type="xml">
-                <tree string="Wordpress Order" colors="red:state in ('cancelled', 'trash', 'failed'); grey: state in ('pending', on-hold'); blue: state == 'processing'; green: state == 'completed'; brown: state == 'refunded'">
+                <tree string="Wordpress Order" colors="red:state in ('cancelled', 'trash', 'failed'); grey: state in ('pending', 'on-hold'); blue: state == 'processing'; green: state == 'completed'; brown: state == 'refunded'">
                     <field name="name"/>
                     <field name="key"/>
                     <field name="date_order"/>
