@@ -121,6 +121,93 @@ class ConnectorServer(orm.Model):
 
     _inherit = 'connector.server'
 
+    def status_wordpress_order_report(self, cr, uid, ids, context=None):
+        """ Status order excel report
+        """
+        excel_pool = self.pool.get('excel.writer')
+        line_pool = self.pool.get('wordpress.sale.order.line')
+
+        # ---------------------------------------------------------------------
+        # Collect data:
+        # ---------------------------------------------------------------------
+        line_ids = line_pool.search(cr, uid, [], context=context)
+        report_data = {
+            'all': [],
+        }
+        for line in line_pool.browse(cr, uid, line_ids, context=context):
+            report_data['all'].append(line)
+
+        # ---------------------------------------------------------------------
+        # Completed order:
+        # ---------------------------------------------------------------------
+        ws_name = 'Ordini completi'
+        excel_pool.create_worksheet(ws_name)
+        row = 0
+
+        # Load formats:
+        f_title = excel_pool.get_format('title')
+        f_header = excel_pool.get_format('header')
+        f_text = excel_pool.get_format('text')
+        f_number = excel_pool.get_format('number')
+
+        header = [
+            'SKU', 'Prodotto',
+            'Q.', 'Prezzo', 'Subtotale',
+
+            'Data', 'Ordine', 'Cliente', 'Pagamento', 'Stato',
+            'Valuta', 'Trasporto', 'Totale', 'Netto',
+            ]
+        width = [
+            10, 30,
+            10, 10, 12,
+            10, 8, 30, 15, 18,
+            3, 10, 10, 10,
+        ]
+        excel_pool.column_width(ws_name, width)
+
+        # 1 Title
+        excel_pool.write_xls_line(
+            ws_name, row, [
+                'Totale ordini arrivati esplosi per articolo'],
+            default_format=f_title)
+        row += 1
+
+        # 2 Header
+        excel_pool.write_xls_line(
+            ws_name, row, header, default_format=f_header)
+        row += 1
+
+        for line in sorted(report_data['all'],
+                           key= lambda x: (x.order_id.name, x.wp_id)):
+            order = line.order_id
+            shipping = order.shipping_total
+            total = order.total
+            net = total - shipping
+            data = [
+                line.sku,
+                line.name,
+
+                (line.quantity, f_number),
+                (line.price, f_number),
+                (line.total, f_number),
+
+                order.date_order,
+                order.name,
+                order.partner_name or '',
+                order.payment or '',
+                order.state
+
+                order.currency,
+                (shipping, f_number),
+                (total, f_number),
+                (net, f_number),  # TODO check VAT!
+                ]
+
+            excel_pool.write_xls_line(
+                ws_name, row, data, default_format=f_text)
+            row += 1
+        return excel_pool.return_attachment(cr, uid, 'wordpress_order')
+
     # Override function to get sold status
     def sold_product_on_website(self, cr, uid, ids, context=None):
         """ Return sold product for default_code
