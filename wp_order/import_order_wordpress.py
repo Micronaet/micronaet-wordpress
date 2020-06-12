@@ -183,12 +183,12 @@ class ConnectorServer(orm.Model):
             'all': [],
             'completed': [],  # today
         }
-        today = ('%s' % datetime.now())[:10]
+        today = ('%s' % (datetime.now() - timedelta(days=1)))[:10]
         for line in line_pool.browse(cr, uid, line_ids, context=context):
             order = line.order_id
             report_data['all'].append(line)
             completed = (order.wp_date_completed or '')[:10]
-            if completed and completed == today:
+            if completed and completed >= today:
                 report_data['completed'].append(line)
 
         # ---------------------------------------------------------------------
@@ -239,7 +239,7 @@ class ConnectorServer(orm.Model):
         width = [
             16, 40,
             6, 6, 8,
-            9, 13, 13,
+            9, 16, 16,
             7, 35, 20, 18,
             4, 10, 10, 10,
         ]
