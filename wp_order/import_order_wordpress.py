@@ -203,7 +203,7 @@ class ConnectorServer(orm.Model):
             if state in ('pending', 'on-hold'):
                 report_data['waiting'].append(line)
 
-            if line.shipping_total:
+            if line.order_id.shipping_total:
                 report_data['shipping'].append(line)
 
         # ---------------------------------------------------------------------
