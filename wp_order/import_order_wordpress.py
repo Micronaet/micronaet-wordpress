@@ -138,16 +138,19 @@ class ConnectorServer(orm.Model):
             state = order.state
 
             # Color setup:
-            write_comment = True
+            write_comment = False
             if state in ('trash', 'failed', 'cancelled'):
                 color = excel_format['red']
-                net = write_comment = False
+                net = 0
+                write_comment = True
             elif state in ('refunded', ):
                 color = excel_format['orange']
-                net = write_comment = False
+                net = 0
+                write_comment = True
             elif state in ('pending', 'on-hold'):
                 color = excel_format['yellow']
-                net = write_comment = False
+                net = 0
+                write_comment = True
             elif state in ('processing', ):
                 color = excel_format['blue']
             elif state in ('completed', ):
