@@ -3,6 +3,18 @@ import sys
 import erppeek
 import ConfigParser
 
+def log_message(log_file, message, mode='info', verbose=True):
+    """ Log message
+    """
+    mode = mode.upper()
+    log_file.write('[%s] %s. %s\n' % (
+        mode,
+        datetime.now(),
+        message,
+    ))
+    if verbose:
+        print(message.strip())
+
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
@@ -11,7 +23,11 @@ for root, folders, files in os.walk('..'):
         if not cfg_file.startswith('openerp'):
             print('Not a config file: %s' % cfg_file)
             continue
-        print('Updating order for %s company' % cfg_file.split('.')[1])
+        company = cfg_file.split('.')[1]
+        f_log = open(os.path.join('./log', company), 'a')
+
+        log_message(f_log, 'Updating order for %s company' % company)
+
         cfg_file = os.path.expanduser(os.path.join('../', cfg_file))
         config = ConfigParser.ConfigParser()
         config.read([cfg_file])
@@ -34,11 +50,12 @@ for root, folders, files in os.walk('..'):
             print('Call python ./load_order.py [all or yesterday]')
             continue
 
-        # Called without all parameter:
+        # Check call parameters:
         if argv[1].lower() == 'yesterday':
             odoo.context = {'from_yesterday': True}
+        log_message(f_log, 'Call mode %s' % argv[1])
 
         connector_pool = odoo.model('connector.server')
         res = connector_pool.get_sale_order_now([connector_id])
-        print(res)
+        log_message(f_log, 'End updating order for %s company\n' % company)
     break
