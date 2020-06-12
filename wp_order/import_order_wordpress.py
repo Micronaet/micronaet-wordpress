@@ -159,7 +159,7 @@ class ConnectorServer(orm.Model):
             """ Clean date
             """
             try:
-                return record_field.replace('T', ' ')
+                return record_field.replace('T', ' ')[:16]
             except:
                 return ''
 
