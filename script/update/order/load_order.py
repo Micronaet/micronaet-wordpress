@@ -2,7 +2,7 @@ import os
 import sys
 import erppeek
 import ConfigParser
-import pdb; pdb.set_trace()
+
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
@@ -29,7 +29,6 @@ for root, folders, files in os.walk('..'):
             'http://%s:%s' % (server, port),
             db=dbname, user=user, password=pwd,
             )
-        import pdb; pdb.set_trace()
         argv = sys.argv
         if len(argv) != 2:
             print('Call python ./load_order.py [all or yesterday]')
