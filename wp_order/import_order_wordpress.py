@@ -140,10 +140,13 @@ class ConnectorServer(orm.Model):
             # Color setup:
             if state in ('trash', 'failed', 'cancelled'):
                 color = excel_format['red']
+                net = 0
             elif state in ('refunded', ):
                 color = excel_format['orange']
+                net = 0
             elif state in ('pending', 'on-hold'):
                 color = excel_format['yellow']
+                net = 0
             elif state in ('processing', ):
                 color = excel_format['blue']
             elif state in ('completed', ):
