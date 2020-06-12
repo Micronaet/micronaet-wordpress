@@ -195,7 +195,7 @@ class ConnectorServer(orm.Model):
                 order.name,
                 order.partner_name or '',
                 order.payment or '',
-                order.state
+                order.state,
 
                 order.currency,
                 (shipping, f_number),
