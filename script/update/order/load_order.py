@@ -40,5 +40,6 @@ for root, folders, files in os.walk('..'):
             odoo.context = {'from_yesterday': True}
 
         connector_pool = odoo.model('connector.server')
-        connector_pool.get_sale_order_now([connector_id])
+        res = connector_pool.get_sale_order_now([connector_id])
+        print(res)
     break
