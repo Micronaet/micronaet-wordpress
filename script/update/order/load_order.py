@@ -20,7 +20,7 @@ for root, folders, files in os.walk('..'):
         pwd = config.get('dbaccess', 'pwd')
         server = config.get('dbaccess', 'server')
         port = config.get('dbaccess', 'port')
-        connector_id = config.get('dbaccess', 'connector_id')
+        connector_id = int(config.get('dbaccess', 'connector_id'))
 
         # ---------------------------------------------------------------------
         # Connect to ODOO:
