@@ -154,7 +154,8 @@ class ConnectorServer(orm.Model):
 
     def get_sale_order_now(self, cr, uid, ids, context=None):
         """ Get sale order list
-            """
+            (context parameter 'from_yesterday' for check from yesterday)
+        """
         # Utility:
         def get_clean_date(record_field):
             """ Clean date
@@ -192,6 +193,11 @@ class ConnectorServer(orm.Model):
             'page': 0,
             # TODO 'after': '2019-05-01T00:00:00' Add clause from search
             }
+        if context.get('from_yesterday'):
+            parameter['after'] = (
+                datetime.now() - timedelta(days=1)).strftime(
+                    '%Y-%m-%dT00:00:00')
+
         wp_order = []
         while theres_data:
             parameter['page'] += 1
