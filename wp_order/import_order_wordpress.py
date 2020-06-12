@@ -255,7 +255,7 @@ class ConnectorServer(orm.Model):
                     # "date_completed": null,
                     # "date_completed_gmt": null,
                 }
-
+                print(order_header)
                 if order_ids:  # XXX No update of header
                     order_id = order_ids[0]
                     _logger.info('Yet found (update only line) %s' % number)
