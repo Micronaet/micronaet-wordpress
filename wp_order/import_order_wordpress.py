@@ -46,6 +46,11 @@ class WordpressSaleOrder(orm.Model):
         'currency': fields.char('Currency'),
         'date_order': fields.datetime('Date order'),
 
+        'wp_date_created': fields.datetime('Date created'),
+        'wp_date_modify': fields.datetime('Date modify'),
+        'wp_date_paid': fields.datetime('Date paid'),
+        'wp_date_completed': fields.datetime('Date completed'),
+
         'partner_name': fields.char('Partner', size=40),
         'partner_email': fields.char('Partner email', size=40),
         'partner_phone': fields.char('Partner phone', size=30),
@@ -201,7 +206,12 @@ class ConnectorServer(orm.Model):
         for record in wp_order:
             try:
                 wp_id = record['id']
-                date_order = record['date_created'][:10]
+                import pdb; pdb.set_trace()
+                wp_date_created = record['date_created'].replace('T', ' ')
+                date_order = wp_date_created[:10]
+                wp_date_modify = record['date_modify'].replace('T', ' ')
+                wp_date_paid = record['date_paid'].replace('T', ' ')
+                wp_date_completed = record['date_completed'].replace('T', ' ')
 
                 # -------------------------------------------------------------
                 #                          ORDER HEADER:
@@ -217,7 +227,13 @@ class ConnectorServer(orm.Model):
                     'name': number,
                     'currency': record['currency'],
                     'key': record['order_key'],
+
                     'date_order': date_order,
+                    'wp_date_created': wp_date_created,
+                    'wp_date_modify': wp_date_modify,
+                    'wp_date_paid': wp_date_paid,
+                    'wp_date_completed': wp_date_completed,
+
                     'wp_record': record,
                     'state': record['status'],
                     'note': record['customer_note'],
