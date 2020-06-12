@@ -315,6 +315,7 @@ class ConnectorServer(orm.Model):
                     cr, uid, [order_id], {
                         'line_ids': [(6, 6, [])],
                     }, context=context)
+
                 # Update
                 for line in record['line_items']:
                     name = line['name']
@@ -340,7 +341,6 @@ class ConnectorServer(orm.Model):
                     line_pool.create(cr, uid, order_line, context=context)
 
             except:
-                import pdb; pdb.set_trace()
                 _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
                 continue
 
