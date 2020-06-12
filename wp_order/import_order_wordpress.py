@@ -160,6 +160,8 @@ class ConnectorServer(orm.Model):
                 (line.total, color['number']),
 
                 order.date_order,
+                order.wp_date_paid,
+                order.wp_date_completed,
                 order.name,
                 order.partner_name or '',
                 order.payment or '',
@@ -230,13 +232,15 @@ class ConnectorServer(orm.Model):
             'SKU', 'Prodotto',
             'Q.', 'Prezzo', 'Subtotale',
 
-            'Data', 'Ordine', 'Cliente', 'Pagamento', 'Stato',
+            'Data', 'Pagato', 'Completo' 
+            'Ordine', 'Cliente', 'Pagamento', 'Stato',
             'Val.', 'Trasporto', 'Totale', 'Netto',
             ]
         width = [
             16, 40,
             6, 6, 8,
-            9, 7, 35, 20, 18,
+            9, 13, 13,
+            7, 35, 20, 18,
             4, 10, 10, 10,
         ]
         excel_pool.column_width(ws_name, width)
