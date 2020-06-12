@@ -184,6 +184,7 @@ class ConnectorServer(orm.Model):
             'completed': [],  # today
             'working': [],  # working order
             'waiting': [],  # waiting for payment
+            'shipping': [],  # transport present
         }
         today = ('%s' % (datetime.now() - timedelta(days=1)))[:10]
         for line in line_pool.browse(cr, uid, line_ids, context=context):
@@ -201,6 +202,10 @@ class ConnectorServer(orm.Model):
 
             if state in ('pending', 'on-hold'):
                 report_data['waiting'].append(line)
+
+            if line.shipping_total:
+                report_data['shipping'].append(line)
+
         # ---------------------------------------------------------------------
         # Completed order:
         # ---------------------------------------------------------------------
@@ -355,6 +360,35 @@ class ConnectorServer(orm.Model):
         row += 1
 
         for line in sorted(report_data['working'],
+                           key=lambda x: (
+                                x.order_id.name, x.wp_id)):
+            data, color = get_standard_data_line(line)
+            excel_pool.write_xls_line(
+                ws_name, row, data, default_format=color['text'])
+            row += 1
+
+        # ---------------------------------------------------------------------
+        # Shipping order:
+        # ---------------------------------------------------------------------
+        ws_name = 'Ordini con trasporto'
+        excel_pool.create_worksheet(ws_name)
+        row = 0
+        excel_pool.column_width(ws_name, width)
+
+        # 1 Title
+        excel_pool.write_xls_line(
+            ws_name, row, [
+                'Elenco righe ordine con costo di trasporto presente'],
+            default_format=excel_format['title'])
+        row += 2
+
+        # 2 Header
+        excel_pool.write_xls_line(
+            ws_name, row, header, default_format=excel_format['header'])
+        excel_pool.autofilter(ws_name, row, 0, row, len(width) - 1)
+        row += 1
+
+        for line in sorted(report_data['shipping'],
                            key=lambda x: (
                                 x.order_id.name, x.wp_id)):
             data, color = get_standard_data_line(line)
