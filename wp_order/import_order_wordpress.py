@@ -182,15 +182,25 @@ class ConnectorServer(orm.Model):
         report_data = {
             'all': [],
             'completed': [],  # today
+            'working': [],  # working order
+            'waiting': [],  # waiting for payment
         }
         today = ('%s' % (datetime.now() - timedelta(days=1)))[:10]
         for line in line_pool.browse(cr, uid, line_ids, context=context):
             order = line.order_id
+            state = order.state
+
             report_data['all'].append(line)
+
             completed = (order.wp_date_completed or '')[:10]
             if completed and completed >= today:
                 report_data['completed'].append(line)
 
+            if state in ('processing', ):
+                report_data['working'].append(line)
+
+            if state in ('pending', 'on-hold'):
+                report_data['waiting'].append(line)
         # ---------------------------------------------------------------------
         # Completed order:
         # ---------------------------------------------------------------------
@@ -289,6 +299,64 @@ class ConnectorServer(orm.Model):
         for line in sorted(report_data['completed'],
                            key=lambda x: (
                                 x.order_id.wp_date_completed, x.wp_id)):
+            data, color = get_standard_data_line(line)
+            excel_pool.write_xls_line(
+                ws_name, row, data, default_format=color['text'])
+            row += 1
+
+        # ---------------------------------------------------------------------
+        # Waiting order:
+        # ---------------------------------------------------------------------
+        ws_name = 'Ordini in attesa di pagamento'
+        excel_pool.create_worksheet(ws_name)
+        row = 0
+        excel_pool.column_width(ws_name, width)
+
+        # 1 Title
+        excel_pool.write_xls_line(
+            ws_name, row, [
+                'Elenco righe ordine che sono in attesa di pagamento'],
+            default_format=excel_format['title'])
+        row += 2
+
+        # 2 Header
+        excel_pool.write_xls_line(
+            ws_name, row, header, default_format=excel_format['header'])
+        excel_pool.autofilter(ws_name, row, 0, row, len(width) - 1)
+        row += 1
+
+        for line in sorted(report_data['waiting'],
+                           key=lambda x: (
+                                x.order_id.name, x.wp_id)):
+            data, color = get_standard_data_line(line)
+            excel_pool.write_xls_line(
+                ws_name, row, data, default_format=color['text'])
+            row += 1
+
+        # ---------------------------------------------------------------------
+        # Working order:
+        # ---------------------------------------------------------------------
+        ws_name = 'Ordini da preparare'
+        excel_pool.create_worksheet(ws_name)
+        row = 0
+        excel_pool.column_width(ws_name, width)
+
+        # 1 Title
+        excel_pool.write_xls_line(
+            ws_name, row, [
+                'Elenco righe ordine confermati da preparare'],
+            default_format=excel_format['title'])
+        row += 2
+
+        # 2 Header
+        excel_pool.write_xls_line(
+            ws_name, row, header, default_format=excel_format['header'])
+        excel_pool.autofilter(ws_name, row, 0, row, len(width) - 1)
+        row += 1
+
+        for line in sorted(report_data['working'],
+                           key=lambda x: (
+                                x.order_id.name, x.wp_id)):
             data, color = get_standard_data_line(line)
             excel_pool.write_xls_line(
                 ws_name, row, data, default_format=color['text'])
