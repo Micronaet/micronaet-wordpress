@@ -2,6 +2,7 @@ import os
 import sys
 import erppeek
 import ConfigParser
+from datetime import datetime
 
 def log_message(log_file, message, mode='info', verbose=True):
     """ Log message
