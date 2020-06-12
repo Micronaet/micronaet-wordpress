@@ -160,8 +160,8 @@ class ConnectorServer(orm.Model):
                 (line.total, color['number']),
 
                 order.date_order,
-                order.wp_date_paid,
-                order.wp_date_completed,
+                order.wp_date_paid or '',
+                order.wp_date_completed or '',
                 order.name,
                 order.partner_name or '',
                 order.payment or '',
