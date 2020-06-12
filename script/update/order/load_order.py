@@ -33,10 +33,10 @@ for root, folders, files in os.walk('..'):
         argv = sys.argv
         if len(argv) != 2:
             print('Call python ./load_order.py [all or yesterday]')
-            sys.exit()
+            continue
 
         # Called without all parameter:
-        if argv[1].lower == 'yesterday':
+        if argv[1].lower() == 'yesterday':
             odoo.context = {'from_yesterday': True}
 
         connector_pool = odoo.model('connector.server')
