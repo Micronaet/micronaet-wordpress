@@ -61,7 +61,7 @@
                             <field name="name"/>
                             <field name="key"/>
                             <field name="wp_date_created" invisible="1"/>
-                            <field name="wp_date_modify" invisible="1"/>
+                            <field name="wp_date_modified" invisible="1"/>
                             <field name="date_order"/>
                             <field name="wp_date_paid"/>
                             <field name="wp_date_completed" />
