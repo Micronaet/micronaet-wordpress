@@ -2,7 +2,7 @@ import os
 import sys
 import erppeek
 import ConfigParser
-
+import pdb; pdb.set_trace()
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
