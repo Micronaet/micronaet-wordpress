@@ -238,11 +238,11 @@ class ConnectorServer(orm.Model):
                     'currency': record['currency'],
                     'key': record['order_key'],
 
-                    'date_order': date_order,
-                    'wp_date_created': wp_date_created,
-                    'wp_date_modified': wp_date_modified,
-                    'wp_date_paid': wp_date_paid,
-                    'wp_date_completed': wp_date_completed,
+                    'date_order': date_order or False,
+                    'wp_date_created': wp_date_created or False,
+                    'wp_date_modified': wp_date_modified or False,
+                    'wp_date_paid': wp_date_paid or False,
+                    'wp_date_completed': wp_date_completed or False,
 
                     'wp_record': record,
                     'state': record['status'],
