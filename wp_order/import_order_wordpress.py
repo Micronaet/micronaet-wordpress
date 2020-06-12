@@ -287,7 +287,8 @@ class ConnectorServer(orm.Model):
         row += 1
 
         for line in sorted(report_data['completed'],
-                           key=lambda x: (x.wp_date_completed, x.wp_id)):
+                           key=lambda x: (
+                                x.order_id.wp_date_completed, x.wp_id)):
             data, color = get_standard_data_line(line)
             excel_pool.write_xls_line(
                 ws_name, row, data, default_format=color['text'])
