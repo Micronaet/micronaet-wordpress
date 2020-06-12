@@ -147,10 +147,34 @@ class ConnectorServer(orm.Model):
         row = 0
 
         # Load formats:
-        f_title = excel_pool.get_format('title')
-        f_header = excel_pool.get_format('header')
-        f_text = excel_pool.get_format('text')
-        f_number = excel_pool.get_format('number')
+        excel_format = {
+            'title': excel_pool.get_format('title'),
+            'header': excel_pool.get_format('header'),
+            'white': {
+                'text': excel_pool.get_format('text'),
+                'number': excel_pool.get_format('number'),
+            },
+            'red': {
+                'text': excel_pool.get_format('bg_red'),
+                'number': excel_pool.get_format('bg_red_number'),
+            },
+            'yellow': {
+                'text': excel_pool.get_format('bg_yellow'),
+                'number': excel_pool.get_format('bg_yellow_number'),
+            },
+            'orange': {
+                'text': excel_pool.get_format('bg_orange'),
+                'number': excel_pool.get_format('bg_orange_number'),
+            },
+            'green': {
+                'text': excel_pool.get_format('bg_green'),
+                'number': excel_pool.get_format('bg_green_number'),
+            },
+            'blue': {
+                'text': excel_pool.get_format('bg_blue'),
+                'number': excel_pool.get_format('bg_blue_number'),
+            },
+        }
 
         header = [
             'SKU', 'Prodotto',
@@ -162,7 +186,7 @@ class ConnectorServer(orm.Model):
         width = [
             16, 40,
             6, 6, 8,
-            9, 7, 25, 20, 18,
+            9, 7, 35, 20, 18,
             4, 10, 10, 10,
         ]
         excel_pool.column_width(ws_name, width)
@@ -171,43 +195,59 @@ class ConnectorServer(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, [
                 'Totale ordini arrivati esplosi per articolo'],
-            default_format=f_title)
+            default_format=excel_format['title'])
         row += 2
 
         # 2 Header
         excel_pool.write_xls_line(
-            ws_name, row, header, default_format=f_header)
+            ws_name, row, header, default_format=excel_format['header'])
         excel_pool.autofilter(ws_name, row, 0, row, len(width) - 1)
         row += 1
 
         for line in sorted(report_data['all'],
-                           key= lambda x: (x.order_id.name, x.wp_id)):
+                           key=lambda x: (x.order_id.name, x.wp_id)):
             order = line.order_id
             shipping = order.shipping_total
             total = order.total
             net = total - shipping
+            state = order.state
+
+            # Color setup:
+            if state in ('trash', 'failed', 'cancelled'):
+                color = excel_format['red']
+            elif state in ('refunded', ):
+                color = excel_format['orange']
+            elif state in ('pending', 'on-hold'):
+                color = excel_format['yellow']
+            elif state in ('processing', ):
+                color = excel_format['blue']
+            elif state in ('completed', ):
+                color = excel_format['green']
+            else:
+                color = excel_format['white']
+
             data = [
                 line.sku,
                 line.name,
 
-                (line.quantity, f_number),
-                (line.price, f_number),
-                (line.total, f_number),
+                (line.quantity, color['number']),
+                (line.price, color['number']),
+                (line.total, color['number']),
 
                 order.date_order,
                 order.name,
                 order.partner_name or '',
                 order.payment or '',
-                order.state,
+                state,
 
                 order.currency,
-                (shipping, f_number),
-                (total, f_number),
-                (net, f_number),  # TODO check VAT!
+                (shipping, color['number']),
+                (total, color['number']),
+                (net, color['number']),  # TODO check VAT!
                 ]
 
             excel_pool.write_xls_line(
-                ws_name, row, data, default_format=f_text)
+                ws_name, row, data, default_format=color['text'])
             row += 1
         return excel_pool.return_attachment(cr, uid, 'wordpress_order')
 
