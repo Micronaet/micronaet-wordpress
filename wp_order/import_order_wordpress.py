@@ -216,7 +216,7 @@ class ConnectorServer(orm.Model):
         for record in wp_order:
             try:
                 wp_id = record['id']
-
+                # TODO Date will show not correct (+2 hours)
                 wp_date_created = get_clean_date(record['date_created'])
                 date_order = wp_date_created[:10]
                 wp_date_modified = get_clean_date(record['date_modified'])
