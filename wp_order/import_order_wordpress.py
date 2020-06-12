@@ -212,7 +212,6 @@ class ConnectorServer(orm.Model):
         # Sorted so parent first:
         new_order_ids = []
         _logger.warning('Order found %s' % (len(wp_order), ))
-        import pdb; pdb.set_trace()
         for record in wp_order:
             try:
                 wp_id = record['id']
