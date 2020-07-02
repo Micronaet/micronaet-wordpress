@@ -198,8 +198,8 @@
                     <button name="publish_master_now" string="Pubblica master ora" type="object" icon="gtk-refresh" attrs="{'invisible': [('wp_parent_template', '=', False)]}"/>
 
                     <field name="need_update" invisible="1"/>
-                    <button name="mark_need_update" string="Aggiornare schedulato" type="object" icon="terp-calendar" attrs="{'invisible': [('need_update', '=', True)]}"/>
-                    <button name="unmark_need_update" string="Annulla aggiorna schedulato" type="object" icon="gtk-cancel" attrs="{'invisible': [('need_update', '=', False)]}"/>
+                    <button name="mark_need_update" string="Aggiornare schedulato" type="object" icon="terp-calendar" attrs="{'invisible': ['|',('wp_parent_template', '=', False),('need_update', '=', True)]}"/>
+                    <button name="unmark_need_update" string="Annulla aggiorna schedulato" type="object" icon="gtk-cancel" attrs="{'invisible': ['|',('wp_parent_template', '=', False),('need_update', '=', False)]}"/>
                 </tree>
             </field>
         </record>
