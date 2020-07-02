@@ -242,7 +242,6 @@ log_activity('End update stock in Wordpress [%s]' % wordpress_url)
 # -----------------------------------------------------------------------------
 # SMTP Sent:
 # -----------------------------------------------------------------------------
-pdb.set_trace()
 if not empty_stock:
     print('No empty stock!')
     sys.exit()
