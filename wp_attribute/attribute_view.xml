@@ -300,6 +300,21 @@
                                         <field name="force_discounted"/>
                                     </group>
                                 </page>
+                                <page string="Amazon">
+                                    <group colspan="4" col="4">
+                                        <separator string="Bullet point 1" colspan="2"/>
+                                        <separator string="Bullet point 2" colspan="2"/>
+                                        <field name="bullet_point_1" colspan="2" nolabel="1"/>
+                                        <field name="bullet_point_2" colspan="2" nolabel="1"/>
+                                        <separator string="Bullet point 3" colspan="2"/>
+                                        <separator string="Bullet point 4" colspan="2"/>
+                                        <field name="bullet_point_3" colspan="2" nolabel="1"/>
+                                        <field name="bullet_point_4" colspan="2" nolabel="1"/>
+                                        <separator string="Bullet point 5" colspan="2"/>
+                                        <newline />
+                                        <field name="bullet_point_5" colspan="2" nolabel="1"/>
+                                    </group>
+                                </page>
                                 <page string="Emozionali">
                                     <group colspan="4" col="4">
                                         <separator string="Emozionale breve" colspan="4"/>

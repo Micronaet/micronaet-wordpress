@@ -708,7 +708,7 @@ class ProductProductWebServer(orm.Model):
                     'name': name,
                     'description': description,
                     'short_description': short,
-                    'sku': self.wp_clean_code(sku), # XXX not needed
+                    'sku': self.wp_clean_code(sku),  # XXX not needed
                     'lang': lang,
                     'lifetime_warranty': lifetime_warranty,
                     'multipack':
@@ -797,8 +797,8 @@ class ProductProductWebServer(orm.Model):
                         call = 'products'
                         reply = wcapi.post(call, data).json()
                         if log_excel != False:
-                            log_excel.append(('post', call, u'%s' % (data),
-                                u'%s' % (reply)))
+                            log_excel.append(('post', call, u'%s' % (data, ),
+                                u'%s' % (reply, )))
                     except:  # Timeout on server:
                         _logger.error('Server timeout: %s' % (data, ))
                         continue
@@ -1096,6 +1096,18 @@ class ProductProductWebServer(orm.Model):
             ),
         'wp_manual_volume': fields.boolean('Volume manuale'),
         # ---------------------------------------------------------------------
+
+        # Amazon data:
+        'bullet_point_1': fields.text(
+            'Bullet point 1', translate=True),
+        'bullet_point_2': fields.text(
+            'Bullet point 2', translate=True),
+        'bullet_point_3': fields.text(
+            'Bullet point 3', translate=True),
+        'bullet_point_4': fields.text(
+            'Bullet point 4', translate=True),
+        'bullet_point_5': fields.text(
+            'Bullet point 5', translate=True),
 
         'wp_type': fields.selection([
             ('simple', 'Simple product'),
