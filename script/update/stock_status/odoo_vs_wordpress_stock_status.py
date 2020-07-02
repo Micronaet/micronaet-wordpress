@@ -173,11 +173,12 @@ for company in database:
 
                 # Empty stock mail collect data:
                 if wp_lang == 'it':
-                    empty_stock.append((
-                        company, default_code, product.name,
-                        status, stock_quantity, stock_comment,
-                    ))
-                continue  # TODO remove
+                    if stock_quantity <= 0:
+                        empty_stock.append((
+                            company, default_code, product.name,
+                            status, stock_quantity, stock_comment,
+                        ))
+
                 multiplier = variation.price_multi or 1
                 if multiplier > 1:
                     stock_quantity = stock_quantity // multiplier
