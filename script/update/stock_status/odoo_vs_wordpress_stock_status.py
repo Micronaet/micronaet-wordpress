@@ -301,14 +301,6 @@ for to in smtp_to.replace(' ', '').split(','):
     msg['To'] = smtp_to
     msg.attach(MIMEText(smtp_text_html, 'html'))
 
-    # No attachment for now:
-    # part = MIMEBase('application', 'octet-stream')
-    # part.set_payload(open(fullname, 'rb').read())
-    # Encoders.encode_base64(part)
-    # part.add_header(
-    #    'Content-Disposition', 'attachment; filename="%s"' % filename)
-    # msg.attach(part)
-
     # Send mail:
     smtp_server.sendmail(odoo_mailer.smtp_user, to, msg.as_string())
 
