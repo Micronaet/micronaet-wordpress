@@ -179,6 +179,7 @@ for company in database:
                             # product.name,
                             status, stock_quantity, stock_comment,
                         ))
+                continue
 
                 multiplier = variation.price_multi or 1
                 if multiplier > 1:
