@@ -177,7 +177,6 @@ for company in database:
                         company, default_code, product.name,
                         status, stock_quantity, stock_comment,
                     ))
-                # continue  # TODO remove
 
                 multiplier = variation.price_multi or 1
                 if multiplier > 1:
