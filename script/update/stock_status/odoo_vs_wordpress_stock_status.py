@@ -175,7 +175,8 @@ for company in database:
                 if wp_lang == 'it':
                     if stock_quantity <= 0:
                         empty_stock.append((
-                            company, default_code, product.name,
+                            company, default_code,
+                            # product.name,
                             status, stock_quantity, stock_comment,
                         ))
 
@@ -251,7 +252,7 @@ smtp_subject = 'Segnalazione prodotti Wordpress senza esistenza'
 smtp_text_html = ''
 
 for record in empty_stock:
-    smtp_text_html += '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>' \
+    smtp_text_html += '<tr><td>%s</td><td>%s</td><td>%s</td><td>' \
                       '%s</td><td>%s</td></tr>' % record
 
 # Add table:
@@ -260,7 +261,6 @@ smtp_text_html = '''
         <tr>
             <th><b>Azienda</b></th>
             <th><b>Codice</b></th>
-            <th><b>Nome</b></th>
             <th><b>Stato</b></th>
             <th><b>Q.</b></th>
             <th><b>Calcolo</b></th>
