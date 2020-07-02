@@ -188,12 +188,14 @@
             <field name="arch" type="xml">
                 <tree string="Imposta prezzi" editable="bottom">
                     <field name="product_id" readonly="1"/>
+                    <field name="wp_parent_template" invisible="1" />
                     <field name="force_vat_price" on_change="onchange_force_vat_price(force_vat_price)"/>
                     <field name="force_price" />
                     <field name="wp_web_pricelist" readonly="1"/>
 
                     <field name="wp_web_discounted_net" readonly="1"/>
                     <field name="force_discounted"/>
+                    <button name="publish_master_now" string="Pubblica master ora" type="object" icon="gtk-refresh" attrs="{'invisible': [('wp_parent_template', '=', False)]}"/>
                 </tree>
             </field>
         </record>
