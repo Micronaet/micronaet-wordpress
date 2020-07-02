@@ -23,12 +23,16 @@
 
 import os
 import sys
+import pdb
 import erppeek
-import xlrd
 import woocommerce
 import ConfigParser
-import slugify
 import pickle
+
+import smtplib
+from email.MIMEMultipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from datetime import datetime
 
 verbose = False  # Log with extra data
@@ -59,6 +63,7 @@ def log_activity(event, mode='info'):
         event,
         ))
 
+
 # -----------------------------------------------------------------------------
 # WP web read: Spaziogiardino
 # -----------------------------------------------------------------------------
@@ -70,6 +75,8 @@ wordpress_url = config.get('wordpress', 'url')
 consumer_key = config.get('wordpress', 'key')
 consumer_secret = config.get('wordpress', 'secret')
 log_activity('Start update stock in Wordpress [%s]' % wordpress_url)
+
+smtp_to = config.get('smtp', 'to')
 
 wcapi = woocommerce.API(
     url=wordpress_url,
@@ -84,6 +91,7 @@ wcapi = woocommerce.API(
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
+empty_stock = []
 for company in database:
     cfg_file = database[company]
 
@@ -163,6 +171,13 @@ for company in database:
                 stock_quantity, stock_comment = \
                     web_product_pool.get_existence_for_product(variation.id)
 
+                # Empty stock mail collect data:
+                if wp_lang == 'it':
+                    empty_stock.append((
+                        company, default_code, product.name,
+                        status, stock_quantity, stock_comment,
+                    ))
+
                 multiplier = variation.price_multi or 1
                 if multiplier > 1:
                     stock_quantity = stock_quantity // multiplier
@@ -223,3 +238,78 @@ for company in database:
 
 log_activity('End update stock in Wordpress [%s]' % wordpress_url)
 
+# -----------------------------------------------------------------------------
+# SMTP Sent:
+# -----------------------------------------------------------------------------
+pdb.set_trace()
+if not empty_stock:
+    print('No empty stock!')
+    sys.exit()
+
+# Parameters:
+smtp_subject = 'Segnalazione prodotti Wordpress senza esistenza'
+smtp_text_html = ''
+
+for record in empty_stock:
+    smtp_text_html += '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>' \
+                      '%s</td><td>%s</td></tr>' % record
+
+# Add table:
+smtp_text_html = '''
+    <table>
+        <tr>
+            <td>Azienda</td>
+            <td>Codice</td>
+            <td>Nome</td>
+            <td>Stato</td>
+            <td>Q.</td>
+            <td>Calcolo</td>
+        </tr>%s
+    </table>''' % smtp_text_html
+
+# -----------------------
+# Get mail server option:
+# -----------------------
+mailer = odoo.model('ir.mail_server')
+mailer_ids = mailer.search([])
+if not mailer_ids:
+    print('[ERR] No mail server configured in ODOO')
+    sys.exit()
+
+odoo_mailer = mailer.browse(mailer_ids)[0]
+
+# Open connection:
+print('[INFO] Sending using "%s" connection [%s:%s]' % (
+    odoo_mailer.name,
+    odoo_mailer.smtp_host,
+    odoo_mailer.smtp_port,
+    ))
+
+if odoo_mailer.smtp_encryption in ('ssl', 'starttls'):
+    smtp_server = smtplib.SMTP_SSL(
+        odoo_mailer.smtp_host, odoo_mailer.smtp_port)
+else:
+    print('[ERR] Connect only SMTP SSL server!')
+    sys.exit()
+
+smtp_server.login(odoo_mailer.smtp_user, odoo_mailer.smtp_pass)
+for to in smtp_to.replace(' ', '').split(','):
+    print('Sending mail to: %s ...' % to)
+    msg = MIMEMultipart()
+    msg['Subject'] = smtp_subject
+    msg['From'] = odoo_mailer.smtp_user
+    msg['To'] = smtp_to
+    msg.attach(MIMEText(smtp_text_html, 'html'))
+
+    # No attachment for now:
+    # part = MIMEBase('application', 'octet-stream')
+    # part.set_payload(open(fullname, 'rb').read())
+    # Encoders.encode_base64(part)
+    # part.add_header(
+    #    'Content-Disposition', 'attachment; filename="%s"' % filename)
+    # msg.attach(part)
+
+    # Send mail:
+    smtp_server.sendmail(odoo_mailer.smtp_user, to, msg.as_string())
+
+smtp_server.quit()

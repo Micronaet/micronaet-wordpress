@@ -398,10 +398,11 @@ class ProductProductWebServer(orm.Model):
 
         else:
             # Net - ordered mode:
-            stock_quantity = int(product.mx_lord_mrp_qty + \
-                product.mx_oc_out_prev - product.mx_of_in)
+            stock_quantity = int(product.mx_lord_mrp_qty +
+                                 product.mx_oc_out_prev - product.mx_of_in)
 
-        #stock_quantity = int(product.mx_lord_mrp_qty + product.mx_oc_out_prev)
+        # stock_quantity = int(
+        # product.mx_lord_mrp_qty + product.mx_oc_out_prev)
         force_min_stock = int(line.force_min_stock)
         if force_min_stock and stock_quantity < force_min_stock:
             stock_quantity = force_min_stock
@@ -421,8 +422,8 @@ class ProductProductWebServer(orm.Model):
             )
 
         # TODO manage q x pack?
-        #q_x_pack = product.q_x_pack or 1
-        #stock_quantity //= q_x_pack
+        # q_x_pack = product.q_x_pack or 1
+        # stock_quantity //= q_x_pack
         return stock_quantity, comment
 
     def get_category_block_for_publish(self, item, lang):
