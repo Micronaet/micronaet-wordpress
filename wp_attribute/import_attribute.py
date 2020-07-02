@@ -1124,7 +1124,7 @@ class ProductPublicCategory(orm.Model):
 
                     # XXX Price for S (ingle)
                     price = web_product_pool.get_wp_price(line)
-                    pdb.set_trace()
+                    # pdb.set_trace()
                     sale_price = u'%s' % (
                         (line.force_discounted / vat_rate) or '')
                     # TODO error: is always 0
