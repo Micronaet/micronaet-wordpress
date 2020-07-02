@@ -177,7 +177,7 @@ for company in database:
                         company, default_code, product.name,
                         status, stock_quantity, stock_comment,
                     ))
-
+                continue  # TODO remove
                 multiplier = variation.price_multi or 1
                 if multiplier > 1:
                     stock_quantity = stock_quantity // multiplier
@@ -257,12 +257,12 @@ for record in empty_stock:
 smtp_text_html = '''
     <table>
         <tr>
-            <td>Azienda</td>
-            <td>Codice</td>
-            <td>Nome</td>
-            <td>Stato</td>
-            <td>Q.</td>
-            <td>Calcolo</td>
+            <th><b>Azienda</b></th>
+            <th><b>Codice</b></th>
+            <th><b>Nome</b></th>
+            <th><b>Stato</b></th>
+            <th><b>Q.</b></th>
+            <th><b>Calcolo</b></th>
         </tr>%s
     </table>''' % smtp_text_html
 
