@@ -253,8 +253,8 @@ smtp_subject = 'Segnalazione prodotti Wordpress senza esistenza'
 smtp_text_html = ''
 
 for record in empty_stock:
-    smtp_text_html += '<tr><td>%s</td><td>%s</td><td>%s</td><td>' \
-                      '%s</td><td>%s</td></tr>' % record
+    smtp_text_html += '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td>' \
+                      '</tr>' % record
 
 # Add table:
 smtp_text_html = '''
