@@ -177,7 +177,9 @@ for company in database:
                         empty_stock.append((
                             company, default_code,
                             # product.name,
-                            status, stock_quantity, stock_comment,
+                            status,
+                            # stock_quantity,
+                            stock_comment,
                         ))
 
                 multiplier = variation.price_multi or 1
@@ -261,7 +263,6 @@ smtp_text_html = '''
             <th><b>Azienda</b></th>
             <th><b>Codice</b></th>
             <th><b>Stato</b></th>
-            <th><b>Q.</b></th>
             <th><b>Calcolo</b></th>
         </tr>%s
     </table>''' % smtp_text_html
