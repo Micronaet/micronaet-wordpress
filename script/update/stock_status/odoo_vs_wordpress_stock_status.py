@@ -177,6 +177,7 @@ for company in database:
                         company, default_code, product.name,
                         status, stock_quantity, stock_comment,
                     ))
+                continue  # TODO remove
 
                 multiplier = variation.price_multi or 1
                 if multiplier > 1:
@@ -225,7 +226,6 @@ for company in database:
                 # -------------------------------------------------------------
                 call = 'products/%s/variations/%s' % (
                     product_id, variation_id)
-                continue  # TODO remove
                 reply = wcapi.put(call, data)
                 if reply.status_code >= 300:
                     print('Error publish stock status: %s, [%s: %s]\n\n%s' % (
