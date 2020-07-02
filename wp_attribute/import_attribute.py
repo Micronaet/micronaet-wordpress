@@ -24,6 +24,7 @@
 import os
 import sys
 import logging
+import pdb
 import openerp
 import json
 import woocommerce
@@ -469,7 +470,7 @@ class ProductPublicCategory(orm.Model):
                     continue
 
                 if len(web_ids) > 1:
-                    import pdb; pdb.set_trace()
+                    pdb.set_trace()
 
                 web_product = web_pool.browse(
                     cr, uid, web_ids, context=context)[0]
@@ -872,7 +873,7 @@ class ProductPublicCategory(orm.Model):
                             lang_color_terms[lang][key] = wp_id
                         except:
                             _logger.error('No name in %s' % record)
-                            import pdb; pdb.set_trace()
+                            pdb.set_trace()
                             continue
             except:
                 raise osv.except_osv(
@@ -1123,6 +1124,7 @@ class ProductPublicCategory(orm.Model):
 
                     # XXX Price for S (ingle)
                     price = web_product_pool.get_wp_price(line)
+                    pdb.set_trace()
                     sale_price = u'%s' % (
                         (line.force_discounted / vat_rate) or '')
                     # TODO error: is always 0
