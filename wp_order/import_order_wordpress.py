@@ -643,6 +643,7 @@ class ConnectorServer(orm.Model):
                                 cr, uid, web_product_ids, context=context)[0]
                             new_qty = web_product.force_this_stock - quantity
                             if new_qty < 0:
+                                _logger.error('Negative status on web order!')
                                 new_qty = 0
                             force_context['forced_manual_stock_comment'] = \
                                 'Scalato ordine: %s' % number
