@@ -638,7 +638,6 @@ class ConnectorServer(orm.Model):
                             ('force_this_stock', '>', 0),  # manage manual q.
                         ], context=context)
                         if web_product_ids:
-                            pdb.set_trace()
                             web_product = web_product_pool.browse(
                                 cr, uid, web_product_ids, context=context)[0]
                             new_qty = web_product.force_this_stock - quantity
@@ -647,7 +646,7 @@ class ConnectorServer(orm.Model):
                                 new_qty = 0
                             force_context['forced_manual_stock_comment'] = \
                                 'Scalato ordine: %s' % number
-                            web_product_pool.write(cr, uid, {
+                            web_product_pool.write(cr, uid, web_product_ids, {
                                 'force_this_stock': new_qty,
                             }, context=context)
 
