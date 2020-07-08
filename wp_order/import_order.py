@@ -492,12 +492,13 @@ class ConnectorServer(orm.Model):
         # Sorted so parent first:
         new_order_ids = []
         _logger.warning('Order found %s' % (len(wp_order), ))
+        import pdb;
+        pdb.set_trace()
         for record in sorted(
                 wp_order, key=lambda x: x['date_created']):
+
             wp_id = record['id']
             name = record['number']
-            if name == '56154':
-                import pdb; pdb.set_trace()
             date_order = record['date_created'][:10]
             payment_method = record['payment_method']
             status = record['status']
