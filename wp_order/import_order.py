@@ -167,7 +167,7 @@ class SaleOrder(orm.Model):
         'worpress_record': fields.text('Worpress record'),
         'wp_payment_confirmed': fields.boolean('Payment confirmed'),
         'wordpress_invoice': fields.boolean(
-            'Wordpress', help='Need invoice, istead of fees'),
+            'Wordpress', help='Need invoice, instead of fees'),
         'wordpress_alert': fields.function(
             _get_corresponding_alert, method=True,
             type='char', string='Alert', store=False),
@@ -192,8 +192,8 @@ class ConnectorServer(orm.Model):
             ('code', '=', code),
             ], context=context)
         if item_ids:
-            return item_ids[0]
             _logger.info('Pool %s code exist: %s' % (pool, code))
+            return item_ids[0]
         else:
             # TODO create?
             _logger.warning('Pool %s new %s (not for now)' % (pool, code))
@@ -492,7 +492,7 @@ class ConnectorServer(orm.Model):
         # Sorted so parent first:
         new_order_ids = []
         _logger.warning('Order found %s' % (len(wp_order), ))
-        import pdb;
+        import pdb
         pdb.set_trace()
         for record in sorted(
                 wp_order, key=lambda x: x['date_created']):
