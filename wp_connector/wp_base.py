@@ -371,16 +371,17 @@ class ProductProductStockLog(orm.Model):
     """
 
     _name = 'product.product.stock.log'
+    _description = 'Manual stock log'
     _order = 'create_date desc'
 
     _columns = {
+        'name': fields.char('Commento', size=40),
         'create_date': fields.datetime('Data'),
         'create_uid': fields.many2one('res.users', 'Da'),
         'web_product_id': fields.many2one(
             'product.product.web.server', 'Web product'),
         'old_qty': fields.float('Vecchia', digits=(10, 2)),
         'new_qty': fields.float('Nuova', digits=(10, 2)),
-        'comment': fields.char('Commento', size=40)
     }
 
 
