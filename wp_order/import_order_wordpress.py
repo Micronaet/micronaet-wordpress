@@ -549,13 +549,13 @@ class ConnectorServer(orm.Model):
                     'total': record['total'],
                 }
                 if order_ids:  # XXX No update of header
-                    run_mode = 'create'
+                    run_mode = 'write'
                     order_id = order_ids[0]
                     order_pool.write(
                         cr, uid, order_ids, order_header, context=context)
                     _logger.info('Yet found (update only line) %s' % number)
                 else:  # Read data:
-                    run_mode = 'write'
+                    run_mode = 'create'
                     # Address:
                     billing = record['billing']
                     shipping = record['shipping']
