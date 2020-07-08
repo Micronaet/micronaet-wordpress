@@ -298,7 +298,7 @@
                                         <field name="force_description" colspan="4"/>
 
                                         <field name="force_min_stock"/>
-                                        <field name="force_this_stock"/>
+                                        <!--<field name="force_this_stock"/>-->
 
                                         <field name="force_price"/>
                                         <field name="wp_web_pricelist"/>
@@ -309,7 +309,7 @@
                                         <field name="force_q_x_pack"/>
                                     </group>
                                 </page>
-                                <page string="Forzature" attrs="{'invisible': [(force_this_stock, '=', False)]}">
+                                <!--<page string="Forzature" attrs="{'invisible': [(force_this_stock, '=', False)]}">
                                     <group colspan="4" col="4">
                                         <field name="stock_log_ids" colspan="4" nolabel="1" readonly="1">
                                             <tree string="Log">
@@ -321,7 +321,7 @@
                                             </tree>
                                         </field>
                                     </group>
-                                </page>
+                                </page>-->
                                 <page string="Amazon">
                                     <group colspan="4" col="4">
                                         <separator string="Bullet point 1" colspan="2"/>
