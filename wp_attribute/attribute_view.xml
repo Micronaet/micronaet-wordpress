@@ -309,7 +309,7 @@
                                         <field name="force_q_x_pack"/>
                                     </group>
                                 </page>
-                                <page string="Magazzino manuale" attrs="{'invisible': [('force_this_stock', '<=', 0)]}">
+                                <page string="Magazzino manuale" attrs="{'invisible': [('force_this_stock', '&lt;=', 0)]}">
                                     <group colspan="4" col="4">
                                         <field name="stock_log_ids" colspan="4" nolabel="1" readonly="1">
                                             <tree string="Log">
