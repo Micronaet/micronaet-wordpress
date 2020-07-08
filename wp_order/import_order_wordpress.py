@@ -648,7 +648,7 @@ class ConnectorServer(orm.Model):
                                 'Scalato ordine: %s' % number
                             web_product_pool.write(cr, uid, web_product_ids, {
                                 'force_this_stock': new_qty,
-                            }, context=context)
+                            }, context=force_context)
 
                     order_line = {
                         'order_id': order_id,
