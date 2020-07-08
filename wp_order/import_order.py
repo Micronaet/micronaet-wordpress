@@ -496,6 +496,8 @@ class ConnectorServer(orm.Model):
                 wp_order, key=lambda x: x['date_created']):
             wp_id = record['id']
             name = record['number']
+            if name == '56154':
+                import pdb; pdb.set_trace()
             date_order = record['date_created'][:10]
             payment_method = record['payment_method']
             status = record['status']
@@ -561,7 +563,6 @@ class ConnectorServer(orm.Model):
                 order_id = order_ids[0]
                 # XXX No update of header
             else:
-                import pdb; pdb.set_trace()
                 # Read data:
                 record_partner = record['billing']
                 record_destination = record['shipping']
