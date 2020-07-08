@@ -24,6 +24,7 @@
 import os
 import sys
 import logging
+import pdb
 import openerp
 import json
 import woocommerce
@@ -492,7 +493,6 @@ class ConnectorServer(orm.Model):
         # Sorted so parent first:
         new_order_ids = []
         _logger.warning('Order found %s' % (len(wp_order), ))
-        import pdb
         pdb.set_trace()
         for record in sorted(
                 wp_order, key=lambda x: x['date_created']):
