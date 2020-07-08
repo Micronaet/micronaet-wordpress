@@ -258,6 +258,7 @@ class ConnectorServer(orm.Model):
     def get_sale_order_now(self, cr, uid, ids, context=None):
         """ Get sale order list
             """
+        pdb.set_trace()
         if context is None:
             context = {}
 
@@ -735,7 +736,7 @@ class ConnectorServer(orm.Model):
                 # Manual stock management:
                 # -------------------------------------------------------------
                 if order_proxy.name == '56154':
-                    import pdb: pdb.set_trace()
+                    pdb.set_trace()
 
                 web_product_ids = web_product_pool.search(cr, uid, [
                     ('connector_id', '=', connector_id),
@@ -743,7 +744,7 @@ class ConnectorServer(orm.Model):
                     ('force_this_stock', '>', 0),  # manage manual q.
                 ], context=context)
                 if web_product_ids:
-                    import pdb; pdb.set_trace()
+                    pdb.set_trace()
                     web_product = web_product_pool.browse(web_product_ids)[0]
                     new_qty = web_product.force_this_stock - quantity
                     if new_qty < 0:
