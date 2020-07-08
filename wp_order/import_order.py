@@ -744,7 +744,7 @@ class ConnectorServer(orm.Model):
                     force_context['forced_manual_stock_comment'] = \
                         'Scalato ordine: %s' % order_proxy.name
                     web_product_pool.write(cr, uid, {
-                        'force_this_stock': this_qty - quantity,
+                        'force_this_stock': new_qty,
                     }, context=context)
 
                 line_data = {
