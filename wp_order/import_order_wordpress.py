@@ -23,6 +23,7 @@
 
 import sys
 import logging
+import pdb
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
 from openerp.tools.translate import _
@@ -458,6 +459,7 @@ class ConnectorServer(orm.Model):
         order_pool = self.pool.get('wordpress.sale.order')
         line_pool = self.pool.get('wordpress.sale.order.line')
         product_pool = self.pool.get('product.product')
+        web_product_pool = self.pool.get('product.product.web.server')
 
         _logger.warning('Read order on wordpress [from_yesterday = %s]' %
                         from_yesterday)
@@ -503,6 +505,8 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Insert order
         # ---------------------------------------------------------------------
+        force_context = context.copy()  # Used for update manual stock mgmnt
+
         # Sorted so parent first:
         new_order_ids = []
         _logger.warning('Order found %s' % (len(wp_order), ))
@@ -544,11 +548,13 @@ class ConnectorServer(orm.Model):
                     'payment': record['payment_method_title'],
                     'total': record['total'],
                 }
+                run_mode = 'create'
                 if order_ids:  # XXX No update of header
                     order_id = order_ids[0]
                     order_pool.write(
                         cr, uid, order_ids, order_header, context=context)
                     _logger.info('Yet found (update only line) %s' % number)
+                    run_mode = 'write'
                 else:  # Read data:
                     # Address:
                     billing = record['billing']
@@ -614,6 +620,7 @@ class ConnectorServer(orm.Model):
                     name = line['name']
                     sku = self.wp_clean_code(line['sku'])
                     product_id = False
+                    quantity = line['quantity']
                     if sku:
                         product_ids = product_pool.search(cr, uid, [
                             ('default_code', '=', sku),
@@ -621,12 +628,35 @@ class ConnectorServer(orm.Model):
                         if product_ids:
                             product_id = product_ids[0]
 
+                    # ---------------------------------------------------------
+                    # Manual stock management:
+                    # ---------------------------------------------------------
+                    if run_mode == 'create':
+                        pdb.set_trace()
+                        web_product_ids = web_product_pool.search(cr, uid, [
+                            ('connector_id', '=', connector_id),
+                            ('product_id', '=', product_id),
+                            ('force_this_stock', '>', 0),  # manage manual q.
+                        ], context=context)
+                        if web_product_ids:
+                            pdb.set_trace()
+                            web_product = web_product_pool.browse(
+                                web_product_ids)[0]
+                            new_qty = web_product.force_this_stock - quantity
+                            if new_qty < 0:
+                                new_qty = 0
+                            force_context['forced_manual_stock_comment'] = \
+                                'Scalato ordine: %s' % number
+                            web_product_pool.write(cr, uid, {
+                                'force_this_stock': new_qty,
+                            }, context=context)
+
                     order_line = {
                         'order_id': order_id,
                         'wp_id': line['id'],
                         'name': name,
                         'sku': sku,
-                        'quantity': line['quantity'],
+                        'quantity': quantity,
                         'price': line['price'],
                         'total': line['total'],
                         'product_id': product_id,
