@@ -317,7 +317,7 @@
                                                 <field name="create_uid"/>
                                                 <field name="old_qty"/>
                                                 <field name="new_qty"/>
-                                                <field name="comment_qty"/>
+                                                <field name="comment"/>
                                             </tree>
                                         </field>
                                     </group>
