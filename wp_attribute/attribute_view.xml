@@ -297,14 +297,16 @@
 
                                         <field name="force_description" colspan="4"/>
 
-                                        <field name="force_q_x_pack"/>
                                         <field name="force_min_stock"/>
+                                        <field name="force_this_stock"/>
 
                                         <field name="force_price"/>
                                         <field name="wp_web_pricelist"/>
 
                                         <field name="wp_web_discounted_net" />
                                         <field name="force_discounted"/>
+
+                                        <field name="force_q_x_pack"/>
                                     </group>
                                 </page>
                                 <page string="Amazon">

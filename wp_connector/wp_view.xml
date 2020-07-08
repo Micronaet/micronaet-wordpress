@@ -320,6 +320,7 @@
                     <field name="force_ean13"/>
                     <field name="force_price"/>
                     <field name="force_min_stock"/>
+                    <field name="force_this_stock"/>
                     <button name="publish_now" string="Publish now" type="object"/>
                 </tree>
             </field>
@@ -350,8 +351,10 @@
                             <field name="force_q_x_pack"/>
                             <field name="force_ean13"/>
 
-                            <field name="force_price"/>
                             <field name="force_min_stock"/>
+                            <field name="force_this_stock"/>
+
+                            <field name="force_price"/>
 
                             <separator string="Wordpress line:" colspan="4"/>
                             <!--<button name="clean_reference" string="Clean reference" colspan="1" type="object" confirm="Do you want delete reference with Wordpress linked product?"/>-->

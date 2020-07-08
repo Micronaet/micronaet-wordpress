@@ -391,34 +391,42 @@ class ProductProductWebServer(orm.Model):
         # DB with MRP:
         # ---------------------------------------------------------------------
         company = product.company_id
-        if company.wp_existence_mode == 'locked':
-            # Net - locked mode:
-            stock_quantity = int(
-                product.mx_net_mrp_qty - product.mx_mrp_b_locked)
-
-        else:
-            # Net - ordered mode:
-            stock_quantity = int(product.mx_lord_mrp_qty +
-                                 product.mx_oc_out_prev - product.mx_of_in)
-
-        # stock_quantity = int(
-        # product.mx_lord_mrp_qty + product.mx_oc_out_prev)
+        force_this_stock = int(line.force_this_stock)
         force_min_stock = int(line.force_min_stock)
-        if force_min_stock and stock_quantity < force_min_stock:
-            stock_quantity = force_min_stock
-
-        if stock_quantity < 0:
-            resetted = True
-            stock_quantity = 0
+        if force_this_stock:
+            stock_quantity = force_this_stock
+            reset_text = 'FIXED'
         else:
-            resetted = False
+            if company.wp_existence_mode == 'locked':
+                # Net - locked mode:
+                stock_quantity = int(
+                    product.mx_net_mrp_qty - product.mx_mrp_b_locked)
 
-        comment = 'Netto - OC: %s + Prev.: %s = %s%s (min. %s)' % (
+            else:
+                # Net - ordered mode:
+                stock_quantity = int(product.mx_lord_mrp_qty +
+                                     product.mx_oc_out_prev - product.mx_of_in)
+
+            # stock_quantity = int(
+            # product.mx_lord_mrp_qty + product.mx_oc_out_prev)
+
+            if force_min_stock and stock_quantity < force_min_stock:
+                stock_quantity = force_min_stock
+                reset_text = 'MIN'
+
+            if stock_quantity < 0:
+                reset_text = 'NEG'
+                stock_quantity = 0
+            else:
+                reset_text = ''
+
+        comment = 'Netto - OC: %s + Prev.: %s = %s %s (min. %s) (fisso %s)' % (
             product.mx_lord_mrp_qty,
             product.mx_oc_out_prev,
             stock_quantity,
-            '*' if resetted else '',
+            reset_text,
             force_min_stock,
+            force_this_stock,
             )
 
         # TODO manage q x pack?
