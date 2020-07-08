@@ -548,14 +548,14 @@ class ConnectorServer(orm.Model):
                     'payment': record['payment_method_title'],
                     'total': record['total'],
                 }
-                run_mode = 'create'
                 if order_ids:  # XXX No update of header
+                    run_mode = 'create'
                     order_id = order_ids[0]
                     order_pool.write(
                         cr, uid, order_ids, order_header, context=context)
                     _logger.info('Yet found (update only line) %s' % number)
-                    run_mode = 'write'
                 else:  # Read data:
+                    run_mode = 'write'
                     # Address:
                     billing = record['billing']
                     shipping = record['shipping']
@@ -632,7 +632,6 @@ class ConnectorServer(orm.Model):
                     # Manual stock management:
                     # ---------------------------------------------------------
                     if run_mode == 'create':
-                        pdb.set_trace()
                         web_product_ids = web_product_pool.search(cr, uid, [
                             ('connector_id', '=', connector_id),
                             ('product_id', '=', product_id),
@@ -641,7 +640,7 @@ class ConnectorServer(orm.Model):
                         if web_product_ids:
                             pdb.set_trace()
                             web_product = web_product_pool.browse(
-                                web_product_ids)[0]
+                                cr, uid, web_product_ids, context=context)[0]
                             new_qty = web_product.force_this_stock - quantity
                             if new_qty < 0:
                                 new_qty = 0
