@@ -487,7 +487,7 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Insert order
         # ---------------------------------------------------------------------
-        force_context = context.copy()  # Used for update manual stock managem.
+        force_context = context.copy()  # Used for update manual stock mngmnt
 
         # Sorted so parent first:
         new_order_ids = []
@@ -561,6 +561,7 @@ class ConnectorServer(orm.Model):
                 order_id = order_ids[0]
                 # XXX No update of header
             else:
+                import pdb; pdb.set_trace()
                 # Read data:
                 record_partner = record['billing']
                 record_destination = record['shipping']
