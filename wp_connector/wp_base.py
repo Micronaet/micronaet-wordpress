@@ -366,6 +366,24 @@ class ResCompany(orm.Model):
         }
 
 
+class ProductProductStockLog(orm.Model):
+    """ Model name: Product Product Stock Log
+    """
+
+    _name = 'product.product.stock.log'
+    _order = 'create_date desc'
+
+    _columns = {
+        'create_date': fields.datetime('Data'),
+        'create_uid': fields.many2one('res.users', 'Da'),
+        'web_product_id': fields.many2one(
+            'product.product.web.server', 'Web product'),
+        'old_qty': fields.float('Vecchia', digits=(10, 2)),
+        'new_qty': fields.float('Nuova', digits=(10, 2)),
+        'comment': fields.char('Commento', size=40)
+    }
+
+
 class ProductProductWebServer(orm.Model):
     """ Model name: ProductProductWebServer
     """
@@ -972,6 +990,11 @@ class ProductProductWebServer(orm.Model):
                     volume, item.product_id.default_code))
 
     _columns = {
+        'stock_log_ids': fields.one2many(
+            'product.product.stock.log', 'web_product_id', 'Log magazzino',
+            help='Log cambi quantità magazzino forzato manualmente',
+        )
+
         'wp_it_id': fields.integer('WP it ID'),
         'wp_en_id': fields.integer('WP en ID'),
 
