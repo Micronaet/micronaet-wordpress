@@ -406,6 +406,7 @@ class ProductProductWebServer(orm.Model):
             log_pool = self.pool.get('product.product.stock.log')
             current = self.browse(cr, uid, ids, context=context)[0]
             data = {
+                'web_product_id': current.id,
                 'old_qty': current.stock_this_qty,
                 'new_qty': vals['stock_this_qty'],
                 'name': 'Forzato manualmente',
