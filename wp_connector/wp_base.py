@@ -992,9 +992,7 @@ class ProductProductWebServer(orm.Model):
     _columns = {
         'stock_log_ids': fields.one2many(
             'product.product.stock.log', 'web_product_id', 'Log magazzino',
-            help='Log cambi quantità magazzino forzato manualmente',
-        )
-
+            help='Log cambi quantità magazzino forzato manualmente', ),
         'wp_it_id': fields.integer('WP it ID'),
         'wp_en_id': fields.integer('WP en ID'),
 
