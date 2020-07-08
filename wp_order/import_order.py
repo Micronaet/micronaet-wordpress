@@ -731,6 +731,9 @@ class ConnectorServer(orm.Model):
                 # -------------------------------------------------------------
                 # Manual stock management:
                 # -------------------------------------------------------------
+                if order_proxy.name == '56154':
+                    import pdb: pdb.set_trace()
+
                 web_product_ids = web_product_pool.search(cr, uid, [
                     ('connector_id', '=', connector_id),
                     ('product_id', '=', product_id),
