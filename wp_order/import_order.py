@@ -737,6 +737,7 @@ class ConnectorServer(orm.Model):
                     ('force_this_stock', '>', 0),  # manage manual q.
                 ], context=context)
                 if web_product_ids:
+                    import pdb; pdb.set_trace()
                     web_product = web_product_pool.browse(web_product_ids)[0]
                     new_qty = web_product.force_this_stock - quantity
                     if new_qty < 0:
