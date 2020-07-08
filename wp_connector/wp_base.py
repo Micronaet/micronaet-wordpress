@@ -402,14 +402,18 @@ class ProductProductWebServer(orm.Model):
 
             @return: True on success, False otherwise
         """
-        if 'stock_this_qty' in vals:
+        if context is None:
+            context = {}
+
+        if 'force_this_stock' in vals:
             log_pool = self.pool.get('product.product.stock.log')
             current = self.browse(cr, uid, ids, context=context)[0]
             data = {
                 'web_product_id': current.id,
-                'old_qty': current.stock_this_qty,
-                'new_qty': vals['stock_this_qty'],
-                'name': 'Forzato manualmente',
+                'old_qty': current.force_this_stock,
+                'new_qty': vals['force_this_stock'],
+                'name': context.get(
+                    'forced_manual_stock_comment', 'Forzato manualmente'),
             }
             log_pool.create(cr, uid, data, context=context)
 

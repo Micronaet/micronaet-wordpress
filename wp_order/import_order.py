@@ -267,6 +267,7 @@ class ConnectorServer(orm.Model):
         partner_pool = self.pool.get('res.partner')
         state_pool = self.pool.get('res.country.state')
         country_pool = self.pool.get('res.country')
+        web_product_pool = self.pool.get('product.product.web.server')
 
         _logger.warning('Read order on wordpress:')
 
@@ -486,11 +487,13 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Insert order
         # ---------------------------------------------------------------------
+        force_context = context.copy()  # Used for update manual stock managem.
+
         # Sorted so parent first:
         new_order_ids = []
         _logger.warning('Order found %s' % (len(wp_order), ))
-        for record in sorted(wp_order,
-                key=lambda x: x['date_created']):
+        for record in sorted(
+                wp_order, key=lambda x: x['date_created']):
             wp_id = record['id']
             name = record['number']
             date_order = record['date_created'][:10]
@@ -510,8 +513,8 @@ class ConnectorServer(orm.Model):
             # -----------------------------------------------------------------
             # Shipping add extra line with cost
             # -----------------------------------------------------------------
-            #shipping_total
-            #shipping_tax
+            # shipping_total
+            # shipping_tax
 
             # -----------------------------------------------------------------
             # Payment method to manage suspended order
@@ -724,6 +727,26 @@ class ConnectorServer(orm.Model):
 
                 product_id = self.get_product_id_wp_or_code(
                     cr, uid, line, context=context)
+
+                # -------------------------------------------------------------
+                # Manual stock management:
+                # -------------------------------------------------------------
+                web_product_ids = web_product_pool.search(cr, uid, [
+                    ('connector_id', '=', connector_id),
+                    ('product_id', '=', product_id),
+                    ('force_this_stock', '>', 0),  # manage manual q.
+                ], context=context)
+                if web_product_ids:
+                    web_product = web_product_pool.browse(web_product_ids)[0]
+                    new_qty = web_product.force_this_stock - quantity
+                    if new_qty < 0:
+                        new_qty = 0
+                    force_context['forced_manual_stock_comment'] = \
+                        'Scalato ordine: %s' % order_proxy.name
+                    web_product_pool.write(cr, uid, {
+                        'force_this_stock': this_qty - quantity,
+                    }, context=context)
+
                 line_data = {
                     'order_id': order_id,
                     'name': name,
@@ -743,12 +766,12 @@ class ConnectorServer(orm.Model):
                         name,
                         partner.id,
                         partner.lang,
-                        True, # Update tax
+                        True,  # Update tax
                         order_proxy.date_order,
-                        False, # Packaging
+                        False,  # Packaging
                         partner.property_account_position.id,
-                        False, # Flag
-                        False, # warehouse_id
+                        False,  # Flag
+                        False,  # warehouse_id
                         context=context).get('value', {})
 
                 # Format correct fhe Tax relation:
