@@ -1138,7 +1138,6 @@ class ProductPublicCategory(orm.Model):
                     # before: line.force_name or \
                     short_description = \
                         variant.emotional_short_description or name
-                    pdb.set_trace()
                     stock_quantity, stock_comment = \
                         web_product_pool.get_existence_for_product(
                             cr, uid, line, context=context)

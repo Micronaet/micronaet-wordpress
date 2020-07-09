@@ -218,6 +218,8 @@
                     <field name="product_id" readonly="1"/>
                     <field name="wp_parent_template" invisible="1" />
                     <field name="wp_parent_id" readonly="1"/>
+                    <field name="q_x_pack" readonly="1"/>
+                    <field name="multiplier" readonly="1"/>
                     <field name="force_min_stock" />
                     <field name="force_this_stock" />
 
