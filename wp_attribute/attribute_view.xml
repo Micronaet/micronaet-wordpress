@@ -124,6 +124,11 @@
             <field name="arch" type="xml">
                 <field name="product_id" position="after">
                     <field name="product_id" string="Codice" filter_domain="[('product_id.default_code','ilike',self)]"/>
+
+                    <filter name="manual_stock_management" string="Magazzino manuale" domain="[('force_this_stock','&gt;',0)]"/>
+                    <filter name="auto_stock_management" string="Magazzino automatico" domain="[('force_this_stock','&lt;=',0)]"/>
+
+                    <filter name="force_min_stock_management" string="Con soglia minima" domain="[('force_min_stock','&gt;',0)]"/>
                 </field>
             </field>
         </record>
