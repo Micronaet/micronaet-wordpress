@@ -125,8 +125,8 @@
                 <field name="product_id" position="after">
                     <field name="product_id" string="Codice" filter_domain="[('product_id.default_code','ilike',self)]"/>
 
-                    <filter name="manual_stock_management" string="Magazzino manuale" domain="[('force_this_stock','&gt;',0)]"/>
-                    <filter name="auto_stock_management" string="Magazzino automatico" domain="[('force_this_stock','&lt;=',0)]"/>
+                    <filter name="manual_stock_management" string="Magazzino manuale" domain="[('force_manual_stock','=',True)]"/>
+                    <filter name="auto_stock_management" string="Magazzino automatico" domain="[('force_manual_stock','=',False)]"/>
 
                     <filter name="force_min_stock_management" string="Con soglia minima" domain="[('force_min_stock','&gt;',0)]"/>
                 </field>
@@ -221,6 +221,8 @@
                     <field name="q_x_pack" readonly="1"/>
                     <field name="price_multi" readonly="1"/>
                     <field name="force_min_stock" />
+
+                    <field name="force_manual_stock" />
                     <field name="force_this_stock" />
 
                     <button name="publish_master_now" string="Pubblica master ora" type="object" icon="gtk-refresh" attrs="{'invisible': [('wp_parent_template', '=', False)]}"/>
@@ -324,8 +326,11 @@
 
                                         <field name="force_description" colspan="4"/>
 
-                                        <field name="force_min_stock"/>
+                                        <field name="force_manual_stock"/>
                                         <field name="force_this_stock"/>
+
+                                        <field name="force_min_stock"/>
+                                        <field name="force_q_x_pack"/>
 
                                         <field name="force_price"/>
                                         <field name="wp_web_pricelist"/>
@@ -333,10 +338,9 @@
                                         <field name="wp_web_discounted_net" />
                                         <field name="force_discounted"/>
 
-                                        <field name="force_q_x_pack"/>
                                     </group>
                                 </page>
-                                <page string="Magazzino manuale" attrs="{'invisible': [('force_this_stock', '&lt;=', 0)]}">
+                                <page string="Magazzino manuale" attrs="{'invisible': [('force_manual_stock', '=', False)]}">
                                     <group colspan="4" col="4">
                                         <field name="stock_log_ids" colspan="4" nolabel="1" readonly="1">
                                             <tree string="Log">

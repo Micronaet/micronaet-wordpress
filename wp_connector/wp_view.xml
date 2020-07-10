@@ -320,6 +320,7 @@
                     <field name="force_ean13"/>
                     <field name="force_price"/>
                     <field name="force_min_stock"/>
+                    <field name="force_manual_stock"/>
                     <field name="force_this_stock"/>
                     <button name="publish_now" string="Publish now" type="object"/>
                 </tree>
@@ -351,9 +352,10 @@
                             <field name="force_q_x_pack"/>
                             <field name="force_ean13"/>
 
-                            <field name="force_min_stock"/>
+                            <field name="force_manual_stock"/>
                             <field name="force_this_stock"/>
 
+                            <field name="force_min_stock"/>
                             <field name="force_price"/>
 
                             <separator string="Wordpress line:" colspan="4"/>

@@ -408,12 +408,14 @@ class ProductProductWebServer(orm.Model):
         if 'force_this_stock' in vals:
             log_pool = self.pool.get('product.product.stock.log')
             current = self.browse(cr, uid, ids, context=context)[0]
+            # if current.force_manual_stock:
+            # Always save stock movement record!
             data = {
                 'web_product_id': current.id,
                 'old_qty': current.force_this_stock,
                 'new_qty': vals['force_this_stock'],
                 'name': context.get(
-                    'forced_manual_stock_comment', 'Forzato manualmente'),
+                    'forced_manual_stock_comment', 'Modifica manuale'),
             }
             log_pool.create(cr, uid, data, context=context)
 
@@ -453,9 +455,10 @@ class ProductProductWebServer(orm.Model):
         # DB with MRP:
         # ---------------------------------------------------------------------
         company = product.company_id
+        force_manual_stock = line.force_manual_stock
         force_this_stock = int(line.force_this_stock)
         force_min_stock = int(line.force_min_stock)
-        if force_this_stock:
+        if force_manual_stock:
             stock_quantity = force_this_stock
             reset_text = 'FIXED'
         else:
@@ -488,7 +491,7 @@ class ProductProductWebServer(orm.Model):
             stock_quantity,
             reset_text,
             force_min_stock,
-            force_this_stock,
+            force_this_stock if force_manual_stock else '/',
             )
 
         # TODO manage q x pack?
