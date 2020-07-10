@@ -220,10 +220,14 @@
                     <field name="wp_parent_id" readonly="1"/>
                     <field name="q_x_pack" readonly="1"/>
                     <field name="price_multi" readonly="1"/>
+
+                    <field name="mx_lord_mrp_qty" readonly="1"/>
+                    <field name="mx_oc_out_prev" readonly="1"/>
+
                     <field name="force_min_stock" />
 
-                    <field name="force_manual_stock" />
-                    <field name="force_this_stock" />
+                    <!--<field name="force_manual_stock" />
+                    <field name="force_this_stock" />-->
 
                     <button name="publish_master_now" string="Pubblica master ora" type="object" icon="gtk-refresh" attrs="{'invisible': [('wp_parent_template', '=', False)]}"/>
 

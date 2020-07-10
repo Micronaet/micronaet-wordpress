@@ -34,6 +34,7 @@
     'depends': [
         'base',
         'wp_connector',
+        # 'inventory_status',  # For stock status
         ],
     'init_xml': [],
     'demo': [],
