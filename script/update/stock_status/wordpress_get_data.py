@@ -16,14 +16,16 @@ pickle_master_file = './log/wp_master_data.p'
 activity_file = './log/activity.log'
 activity_f = open(activity_file, 'a')
 
+
 def log_activity(event, mode='info'):
-    ''' Log activity on file
-    '''
+    """ Log activity on file
+    """
     activity_f.write('%s [%s] %s\n' % (
         datetime.now(),
         mode.upper(),
         event,
         ))
+
 
 # Worpress parameters:
 config = ConfigParser.ConfigParser()
@@ -34,8 +36,9 @@ consumer_key = config.get('wordpress', 'key')
 consumer_secret = config.get('wordpress', 'secret')
 log_activity('Start get Wordpress product status [%s]' % wordpress_url)
 
+
 # -----------------------------------------------------------------------------
-# Spaziogiardino
+#                                Spaziogiardino
 # -----------------------------------------------------------------------------
 wcapi = woocommerce.API(
     url=wordpress_url,
@@ -81,9 +84,9 @@ while True:
         images = record.get('images', False)
 
         if lang not in variant_db:
-             variant_db[lang] = {}
+            variant_db[lang] = {}
 
-        variation_parameter = {'per_page': 50, 'page': 1} # Only one call!
+        variation_parameter = {'per_page': 50, 'page': 1}  # Only one call!
         call = 'products/%s/variations' % product_id
         variation_reply = wcapi.get(call, params=variation_parameter)
 
@@ -91,7 +94,7 @@ while True:
         # Master part:
         # ---------------------------------------------------------------------
         if lang not in master_db:
-             master_db[lang] = {}
+            master_db[lang] = {}
         if sku in master_db[lang]:  # Yet present
             master_check_double.append((lang, sku))
         master_db[lang][sku] = product_id
@@ -126,8 +129,10 @@ print('Doppioni:')
 print('%s' % (master_check_double, ))
 
 doppi = []
+double_f = open('./doppioni.txt', 'w')
 for lang, sku in master_check_double:
-     if sku not in doppi:
-         doppi.append(sku)
-
+    if sku not in doppi:
+        doppi.append(sku)
+        double_f.write('%s\n' % sku)
+double_f.close()
 print(doppi)
