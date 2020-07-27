@@ -9,7 +9,7 @@ import ConfigParser
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
-mode = 'openerp' # 'local'
+mode = 'openerp'  # 'local'
 company_list = ['fia', 'gpb']
 lang_list = ['it_IT', 'en_US']
 
@@ -23,12 +23,12 @@ for company in company_list:
     pools[company] = {}
     for lang in lang_list:
         pools[company][lang] = {}
-        
+
         pools[company][lang]['colors'] = {}
-    
+
 config = ConfigParser.ConfigParser()
 
-for company in company_list: #['fia', 'gpb']:
+for company in company_list:  # ['fia', 'gpb']:
     cfg_file = os.path.expanduser('../%s.%s.cfg' % (mode, company))
     config.read([cfg_file])
     dbname = config.get('dbaccess', 'dbname')
@@ -39,48 +39,48 @@ for company in company_list: #['fia', 'gpb']:
 
     # -------------------------------------------------------------------------
     # Connect to ODOO:
-    # -------------------------------------------------------------------------    
-    for lang in lang_list:        
+    # -------------------------------------------------------------------------
+    for lang in lang_list:
         odoo = erppeek.Client(
-            'http://%s:%s' % (server, port), 
+            'http://%s:%s' % (server, port),
             db=dbname, user=user, password=pwd,
             )
         odoo.context = {'lang': lang}
-        
+
         # Pool used:
         pools[company][lang]['colors'] = \
-            odoo.model('connector.product.color.dot') 
+            odoo.model('connector.product.color.dot')
 
 space_problem = []
 for company in company_list:
-    print 'Working DB', company
-    
-    for lang in lang_list:       
-        print 'Working language', lang
-        
+    print('Working DB', company)
+
+    for lang in lang_list:
+        print('Working language', lang)
+
         source = {
             'pool': pools[company][lang]['colors'],
-            'connector_id': connector_id[company],            
+            'connector_id': connector_id[company],
             }
-            
+
         # Destination:
         if company == 'fia':
-            destination = {                
+            destination = {
                 'pool': pools['gpb'][lang]['colors'],
-                'connector_id': connector_id['gpb'],            
+                'connector_id': connector_id['gpb'],
                 }
         else:
-            destination = {                
+            destination = {
                 'pool': pools['fia'][lang]['colors'],
-                'connector_id': connector_id['fia'],    
+                'connector_id': connector_id['fia'],
                 }
 
         # Search colors:
         source_color_ids = source['pool'].search([])
         for source_color in source['pool'].browse(source_color_ids):
             name = source_color.name  # Code
-            if name != name.strip():            
-                print '   Space problem: %s %s %s' % (company, lang, name)
+            if name != name.strip():
+                print('   Space problem: %s %s %s' % (company, lang, name))
                 if name not in space_problem:
                     space_problem.append(name)
                 source['pool'].write([source_color.id], {
@@ -101,15 +101,15 @@ for company in company_list:
                 'code': (source_color.code or '').strip(),
                 'not_active': source_color.not_active,
                 }
-                
+
             if destination_ids:
                 # Update:
-                print 'Update: %s %s %s' % (company, lang, data)
+                print('Update: %s %s %s' % (company, lang, data))
                 destination['pool'].write(destination_ids, data)
             else:
-                # Create:    
-                print 'Create: %s %s %s' % (company, lang, data)
+                # Create:
+                print('Create: %s %s %s' % (company, lang, data))
                 destination['pool'].create(data)
 
-print 'Space problem:'
-print space_problem
+print('Space problem:')
+print(space_problem)
