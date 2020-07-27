@@ -129,7 +129,7 @@ print('Doppioni:')
 print('%s' % (master_check_double, ))
 
 doppi = []
-double_f = open('./doppioni.txt', 'w')
+double_f = open('./log/doppioni.txt', 'w')
 for lang, sku in master_check_double:
     if sku not in doppi:
         doppi.append(sku)
