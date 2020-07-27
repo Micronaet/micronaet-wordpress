@@ -135,4 +135,5 @@ for lang, sku in master_check_double:
         doppi.append(sku)
         double_f.write('%s\n' % sku)
 double_f.close()
+
 print(doppi)
