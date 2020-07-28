@@ -110,8 +110,6 @@ while True:
         master_db[lang][sku] = product_id
         for variation in variation_reply.json():
             total += 1
-            if total < 1283:
-                continue
             variation_id = variation['id']
 
             variation_sku = variation['sku'].replace('&nbsp;', ' ')
