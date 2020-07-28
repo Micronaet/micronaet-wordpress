@@ -117,6 +117,7 @@ while True:
                 variation_image = False
 
             # Variation color for fabric:
+            variant_color = 'NESSUNO'
             try:
                 for item in variation['attributes']:
                     if item['id'] != 1:
