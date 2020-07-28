@@ -100,14 +100,16 @@ while True:
         if sku in master_db[lang]:  # Yet present
             master_check_double.append((lang, sku))
         master_db[lang][sku] = product_id
-        pdb.set_trace()
         for variation in variation_reply.json():
             total += 1
             variation_id = variation['id']
 
             variation_sku = variation['sku'].replace('&nbsp;', ' ')
-            variation_image = variation.get('image', False)
-
+            try:
+                variation_image = variation['image']
+            except:
+                variation_image = False
+            print(variation['attributes'])
             if variation_sku in variant_db[lang]:
                 variant_check_double.append((lang, variation_sku))
             variant_db[lang][variation_sku] = {
@@ -128,7 +130,7 @@ log_activity('End get Wordpress product status [%s]' % wordpress_url)
 
 # Save master dump file:
 pickle.dump(master_db, open(pickle_master_file, 'wb'))
-
+pdb.set_trace()
 for comment, filename, double_list in (
         ('master', 'double_master.txt', master_check_double),
         ('variant', 'double_variant.txt', variant_check_double),
