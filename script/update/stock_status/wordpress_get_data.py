@@ -125,6 +125,7 @@ while True:
                 variation_sku,
                 variation_color,
             ))
+            double_f.flush()
 
             if variation_sku in variant_db[lang]:
                 variant_check_double.append((lang, variation_sku))
@@ -146,7 +147,6 @@ log_activity('End get Wordpress product status [%s]' % wordpress_url)
 
 # Save master dump file:
 pickle.dump(master_db, open(pickle_master_file, 'wb'))
-pdb.set_trace()
 for comment, filename, double_list in (
         ('master', 'double_master.txt', master_check_double),
         ('variant', 'double_variant.txt', variant_check_double),
