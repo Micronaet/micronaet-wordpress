@@ -3,6 +3,7 @@ import woocommerce
 import pickle
 import urllib
 import sys
+import pdb
 import erppeek
 import ConfigParser
 import pickle
@@ -99,7 +100,7 @@ while True:
         if sku in master_db[lang]:  # Yet present
             master_check_double.append((lang, sku))
         master_db[lang][sku] = product_id
-
+        pdb.set_trace()
         for variation in variation_reply.json():
             total += 1
             variation_id = variation['id']
