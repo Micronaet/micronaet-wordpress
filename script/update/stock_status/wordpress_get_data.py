@@ -110,6 +110,8 @@ while True:
         master_db[lang][sku] = product_id
         for variation in variation_reply.json():
             total += 1
+            if total < 1283:
+                continue
             variation_id = variation['id']
 
             variation_sku = variation['sku'].replace('&nbsp;', ' ')
@@ -128,7 +130,7 @@ while True:
             except:
                 variant_color = 'ERRORE'
             double_f = double_lang_f[lang]
-            double_f.write('%s | %s | %s\n' % (
+            double_f.write(u'%s | %s | %s\n' % (
                 sku,
                 variation_sku,
                 variant_color,
@@ -136,7 +138,7 @@ while True:
             double_f.flush()
             key = (lang, sku, variation_sku, variant_color)
             if key in master_variant_list:
-                double_lang_f[''].write('%s\n' % (key, ))
+                double_lang_f[''].write(u'%s\n' % (key, ))
                 double_lang_f[''].flush()
             else:
                 master_variant_list.append(key)
