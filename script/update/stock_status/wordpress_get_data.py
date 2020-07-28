@@ -64,8 +64,8 @@ parameter = {'per_page': 40, 'page': 1}
 total = 0
 
 double_lang_f = {
-    'it': codecs('./log/it.double.csv', 'w', 'utf8'),
-    'en': codecs('./log/en.double.csv', 'w', 'utf8'),
+    'it': codecs.open('./log/it.double.csv', 'w', 'utf8'),
+    'en': codecs.open('./log/en.double.csv', 'w', 'utf8'),
 }
 
 while True:
