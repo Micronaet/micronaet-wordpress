@@ -451,8 +451,6 @@ class ProductProductWebServer(orm.Model):
         if type(line) == int:
             line = webproduct_pool.browse(cr, uid, line, context=context)
         product = line.product_id
-        if product.default_code == '355':
-            pdb.set_trace()
 
         # ---------------------------------------------------------------------
         # DB with MRP:
