@@ -69,7 +69,7 @@ double_lang_f = {
     'en': codecs.open('./log/en.double.csv', 'w', 'utf8'),
     '': codecs.open('./log/controllo.csv', 'w', 'utf8'),
 }
-pdb.set_trace()
+
 while True:
     print('Reading page %s [Block %s]' % (
         parameter['page'], parameter['per_page']))
