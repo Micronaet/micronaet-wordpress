@@ -118,12 +118,12 @@ while True:
                         continue
                     variant_color = item['option']
             except:
-                variation_color = 'ERRORE'
+                variant_color = 'ERRORE'
             double_f.write('%s | %s | %s | %s\n' % (
                 sku,
                 lang,
                 variation_sku,
-                variation_color,
+                variant_color,
             ))
             double_f.flush()
 
