@@ -62,7 +62,11 @@ variant_check_double = []
 parameter = {'per_page': 40, 'page': 1}
 total = 0
 
-double_f = open('./log/double.csv', 'w')
+double_lang_f = {
+    'it':  open('./log/it.double.csv', 'w'),
+    'en': open('./log/en.double.csv', 'w'),
+}
+
 while True:
     print('Reading page %s [Block %s]' % (
         parameter['page'], parameter['per_page']))
@@ -119,9 +123,9 @@ while True:
                     variant_color = item['option']
             except:
                 variant_color = 'ERRORE'
-            double_f.write('%s | %s | %s | %s\n' % (
+            double_f = double_lang_f[lang]
+            double_f.write('%s | %s | %s\n' % (
                 sku,
-                lang,
                 variation_sku,
                 variant_color,
             ))
