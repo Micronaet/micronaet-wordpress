@@ -118,6 +118,7 @@ while True:
             except:
                 variation_image = False
 
+            # -----------------------------------------------------------------
             # Variation color for fabric:
             variant_color = 'NESSUNO'
             try:
@@ -140,6 +141,7 @@ while True:
                 double_lang_f[''].flush()
             else:
                 master_variant_list.append(key)
+            # -----------------------------------------------------------------
 
             if variation_sku in variant_db[lang]:
                 variant_check_double.append((lang, variation_sku))
