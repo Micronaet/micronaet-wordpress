@@ -59,6 +59,7 @@ variant_db = {}
 master_db = {}
 master_check_double = []
 variant_check_double = []
+master_variant_list = []
 
 parameter = {'per_page': 40, 'page': 1}
 total = 0
@@ -66,8 +67,9 @@ total = 0
 double_lang_f = {
     'it': codecs.open('./log/it.double.csv', 'w', 'utf8'),
     'en': codecs.open('./log/en.double.csv', 'w', 'utf8'),
+    '': codecs.open('./log/controllo.csv', 'w', 'utf8'),
 }
-
+pdb.set_trace()
 while True:
     print('Reading page %s [Block %s]' % (
         parameter['page'], parameter['per_page']))
@@ -132,6 +134,11 @@ while True:
                 variant_color,
             ))
             double_f.flush()
+            key = (lang, sku, variation_sku, variant_color)
+            if key in master_variant_list:
+                double_lang_f[''].write('%s\n' % (key))
+            else:
+                master_variant_list.append(key)
 
             if variation_sku in variant_db[lang]:
                 variant_check_double.append((lang, variation_sku))
