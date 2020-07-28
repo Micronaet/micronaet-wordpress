@@ -1,5 +1,6 @@
 import os
 import woocommerce
+import codecs
 import pickle
 import urllib
 import sys
@@ -63,8 +64,8 @@ parameter = {'per_page': 40, 'page': 1}
 total = 0
 
 double_lang_f = {
-    'it':  open('./log/it.double.csv', 'w'),
-    'en': open('./log/en.double.csv', 'w'),
+    'it': codecs('./log/it.double.csv', 'w', 'utf8'),
+    'en': codecs('./log/en.double.csv', 'w', 'utf8'),
 }
 
 while True:
