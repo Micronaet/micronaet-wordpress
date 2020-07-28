@@ -24,6 +24,7 @@
 import os
 import logging
 import woocommerce
+import pdb
 from datetime import datetime
 from openerp.osv import fields, osv, expression, orm
 from openerp.tools.translate import _
@@ -450,6 +451,8 @@ class ProductProductWebServer(orm.Model):
         if type(line) == int:
             line = webproduct_pool.browse(cr, uid, line, context=context)
         product = line.product_id
+        if product.default_code == '355':
+            pdb.set_trace()
 
         # ---------------------------------------------------------------------
         # DB with MRP:

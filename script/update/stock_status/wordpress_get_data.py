@@ -133,7 +133,6 @@ for comment, filename, double_list in (
         ('variant', 'double_variant.txt', variant_check_double),
         ):
     print('Doppioni %s:' % comment)
-    # print('%s' % (double_list, ))
 
     double_f = open('./log/%s' % filename, 'w')
     for record in double_list:
