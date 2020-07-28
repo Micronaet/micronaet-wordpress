@@ -136,7 +136,8 @@ while True:
             double_f.flush()
             key = (lang, sku, variation_sku, variant_color)
             if key in master_variant_list:
-                double_lang_f[''].write('%s\n' % (key))
+                double_lang_f[''].write('%s\n' % (key, ))
+                double_lang_f[''].flush()
             else:
                 master_variant_list.append(key)
 
