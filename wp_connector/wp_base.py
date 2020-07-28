@@ -445,6 +445,14 @@ class ProductProductWebServer(orm.Model):
         """
         webproduct_pool = self.pool.get('product.product.web.server')
 
+        # Update stock on if disabled:
+        user_pool = self.pool.get('res.users')
+        user = user_pool.browse(cr, uid, uid, context=context)
+        if user.no_inventory_status:
+            user_pool.write(cr, uid, uid, {
+                'no_inventory_status': False,
+            }, context=context)
+
         # ---------------------------------------------------------------------
         # Call from external:
         # ---------------------------------------------------------------------
