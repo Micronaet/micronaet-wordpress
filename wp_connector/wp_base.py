@@ -96,7 +96,7 @@ class ConnectorServer(orm.Model):
     def get_wp_connector(self, cr, uid, ids, context=None):
         """ Connect with Word Press API management
         """
-        timeout = 600 # TODO parametrize
+        timeout = 600  # TODO parametrize
 
         connector = self.browse(cr, uid, ids, context=context)[0]
         if not connector.wordpress:
@@ -133,6 +133,7 @@ class ConnectorServer(orm.Model):
 
     _columns = {
         'wp_publish_image': fields.boolean('Pubblica immagini'),
+        'wp_ean_gtin': fields.boolean('EAN GTIN', help='Use EAN code in GTIN'),
         'wordpress': fields.boolean('Wordpress', help='Wordpress web server'),
 
         'wp_all_category': fields.boolean('All category',

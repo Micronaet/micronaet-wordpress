@@ -12,6 +12,7 @@
                 </xpath>
                 <field name="password" position="after">
                     <field name="wp_publish_image" />
+                    <field name="wp_ean_gtin" />
                 </field>
             </field>
         </record>

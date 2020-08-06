@@ -428,6 +428,14 @@ class ProductPublicCategory(orm.Model):
             help='Color path for dot images, use ~ for home'),
         }
 
+    def get_gtin(self, line):
+        """ Return GTIN number depend on parameters
+        """
+        ean13 = line.product_id.ean13 or False
+        if line.connector_id.wp_ean_gtin and ean13:
+            return ean13
+        return False
+
     def external_get_wp_id(self, cr, uid, ids, context=None):
         """ External extract data to get Code - Lang: WP ID
         """
@@ -959,7 +967,7 @@ class ProductPublicCategory(orm.Model):
                     'Default nella scheda prodotto',
                     'put',
                     call,
-                    u'%s' % (data),
+                    u'%s' % (data, ),
                     u'%s' % (reply, ),
                     ], default_format=excel_format['text'])
                 # =============================================================
@@ -1038,7 +1046,7 @@ class ProductPublicCategory(orm.Model):
                         'Aggiornamento termini attributi',
                         'post',
                         call,
-                        u'%s' % (data),
+                        u'%s' % (data, ),
                         u'%s' % (res, ),
                         ], default_format=excel_format['text'])
                     # =========================================================
@@ -1167,6 +1175,14 @@ class ProductPublicCategory(orm.Model):
                             'option': fabric_code,
                         }],
                     }
+
+                    # ---------------------------------------------------------
+                    # GTIN Part:
+                    # ---------------------------------------------------------
+                    gtin = self.get_gtin(line)
+                    if gtin:
+                        data['gtin'] = gtin
+
                     # 'slug': self.get_lang_slug(variant_code, lang),
                     # TODO
                     # stock_status
