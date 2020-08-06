@@ -428,14 +428,6 @@ class ProductPublicCategory(orm.Model):
             help='Color path for dot images, use ~ for home'),
         }
 
-    def get_gtin(self, line):
-        """ Return GTIN number depend on parameters
-        """
-        ean13 = line.product_id.ean13 or False
-        if line.connector_id.wp_ean_gtin and ean13:
-            return ean13
-        return False
-
     def external_get_wp_id(self, cr, uid, ids, context=None):
         """ External extract data to get Code - Lang: WP ID
         """

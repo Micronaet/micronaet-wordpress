@@ -141,7 +141,7 @@ class ConnectorServer(orm.Model):
         row = 0
         excel_pool.write_xls_line(
             ws_name, row, [
-            'Pubbl.', 'Codice', 'Colore', 'Brand',
+            'Pubbl.', 'Codice', 'GTIN', 'Colore', 'Brand',
             'Nome', 'Descrizione',
             '(Name)', '(Description)',
             'Categorie', 'Mag.', 'Dett. mag.', 'Extra', 'Molt.',
@@ -183,6 +183,9 @@ class ConnectorServer(orm.Model):
                 self, product, album_ids, context=context)
             dropbox_image = get_image_list(
                 self, product, album_ids, context={'image_mode': 'url'})
+
+            # GTIN
+            gtin = connector_pool.get_gtin(line)
 
             # Stock:
             stock_qty, stock_comment = \
@@ -232,6 +235,7 @@ class ConnectorServer(orm.Model):
                 ws_name, row, [
                     published,
                     default_code,
+                    gtin or '',
                     line.wp_color_id.name or '',
                     line.brand_id.name or '',
                     short_description,  # product.name,

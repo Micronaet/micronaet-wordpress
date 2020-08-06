@@ -131,6 +131,14 @@ class ConnectorServer(orm.Model):
         return image_pool.update_wp_volume(
            cr, uid, image_ids, context=context)
 
+    def get_gtin(self, line):
+        """ Return GTIN number depend on parameters
+        """
+        ean13 = line.product_id.ean13 or False
+        if line.connector_id.wp_ean_gtin and ean13:
+            return ean13
+        return False
+
     _columns = {
         'wp_publish_image': fields.boolean('Pubblica immagini'),
         'wp_ean_gtin': fields.boolean('EAN GTIN', help='Use EAN code in GTIN'),
