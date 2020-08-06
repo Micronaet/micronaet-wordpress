@@ -87,6 +87,7 @@ class ConnectorServer(orm.Model):
         excel_pool = self.pool.get('excel.writer')
         product_pool = self.pool.get('product.product')
         connector_pool = self.pool.get('product.product.web.server')
+        server_pool = self.pool.get('connector.server')
 
         # Get sold product database:
         sold_product = self.sold_product_on_website(
@@ -124,7 +125,7 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Width
         excel_pool.column_width(ws_name, [
-            5, 15, 20, 15,
+            5, 15, 10, 20, 15,
             30, 70,
             30, 70,
             50, 10, 30, 5, 5,
@@ -185,7 +186,7 @@ class ConnectorServer(orm.Model):
                 self, product, album_ids, context={'image_mode': 'url'})
 
             # GTIN
-            gtin = connector_pool.get_gtin(line)
+            gtin = server_pool.get_gtin(line)
 
             # Stock:
             stock_qty, stock_comment = \
