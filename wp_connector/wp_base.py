@@ -134,10 +134,10 @@ class ConnectorServer(orm.Model):
     def get_gtin(self, line):
         """ Return GTIN number depend on parameters
         """
-        ean13 = line.product_id.ean13 or False
+        ean13 = line.force_ean or line.product_id.ean13 or ''
         if line.connector_id.wp_ean_gtin and ean13:
             return ean13
-        return False
+        return ''
 
     _columns = {
         'wp_publish_image': fields.boolean('Pubblica immagini'),
