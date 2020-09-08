@@ -434,7 +434,7 @@ class ProductPublicCategory(orm.Model):
         web_pool = self.pool.get('product.product.web.server')
         connector_id = ids[0]
         not_found = []
-        # TODO mangage not parent product!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # TODO manage not parent product!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         # Read WP product:
         wcapi = self.get_wp_connector(
@@ -446,7 +446,9 @@ class ProductPublicCategory(orm.Model):
         theres_data = True
         while theres_data:
             call = 'products'
-            reply = wcapi.get(call, params=parameter).json()
+            reply = self.wp_loopcall(
+                wcapi, 'get', call, params=parameter).json()
+
             parameter['page'] += 1
 
             for item in reply:
@@ -457,7 +459,7 @@ class ProductPublicCategory(orm.Model):
 
                 if not default_code:
                     not_found.append(wp_id)
-                    _logger.warning('Product not found: %s' % (
+                    _logger.warning('Product not found: %s lang: %s' % (
                         default_code, lang))
 
                 web_ids = web_pool.search(cr, uid, [
@@ -644,8 +646,8 @@ class ProductPublicCategory(orm.Model):
         #                     ATTRIBUTES: (need Tessuto, Brand)
         # ---------------------------------------------------------------------
         call = 'products/attributes'
-        current_wp_attribute = wcapi.get(
-            call, params=variation_parameters).json()
+        current_wp_attribute = self.wp_loopcall(
+            wcapi, 'get', call, params=variation_parameters).json()
 
         # =====================================================================
         # Excel log:
@@ -717,8 +719,8 @@ class ProductPublicCategory(orm.Model):
         # Fabric attribute:
         while theres_data:
             call = 'products/attributes/%s/terms' % attribute_id['Tessuto']
-            res = wcapi.get(
-                call, params=parameter).json()
+            res = self.wp_loopcall(
+                wcapi, 'get', call, params=parameter).json()
 
             # =================================================================
             # Excel log:
@@ -764,8 +766,10 @@ class ProductPublicCategory(orm.Model):
         lang_brand_terms = {}  # not needed for now
 
         call = 'products/attributes/%s/terms' % attribute_id['Brand']
-        for record in wcapi.get(
-                call, params=variation_parameters).json():
+
+        for record in self.wp_loopcall(
+                wcapi, 'get', call, params=variation_parameters).json():
+
             lang = record['lang']
             name = record['name']
 
@@ -843,7 +847,8 @@ class ProductPublicCategory(orm.Model):
                 if any(data.values()): # only if one is present
                     call = 'products/attributes/%s/terms/batch' % \
                         attribute_id['Tessuto']
-                    res = wcapi.post(call, data=data).json()
+                    res = self.wp_loopcall(
+                        wcapi, 'post', call, data=data).json()
 
                     # =========================================================
                     # Excel log:
@@ -945,7 +950,8 @@ class ProductPublicCategory(orm.Model):
                     }
 
                 call = 'products/%s' % wp_id
-                reply = wcapi.put(call, data).json()
+                reply = self.wp_loopcall(
+                    wcapi, 'put', call, data=data).json()
 
                 # =============================================================
                 # Excel log:
@@ -1028,7 +1034,8 @@ class ProductPublicCategory(orm.Model):
 
                 try:
                     call = 'products/%s' % wp_id
-                    res = wcapi.post(call, data=data).json()
+                    res = self.wp_loopcall(
+                        wcapi, 'post', call, data=data).json()
 
                     # =========================================================
                     # Excel log:
@@ -1053,7 +1060,8 @@ class ProductPublicCategory(orm.Model):
                 # Upload product variations:
                 # -------------------------------------------------------------
                 call = 'products/%s/variations' % wp_id
-                res = wcapi.get(call, params=variation_parameters).json()
+                res = self.wp_loopcall(
+                    wcapi, 'get', call, params=variation_parameters).json()
 
                 # =============================================================
                 # Excel log:
@@ -1110,8 +1118,9 @@ class ProductPublicCategory(orm.Model):
 
                 # Clean variant no color:
                 if data['delete']:
-                    wcapi.post(
-                        'products/%s/variations/batch' % wp_id, data).json()
+                    call = 'products/%s/variations/batch' % wp_id
+                    self.wp_loopcall(
+                        wcapi, 'post', call, data=data).json()
                     # TODO log
 
                 for line, fabric_code in variants:
@@ -1230,7 +1239,8 @@ class ProductPublicCategory(orm.Model):
                             wp_id,
                             variant_id,
                             )
-                        res = wcapi.put(call, data).json()
+                        res = self.wp_loopcall(
+                            wcapi, 'put', call, data=data).json()
                         # del(current_variant[fabric_code]) #for clean operat.
 
                         # =====================================================
@@ -1256,7 +1266,8 @@ class ProductPublicCategory(orm.Model):
 
                         operation = 'NEW'
                         call = 'products/%s/variations' % wp_id
-                        res = wcapi.post(call, data).json()
+                        res = self.wp_loopcall(
+                            wcapi, 'post', call, data=data).json()
 
                         # =====================================================
                         # Excel log:
