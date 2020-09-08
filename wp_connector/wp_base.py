@@ -24,6 +24,7 @@
 import os
 import logging
 import woocommerce
+import sys
 import pdb
 from datetime import datetime
 from openerp.osv import fields, osv, expression, orm
@@ -92,6 +93,42 @@ class ConnectorServer(orm.Model):
         """
         slug = slugify(name)
         return slug + ('' if lang == 'it' else '-en')
+
+    def wp_loopcall(self, wcapi, mode, call, data=None, params=None):
+        """ Call in loop mode the end point procedure
+        """
+        # Define correct call:
+        if mode == 'put':
+            wp_function = wcapi.put
+        elif mode == 'post':
+            wp_function = wcapi.post
+        elif mode == 'get':
+            wp_function = wcapi.get
+        else:
+            _logger.error('Cannot call wcapi.%s' % mode)
+            return False
+
+        # Infinite loop call:
+        try_total = 0
+        while True:
+            try_total += 1
+            try:
+                if mode == 'get':
+                    return wp_function(call, params)
+                else:  # post, put
+                    return wp_function(call, data)
+            except:
+                _logger.error(
+                    'Server error [try #%s] mode: %s %s %s %s\n%s' % (
+                        try_total,
+                        mode,
+                        call,
+                        data,
+                        params,
+                        sys.exc_info(),
+                    ))
+                continue  # new try
+        return False  # Never passed from here
 
     def get_wp_connector(self, cr, uid, ids, context=None):
         """ Connect with Word Press API management
@@ -855,18 +892,19 @@ class ProductProductWebServer(orm.Model):
                 if wp_id:
                     try:
                         call = 'products/%s' % wp_id
-                        reply = wcapi.put(call, data).json()
+                        reply = server_pool.wp_loopcall(
+                            wcapi, 'put', call, data=data).json()
                         if log_excel != False:
                             log_excel.append((
                                 'put', call, u'%s' % (data, ),
-                                u'%s' % (reply))
+                                u'%s' % (reply, ))
                             )
                         _logger.info('%s\n%s' % (call, data))
 
                         if reply.get('code') in (
                                 'product_invalid_sku',
                                 'woocommerce_rest_product_invalid_id'):
-                            pass # TODO Manage this case?
+                            pass  # TODO Manage this case?
                             # wp_id = False # will be created after
                         else:
                             _logger.warning('Product %s lang %s updated!' % (
@@ -888,7 +926,8 @@ class ProductProductWebServer(orm.Model):
                             data['images'] = images
 
                         call = 'products'
-                        reply = wcapi.post(call, data).json()
+                        reply = server_pool.wp_loopcall(
+                            wcapi, 'post', call, data=data).json()
                         if log_excel != False:
                             log_excel.append(('post', call, u'%s' % (data, ),
                                 u'%s' % (reply, )))
