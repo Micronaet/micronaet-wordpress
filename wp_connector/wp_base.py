@@ -98,15 +98,11 @@ class ConnectorServer(orm.Model):
         """ Call in loop mode the end point procedure
         """
         # Define correct call:
-        if mode == 'put':
-            wp_function = wcapi.put
-        elif mode == 'post':
-            wp_function = wcapi.post
-        elif mode == 'get':
-            wp_function = wcapi.get
+        if mode in ('put', 'post', 'get'):
+            wp_function = eval('wcapi.%s' % mode)
         else:
             _logger.error('Cannot call wcapi.%s' % mode)
-            return False
+            return False  # Will raise error in super function
 
         # Infinite loop call:
         try_total = 0
@@ -114,7 +110,7 @@ class ConnectorServer(orm.Model):
             try_total += 1
             try:
                 if mode == 'get':
-                    return wp_function(call, params)
+                    return wp_function(call, params=params)
                 else:  # post, put
                     return wp_function(call, data)
             except:
@@ -127,6 +123,7 @@ class ConnectorServer(orm.Model):
                         params,
                         sys.exc_info(),
                     ))
+                # TODO comunicate with some external method
                 continue  # new try
         return False  # Never passed from here
 
