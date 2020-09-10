@@ -761,7 +761,7 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         #                        TERMS: (for Brand Attribute)
         # ---------------------------------------------------------------------
-        lang_brand_terms = {} # not needed for now
+        lang_brand_terms = {}  # not needed for now
 
         call = 'products/attributes/%s/terms' % attribute_id['Brand']
         for record in wcapi.get(

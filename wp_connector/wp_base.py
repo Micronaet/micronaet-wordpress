@@ -144,7 +144,8 @@ class ConnectorServer(orm.Model):
         'wp_ean_gtin': fields.boolean('EAN GTIN', help='Use EAN code in GTIN'),
         'wordpress': fields.boolean('Wordpress', help='Wordpress web server'),
 
-        'wp_all_category': fields.boolean('All category',
+        'wp_all_category': fields.boolean(
+            'All category',
             help='Public all product with category and parent also'),
         'wp_url': fields.char('WP URL', size=180),
         'wp_key': fields.char('WP consumer key', size=180),
