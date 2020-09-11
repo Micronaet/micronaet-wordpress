@@ -1041,6 +1041,7 @@ class ProductProductWebServer(orm.Model):
     def update_wp_volume(self, cr, uid, ids, context=None):
         """ Update volume field
         """
+        import pdb; pdb.set_trace()
         for item in self.browse(cr, uid, ids, context=context):
             product = item.product_id
             multi = item.price_multi or 1
