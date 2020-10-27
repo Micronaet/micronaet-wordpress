@@ -19,7 +19,6 @@
 ###############################################################################
 import logging
 import xlrd
-import xlsxwriter
 import base64
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime
@@ -29,6 +28,7 @@ from openerp.tools import (
     DEFAULT_SERVER_DATETIME_FORMAT,
     DATETIME_FORMATS_MAP,
     float_compare)
+import pdb
 
 _logger = logging.getLogger(__name__)
 
@@ -156,7 +156,7 @@ class ProductProductImportWorpdress(orm.Model):
         def number_to_text(value):
             """ Force text number in Excel
             """
-            if type(value) in (float, int ):
+            if type(value) in (float, int):
                 return '%s' % int(value)
             else:
                 return value or ''
@@ -207,6 +207,7 @@ class ProductProductImportWorpdress(orm.Model):
 
         error = ''
         last_master_id = False  # ID of last master
+        pdb.set_trace()
         for row in range(row_start, ws.nrows):
             lang_text = {IT: {}, EN: {}}
             error_list = []
@@ -326,7 +327,9 @@ class ProductProductImportWorpdress(orm.Model):
                 })
                 if product_ids:  # Update record (if exist or for language)
                     # Update only field present:
-                    not_used_fields = [field for field in product_data if field not in ('xlsx_id', 'default_code')]
+                    not_used_fields = [
+                        field for field in product_data if field not in (
+                            'xlsx_id', 'default_code')]
 
                     for field in not_used_fields:
                         if not product_data[field]:

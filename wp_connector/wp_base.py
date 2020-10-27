@@ -1134,35 +1134,35 @@ class ProductProductWebServer(orm.Model):
 
         'pack_l': fields.function(
             _get_product_detail_items, method=True, readonly=1,
-            type='float', string='L. Pack', multi=True,
+            type='float', string='L. Pack', multi=True, store=False,
             ),
         'pack_h': fields.function(
             _get_product_detail_items, method=True, readonly=1,
-            type='float', string='H. Pack', multi=True,
+            type='float', string='H. Pack', multi=True, store=False,
             ),
         'pack_p': fields.function(
             _get_product_detail_items, method=True, readonly=1,
-            type='float', string='P. Pack', multi=True,
+            type='float', string='P. Pack', multi=True, store=False,
             ),
 
         'weight': fields.function(
             _get_product_detail_items, method=True, readonly=1,
-            type='float', string='Peso lordo', multi=True,
+            type='float', string='Peso lordo', multi=True, store=False,
             ),
         # TODO remove?
         'weight_net': fields.function(
             _get_product_detail_items, method=True, readonly=1,
-            type='float', string='Peso netto', multi=True,
+            type='float', string='Peso netto', multi=True, store=False,
             ),
 
         'lst_price': fields.function(
             _get_product_detail_items, method=True, readonly=1,
-            type='float', string='Listino', multi=True,
+            type='float', string='Listino', multi=True, store=False,
             ),
 
         'q_x_pack': fields.function(
             _get_product_detail_items, method=True, readonly=1,
-            type='float', string='Q. x Pack', multi=True,
+            type='float', string='Q. x Pack', multi=True, store=False,
             ),
 
         # ---------------------------------------------------------------------
