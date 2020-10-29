@@ -50,50 +50,102 @@ WS_out = WB_out.add_worksheet('Prodotti')
 # Read Excel file:
 # -----------------------------------------------------------------------------
 # Get list of files:
-excel_input = []
+wb_input = []
 for root, folders, files in os.path.walk(path['input']):
     for file in files:
         if file[-4:].lower() == 'xlsx':
-            excel_input.append(os.path.join(root, file))
+            fullname = os.path.join(root, file)
+            try:
+                wb = xlrd.open_workbook(fullname)
+            except:
+                print('[ERROR] Cannot read XLS file: %s' % fullname)
+                sys.exit()
+            wb_input.append(wb)
 
 # -----------------------------------------------------------------------------
 # Read all Excel files:
 # -----------------------------------------------------------------------------
 data = {
-    'code': {},  # Product selected
+    'code': {},  # Product selected (Dict because save row in output file)
     'linked': {},  # Linked product
-}  # Dict because save row in output file
+}
 field_name = ['codice', 'esistenza', 'abbinamenti']  # Check correct field name
 
 # A. First read for get selection:
-for fullname in excel_input:
-    try:
-        WB = xlrd.open_workbook(fullname)
-    except:
-        print('[ERROR] Cannot read XLS file: %s' % fullname)
-        sys.exit()
+for wb in wb_input:
+    for ws_name in wb.sheet_names():
+        ws = wb.sheet_by_name(ws_name)
+        print('Read XLS file: %s [%s]' % (wb, ws_name))
+        with_link, start = False
 
-    for ws_name in WB.sheet_names():
-        WS = WB.sheet_by_name(ws_name)
-        print('Read XLS file: %s [%s]' % (fullname, ws_name))
-
-        for row in range(WS.nrows):
+        for row in range(ws.nrows):
             if not row:  # First
                 # -------------------------------------------------------------
                 # Read field line:
                 # -------------------------------------------------------------
                 field_position = {}
-                for col in range(WS.cols):
-                    name = WS.cell(row, col).value
-                    if name not in field_name:
+
+                for col in range(1, ws.cols):
+                    name = (ws.cell(row, col).value or '').lower()
+                    if name in field_name:
+                        field_position[name] = col
+                    else:
                         print('%s [%s] %s. Nome campo non corretto: %s' % (
                             fullname, ws_name, row, name,
                         ))
-                    field_position[name] = col
 
+                # Check mandatory fields:
+                if 'esistenza' not in field_position:
+                    print('%s [%s] %s. Not a sheet for product selection' %
+                        fullname, ws_name, row
+                    )
+                    break
+                if 'codice' not in field_position:
+                    print('%s [%s] %s. Not present key field: codice' %
+                        fullname, ws_name, row
+                    )
+                    break
+                if 'abbinamenti' in field_position:
+                    with_link = True
 
+            # Read other lined:
+            cell = ws.cell(row, 0).value
 
+            cell_code = ws.cell(row, field_position['codice']).value
+            if cell_code:
+                default_code = cell_code
+            # Else keep previous for linked product
 
+            if not start and cell == 'start':
+                start = True
+
+            # Linked product:
+            if with_link:
+                linked = ws.cell(
+                    row, field_position['abbinamenti']).value
+                # (ver. 1) Check data line
+                if not start or not (default_code or linked):
+                    print('%s [%s] %s. Line not imported (no code or link)' %
+                          fullname, ws_name, row
+                          )
+                    continue
+
+                if default_code not in data['linked']:
+                    data['linked'][default_code] = []
+                    if linked not in data['linked'][default_code]:
+                        data['linked'][default_code].append(linked)
+            else:
+                # (ver. 2) Check data line
+                if not start or not default_code:
+                    print('%s [%s] %s. Line not imported (no code)' %
+                          fullname, ws_name, row
+                          )
+                    continue
+
+            # Selected product:
+            if default_code not in data['code']:
+                data['code'].append(default_code)
+        print(data)
 
 """
 # Extract Excel columns:
