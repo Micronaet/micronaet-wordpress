@@ -230,8 +230,7 @@ for wb in wb_input:
                 fullname, ws_name))
             continue
         else:
-            print(u'Data import from XLS file: %s [%s]' % (
-                fullname, ws_name))
+            print(u'Data import from XLS file: %s [%s]' % (fullname, ws_name))
 
         for row in range(1, ws.nrows):
             # -----------------------------------------------------------------
@@ -240,11 +239,11 @@ for wb in wb_input:
             if row == 1:  # First
                 for col in range(1, ws.ncols):
                     try:
-                        name = int(ws.cell(row, col).value)
+                        position = int(ws.cell(row, col).value)
                     except:
                         continue
-                    if name and code_position != name:  # Code not written
-                        output_col[col] = name
+                    if position and code_position != position:  # Code removed
+                        output_col[col] = position
 
             # Read other lined:
             cell = ws.cell(row, 0).value
@@ -257,17 +256,16 @@ for wb in wb_input:
             if type(cell_code) == float and default_code[-2:] == '.0':
                 default_code = default_code[:-2]
 
-            print(default_code)
-            row_out = data['code'].get(default_code)
-            if not row_out:
+            out_row = data['code'].get(default_code)
+            if not out_row:
                 continue  # Code not used
-
+            pdb.set_trace()
             for col in output_col:
                 col_out = output_col[col]  # position on output file
 
                 wb_out.write_xls_line(
                     ws_out_name, out_row, [
-                        ws.cell(row, 0).value,  # This cell
+                        ws.cell(row, col).value,  # This cell
                     ], default_format=excel_format['text'], col=col_out - 1)
 
 wb_out.close_workbook()
