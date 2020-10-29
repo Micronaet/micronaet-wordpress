@@ -156,7 +156,6 @@ for wb in wb_input:
 
                     if not name:
                         continue
-                    print('>>>>>>>>>>', name)
                     if name in field_name:
                         field_position[name] = col
                     else:
@@ -173,7 +172,7 @@ for wb in wb_input:
                     print('%s [%s] %s. Not present key field: codice' % (
                           fullname, ws_name, row))
                     break
-
+                # accessori not used for now
                 wb_input[wb][1][ws_name] = field_position['codice']
 
             # Read other lined:
