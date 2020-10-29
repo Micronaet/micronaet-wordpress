@@ -57,6 +57,12 @@ ws_out_name = 'Prodotti'
 out_row = 0
 
 wb_out.create_worksheet(ws_out_name)
+manage_date_function = {
+    # Out col: (Language, function to clean <use value>)
+    4: (True, False),
+    27: (False, "value.replace('-', '')"),
+    # Cube FT in M3: 0,0282797016
+}
 wb_out.write_xls_line(ws_out_name, out_row, [
     'Padre', 'Disatt.', 'Codice prodotto',
     'Nome prodotto [IT]', 'Nome prodotto [EN]',
@@ -113,7 +119,7 @@ for root, folders, files in os.walk(path['input']):
                 print('[ERROR] Cannot read XLS file: %s' % fullname)
                 sys.exit()
             wb_input[wb] = [fullname, {}]  # Sheet code position
-
+    break
 # -----------------------------------------------------------------------------
 # Read all Excel files:
 # -----------------------------------------------------------------------------
@@ -121,13 +127,15 @@ data = {
     'code': {},  # Product selected (Dict because save row in output file)
     'linked': {},  # Linked product
 }
-field_name = ['codice', 'esistenza', 'abbinamenti']  # Check correct field name
+field_name = ['codice', 'esistenza', 'accessori']  # Check correct field name
 
 # -----------------------------------------------------------------------------
 # A. First read for get selection:
 # -----------------------------------------------------------------------------
 for wb in wb_input:
-    filename = wb_input[wb][0]
+    fullname = wb_input[wb][0].decode('utf8', 'replace')
+    print('>>>>>>>>>>>>>>>>>', fullname)
+    # pdb.set_trace()
     for ws_name in wb.sheet_names():
         ws = wb.sheet_by_name(ws_name)
         print('Read XLS file: %s [%s]' % (fullname, ws_name))
@@ -141,9 +149,14 @@ for wb in wb_input:
                 field_position = {}
 
                 for col in range(1, ws.ncols):
-                    name = (ws.cell(row, col).value or '').lower()
+                    try:
+                        name = (ws.cell(row, col).value or '').lower()
+                    except:
+                        continue
+
                     if not name:
                         continue
+                    print('>>>>>>>>>>', name)
                     if name in field_name:
                         field_position[name] = col
                     else:
@@ -160,8 +173,10 @@ for wb in wb_input:
                     print('%s [%s] %s. Not present key field: codice' % (
                           fullname, ws_name, row))
                     break
-                if 'abbinamenti' in field_position:
+
+                if 'accessori' in field_position:
                     with_link = True
+                    pdb.set_trace()
                 wb_input[wb][1][ws_name] = field_position['codice']
 
             # Read other lined:
@@ -183,7 +198,7 @@ for wb in wb_input:
             # Linked product:
             if with_link:
                 linked = ws.cell(
-                    row, field_position['abbinamenti']).value
+                    row, field_position['accessori']).value
                 # (ver. 1) Check data line
                 if not start or not (default_code or linked):
                     print('%s [%s] %s. Line not imported (no code or link)' % (
@@ -206,7 +221,7 @@ for wb in wb_input:
                 out_row += 1
                 data['code'][default_code] = out_row
                 print('%s [%s] %s. Used row' % (
-                    wb_out, ws_name, row))
+                    filename_out, ws_name, row))
                 wb_out.write_xls_line(
                     ws_out_name, out_row, [
                         'X',
@@ -269,10 +284,25 @@ for wb in wb_input:
                 except:
                     pass  # Nothing to do, leave as is
 
+                # Post operation:
+                lang_field, lambda_funct = manage_date_function.get(
+                    col_out, (False, False))
+                if lambda_funct:
+                    value = eval(lambda_funct)
+
+                if lang_field:
+                    value_data = [value, value]
+                else:
+                    value_data = [value]
+
+                # Write real cell:
                 wb_out.write_xls_line(
-                    ws_out_name, out_row, [
-                        value,
-                    ], default_format=excel_format['text'], col=col_out - 1)
+                    ws_out_name, out_row, value_data,
+                    default_format=excel_format['text'], col=col_out - 1)
+
+
+print('\n' * 10)
+print(data['linked'])
 
 wb_out.close_workbook()
 """
