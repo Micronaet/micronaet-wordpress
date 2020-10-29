@@ -16,7 +16,7 @@ import pickle
 from datetime import datetime
 
 # Parameters:
-verbose = False  # Log with extra data
+verbose = False  # Log with input data
 demo = False
 # Load WP link DB:
 pickle_file = './log/wp_master_data.p'

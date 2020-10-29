@@ -204,7 +204,7 @@ class ConnectorServer(orm.Model):
         """ Get product ID, rules:
             Search wp_id for Wordpress ID
             Search default_code
-            Search extra DB default_code
+            Search input DB default_code
             Create if not present
         """
         product_pool = self.pool.get('product.product')
@@ -515,7 +515,7 @@ class ConnectorServer(orm.Model):
 
             # TODO Manage:
             # -----------------------------------------------------------------
-            # Shipping add extra line with cost
+            # Shipping add input line with cost
             # -----------------------------------------------------------------
             # shipping_total
             # shipping_tax
@@ -533,7 +533,7 @@ class ConnectorServer(orm.Model):
                 wf_confirm = True
 
             # -----------------------------------------------------------------
-            # Discount add extra line with discount value
+            # Discount add input line with discount value
             # -----------------------------------------------------------------
             # discount_total
             # discount_tax

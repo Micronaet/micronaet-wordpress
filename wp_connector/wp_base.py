@@ -654,10 +654,10 @@ class ProductProductWebServer(orm.Model):
             price = price * (
                 100.0 - connector.discount) / 100.0
 
-            # Add unit extra:
+            # Add unit input:
             price += price_extra
 
-            # Add extra VAT:
+            # Add input VAT:
             price += connector.add_vat * price / 100.0
 
             # Approx:
@@ -1107,8 +1107,8 @@ class ProductProductWebServer(orm.Model):
             'Multiplier', digits=(16, 2),
             help='Moltiplica il prezzo di listino attuale'),
         'price_extra': fields.float(
-            'Price extra (unit.)', digits=(16, 2),
-            help='Aggiunto dopo lo sconto l\'extra (considerato al pezzo)'),
+            'Price input (unit.)', digits=(16, 2),
+            help='Aggiunto dopo lo sconto l\'input (considerato al pezzo)'),
 
         'wordpress_categ_ids': fields.many2many(
             'product.public.category', 'product_wp_rel',

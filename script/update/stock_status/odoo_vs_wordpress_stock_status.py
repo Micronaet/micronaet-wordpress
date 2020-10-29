@@ -35,7 +35,7 @@ from email.mime.text import MIMEText
 
 from datetime import datetime
 
-verbose = False  # Log with extra data
+verbose = False  # Log with input data
 vat_rate = 1.22
 lang_db = ['it_IT', 'en_US']
 database = {}
