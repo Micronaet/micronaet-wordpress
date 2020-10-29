@@ -26,7 +26,7 @@ import erppeek
 import xlsxwriter
 import xlrd
 import ConfigParser
-from . import excel_report
+from excel_export.excel_wrapper import ExcelWriter
 
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
@@ -44,16 +44,26 @@ path = {
 
 filename_out = os.path.join(path['output'], 'odoo_vs_wordpress.xlsx')
 pdb.set_trace()
-wb_report = excel_report.ExcelWriter(filename_out)
-wb_out = xlsxwriter.Workbook(filename_out)
-ws_out = wb_out.add_worksheet('Prodotti')
+wb_out = ExcelWriter(filename_out)
 
-# Header
+# Format:
+wb_out.set_format()
+excel_format = {
+    'title': wb_out.get_format('title'),
+}
+
+ws_out_name = 'Prodotti'
 out_row = 0
-ws_out.write(out_row, 0, 'Padre')
-ws_out.write(out_row, 1, 'Non pubblicato')
-ws_out.write(out_row, 2, 'Codice prodotto')
 
+wb_out.create_worksheet(ws_out_name)
+wb_out.write_xls_line(ws_out_name, out_row, [
+    'Padre',
+    'Non pubblicato',
+    'Codice prodotto',
+], default_format=False, col=0)
+wb_out.column_width(ws_out_name, [
+    5, 5, 15,
+])
 # -----------------------------------------------------------------------------
 # Read Excel file:
 # -----------------------------------------------------------------------------
@@ -158,12 +168,13 @@ for wb in wb_input:
             if default_code not in data['code']:
                 data['code'][default_code] = out_row
                 print('%s [%s] %s. Used row' % (
-                    fullname, ws_name, row))
-                ws_out.write(out_row, 2, default_code)
+                    wb_out, ws_name, row))
+                wb_out.write_xls_line(
+                    ws_out_name, out_row, [default_code], col=2)
 
         print(data)
 
-wb_out.close()
+wb_out.close_workbook()
 """
 # Extract Excel columns:
 is_master = ws.cell(row, 0).value.upper() in 'SX'

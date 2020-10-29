@@ -153,9 +153,9 @@ class ExcelWriter:
                     self._WS[ws_name].write(row, col, record, default_format)
                 else:
                     self._WS[ws_name].write(row, col, record)
-            elif len(record) == 2: # Normal text, format
+            elif len(record) == 2:  # Normal text, format
                 self._WS[ws_name].write(row, col, *record)
-            else: # Rich format TODO
+            else:  # Rich format TODO
                 self._WS[ws_name].write_rich_string(row, col, *record)
             col += 1
         return True
