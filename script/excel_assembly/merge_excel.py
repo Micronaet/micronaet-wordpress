@@ -125,7 +125,7 @@ for root, folders, files in os.walk(path['input']):
 # -----------------------------------------------------------------------------
 data = {
     'code': {},  # Product selected (Dict because save row in output file)
-    'linked': {},  # Linked product
+    # 'linked': {},  # Linked product
 }
 field_name = ['codice', 'esistenza', 'accessori']  # Check correct field name
 
@@ -174,9 +174,6 @@ for wb in wb_input:
                           fullname, ws_name, row))
                     break
 
-                if 'accessori' in field_position:
-                    with_link = True
-                    pdb.set_trace()
                 wb_input[wb][1][ws_name] = field_position['codice']
 
             # Read other lined:
@@ -195,26 +192,10 @@ for wb in wb_input:
             if not cell_qty:
                 continue  # Not used
 
-            # Linked product:
-            if with_link:
-                linked = ws.cell(
-                    row, field_position['accessori']).value
-                # (ver. 1) Check data line
-                if not start or not (default_code or linked):
-                    print('%s [%s] %s. Line not imported (no code or link)' % (
-                          fullname, ws_name, row))
-                    continue
-
-                if default_code not in data['linked']:
-                    data['linked'][default_code] = []
-                    if linked not in data['linked'][default_code]:
-                        data['linked'][default_code].append(linked)
-            else:
-                # (ver. 2) Check data line
-                if not start or not default_code:
-                    print('%s [%s] %s. Line not imported (no code)' % (
-                          fullname, ws_name, row))
-                    continue
+            if not start or not default_code:
+                print('%s [%s] %s. Line not imported (no code)' % (
+                      fullname, ws_name, row))
+                continue
 
             # Selected product:
             if default_code not in data['code']:
@@ -300,9 +281,6 @@ for wb in wb_input:
                     ws_out_name, out_row, value_data,
                     default_format=excel_format['text'], col=col_out - 1)
 
-
-print('\n' * 10)
-print(data['linked'])
 
 wb_out.close_workbook()
 """
