@@ -26,7 +26,7 @@ import erppeek
 import xlsxwriter
 import xlrd
 import ConfigParser
-import excel_report
+from . import excel_report
 
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
@@ -43,6 +43,8 @@ path = {
 }
 
 filename_out = os.path.join(path['output'], 'odoo_vs_wordpress.xlsx')
+pdb.set_trace()
+wb_report = excel_report.ExcelWriter(filename_out)
 wb_out = xlsxwriter.Workbook(filename_out)
 ws_out = wb_out.add_worksheet('Prodotti')
 

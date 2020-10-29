@@ -17,9 +17,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
-import os
-import sys
-import shutil
 import xlsxwriter
 from xlsxwriter.utility import xl_rowcol_to_cell
 
@@ -112,7 +109,7 @@ class ExcelWriter:
             self._log_operation('Closed WB %s' % self._filename)
         except:
             self._log_operation(
-                'Error closing WB %s' % (self._filename), 'error')
+                'Error closing WB %s' % self._filename, 'error')
         self._WB = False # remove object in instance
 
     def create_worksheet(self, name=False):
