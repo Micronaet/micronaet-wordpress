@@ -59,56 +59,45 @@ out_row = 0
 
 wb_out.create_worksheet(ws_out_name)
 wb_out.write_xls_line(ws_out_name, out_row, [
-    'Padre',
-    'Non pubblicato',
-    'Codice prodotto',
-    'Nome prodotto [IT]',
-    'Nome prodotto [EN]',
-    'Brand',
-    'Codice colore',
-    'Categorie',
-    'Listino',
-    'Garanzia vita',
-    'Moltiplicatore',
-    'Prezzo extra',
-    'Materiale',
+    'Padre', 'Non pubblicato', 'Codice prodotto',
+    'Nome prodotto [IT]', 'Nome prodotto [EN]',
+    'Brand', 'Codice colore', 'Categorie',
+    'Listino', 'Garanzia vita', 'Moltiplicatore', 'Prezzo extra', 'Materiale',
 
     # Package:
-    'L',
-    'H',
-    'Q',
+    'L', 'H', 'Q',
 
-    'Box dimensioni [IT]',
-    'Box dimensioni [EN]',
-    'Peso lordo',
-    'Peso netto',
-    'Q x pack',
+    'Box dimensioni [IT]', 'Box dimensioni [EN]',
+    'Peso lordo', 'Peso netto', 'Q x pack',
 
     # Force:
-    'Nome [IT]',
-    'Nome [EN]',
-    'Descrizione [IT]',
-    'Descrizione [EN]',
-    'Q x pack',
-    'EAN',
-    'Prezzo',
-    'Stock minimo',
+    'Nome [IT]', 'Nome [EN]', 'Descrizione [IT]', 'Descrizione [EN]',
+    'Q x pack', 'EAN', 'Prezzo', 'Stock minimo',
 
-    'Estesa [IT]',
-    'Estesa [EN]',
-    'Emozionale breve [IT]',
-    'Emozionale breve [EN]',
-    'mozionale dettagliata [IT]',
-    'mozionale dettagliata [EN]',
+    'Estesa [IT]', 'Estesa [EN]',
+    'Emozionale breve [IT]', 'Emozionale breve [EN]',
+    'Emozionale dettagliata [IT]', 'Emozionale dettagliata [EN]',
+    ], default_format=excel_format['header'])
 
-
-
-
-
-
-], default_format=excel_format['header'])
 wb_out.column_width(ws_out_name, [
     5, 5, 15,
+    30, 30,
+    25, 25, 25,
+    20, 5, 5, 15, 20,
+
+    # Package:
+    5, 5, 5,
+
+    10, 10,
+    10, 10, 10,
+
+    # Force:
+    30, 30, 40, 40,
+    10, 12, 15, 15,
+
+    30, 30,
+    35, 35,
+    40, 40,
 ])
 # -----------------------------------------------------------------------------
 # Read Excel file:
@@ -216,7 +205,9 @@ for wb in wb_input:
                 print('%s [%s] %s. Used row' % (
                     wb_out, ws_name, row))
                 wb_out.write_xls_line(
-                    ws_out_name, out_row, [default_code], col=2)
+                    ws_out_name, out_row, [default_code],
+                    default_format=excel_format['text'],
+                    col=2)
 
         print(data)
 
