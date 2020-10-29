@@ -259,13 +259,19 @@ for wb in wb_input:
             out_row = data['code'].get(default_code)
             if not out_row:
                 continue  # Code not used
-            pdb.set_trace()
+
             for col in output_col:
                 col_out = output_col[col]  # position on output file
 
+                value = ws.cell(row, col).value
+                try:
+                    value = value.capitalize()
+                except:
+                    pass  # Nothing to do, leave as is
+
                 wb_out.write_xls_line(
                     ws_out_name, out_row, [
-                        ws.cell(row, col).value,  # This cell
+                        value,
                     ], default_format=excel_format['text'], col=col_out - 1)
 
 wb_out.close_workbook()
