@@ -21,10 +21,12 @@
 ###############################################################################
 import os
 import sys
+import pdb
 import erppeek
 import xlsxwriter
 import xlrd
 import ConfigParser
+import excel_report
 
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
@@ -33,25 +35,29 @@ cfg_file = os.path.expanduser('./openerp.cfg')
 
 config = ConfigParser.ConfigParser()
 config.read([cfg_file])
-data = config.get('folder', 'data')
+root = os.path.expanduser(config.get('folder', 'root'))
 
 path = {
-    'output': os.path.join(data, 'output'),
-    'input': os.path.join(data, 'input'),
+    'input': os.path.join(root, 'data'),
+    'output': root,
 }
 
 filename_out = os.path.join(path['output'], 'odoo_vs_wordpress.xlsx')
-WB_out = xlsxwriter.Workbook(filename_out)
-WS_out = WB_out.add_worksheet('Prodotti')
-# WS1.write(0, 0, 'Nome')
-# WS1.write(0, 1, 'Mail')
+wb_out = xlsxwriter.Workbook(filename_out)
+ws_out = wb_out.add_worksheet('Prodotti')
+
+# Header
+out_row = 0
+ws_out.write(out_row, 0, 'Padre')
+ws_out.write(out_row, 1, 'Non pubblicato')
+ws_out.write(out_row, 2, 'Codice prodotto')
 
 # -----------------------------------------------------------------------------
 # Read Excel file:
 # -----------------------------------------------------------------------------
 # Get list of files:
 wb_input = []
-for root, folders, files in os.path.walk(path['input']):
+for root, folders, files in os.walk(path['input']):
     for file in files:
         if file[-4:].lower() == 'xlsx':
             fullname = os.path.join(root, file)
@@ -76,7 +82,7 @@ for wb in wb_input:
     for ws_name in wb.sheet_names():
         ws = wb.sheet_by_name(ws_name)
         print('Read XLS file: %s [%s]' % (wb, ws_name))
-        with_link, start = False
+        with_link = start = False
 
         for row in range(ws.nrows):
             if not row:  # First
@@ -85,25 +91,25 @@ for wb in wb_input:
                 # -------------------------------------------------------------
                 field_position = {}
 
-                for col in range(1, ws.cols):
+                for col in range(1, ws.ncols):
                     name = (ws.cell(row, col).value or '').lower()
+                    if not name:
+                        continue
                     if name in field_name:
                         field_position[name] = col
                     else:
-                        print('%s [%s] %s. Nome campo non corretto: %s' % (
-                            fullname, ws_name, row, name,
+                        print('%s [%s] %s. Field name non in %s: %s' % (
+                            fullname, ws_name, row, name, field_name
                         ))
 
                 # Check mandatory fields:
                 if 'esistenza' not in field_position:
-                    print('%s [%s] %s. Not a sheet for product selection' %
-                        fullname, ws_name, row
-                    )
+                    print('%s [%s] %s. Not a sheet for product selection' % (
+                          wb, ws_name, row))
                     break
                 if 'codice' not in field_position:
-                    print('%s [%s] %s. Not present key field: codice' %
-                        fullname, ws_name, row
-                    )
+                    print('%s [%s] %s. Not present key field: codice' % (
+                          wb, ws_name, row))
                     break
                 if 'abbinamenti' in field_position:
                     with_link = True
@@ -113,11 +119,16 @@ for wb in wb_input:
 
             cell_code = ws.cell(row, field_position['codice']).value
             if cell_code:
-                default_code = cell_code
-            # Else keep previous for linked product
+                default_code = str(cell_code)
+                if type(cell_code) == float and default_code[-2:] == '.0':
+                    default_code = default_code[:-2]
 
             if not start and cell == 'start':
                 start = True
+
+            cell_qty = ws.cell(row, field_position['esistenza']).value
+            if not cell_qty:
+                continue  # Not used
 
             # Linked product:
             if with_link:
@@ -125,9 +136,8 @@ for wb in wb_input:
                     row, field_position['abbinamenti']).value
                 # (ver. 1) Check data line
                 if not start or not (default_code or linked):
-                    print('%s [%s] %s. Line not imported (no code or link)' %
-                          fullname, ws_name, row
-                          )
+                    print('%s [%s] %s. Line not imported (no code or link)' % (
+                          fullname, ws_name, row))
                     continue
 
                 if default_code not in data['linked']:
@@ -137,16 +147,21 @@ for wb in wb_input:
             else:
                 # (ver. 2) Check data line
                 if not start or not default_code:
-                    print('%s [%s] %s. Line not imported (no code)' %
-                          fullname, ws_name, row
-                          )
+                    print('%s [%s] %s. Line not imported (no code)' % (
+                          fullname, ws_name, row))
                     continue
 
             # Selected product:
+            out_row += 1
             if default_code not in data['code']:
-                data['code'].append(default_code)
+                data['code'][default_code] = out_row
+                print('%s [%s] %s. Used row' % (
+                    fullname, ws_name, row))
+                ws_out.write(out_row, 2, default_code)
+
         print(data)
 
+wb_out.close()
 """
 # Extract Excel columns:
 is_master = ws.cell(row, 0).value.upper() in 'SX'
