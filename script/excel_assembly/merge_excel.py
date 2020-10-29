@@ -216,6 +216,7 @@ for wb in wb_input:
 # -----------------------------------------------------------------------------
 # A. First read for get selection:
 # -----------------------------------------------------------------------------
+pdb.set_trace()
 for wb in wb_input:
     for ws_name in wb.sheet_names():
         ws = wb.sheet_by_name(ws_name)
@@ -230,73 +231,38 @@ for wb in wb_input:
             print('Data import from XLS file: %s [%s]' % (wb, ws_name))
 
         for row in range(1, ws.nrows):
+            # -----------------------------------------------------------------
+            # Position row:
+            # -----------------------------------------------------------------
             if row == 1:  # First
-                # -------------------------------------------------------------
-                # Read field line:
-                # -------------------------------------------------------------
-
                 for col in range(1, ws.ncols):
                     try:
                         name = ws.cell(row, col).value.lower()
                     except:
                         continue
 
-                    if not name:
-                        continue
+                    if name > 0:
+                        output_col[col] = name
 
             # Read other lined:
             cell = ws.cell(row, 0).value
-
-            cell_code = ws.cell(row, field_position['codice']).value
-            if cell_code:
-                default_code = str(cell_code)
-                if type(cell_code) == float and default_code[
-                                                -2:] == '.0':
-                    default_code = default_code[:-2]
-
             if not start and cell == 'start':
                 start = True
+            if not start:
+                continue
 
-            cell_qty = ws.cell(row, field_position['esistenza']).value
-            if not cell_qty:
-                continue  # Not used
+            default_code = str(ws.cell(row, code_position).value)
+            if type(cell_code) == float and default_code[-2:] == '.0':
+                default_code = default_code[:-2]
 
-            # Linked product:
-            if with_link:
-                linked = ws.cell(
-                    row, field_position['abbinamenti']).value
-                # (ver. 1) Check data line
-                if not start or not (default_code or linked):
-                    print(
-                        '%s [%s] %s. Line not imported (no code or link)' % (
-                            fullname, ws_name, row))
-                    continue
+            row_out = data['code'][default_code]
+            for col in output_col:
+                col_out = output_col[col]  # position on output file
 
-                if default_code not in data['linked']:
-                    data['linked'][default_code] = []
-                    if linked not in data['linked'][default_code]:
-                        data['linked'][default_code].append(linked)
-            else:
-                # (ver. 2) Check data line
-                if not start or not default_code:
-                    print('%s [%s] %s. Line not imported (no code)' % (
-                        fullname, ws_name, row))
-                    continue
-
-            # Selected product:
-            out_row += 1
-            if default_code not in data['code']:
-                data['code'][default_code] = out_row
-                print('%s [%s] %s. Used row' % (
-                    wb_out, ws_name, row))
                 wb_out.write_xls_line(
                     ws_out_name, out_row, [
-                        'X',
-                        '',
-                        default_code
-                    ], default_format=excel_format['text'])
-
-        print(data)
+                        ws.cell(row, 0).value,  # This cell
+                    ], default_format=excel_format['text'], col=col_out - 1)
 
 wb_out.close_workbook()
 """
