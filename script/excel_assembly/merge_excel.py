@@ -50,6 +50,8 @@ wb_out = ExcelWriter(filename_out)
 wb_out.set_format()
 excel_format = {
     'title': wb_out.get_format('title'),
+    'header': wb_out.get_format('header'),
+    'text': wb_out.get_format('text'),
 }
 
 ws_out_name = 'Prodotti'
@@ -60,7 +62,51 @@ wb_out.write_xls_line(ws_out_name, out_row, [
     'Padre',
     'Non pubblicato',
     'Codice prodotto',
-], default_format=False, col=0)
+    'Nome prodotto [IT]',
+    'Nome prodotto [EN]',
+    'Brand',
+    'Codice colore',
+    'Categorie',
+    'Listino',
+    'Garanzia vita',
+    'Moltiplicatore',
+    'Prezzo extra',
+    'Materiale',
+
+    # Package:
+    'L',
+    'H',
+    'Q',
+
+    'Box dimensioni [IT]',
+    'Box dimensioni [EN]',
+    'Peso lordo',
+    'Peso netto',
+    'Q x pack',
+
+    # Force:
+    'Nome [IT]',
+    'Nome [EN]',
+    'Descrizione [IT]',
+    'Descrizione [EN]',
+    'Q x pack',
+    'EAN',
+    'Prezzo',
+    'Stock minimo',
+
+    'Estesa [IT]',
+    'Estesa [EN]',
+    'Emozionale breve [IT]',
+    'Emozionale breve [EN]',
+    'mozionale dettagliata [IT]',
+    'mozionale dettagliata [EN]',
+
+
+
+
+
+
+], default_format=excel_format['header'])
 wb_out.column_width(ws_out_name, [
     5, 5, 15,
 ])
