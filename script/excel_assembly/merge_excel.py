@@ -43,7 +43,6 @@ path = {
 }
 
 filename_out = os.path.join(path['output'], 'odoo_vs_wordpress.xlsx')
-pdb.set_trace()
 wb_out = ExcelWriter(filename_out)
 
 # Format:
@@ -103,7 +102,7 @@ wb_out.column_width(ws_out_name, [
 # Read Excel file:
 # -----------------------------------------------------------------------------
 # Get list of files:
-wb_input = []
+wb_input = {}
 for root, folders, files in os.walk(path['input']):
     for file in files:
         if file[-4:].lower() == 'xlsx':
@@ -113,7 +112,7 @@ for root, folders, files in os.walk(path['input']):
             except:
                 print('[ERROR] Cannot read XLS file: %s' % fullname)
                 sys.exit()
-            wb_input.append(wb)
+            wb_input[wb] = {}  # Sheet code position
 
 # -----------------------------------------------------------------------------
 # Read all Excel files:
@@ -124,7 +123,9 @@ data = {
 }
 field_name = ['codice', 'esistenza', 'abbinamenti']  # Check correct field name
 
+# -----------------------------------------------------------------------------
 # A. First read for get selection:
+# -----------------------------------------------------------------------------
 for wb in wb_input:
     for ws_name in wb.sheet_names():
         ws = wb.sheet_by_name(ws_name)
@@ -160,6 +161,7 @@ for wb in wb_input:
                     break
                 if 'abbinamenti' in field_position:
                     with_link = True
+                wb_input[wb][ws_name] = field_position['codice']
 
             # Read other lined:
             cell = ws.cell(row, 0).value
@@ -196,6 +198,89 @@ for wb in wb_input:
                 if not start or not default_code:
                     print('%s [%s] %s. Line not imported (no code)' % (
                           fullname, ws_name, row))
+                    continue
+
+            # Selected product:
+            out_row += 1
+            if default_code not in data['code']:
+                data['code'][default_code] = out_row
+                print('%s [%s] %s. Used row' % (
+                    wb_out, ws_name, row))
+                wb_out.write_xls_line(
+                    ws_out_name, out_row, [
+                        'X',
+                        '',
+                        default_code
+                    ], default_format=excel_format['text'])
+
+# -----------------------------------------------------------------------------
+# A. First read for get selection:
+# -----------------------------------------------------------------------------
+for wb in wb_input:
+    for ws_name in wb.sheet_names():
+        ws = wb.sheet_by_name(ws_name)
+        start = False
+
+        output_col = {}
+
+        code_position = wb_input[wb].get(ws_name)
+        if not code_position:
+            print('%s [%s]. No code position in this sheet' % (wb, ws_name))
+        else:
+            print('Data import from XLS file: %s [%s]' % (wb, ws_name))
+
+        for row in range(1, ws.nrows):
+            if row == 1:  # First
+                # -------------------------------------------------------------
+                # Read field line:
+                # -------------------------------------------------------------
+
+                for col in range(1, ws.ncols):
+                    try:
+                        name = ws.cell(row, col).value.lower()
+                    except:
+                        continue
+
+                    if not name:
+                        continue
+
+            # Read other lined:
+            cell = ws.cell(row, 0).value
+
+            cell_code = ws.cell(row, field_position['codice']).value
+            if cell_code:
+                default_code = str(cell_code)
+                if type(cell_code) == float and default_code[
+                                                -2:] == '.0':
+                    default_code = default_code[:-2]
+
+            if not start and cell == 'start':
+                start = True
+
+            cell_qty = ws.cell(row, field_position['esistenza']).value
+            if not cell_qty:
+                continue  # Not used
+
+            # Linked product:
+            if with_link:
+                linked = ws.cell(
+                    row, field_position['abbinamenti']).value
+                # (ver. 1) Check data line
+                if not start or not (default_code or linked):
+                    print(
+                        '%s [%s] %s. Line not imported (no code or link)' % (
+                            fullname, ws_name, row))
+                    continue
+
+                if default_code not in data['linked']:
+                    data['linked'][default_code] = []
+                    if linked not in data['linked'][default_code]:
+                        data['linked'][default_code].append(linked)
+            else:
+                # (ver. 2) Check data line
+                if not start or not default_code:
+                    print('%s [%s] %s. Line not imported (no code)' % (
+                        fullname, ws_name, row))
                     continue
 
             # Selected product:
