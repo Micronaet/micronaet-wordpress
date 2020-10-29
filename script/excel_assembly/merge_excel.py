@@ -59,7 +59,7 @@ out_row = 0
 
 wb_out.create_worksheet(ws_out_name)
 wb_out.write_xls_line(ws_out_name, out_row, [
-    'Padre', 'Non pubblicato', 'Codice prodotto',
+    'Padre', 'Disatt.', 'Codice prodotto',
     'Nome prodotto [IT]', 'Nome prodotto [EN]',
     'Brand', 'Codice colore', 'Categorie',
     'Listino', 'Garanzia vita', 'Moltiplicatore', 'Prezzo extra', 'Materiale',
@@ -80,7 +80,7 @@ wb_out.write_xls_line(ws_out_name, out_row, [
     ], default_format=excel_format['header'])
 
 wb_out.column_width(ws_out_name, [
-    5, 5, 15,
+    6, 6, 15,
     30, 30,
     25, 25, 25,
     20, 5, 5, 15, 20,
@@ -205,9 +205,11 @@ for wb in wb_input:
                 print('%s [%s] %s. Used row' % (
                     wb_out, ws_name, row))
                 wb_out.write_xls_line(
-                    ws_out_name, out_row, [default_code],
-                    default_format=excel_format['text'],
-                    col=2)
+                    ws_out_name, out_row, [
+                        'X',
+                        '',
+                        default_code
+                    ], default_format=excel_format['text'])
 
         print(data)
 
