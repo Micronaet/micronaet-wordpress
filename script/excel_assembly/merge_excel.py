@@ -112,7 +112,7 @@ for root, folders, files in os.walk(path['input']):
             except:
                 print('[ERROR] Cannot read XLS file: %s' % fullname)
                 sys.exit()
-            wb_input[wb] = {}  # Sheet code position
+            wb_input[wb] = [fullname, {}]  # Sheet code position
 
 # -----------------------------------------------------------------------------
 # Read all Excel files:
@@ -127,9 +127,10 @@ field_name = ['codice', 'esistenza', 'abbinamenti']  # Check correct field name
 # A. First read for get selection:
 # -----------------------------------------------------------------------------
 for wb in wb_input:
+    filename = wb_input[wb][0]
     for ws_name in wb.sheet_names():
         ws = wb.sheet_by_name(ws_name)
-        print('Read XLS file: %s [%s]' % (wb, ws_name))
+        print('Read XLS file: %s [%s]' % (fullname, ws_name))
         with_link = start = False
 
         for row in range(ws.nrows):
@@ -153,15 +154,15 @@ for wb in wb_input:
                 # Check mandatory fields:
                 if 'esistenza' not in field_position:
                     print('%s [%s] %s. Not a sheet for product selection' % (
-                          wb, ws_name, row))
+                          fullname, ws_name, row))
                     break
                 if 'codice' not in field_position:
                     print('%s [%s] %s. Not present key field: codice' % (
-                          wb, ws_name, row))
+                          fullname, ws_name, row))
                     break
                 if 'abbinamenti' in field_position:
                     with_link = True
-                wb_input[wb][ws_name] = field_position['codice']
+                wb_input[wb][1][ws_name] = field_position['codice']
 
             # Read other lined:
             cell = ws.cell(row, 0).value
@@ -216,19 +217,20 @@ for wb in wb_input:
 # -----------------------------------------------------------------------------
 # A. First read for get selection:
 # -----------------------------------------------------------------------------
-pdb.set_trace()
 for wb in wb_input:
+    fullname = wb_input[wb][0]
     for ws_name in wb.sheet_names():
         ws = wb.sheet_by_name(ws_name)
         start = False
-
         output_col = {}
 
-        code_position = wb_input[wb].get(ws_name)
+        code_position = wb_input[wb][1].get(ws_name)
         if not code_position:
-            print('%s [%s]. No code position in this sheet' % (wb, ws_name))
+            print('%s [%s]. No code position in this sheet' % (
+                fullname, ws_name))
         else:
-            print('Data import from XLS file: %s [%s]' % (wb, ws_name))
+            print('Data import from XLS file: %s [%s]' % (
+                fullname, ws_name))
 
         for row in range(1, ws.nrows):
             # -----------------------------------------------------------------
@@ -237,11 +239,10 @@ for wb in wb_input:
             if row == 1:  # First
                 for col in range(1, ws.ncols):
                     try:
-                        name = ws.cell(row, col).value.lower()
+                        name = int(ws.cell(row, col).value)
                     except:
                         continue
-
-                    if name > 0:
+                    if name and code_position != name:  # Code not written
                         output_col[col] = name
 
             # Read other lined:
@@ -255,7 +256,10 @@ for wb in wb_input:
             if type(cell_code) == float and default_code[-2:] == '.0':
                 default_code = default_code[:-2]
 
-            row_out = data['code'][default_code]
+            row_out = data['code'].get(default_code)
+            if not row_out:
+                continue  # Code not used
+
             for col in output_col:
                 col_out = output_col[col]  # position on output file
 
