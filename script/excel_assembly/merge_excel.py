@@ -202,8 +202,8 @@ for wb in wb_input:
                     continue
 
             # Selected product:
-            out_row += 1
             if default_code not in data['code']:
+                out_row += 1
                 data['code'][default_code] = out_row
                 print('%s [%s] %s. Used row' % (
                     wb_out, ws_name, row))
@@ -218,7 +218,7 @@ for wb in wb_input:
 # A. First read for get selection:
 # -----------------------------------------------------------------------------
 for wb in wb_input:
-    fullname = wb_input[wb][0]
+    fullname = wb_input[wb][0].decode('utf-8', 'replace')
     for ws_name in wb.sheet_names():
         ws = wb.sheet_by_name(ws_name)
         start = False
@@ -226,10 +226,11 @@ for wb in wb_input:
 
         code_position = wb_input[wb][1].get(ws_name)
         if not code_position:
-            print('%s [%s]. No code position in this sheet' % (
+            print(u'%s [%s]. No code position in this sheet' % (
                 fullname, ws_name))
+            continue
         else:
-            print('Data import from XLS file: %s [%s]' % (
+            print(u'Data import from XLS file: %s [%s]' % (
                 fullname, ws_name))
 
         for row in range(1, ws.nrows):
@@ -252,10 +253,11 @@ for wb in wb_input:
             if not start:
                 continue
 
-            default_code = str(ws.cell(row, code_position).value)
+            default_code = '%s' % ws.cell(row, code_position).value
             if type(cell_code) == float and default_code[-2:] == '.0':
                 default_code = default_code[:-2]
 
+            print(default_code)
             row_out = data['code'].get(default_code)
             if not row_out:
                 continue  # Code not used
