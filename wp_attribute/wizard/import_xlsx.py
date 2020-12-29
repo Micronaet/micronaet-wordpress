@@ -165,7 +165,10 @@ class ProductProductImportWorpdress(orm.Model):
             """ Extract check box value
                 s, S, Y, y, X, x means True
             """
-            value = (value or '').upper()
+            try:
+                value = (value or '').upper()
+            except:
+                pdb.set_trace()
             return (value in 'SXY')
 
         # Parameters:
