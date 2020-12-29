@@ -161,6 +161,13 @@ class ProductProductImportWorpdress(orm.Model):
             else:
                 return value or ''
 
+        def get_check_value(value):
+            """ Extract check box value
+                s, S, Y, y, X, x means True
+            """
+            value = (value or '').upper()
+            return (value in 'SXY')
+
         # Parameters:
         xlsx_id = ids[0]
 
@@ -214,9 +221,9 @@ class ProductProductImportWorpdress(orm.Model):
             error_list = []
 
             # Extract Excel columns:
-            is_master = ws.cell(row, 0).value.upper() in 'SX'
+            is_master = get_check_value(ws.cell(row, 0).value)
             published = not(ws.cell(row, 1).value.strip())
-            default_code = number_to_text(ws.cell(row, 2).value.upper())
+            default_code = number_to_text(ws.cell(row, 2).value).upper()
             ean = ''  # TODO number_to_text(ws.cell(row, 3).value)
             lang_text[IT]['name'] = ws.cell(row, 4).value
             lang_text[EN]['name'] = ws.cell(row, 5).value \
@@ -225,7 +232,7 @@ class ProductProductImportWorpdress(orm.Model):
             color_code = ws.cell(row, 7).value
             category_code = ws.cell(row, 8).value
             pricelist = ws.cell(row, 9).value or 0.0
-            lifetime_warranty = ws.cell(row, 10).value.upper() in 'SX'
+            lifetime_warranty = get_check_value(ws.cell(row, 10).value or '')
             multiply = ws.cell(row, 11).value or 1
             extra_price = ws.cell(row, 12).value or 0.0
             material_code = ws.cell(row, 13).value
