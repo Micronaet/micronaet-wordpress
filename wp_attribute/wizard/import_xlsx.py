@@ -166,7 +166,7 @@ class ProductProductImportWorpdress(orm.Model):
                 s, S, Y, y, X, x means True
             """
             value = (value or '').upper()
-            return (value in 'SXY')
+            return (value and value in 'SXY')
 
         # Parameters:
         xlsx_id = ids[0]
