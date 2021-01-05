@@ -610,7 +610,7 @@ class ProductProductWebServer(orm.Model):
         """
         if destination == 'wp':
             return default_code.replace(' ', '&nbsp;')
-        else: # odoo
+        else:  # odoo
             return default_code.replace('&nbsp;', ' ')
 
     def get_wp_image(self, item, variant=False):

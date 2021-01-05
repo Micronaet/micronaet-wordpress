@@ -7,15 +7,36 @@
             <field name="inherit_id" ref="connector_web_base.view_connector_server_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//header/button" position="after">
-                    
-                    <button name="clean_and_republish_id_now" string="Reset and republish category" type="object" 
-                        confirm="Clean all WP ID saved and republish all (used when category are delete from web), confirm?" 
+                    <button name="clean_and_republish_id_now" string="Reset and republish category" type="object"
+                        confirm="Clean all WP ID saved and republish all (used when category are delete from web), confirm?"
                         icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
-                    <button name="publish_category_now" string="Publish category" type="object" 
-                        confirm="Depend on server configuration, import or export category, confirm?" 
+                    <button name="publish_category_now" string="Publish category" type="object"
+                        confirm="Depend on server configuration, import or export category, confirm?"
                         class="oe_highlight" icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
                 </xpath>
             </field>
-        </record>    
+        </record>
+        <record id="product_public_category_wp_form_view" model="ir.ui.view">
+            <field name="name">product.public.category.wp.form</field>
+            <field name="model">product.public.category</field>
+            <field name="inherit_id" ref="connector_web_product_category.product_public_category_form_view"/>
+            <field name="arch" type="xml">
+                 <field name="connector_id" position="after">
+                     <field name="wp_it_id"/>
+                     <field name="wp_en_id"/>
+                 </field>
+            </field>
+        </record>
+        <record id="product_public_category_wp_tree_view" model="ir.ui.view">
+            <field name="name">product.public.category.wp.tree</field>
+            <field name="model">product.public.category</field>
+            <field name="inherit_id" ref="connector_web_product_category.product_public_category_tree_view"/>
+            <field name="arch" type="xml">
+                 <field name="connector_id" position="after">
+                     <field name="wp_it_id"/>
+                     <field name="wp_en_id"/>
+                 </field>
+            </field>
+        </record>
     </data>
 </openerp>
