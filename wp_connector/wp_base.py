@@ -114,6 +114,7 @@ class ConnectorServer(orm.Model):
                 else:  # post, put
                     return wp_function(call, data)
             except:
+                pdb.set_trace()
                 _logger.error(
                     'Server error [try #%s] mode: %s %s %s %s\n%s' % (
                         try_total,
@@ -123,7 +124,7 @@ class ConnectorServer(orm.Model):
                         params,
                         sys.exc_info(),
                     ))
-                # TODO comunicate with some external method
+                # TODO Raise with some external method
                 continue  # new try
         return False  # Never passed from here
 
