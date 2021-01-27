@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001-2015 Micronaet S.r.l. (<https://micronaet.com>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -13,7 +13,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -38,7 +38,7 @@ parameters = {
     'consumer_secret': 'cs_a9998513e0c5f1af1abd74885e90f48e49082a78',
     }
 
-kwargs = {    
+kwargs = {
     'wp_api': 'wp_api',
     'version': 'wc/v3',
     #'is_ssl': False,
@@ -80,7 +80,7 @@ class API(object):
         return '%s%s/%s/%s' % (url, api, self.version, endpoint)
 
     def __request(self, method, endpoint, data, params=None, **kwargs):
-        ''' Do requests 
+        ''' Do requests
         '''
         import pdb; pdb.set_trace()
         if params is None:
@@ -142,16 +142,16 @@ class API(object):
         return self.__request('OPTIONS', endpoint, None, **kwargs)
 
 #WP = API(
-#    parameters['url'], 
-#    parameters['consumer_key'], 
-#    parameters['consumer_secret'], 
+#    parameters['url'],
+#    parameters['consumer_key'],
+#    parameters['consumer_secret'],
 #    **kwargs)
 #
 #print WP.get('orders')
 #import pdb; pdb.set_trace()
 
 res = request(
-    method='GET', 
+    method='GET',
     url='http://demo8.evoluzionetelematica.it/spaziogiardino.it/wp-json/wc/v3/products',
     auth=(
         'ck_f00df6028cc22a7e0bf0b8f4579e5f36bd83866a',
@@ -163,19 +163,19 @@ res = request(
     headers={
         'user-agent': 'ODOO API Client-Python/1.0',
         'accept': 'application/json'
-        },   
+        },
     )
-print res.text
+print(res.text)
 url = 'http://demo8.evoluzionetelematica.it/spaziogiardino.it/wp-json/wc/v3/products'
 key = 'ck_f00df6028cc22a7e0bf0b8f4579e5f36bd83866a'
 secret = 'cs_a9998513e0c5f1af1abd74885e90f48e49082a78'
 command = 'curl %s -u %s:%s '  % (
-    url, 
-    key, 
-    secret,    
+    url,
+    key,
+    secret,
     )
-print command
-os.system(command)    
+print(command)
+os.system(command)
 
 import pdb; pdb.set_trace()
 from woocommerce import API
@@ -190,6 +190,5 @@ wcapi = API(
 )
 print(wcapi.get("products").json())
 
-    
-import pdb; pdb.set_trace()    
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
+import pdb; pdb.set_trace()
