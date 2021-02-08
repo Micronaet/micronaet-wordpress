@@ -172,7 +172,7 @@ for wb in wb_input:
                     print('%s [%s] %s. Not present key field: codice' % (
                           fullname, ws_name, row))
                     break
-                # accessori not used for now
+                # accessory not used for now
                 wb_input[wb][1][ws_name] = field_position['codice']
 
             # Read other lined:

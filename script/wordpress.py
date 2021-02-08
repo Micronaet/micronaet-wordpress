@@ -41,15 +41,15 @@ parameters = {
 kwargs = {
     'wp_api': 'wp_api',
     'version': 'wc/v3',
-    #'is_ssl': False,
+    # 'is_ssl': False,
     'timeout': 5,
-    #'verify_ssl': False,
-    #'query_string_auth': False,
+    # 'verify_ssl': False,
+    # 'query_string_auth': False,
     }
 
 class API(object):
-    ''' API Class for manage request
-    '''
+    """ API Class for manage request
+    """
 
     def __init__(self, url, consumer_key, consumer_secret, **kwargs):
         self.url = url
@@ -57,17 +57,17 @@ class API(object):
         self.consumer_secret = consumer_secret
         self.wp_api = kwargs.get('wp_api', True)
         self.version = kwargs.get('version', 'wc/v3')
-        #self.is_ssl = self.__is_ssl()
+        # self.is_ssl = self.__is_ssl()
         self.timeout = kwargs.get('timeout', 5)
-        #self.verify_ssl = kwargs.get('verify_ssl', True)
-        #self.query_string_auth = kwargs.get('query_string_auth', False)
+        # self.verify_ssl = kwargs.get('verify_ssl', True)
+        # self.query_string_auth = kwargs.get('query_string_auth', False)
 
-    #def __is_ssl(self):
+    # def __is_ssl(self):
     #    ''' Check if url use HTTPS '''
     #    return self.url.startswith('https')
 
     def __get_url(self, endpoint):
-        ''' Get URL for requests '''
+        """ Get URL for requests """
         url = self.url
         api = 'wc-api'
 
@@ -80,8 +80,8 @@ class API(object):
         return '%s%s/%s/%s' % (url, api, self.version, endpoint)
 
     def __request(self, method, endpoint, data, params=None, **kwargs):
-        ''' Do requests
-        '''
+        """ Do requests
+        """
         import pdb; pdb.set_trace()
         if params is None:
             params = {}
@@ -122,23 +122,23 @@ class API(object):
         )
 
     def get(self, endpoint, **kwargs):
-        ''' Get requests '''
+        """ Get requests """
         return self.__request('GET', endpoint, None, **kwargs)
 
     def post(self, endpoint, data, **kwargs):
-        ''' POST requests '''
+        """ POST requests """
         return self.__request('POST', endpoint, data, **kwargs)
 
     def put(self, endpoint, data, **kwargs):
-        ''' PUT requests '''
+        """ PUT requests """
         return self.__request('PUT', endpoint, data, **kwargs)
 
     def delete(self, endpoint, **kwargs):
-        ''' DELETE requests '''
+        """ DELETE requests """
         return self.__request('DELETE', endpoint, None, **kwargs)
 
     def options(self, endpoint, **kwargs):
-        ''' OPTIONS requests '''
+        """ OPTIONS requests """
         return self.__request('OPTIONS', endpoint, None, **kwargs)
 
 #WP = API(
@@ -189,6 +189,3 @@ wcapi = API(
     version="wc/v3"
 )
 print(wcapi.get("products").json())
-
-
-import pdb; pdb.set_trace()

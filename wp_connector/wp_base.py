@@ -624,7 +624,7 @@ class ProductProductWebServer(orm.Model):
 
             src = {'src': link, }
             if variant:
-                return src # Variant only one image!
+                return src  # Variant only one image!
             images.append(src)
 
         return images
@@ -695,7 +695,6 @@ class ProductProductWebServer(orm.Model):
                 wp_files.append(os.path.join(root, filename))
             break  # only this folder
 
-        import pdb; pdb.set_trace()
         # TODO manage externally not during thi operation?
         for fullname in wp_files:
             _logger.info('Updating with: %s' % filename)
