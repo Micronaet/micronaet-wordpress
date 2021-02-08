@@ -215,7 +215,6 @@ class ProductProductImportWorpdress(orm.Model):
 
         error = ''
         last_master_id = False  # ID of last master
-        pdb.set_trace()
         for row in range(row_start, ws.nrows):
             _logger.info('Reading row: %s' % row)
             lang_text = {IT: {}, EN: {}}
