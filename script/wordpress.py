@@ -47,6 +47,7 @@ kwargs = {
     # 'query_string_auth': False,
     }
 
+
 class API(object):
     """ API Class for manage request
     """
