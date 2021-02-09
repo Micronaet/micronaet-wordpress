@@ -152,6 +152,9 @@ class ConnectorServer(orm.Model):
             'Mod. imb.', 'Imballo', 'Dimensioni prodotto', 'Vol.',
             'Garanzia',
             'Tipo WP', 'Master', 'Padre', 'WPID it.', 'WPID en.',
+            'Bullet 1', '(Bullet 1)', 'Bullet 2', '(Bullet 2)',
+            'Bullet 3', '(Bullet 3)', 'Bullet 4', '(Bullet 4)',
+            'Bullet 5', '(Bullet 5)',
             'Immagini', 'Link',
             ], default_format=excel_format['header'])
 
@@ -168,7 +171,7 @@ class ConnectorServer(orm.Model):
 
         for line in sorted(connector_pool.browse(
                 cr, uid, line_ids, context=context),
-                key = lambda p: (
+                key=lambda p: (
                     p.product_id.default_code,
                     p.product_id.name),
                 ):
@@ -273,6 +276,17 @@ class ConnectorServer(orm.Model):
                     line.wp_it_id,
                     line.wp_en_id,
 
+                    line.bullet_point_1 or '',
+                    '',
+                    line.bullet_point_2 or '',
+                    '',
+                    line.bullet_point_3 or '',
+                    '',
+                    line.bullet_point_4 or '',
+                    '',
+                    line.bullet_point_5 or '',
+                    '',
+
                     image,
                     dropbox_image,
                     ], default_format=color_format['text'])
@@ -307,6 +321,23 @@ class ConnectorServer(orm.Model):
                     short_description,  # product.name,
                     description,  # product.large_description or '',
                     ], default_format=color_format['text'], col=5)
+
+            # Bullet point:
+            excel_pool.write_xls_line(
+                ws_name, row, [line.bullet_point_1 or '', ],
+                default_format=color_format['text'], col=30)
+            excel_pool.write_xls_line(
+                ws_name, row, [line.bullet_point_2 or '', ],
+                default_format=color_format['text'], col=32)
+            excel_pool.write_xls_line(
+                ws_name, row, [line.bullet_point_3 or '', ],
+                default_format=color_format['text'], col=34)
+            excel_pool.write_xls_line(
+                ws_name, row, [line.bullet_point_4 or '', ],
+                default_format=color_format['text'], col=36)
+            excel_pool.write_xls_line(
+                ws_name, row, [line.bullet_point_5 or '', ],
+                default_format=color_format['text'], col=38)
 
         # ---------------------------------------------------------------------
         # Web Schema
@@ -391,4 +422,3 @@ class ConnectorServer(orm.Model):
                     ], default_format=excel_format['black']['text'])
 
         return excel_pool.return_attachment(cr, uid, 'web_product')
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
