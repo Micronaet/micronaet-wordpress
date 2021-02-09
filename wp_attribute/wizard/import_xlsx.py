@@ -272,6 +272,23 @@ class ProductProductImportWorpdress(orm.Model):
             lang_text[EN]['emotional_description'] = ws.cell(row, 36).value \
                 or lang_text[IT]['emotional_description']
 
+            # Bullet point:
+            lang_text[IT]['bullet_point_1'] = ws.cell(row, 37).value
+            lang_text[EN]['bullet_point_1'] = ws.cell(row, 38).value \
+                or lang_text[IT]['bullet_point_1']
+            lang_text[IT]['bullet_point_2'] = ws.cell(row, 37).value
+            lang_text[EN]['bullet_point_2'] = ws.cell(row, 38).value \
+                or lang_text[IT]['bullet_point_2']
+            lang_text[IT]['bullet_point_3'] = ws.cell(row, 37).value
+            lang_text[EN]['bullet_point_3'] = ws.cell(row, 38).value \
+                or lang_text[IT]['bullet_point_3']
+            lang_text[IT]['bullet_point_4'] = ws.cell(row, 37).value
+            lang_text[EN]['bullet_point_4'] = ws.cell(row, 38).value \
+                or lang_text[IT]['bullet_point_4']
+            lang_text[IT]['bullet_point_5'] = ws.cell(row, 37).value
+            lang_text[EN]['bullet_point_5'] = ws.cell(row, 38).value \
+                or lang_text[IT]['bullet_point_5']
+
             if not default_code:
                 _logger.warning('Default code not found')
                 continue
@@ -398,6 +415,11 @@ class ProductProductImportWorpdress(orm.Model):
                     'force_name': lang_text[lang]['force_name'],
                     'force_description': lang_text[lang]['force_description'],
                     'weight_aditional_info': lang_text[lang]['box_dimension'],
+                    'bullet_point_1': lang_text[lang]['bullet_point_1'],
+                    'bullet_point_2': lang_text[lang]['bullet_point_2'],
+                    'bullet_point_3': lang_text[lang]['bullet_point_3'],
+                    'bullet_point_4': lang_text[lang]['bullet_point_4'],
+                    'bullet_point_5': lang_text[lang]['bullet_point_5'],
                 })
 
                 if web_ids:
