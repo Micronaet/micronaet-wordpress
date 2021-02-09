@@ -277,15 +277,15 @@ class ConnectorServer(orm.Model):
                     line.wp_it_id,
                     line.wp_en_id,
 
-                    line.bullet_point_1 or 'IT',
+                    line.bullet_point_1 or '',
                     '',
-                    line.bullet_point_2 or 'IT',
+                    line.bullet_point_2 or '',
                     '',
-                    line.bullet_point_3 or 'IT',
+                    line.bullet_point_3 or '',
                     '',
-                    line.bullet_point_4 or 'IT',
+                    line.bullet_point_4 or '',
                     '',
-                    line.bullet_point_5 or 'IT',
+                    line.bullet_point_5 or '',
                     '',
 
                     image,
@@ -301,7 +301,7 @@ class ConnectorServer(orm.Model):
         ctx = context.copy()
         ctx['lang'] = 'en_US'
         # TODO use line loop (for force name!!!)
-        for product in connector_pool.browse(
+        for line in connector_pool.browse(
                 cr, uid, line_ids, context=ctx):
             product = line.product_id
             row = selected[line.id]
@@ -325,19 +325,19 @@ class ConnectorServer(orm.Model):
 
             # Bullet point:
             excel_pool.write_xls_line(
-                ws_name, row, ['EN1' or line.bullet_point_1 or ''],
+                ws_name, row, [line.bullet_point_1 or ''],
                 default_format=color_format['text'], col=32)
             excel_pool.write_xls_line(
-                ws_name, row, ['EN2' or line.bullet_point_2 or ''],
+                ws_name, row, [line.bullet_point_2 or ''],
                 default_format=color_format['text'], col=34)
             excel_pool.write_xls_line(
-                ws_name, row, ['EN3' or line.bullet_point_3 or ''],
+                ws_name, row, [line.bullet_point_3 or ''],
                 default_format=color_format['text'], col=36)
             excel_pool.write_xls_line(
-                ws_name, row, ['EN4' or line.bullet_point_4 or ''],
+                ws_name, row, [line.bullet_point_4 or ''],
                 default_format=color_format['text'], col=38)
             excel_pool.write_xls_line(
-                ws_name, row, ['EN5' or line.bullet_point_5 or ''],
+                ws_name, row, [line.bullet_point_5 or ''],
                 default_format=color_format['text'], col=40)
 
         # ---------------------------------------------------------------------
