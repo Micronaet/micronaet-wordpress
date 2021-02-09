@@ -302,7 +302,7 @@ class ConnectorServer(orm.Model):
         # TODO use line loop (for force name!!!)
         for product in connector_pool.browse(
                 cr, uid, line_ids, context=ctx):
-            product = line.prodcut_id
+            product = line.product_id
             row = selected[line.id]
             color_format = color_format_all[line.id]
 
