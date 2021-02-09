@@ -869,6 +869,13 @@ class ProductProductWebServer(orm.Model):
                         # catalog  search  hidden
 
                         'weight_aditional_info': item.weight_aditional_info,
+
+                        # Bullet point:
+                        'bullet_point_1': item.bullet_point_1,
+                        'bullet_point_2': item.bullet_point_2,
+                        'bullet_point_3': item.bullet_point_3,
+                        'bullet_point_4': item.bullet_point_4,
+                        'bullet_point_5': item.bullet_point_5,
                         })
 
                 else:  # Other lang (only translation
