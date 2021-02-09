@@ -135,6 +135,7 @@ class ConnectorServer(orm.Model):
             5, 20, 30, 7,
             7,
             10, 5, 15, 6, 6,
+            25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
             40, 40,
             ])
 
@@ -324,19 +325,19 @@ class ConnectorServer(orm.Model):
 
             # Bullet point:
             excel_pool.write_xls_line(
-                ws_name, row, ['EN1' or line.bullet_point_1 or '', ],
+                ws_name, row, ['EN1' or line.bullet_point_1 or ''],
                 default_format=color_format['text'], col=32)
             excel_pool.write_xls_line(
-                ws_name, row, ['EN2' or line.bullet_point_2 or '', ],
+                ws_name, row, ['EN2' or line.bullet_point_2 or ''],
                 default_format=color_format['text'], col=34)
             excel_pool.write_xls_line(
-                ws_name, row, ['EN3' or line.bullet_point_3 or '', ],
+                ws_name, row, ['EN3' or line.bullet_point_3 or ''],
                 default_format=color_format['text'], col=36)
             excel_pool.write_xls_line(
-                ws_name, row, ['EN4' or line.bullet_point_4 or '', ],
+                ws_name, row, ['EN4' or line.bullet_point_4 or ''],
                 default_format=color_format['text'], col=38)
             excel_pool.write_xls_line(
-                ws_name, row, ['EN5' or line.bullet_point_5 or '', ],
+                ws_name, row, ['EN5' or line.bullet_point_5 or ''],
                 default_format=color_format['text'], col=40)
 
         # ---------------------------------------------------------------------
