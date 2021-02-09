@@ -220,8 +220,8 @@ class ConnectorServer(orm.Model):
                 grouped[default_code6].append(default_code[6:].strip())
 
             row += 1
-            selected[product.id] = row  # To update english lang
-            color_format_all[product.id] = color_format
+            selected[line.id] = row  # To update english lang
+            color_format_all[line.id] = color_format
 
             # Readability:
             short_description = line.force_name or \
@@ -300,11 +300,11 @@ class ConnectorServer(orm.Model):
         ctx = context.copy()
         ctx['lang'] = 'en_US'
         # TODO use line loop (for force name!!!)
-        for product in product_pool.browse(
-                cr, uid, product_ids, context=ctx):
-
-            row = selected[product.id]
-            color_format = color_format_all[product.id]
+        for product in connector_pool.browse(
+                cr, uid, line_ids, context=ctx):
+            product = line.prodcut_id
+            row = selected[line.id]
+            color_format = color_format_all[line.id]
 
             # Readability:
             # line.force_name or \
