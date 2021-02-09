@@ -276,15 +276,15 @@ class ConnectorServer(orm.Model):
                     line.wp_it_id,
                     line.wp_en_id,
 
-                    line.bullet_point_1 or '',
+                    line.bullet_point_1 or 'IT',
                     '',
-                    line.bullet_point_2 or '',
+                    line.bullet_point_2 or 'IT',
                     '',
-                    line.bullet_point_3 or '',
+                    line.bullet_point_3 or 'IT',
                     '',
-                    line.bullet_point_4 or '',
+                    line.bullet_point_4 or 'IT',
                     '',
-                    line.bullet_point_5 or '',
+                    line.bullet_point_5 or 'IT',
                     '',
 
                     image,
@@ -324,20 +324,20 @@ class ConnectorServer(orm.Model):
 
             # Bullet point:
             excel_pool.write_xls_line(
-                ws_name, row, [line.bullet_point_1 or '', ],
-                default_format=color_format['text'], col=30)
-            excel_pool.write_xls_line(
-                ws_name, row, [line.bullet_point_2 or '', ],
+                ws_name, row, [line.bullet_point_1 or 'EN', ],
                 default_format=color_format['text'], col=32)
             excel_pool.write_xls_line(
-                ws_name, row, [line.bullet_point_3 or '', ],
+                ws_name, row, [line.bullet_point_2 or 'EN', ],
                 default_format=color_format['text'], col=34)
             excel_pool.write_xls_line(
-                ws_name, row, [line.bullet_point_4 or '', ],
+                ws_name, row, [line.bullet_point_3 or 'EN', ],
                 default_format=color_format['text'], col=36)
             excel_pool.write_xls_line(
-                ws_name, row, [line.bullet_point_5 or '', ],
+                ws_name, row, [line.bullet_point_4 or 'EN', ],
                 default_format=color_format['text'], col=38)
+            excel_pool.write_xls_line(
+                ws_name, row, [line.bullet_point_5 or 'EN', ],
+                default_format=color_format['text'], col=40)
 
         # ---------------------------------------------------------------------
         # Web Schema
