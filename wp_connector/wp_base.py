@@ -151,9 +151,9 @@ class ConnectorServer(orm.Model):
                             'title': filename,
                             'status': 'publish',
                             'author': author_id,
-                            'alt_text': fullname,
-                            'caption': fullname,
-                            'description': fullname,
+                            'alt_text': filename,
+                            'caption': filename,  # TODO change some data?
+                            'description': filename,
                         }
 
                         # Open file in different ways:
