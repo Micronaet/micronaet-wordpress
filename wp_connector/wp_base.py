@@ -109,18 +109,18 @@ class ConnectorServer(orm.Model):
             album_path = os.path.expanduser(album.path)
             pickle_file = os.path.join(
                 album_path, 'pickle', 'wordpress_%s.pickle' % album.code)
-            try:
+            if os.path.isfile(pickle_file):
                 pickle_album = pickle.load(open(pickle_file, 'rb'))
-            except:
-                pickle_file = {}
+            else:
+                pickle_album = {}
 
             for root, folders, files in os.walk(album_path):
                 for filename in files:
-                    if filename.split('.')[-1].upper() == 'JPG':
+                    if filename.split('.')[-1].upper() != 'JPG':
                         _logger.error('Not an image: %s' % filename)
                         continue
 
-                    fullname = os.path.join(root, fullname)
+                    fullname = os.path.join(root, filename)
                     if fullname not in pickle_album:
                         pickle_album[fullname] = {
                             'modify': False,
@@ -180,7 +180,10 @@ class ConnectorServer(orm.Model):
 
                         pickle_album[fullname]['media_id'] = wp_id
                         pickle_album[fullname]['url'] = image_url
-                    break  # Not subfolders
+
+                    # Store every image published:
+                    pickle.dump(pickle_album, open(pickle_file, 'wb'))
+                break  # Not subfolders
 
             # -----------------------------------------------------------------
             # Delete old:
@@ -201,7 +204,7 @@ class ConnectorServer(orm.Model):
                 _logger.info(reply.text)
             """
             # Store pickle file for every album:
-            pickle.dump(pickle_album, open(pickle_file, 'rb'))
+            pickle.dump(pickle_album, open(pickle_file, 'wb'))
         return True
 
     # -------------------------------------------------------------------------
