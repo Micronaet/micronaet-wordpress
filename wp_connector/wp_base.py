@@ -109,7 +109,10 @@ class ConnectorServer(orm.Model):
             album_path = os.path.expanduser(album.path)
             pickle_file = os.path.join(
                 album_path, 'pickle', 'wordpress_%s.pickle' % album.code)
-            pickle_album = pickle.load(open(pickle_file, 'rb'))
+            try:
+                pickle_album = pickle.load(open(pickle_file, 'rb'))
+            except:
+                pickle_file = {}
 
             for root, folders, files in os.walk(album_path):
                 for filename in files:
@@ -183,6 +186,7 @@ class ConnectorServer(orm.Model):
             # Delete old:
             # -----------------------------------------------------------------
             """
+            # TODO Not here but when updated product and variation
             if wp_id:  # Delete previous:
                 delete_url = '%s/wp-json/wp/v2/media/%s' % (root_url, wp_id)
                 params = {
@@ -196,6 +200,8 @@ class ConnectorServer(orm.Model):
                 )
                 _logger.info(reply.text)
             """
+            # Store pickle file for every album:
+            pickle.dump(pickle_album, open(pickle_file, 'rb'))
         return True
 
     # -------------------------------------------------------------------------
