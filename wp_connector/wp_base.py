@@ -137,7 +137,8 @@ class ConnectorServer(orm.Model):
                         atime, mtime, ctime) = os.stat(fullname)
 
                     modify_time = time.ctime(mtime)
-                    if modify_time != pickle_album[fullname]['modify']:
+                    if modify_time != pickle_album[fullname]['modify'] or \
+                            not pickle_album[fullname]['media_id']:
                         pickle_album[fullname]['modify'] = modify_time
 
                         # Update web site:
