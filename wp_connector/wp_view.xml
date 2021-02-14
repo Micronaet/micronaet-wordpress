@@ -199,6 +199,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//header/button" position="after">
                     <button name="extract_wordpress_published_report" string="List published" type="object" confirm="Extract all information published, could take time, confirm?" class="oe_highlight" icon="gtk-print" attrs="{'invisible': [('wordpress','=',False)]}"/>
+                    <button name="publish_image_on_wordpress" string="Pubblica Media" type="object" confirm="Legge tutta la cartella dei media (album) e verifica quelli da pubblicare, può essere una operazione lenta, confermi?" class="oe_highlight" icon="gtk-execute" attrs="{'invisible': [('wordpress','=',False)]}"/>
                 </xpath>
 
                 <field name="name" position="before">
@@ -248,6 +249,12 @@
 
                         <field name="wp_version" attrs="{'required': [('wordpress', '=', True)]}"/>
                         <field name="album_ids" widget="many2many_tags"/>
+
+                        <separator string="Media:" colspan="4"/>
+                        <field name="wp_username" />
+                        <field name="wp_password" />
+                        <field name="wp_user_id" />
+                        <newline/>
 
                         <field name="wp_category" />
                         <field name="wp_all_category" />

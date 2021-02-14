@@ -22,10 +22,13 @@
 ###############################################################################
 
 import os
+import time
 import logging
 import woocommerce
 import sys
 import pdb
+import requests
+import pickle
 from datetime import datetime
 from openerp.osv import fields, osv, expression, orm
 from openerp.tools.translate import _
@@ -84,6 +87,116 @@ class ConnectorServer(orm.Model):
     """ Model name: ConnectorServer
     """
     _inherit = 'connector.server'
+
+    def publish_image_on_wordpress(self, cr, uid, ids, context=None):
+        """ Scheduled action for publish image on web site and
+        """
+        if context is None:
+            context = {}
+
+        # Media access:
+        pdb.set_trace()
+        connector = self.browse(cr, uid, ids, context=context)[0]
+        root_url = connector.wp_url
+        username = connector.wp_username
+        password = connector.wp_password
+        author_id = connector.wp_user_id
+        auth = (username, password)
+        url = '%s/wp-json/wp/v2/media' % root_url
+
+        for album in connector.album_ids:
+            # Read pickle file for album
+            album_path = os.path.expanduser(album.path)
+            pickle_file = os.path.join(
+                album_path, 'pickle', 'wordpress_%s.pickle' % album.code)
+            pickle_album = pickle.load(open(pickle_file, 'rb'))
+
+            for root, folders, files in os.walk(album_path):
+                for filename in files:
+                    if filename.split('.')[-1].upper() == 'JPG':
+                        _logger.error('Not an image: %s' % filename)
+                        continue
+
+                    fullname = os.path.join(root, fullname)
+                    if fullname not in pickle_album:
+                        pickle_album[fullname] = {
+                            'modify': False,
+                            'media_id': False,
+                            'url': url,
+                            'remove': [],  # media_id to remove when updated
+                        }
+                    # Check modify date:
+                    (
+                        mode, ino, dev, nlink, uid, gid, size,
+                        atime, mtime, ctime) = os.stat(fullname)
+
+                    modify_time = time.ctime(mtime)
+                    if modify_time != pickle_album[fullname]['modify']:
+                        pickle_album[fullname]['modify'] = modify_time
+
+                        # Update web site:
+                        headers = {
+                            'Content-Type': 'image/jpg',
+                            'Content-Disposition':
+                                'attachment; filename="%s"' % fullname,
+                        }
+                        params = {
+                            'lang': 'it',
+                            'title': filename,
+                            'status': 'publish',
+                            'author': author_id,
+                            'alt_text': fullname,
+                            'caption': fullname,
+                            'description': fullname,
+                        }
+
+                        # Open file in different ways:
+                        file_handler = open(fullname, 'rb')  # handler
+                        image_data = file_handler.read()  # binary data
+
+                        reply = requests.post(
+                            url,
+                            headers=headers,
+                            params=params,
+                            data=image_data,
+                            auth=auth,
+                        )
+                        try:
+                            reply_json = reply.json()
+                            wp_id = reply_json['id']
+                            image_url = reply_json['source_url']
+                        except:  # Error reply
+                            _logger.error(reply.text)
+                            continue
+
+                        # Manage old media:
+                        old_media_id = pickle_album[fullname]['media_id']
+                        if old_media_id:
+                            pickle_album[fullname]['media_id'] = old_media_id
+                        pickle_album[fullname]['remove'].append(old_media_id)
+
+                        pickle_album[fullname]['media_id'] = wp_id
+                        pickle_album[fullname]['url'] = image_url
+                    break  # Not subfolders
+
+            # -----------------------------------------------------------------
+            # Delete old:
+            # -----------------------------------------------------------------
+            """
+            if wp_id:  # Delete previous:
+                delete_url = '%s/wp-json/wp/v2/media/%s' % (root_url, wp_id)
+                params = {
+                    'force': True,
+                }
+                reply = requests.delete(
+                    delete_url,
+                    # headers=headers
+                    params=params,
+                    auth=auth,
+                )
+                _logger.info(reply.text)
+            """
+        return True
 
     # -------------------------------------------------------------------------
     # Utility:
@@ -182,6 +295,12 @@ class ConnectorServer(orm.Model):
         'wp_all_category': fields.boolean(
             'All category',
             help='Public all product with category and parent also'),
+
+        # Media:
+        'wp_username': fields.char('WP username', size=180),
+        'wp_password': fields.char('WP password', size=180),
+        'wp_user_id': fields.integer('WP Author ID'),
+
         'wp_url': fields.char('WP URL', size=180),
         'wp_key': fields.char('WP consumer key', size=180),
         'wp_secret': fields.char('WP consumer secret', size=180),
