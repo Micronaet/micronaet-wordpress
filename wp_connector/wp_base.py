@@ -196,7 +196,9 @@ class ConnectorServer(orm.Model):
                                         params=params,
                                         auth=auth,
                                     )
-                                    _logger.info(reply.text)
+                                    _logger.info(
+                                        'Old image deleted' if reply.ok else
+                                        'Old image not deleted!')
                                 except:
                                     _logger.error(
                                         'Error remove media: %s' % remove_id)
