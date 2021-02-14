@@ -94,6 +94,7 @@ class ConnectorServer(orm.Model):
         if context is None:
             context = {}
         force_remove = False  # TODO put it after upload image in product
+        pdb.set_trace()
 
         # Media access:
         connector = self.browse(cr, uid, ids, context=context)[0]
