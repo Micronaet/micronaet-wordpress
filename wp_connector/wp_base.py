@@ -108,12 +108,14 @@ class ConnectorServer(orm.Model):
         for album in connector.album_ids:
             # Read pickle file for album
             album_path = os.path.expanduser(album.path)
+            pickle_path = os.path.join(album_path, 'pickle')
             pickle_file = os.path.join(
-                album_path, 'pickle', 'wordpress_%s.pickle' % album.code)
+                pickle_path, 'wordpress_%s.pickle' % album.code)
             if os.path.isfile(pickle_file):
                 pickle_album = pickle.load(open(pickle_file, 'rb'))
             else:
                 pickle_album = {}
+                os.system('mkdir -p %s' % pickle_path)
 
             for root, folders, files in os.walk(album_path):
                 for filename in files:
