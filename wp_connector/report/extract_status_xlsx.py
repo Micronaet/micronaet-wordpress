@@ -60,24 +60,24 @@ class ConnectorServer(orm.Model):
         def get_image_list(self, product, album_ids, context=None):
             """ Fields function for calculate
             """
+            web_product_pool = self.pool.get('product.product.web.server')
             if context is None:
                 context = {}
 
             image_mode = context.get('image_mode', 'filename')
 
             res = ''
-            for image in sorted(product.image_ids,
+            for image in sorted(
+                    product.image_ids,
                     key=lambda x: x.filename[:-4]):
                 if image.album_id.id in album_ids:
                     if image_mode == 'filename':
                         res += u'[%s: %s]' % (
                             image.album_id.code, image.filename)
                     else:
-                        res += u'[%s: %s]' % (
+                        res += u'[%s: media ID: %s]' % (
                             image.album_id.code,
-                            'http://my.fiam.it/upload/images/%s' % (
-                                image.filename or ''),
-                            # image.dropbox_link,
+                            web_product_pool.get_pickle_album_file(image),
                             )
             return res
 
@@ -411,7 +411,7 @@ class ConnectorServer(orm.Model):
             ], default_format=excel_format['header'])
         for product in sorted(product_pool.browse(
                 cr, uid, product_ids, context=context),
-                key = lambda p: (p.default_code, p.name),
+                key=lambda p: (p.default_code, p.name),
                 ):
 
             row += 1
