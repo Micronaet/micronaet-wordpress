@@ -768,14 +768,11 @@ class ProductProductWebServer(orm.Model):
         """ Extract complete list of images (single if variant mode)
         """
         images = []
-        pdb.set_trace()
         for image in item.wp_dropbox_images_ids:
-            # TODO test:
             media_id = self.get_pickle_album_file(image)
             if not media_id:
                 _logger.error('Image not published yet: %s' % image.filename)
 
-            # ----------
             src = {'id': media_id, }
             if variant:
                 return src  # Variant only one image!
