@@ -747,16 +747,20 @@ class ProductProductWebServer(orm.Model):
         else:  # odoo
             return default_code.replace('&nbsp;', ' ')
 
-    def get_pickle_album_file(self, album, fullname):
+    def get_pickle_album_file(self, image):
         """ Read pickle album and return media ID
         """
+        album = image.album_id
+        album_path = album.path
+
         pickle_filename = os.path.join(
-            album.path,
+            album_path,
             'pickle',
             'wordpress_%s.pickle' % album.code,
         )
         pickle_album = pickle.load(open(pickle_filename, 'rb'))
-        image_record = pickle_album.get(fullname, {})
+        image_record = pickle_album.get(
+            os.path.join(album_path, image.filename), {})
         media_id = image_record.get('media_id')
         return media_id
 
@@ -767,8 +771,7 @@ class ProductProductWebServer(orm.Model):
         pdb.set_trace()
         for image in item.wp_dropbox_images_ids:
             # TODO test:
-            album = image.album_id
-            media_id = self.get_pickle_album_file(album, image.fullname)
+            media_id = self.get_pickle_album_file(image)
             if not media_id:
                 _logger.error('Image not published yet: %s' % image.filename)
 
