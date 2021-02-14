@@ -93,6 +93,7 @@ class ConnectorServer(orm.Model):
         """
         if context is None:
             context = {}
+        force_remove = True  # TODO put it after upload image in product
 
         # Media access:
         pdb.set_trace()
@@ -175,34 +176,35 @@ class ConnectorServer(orm.Model):
                         # Manage old media:
                         old_media_id = pickle_album[fullname]['media_id']
                         if old_media_id:
-                            pickle_album[fullname]['media_id'] = old_media_id
-                        pickle_album[fullname]['remove'].append(old_media_id)
-
+                            pickle_album[fullname]['remove'].append(
+                                old_media_id)
                         pickle_album[fullname]['media_id'] = wp_id
                         pickle_album[fullname]['url'] = image_url
+
+                        # -----------------------------------------------------
+                        # Delete old:
+                        # -----------------------------------------------------
+                        if force_remove:
+                            for remove_id in pickle_album[fullname]['remove']:
+                                delete_url = '%s/wp-json/wp/v2/media/%s' % (
+                                    root_url, remove_id)
+                                params = {'force': True, }
+                                try:
+                                    reply = requests.delete(
+                                        delete_url,
+                                        # headers=headers
+                                        params=params,
+                                        auth=auth,
+                                    )
+                                    _logger.info(reply.text)
+                                except:
+                                    _logger.error(
+                                        'Error remove media: %s' % remove_id)
 
                     # Store every image published:
                     pickle.dump(pickle_album, open(pickle_file, 'wb'))
                 break  # Not subfolders
 
-            # -----------------------------------------------------------------
-            # Delete old:
-            # -----------------------------------------------------------------
-            """
-            # TODO Not here but when updated product and variation
-            if wp_id:  # Delete previous:
-                delete_url = '%s/wp-json/wp/v2/media/%s' % (root_url, wp_id)
-                params = {
-                    'force': True,
-                }
-                reply = requests.delete(
-                    delete_url,
-                    # headers=headers
-                    params=params,
-                    auth=auth,
-                )
-                _logger.info(reply.text)
-            """
             # Store pickle file for every album:
             pickle.dump(pickle_album, open(pickle_file, 'wb'))
         return True
@@ -597,7 +599,7 @@ class ProductProductWebServer(orm.Model):
             cr, uid, ids, vals, context=context)
 
     '''def create(self, cr, uid, vals, context=None):
-        """ Create a new record for a model 
+        """ Create a new record for a model
         ClassName
             @param cr: cursor to database
             @param uid: id of current user
