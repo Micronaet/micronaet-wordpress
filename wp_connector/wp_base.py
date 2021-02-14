@@ -93,10 +93,9 @@ class ConnectorServer(orm.Model):
         """
         if context is None:
             context = {}
-        force_remove = True  # TODO put it after upload image in product
+        force_remove = False  # TODO put it after upload image in product
 
         # Media access:
-        pdb.set_trace()
         connector = self.browse(cr, uid, ids, context=context)[0]
         root_url = connector.wp_url
         username = connector.wp_username
