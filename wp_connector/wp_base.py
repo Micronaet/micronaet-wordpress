@@ -747,20 +747,36 @@ class ProductProductWebServer(orm.Model):
         else:  # odoo
             return default_code.replace('&nbsp;', ' ')
 
+    def get_pickle_album_file(self, album, fullname):
+        """ Read pickle album and return media ID
+        """
+        pickle_filename = os.path.join(
+            album.path,
+            'pickle',
+            'wordpress_%s.pickle' % album.code,
+        )
+        pickle_album = pickle.load(open(pickle_filename, 'rb'))
+        image_record = pickle_album.get(fullname, {})
+        media_id = image_record.get('media_id')
+        return media_id
+
     def get_wp_image(self, item, variant=False):
         """ Extract complete list of images (single if variant mode)
         """
         images = []
+        pdb.set_trace()
         for image in item.wp_dropbox_images_ids:
-            link = 'http://my.fiam.it/upload/images/%s' % (
-                image.filename or '')
-            _logger.warning('Image: %s' % link)
+            # TODO test:
+            album = image.album_id
+            media_id = self.get_pickle_album_file(album, image.fullname)
+            if not media_id:
+                _logger.error('Image not published yet: %s' % image.filename)
 
-            src = {'src': link, }
+            # ----------
+            src = {'id': media_id, }
             if variant:
                 return src  # Variant only one image!
             images.append(src)
-
         return images
 
     def get_wp_price_external(self, cr, uid, line_id, context=None):

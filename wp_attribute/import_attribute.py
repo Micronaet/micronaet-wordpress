@@ -802,7 +802,7 @@ class ProductPublicCategory(orm.Model):
                 if odoo_color.dropbox_image:
                     item['color_image'] = odoo_color.dropbox_image
 
-                if lang != default_lang: # Different language:
+                if lang != default_lang:  # Different language:
                     # TODO correct
                     wp_it_id = lang_color_terms[default_lang].get(key)
                     if wp_it_id:
