@@ -60,6 +60,8 @@ class ConnectorServer(orm.Model):
         def get_image_list(self, product, album_ids, context=None):
             """ Fields function for calculate
             """
+            ctx = context.copy()
+            ctx['return_url'] = True
             web_product_pool = self.pool.get('product.product.web.server')
             if context is None:
                 context = {}
@@ -75,9 +77,9 @@ class ConnectorServer(orm.Model):
                         res += u'[%s: %s]' % (
                             image.album_id.code, image.filename)
                     else:
-                        res += u'[%s: media ID: %s]' % (
+                        res += u'[%s: Media URL: %s]' % (
                             image.album_id.code,
-                            web_product_pool.get_pickle_album_file(image),
+                            web_product_pool.get_pickle_album_file(image, ctx),
                             )
             return res
 

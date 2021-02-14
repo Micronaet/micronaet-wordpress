@@ -748,9 +748,12 @@ class ProductProductWebServer(orm.Model):
         else:  # odoo
             return default_code.replace('&nbsp;', ' ')
 
-    def get_pickle_album_file(self, image):
+    def get_pickle_album_file(self, image, context=None):
         """ Read pickle album and return media ID
         """
+        if context is None:
+            context = {}
+        return_url = context.get('return_url')
         album = image.album_id
         album_path = album.path
 
@@ -762,8 +765,12 @@ class ProductProductWebServer(orm.Model):
         pickle_album = pickle.load(open(pickle_filename, 'rb'))
         image_record = pickle_album.get(
             os.path.join(album_path, image.filename), {})
-        media_id = image_record.get('media_id')
-        return media_id
+        if return_url:
+            url = image_record.get('url')
+            return url
+        else:
+            media_id = image_record.get('media_id')
+            return media_id
 
     def get_wp_image(self, item, variant=False):
         """ Extract complete list of images (single if variant mode)
