@@ -276,17 +276,17 @@ class ProductProductImportWorpdress(orm.Model):
             lang_text[IT]['bullet_point_1'] = ws.cell(row, 37).value
             lang_text[EN]['bullet_point_1'] = ws.cell(row, 38).value \
                 or lang_text[IT]['bullet_point_1']
-            lang_text[IT]['bullet_point_2'] = ws.cell(row, 37).value
-            lang_text[EN]['bullet_point_2'] = ws.cell(row, 38).value \
+            lang_text[IT]['bullet_point_2'] = ws.cell(row, 39).value
+            lang_text[EN]['bullet_point_2'] = ws.cell(row, 40).value \
                 or lang_text[IT]['bullet_point_2']
-            lang_text[IT]['bullet_point_3'] = ws.cell(row, 37).value
-            lang_text[EN]['bullet_point_3'] = ws.cell(row, 38).value \
+            lang_text[IT]['bullet_point_3'] = ws.cell(row, 41).value
+            lang_text[EN]['bullet_point_3'] = ws.cell(row, 42).value \
                 or lang_text[IT]['bullet_point_3']
-            lang_text[IT]['bullet_point_4'] = ws.cell(row, 37).value
-            lang_text[EN]['bullet_point_4'] = ws.cell(row, 38).value \
+            lang_text[IT]['bullet_point_4'] = ws.cell(row, 43).value
+            lang_text[EN]['bullet_point_4'] = ws.cell(row, 44).value \
                 or lang_text[IT]['bullet_point_4']
-            lang_text[IT]['bullet_point_5'] = ws.cell(row, 37).value
-            lang_text[EN]['bullet_point_5'] = ws.cell(row, 38).value \
+            lang_text[IT]['bullet_point_5'] = ws.cell(row, 45).value
+            lang_text[EN]['bullet_point_5'] = ws.cell(row, 46).value \
                 or lang_text[IT]['bullet_point_5']
 
             if not default_code:
