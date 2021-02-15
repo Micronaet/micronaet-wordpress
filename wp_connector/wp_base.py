@@ -105,13 +105,23 @@ class ConnectorServer(orm.Model):
         url = '%s/wp-json/wp/v2/media' % root_url
 
         for album in connector.album_ids:
+            _logger.info('Seek album: %s' % album.name)
             # Read pickle file for album
             album_path = os.path.expanduser(album.path)
             pickle_path = os.path.join(album_path, 'pickle')
             pickle_file = os.path.join(
                 pickle_path, 'wordpress_%s.pickle' % album.code)
             if os.path.isfile(pickle_file):
-                pickle_album = pickle.load(open(pickle_file, 'rb'))
+                try:
+                    pickle_album = pickle.load(open(pickle_file, 'rb'))
+                except:
+                    _logger.error('Pickle file damnaged, restore from Dropbox')
+                    raise osv.except_osv(
+                            _('Errore'),
+                            _('Pickle file danneggiato, ripristinare da '
+                              'Dropbox una versione recente: '
+                              '%s' % pickle_file),
+                            )
             else:
                 pickle_album = {}
                 os.system('mkdir -p %s' % pickle_path)
@@ -182,6 +192,7 @@ class ConnectorServer(orm.Model):
                                 old_media_id)
                         pickle_album[fullname]['media_id'] = wp_id
                         pickle_album[fullname]['url'] = image_url
+                        _logger.info('Update image: %s' % filename)
 
                         # -----------------------------------------------------
                         # Delete old:
@@ -204,6 +215,8 @@ class ConnectorServer(orm.Model):
                                 except:
                                     _logger.error(
                                         'Error remove media: %s' % remove_id)
+                    else:
+                        _logger.info('No need to update: %s' % filename)
 
                     # Store every image published:
                     pickle.dump(pickle_album, open(pickle_file, 'wb'))
