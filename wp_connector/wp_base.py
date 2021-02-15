@@ -167,6 +167,10 @@ class ConnectorServer(orm.Model):
                         }
 
                         # Open file in different ways:
+                        if not os.path.isfile(fullname):
+                            _logger.error(
+                                'File deleted during procedure: %s' % filename)
+                            continue
                         file_handler = open(fullname, 'rb')  # handler
                         image_data = file_handler.read()  # binary data
 
