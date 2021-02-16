@@ -1411,15 +1411,15 @@ class ProductProductWebServer(orm.Model):
         # ---------------------------------------------------------------------
 
         # Amazon data:
-        'bullet_point_1': fields.char(
+        'bullet_point_1': fields.text(
             'Bullet point 1', translate=True, size=100),
-        'bullet_point_2': fields.char(
+        'bullet_point_2': fields.text(
             'Bullet point 2', translate=True, size=100),
-        'bullet_point_3': fields.char(
+        'bullet_point_3': fields.text(
             'Bullet point 3', translate=True, size=100),
-        'bullet_point_4': fields.char(
+        'bullet_point_4': fields.text(
             'Bullet point 4', translate=True, size=100),
-        'bullet_point_5': fields.char(
+        'bullet_point_5': fields.text(
             'Bullet point 5', translate=True, size=100),
 
         'wp_type': fields.selection([
