@@ -416,7 +416,7 @@ class ConnectorServer(orm.Model):
                 send_group,
                 'Ordini Wordpress',
                 'Elenco ordini Wordpress',
-                'ordinato.xlxs',
+                'ordinato.xlsx',
                 context=context)
         else:
             return excel_pool.return_attachment(cr, uid, 'wordpress_order')
