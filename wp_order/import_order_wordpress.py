@@ -454,7 +454,9 @@ class ConnectorServer(orm.Model):
 
     def get_sale_order_now(self, cr, uid, ids, context=None):
         """ Get sale order list
-            (context parameter 'from_yesterday' for check from yesterday)
+            Context parameters:
+                'from_yesterday' for check from yesterday)
+                'report_log' for send email with status report
         """
         # Utility:
         def get_clean_date(record_field):
@@ -468,6 +470,7 @@ class ConnectorServer(orm.Model):
         if context is None:
             context = {}
         from_yesterday = context.get('from_yesterday')
+        report_log = context.get('report_log')
 
         # Pool used:
         order_pool = self.pool.get('wordpress.sale.order')
@@ -519,7 +522,7 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Insert order
         # ---------------------------------------------------------------------
-        force_context = context.copy()  # Used for update manual stock mgmnt
+        force_context = context.copy()  # Used for update manual stock mngmnt
 
         # Sorted so parent first:
         new_order_ids = []
@@ -680,17 +683,23 @@ class ConnectorServer(orm.Model):
                 _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
                 continue
 
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('New order'),
-            'view_type': 'form',
-            'view_mode': 'tree,form',
-            # 'res_id': 1,
-            'res_model': 'wordpress.sale.order',
-            'view_id': False,
-            'views': [(False, 'tree'), (False, 'form')],
-            'domain': [('id', 'in', new_order_ids)],
-            'context': context,
-            'target': 'current',
-            'nodestroy': False,
-            }
+        if report_log:  # Send mail to manager group
+            ctx = context.copy()
+            ctx['send_group'] = 'wp_connector.group_order_report_manager'
+            return self.status_wordpress_order_report(
+                cr, uid, ids, context=ctx)
+        else:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('New order'),
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                # 'res_id': 1,
+                'res_model': 'wordpress.sale.order',
+                'view_id': False,
+                'views': [(False, 'tree'), (False, 'form')],
+                'domain': [('id', 'in', new_order_ids)],
+                'context': context,
+                'target': 'current',
+                'nodestroy': False,
+                }

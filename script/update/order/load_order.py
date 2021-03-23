@@ -40,6 +40,7 @@ for root, folders, files in os.walk('..'):
         server = config.get('dbaccess', 'server')
         port = config.get('dbaccess', 'port')
         connector_id = int(config.get('dbaccess', 'connector_id'))
+        send_message = eval(config.get('dbaccess', 'send_message'))
 
         # ---------------------------------------------------------------------
         # Connect to ODOO:
@@ -56,6 +57,10 @@ for root, folders, files in os.walk('..'):
         # Check call parameters:
         if argv[1].lower() == 'yesterday':
             odoo.context = {'from_yesterday': True}
+        else:
+            # Send message with all order from wordpress to the manager group
+            if send_message:
+                odoo.context = {'report_log': True}
         log_message(f_log, 'Call mode %s' % argv[1])
 
         connector_pool = odoo.model('connector.server')
