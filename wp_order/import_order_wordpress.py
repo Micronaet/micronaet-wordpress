@@ -479,8 +479,9 @@ class ConnectorServer(orm.Model):
         product_pool = self.pool.get('product.product')
         web_product_pool = self.pool.get('product.product.web.server')
 
-        _logger.warning('Read order on wordpress [from_yesterday = %s]' %
-                        from_yesterday)
+        _logger.warning(
+            'Read order on wordpress [from_yesterday=%s, report_log=%s]' % (
+                from_yesterday, report_log)
 
         # ---------------------------------------------------------------------
         #                        CREATE ORDERS OPERATION:
