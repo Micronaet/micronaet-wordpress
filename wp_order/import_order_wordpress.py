@@ -411,13 +411,14 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Return excel file:
         if send_group:
-            return excel_pool.send_mail_to_group(
+            excel_pool.send_mail_to_group(
                 cr, uid,
                 send_group,
                 'Ordini Wordpress',
                 'Elenco ordini Wordpress',
                 'ordinato.xlsx',
                 context=context)
+            return True
         else:
             return excel_pool.return_attachment(cr, uid, 'wordpress_order')
 
