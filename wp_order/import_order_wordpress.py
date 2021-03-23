@@ -481,7 +481,7 @@ class ConnectorServer(orm.Model):
 
         _logger.warning(
             'Read order on wordpress [from_yesterday=%s, report_log=%s]' % (
-                from_yesterday, report_log)
+                from_yesterday, report_log))
 
         # ---------------------------------------------------------------------
         #                        CREATE ORDERS OPERATION:
