@@ -124,7 +124,12 @@ class ConnectorServer(orm.Model):
 
     def status_wordpress_order_report(self, cr, uid, ids, context=None):
         """ Status order excel report
+            context: send_group > name of group if file will be sent
         """
+        if context is None:
+            context = {}
+        send_group = context.get('send_group')
+
         excel_pool = self.pool.get('excel.writer')
         line_pool = self.pool.get('wordpress.sale.order.line')
 
@@ -405,7 +410,16 @@ class ConnectorServer(orm.Model):
 
         # ---------------------------------------------------------------------
         # Return excel file:
-        return excel_pool.return_attachment(cr, uid, 'wordpress_order')
+        if send_group:
+            return excel_pool.send_mail_to_group(
+                cr, uid,
+                send_group,
+                'Ordini Wordpress',
+                'Elenco ordini Wordpress',
+                'ordinato.xlxs',
+                context=context)
+        else:
+            return excel_pool.return_attachment(cr, uid, 'wordpress_order')
 
     # Override function to get sold status
     def sold_product_on_website(self, cr, uid, ids, context=None):

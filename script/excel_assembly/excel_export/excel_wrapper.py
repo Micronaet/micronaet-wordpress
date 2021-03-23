@@ -197,6 +197,11 @@ class ExcelWriter:
         return self._WS[ws_name].write_formula(
             row, col, formula, default_format, value)
 
+    def write_url(self, ws_name, cell, link, string):
+        """ Write formula in cell passed
+        """
+        return self._WS[ws_name].write_url(cell, link, string=string)
+
     def set_format(
             self,
             # Title:
