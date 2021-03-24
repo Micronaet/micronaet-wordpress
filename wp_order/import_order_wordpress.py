@@ -432,18 +432,6 @@ class ConnectorServer(orm.Model):
         # Shipping order:
         # ---------------------------------------------------------------------
         ws_name = 'Analisi prodotti'
-        excel_pool.create_worksheet(ws_name)
-        row = 0
-        excel_pool.column_width(ws_name, width)
-
-        # 1 Title
-        excel_pool.write_xls_line(
-            ws_name, row, [
-                'Sato prodotti web'],
-            default_format=excel_format['title'])
-        row += 2
-
-        # 2 Header
         product_header = [
             'Codice', 'Prodotto',
             'Venduto q.', 'Fatturato',
@@ -454,6 +442,19 @@ class ConnectorServer(orm.Model):
             10, 10,
             10, 12,
         ]
+
+        excel_pool.create_worksheet(ws_name)
+        row = 0
+        excel_pool.column_width(ws_name, product_width)
+
+        # 1 Title
+        excel_pool.write_xls_line(
+            ws_name, row, [
+                'Sato prodotti web'],
+            default_format=excel_format['title'])
+        row += 2
+
+        # 2 Header
         excel_pool.write_xls_line(
             ws_name, row, product_header,
             default_format=excel_format['header'])
@@ -467,7 +468,7 @@ class ConnectorServer(orm.Model):
             order_data = product_stats[product]
             product_data = [
                 product.default_code,
-                product.name,
+                '',  # product.name,
                 order_data['quantity'],
                 order_data['total'],
                 order_data['last_price'],
@@ -477,7 +478,6 @@ class ConnectorServer(orm.Model):
             excel_pool.write_xls_line(
                 ws_name, row, product_data,
                 default_format=excel_format['white'])
-
             row += 1
 
         # ---------------------------------------------------------------------
