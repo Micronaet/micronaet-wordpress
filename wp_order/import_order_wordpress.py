@@ -468,7 +468,7 @@ class ConnectorServer(orm.Model):
             # Write line:
             excel_pool.write_xls_line(
                 ws_name, row, product_data,
-                default_format=excel_format['text'])
+                default_format=excel_format['white'])
 
             row += 1
 
