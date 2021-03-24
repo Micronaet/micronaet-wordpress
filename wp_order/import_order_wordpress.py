@@ -444,8 +444,16 @@ class ConnectorServer(orm.Model):
         row += 2
 
         # 2 Header
-        product_header = []
-        product_width = [10, 10, ]
+        product_header = [
+            'Codice', 'Prodotto',
+            'Venduto q.', 'Fatturato',
+            'Ultimo p.d.v.', 'Ultima vendita',
+        ]
+        product_width = [
+            15, 30,
+            10, 10,
+            10, 12,
+        ]
         excel_pool.write_xls_line(
             ws_name, row, product_header,
             default_format=excel_format['header'])
@@ -458,8 +466,8 @@ class ConnectorServer(orm.Model):
         for product in sorted(product_stats, key=lambda x: x.default_code):
             order_data = product_stats[product]
             product_data = [
-                product.name,
                 product.default_code,
+                product.name,
                 order_data['quantity'],
                 order_data['total'],
                 order_data['last_price'],
