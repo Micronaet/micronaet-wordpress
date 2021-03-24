@@ -451,6 +451,7 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         ws_name = 'Analisi prodotti'
         product_header = [
+            'Pubbl.',
             'Codice', 'Prodotto',
             'Venduto q.', 'Fatturato',
             'Ultima vendita', 'Ultimo p.d.v.',
@@ -458,6 +459,7 @@ class ConnectorServer(orm.Model):
             'Prezzo ODOO', 'Prezzo web',
         ]
         product_width = [
+            8,
             15, 40,
             10, 10,
             10, 12,
@@ -480,7 +482,7 @@ class ConnectorServer(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, product_header,
             default_format=excel_format['header'])
-        excel_pool.autofilter(ws_name, row, 0, row, 1)
+        excel_pool.autofilter(ws_name, row, 0, row, 2)
         row += 1
 
         if False in product_stats:
@@ -507,13 +509,13 @@ class ConnectorServer(orm.Model):
                     stock_qty = stock_qty // multiplier
                 odoo_price = web_product.force_price or web_product.lst_price
                 price = web_product_pool.get_wp_price(web_product)
+                published = web_product.published
             else:
                 stock_qty = 0.0
-                stock_comment = ''
-                odoo_price = ''
-                price = ''
+                stock_comment = odoo_price = price = published = ''
 
             product_data = [
+                'X' if published else '',
                 product.default_code or '',
                 product.name or '',
                 (order_data['quantity'] or '', color['number']),
