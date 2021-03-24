@@ -431,7 +431,6 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Shipping order:
         # ---------------------------------------------------------------------
-        """
         ws_name = 'Analisi prodotti'
         product_header = [
             'Codice', 'Prodotto',
@@ -465,22 +464,23 @@ class ConnectorServer(orm.Model):
         if False in product_stats:
             del(product_stats[False])
 
+        pdb.set_trace()
         for product in sorted(product_stats, key=lambda x: x.default_code):
             order_data = product_stats[product]
             product_data = [
-                product.default_code,
+                '',  # product.default_code,
                 '',  # product.name,
-                order_data['quantity'],
-                order_data['total'],
-                order_data['last_price'],
-                order_data['last_date'],
+                order_data['quantity'] or '',
+                order_data['total'] or '',
+                order_data['last_price'] or '',
+                order_data['last_date'] or '',
             ]
             # Write line:
             excel_pool.write_xls_line(
                 ws_name, row, product_data,
                 default_format=excel_format['white'])
             row += 1
-        """
+
         # ---------------------------------------------------------------------
         # Return excel file:
         if send_group:
