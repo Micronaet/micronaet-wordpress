@@ -178,7 +178,7 @@
             <field name="view_mode">tree,form</field>
         </record>
         <record id="wordpress_sale_order_transport_view_action" model="ir.actions.act_window">
-            <field name="name">Wordpress order</field>
+            <field name="name">Wordpress trasporti</field>
             <field name="type">ir.actions.act_window</field>
             <field name="view_id" ref="wordpress_sale_order_insert_transport_view_tree"/>
             <field name="res_model">wordpress.sale.order</field>
