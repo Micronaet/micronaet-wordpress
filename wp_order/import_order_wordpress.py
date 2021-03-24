@@ -209,13 +209,31 @@ class ConnectorServer(orm.Model):
             'shipping': [],  # transport present
         }
         today = ('%s' % (datetime.now() - timedelta(days=1)))[:10]
+        product_stats = {}
         for line in line_pool.browse(cr, uid, line_ids, context=context):
             order = line.order_id
             state = order.state
-
+            product = line.product_id or False
+            if product not in product_stats:
+                product_stats[product] = {
+                    'quantity': 0.0,
+                    'total': 0.0,
+                    'last_price': 0.0,
+                    'last_date': False,
+                }
             report_data['all'].append(line)
 
             completed = (order.wp_date_completed or '')[:10]
+            if completed:   # For statistic:
+                product_stats[product]['quantity'] += line.quantity
+                product_stats[product]['total'] += line.total
+
+                date_order = line.order_id.date_order
+                if not product_stats[product]['last_date'] or \
+                        date_order > product_stats[product]['last_date']:
+                    product_stats[product]['last_price'] = line.price
+                    product_stats[product]['last_date'] = date_order
+
             if completed and completed >= today:
                 report_data['completed'].append(line)
 
@@ -406,6 +424,50 @@ class ConnectorServer(orm.Model):
                            key=lambda x: (
                                 x.order_id.name, x.wp_id)):
             get_standard_data_line(excel_pool, ws_name, row, line)
+            row += 1
+
+        # ---------------------------------------------------------------------
+        # Shipping order:
+        # ---------------------------------------------------------------------
+        ws_name = 'Analisi prodotti'
+        excel_pool.create_worksheet(ws_name)
+        row = 0
+        excel_pool.column_width(ws_name, width)
+
+        # 1 Title
+        excel_pool.write_xls_line(
+            ws_name, row, [
+                'Sato prodotti web'],
+            default_format=excel_format['title'])
+        row += 2
+
+        # 2 Header
+        product_header = []
+        product_width = [10, 10, ]
+        excel_pool.write_xls_line(
+            ws_name, row, product_header,
+            default_format=excel_format['header'])
+        excel_pool.autofilter(ws_name, row, 0, row, len(product_width) - 1)
+        row += 1
+
+        if False in product_stats:
+            del(product_stats[False])
+
+        for line in sorted(product_stats, key=lambda x: x.default_code):
+            order_data = product_stats[product]
+            product_data = [
+                product.name,
+                product.default_code,
+                order_data['quantity'],
+                order_data['total'],
+                order_data['last_price'],
+                order_data['last_date'],
+            ]
+            # Write line:
+            excel_pool.write_xls_line(
+                ws_name, row, product_data,
+                default_format=excel_format['text'])
+
             row += 1
 
         # ---------------------------------------------------------------------
