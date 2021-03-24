@@ -86,7 +86,6 @@ while True:
     if not json_reply:
         break
 
-    pdb.set_trace()
     for record in json_reply:
         product_id = record['id']
         lang = record['lang']
