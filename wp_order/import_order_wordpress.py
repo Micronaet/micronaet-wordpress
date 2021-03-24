@@ -490,7 +490,7 @@ class ConnectorServer(orm.Model):
                 if multiplier > 1:
                     stock_qty = stock_qty // multiplier
                 odoo_price = web_product.force_price or web_product.lst_price
-                price = self.get_wp_price(web_product)
+                price = web_product_pool.get_wp_price(web_product)
             else:
                 stock_qty = 0.0
                 stock_comment = ''
