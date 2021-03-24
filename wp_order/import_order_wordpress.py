@@ -44,6 +44,8 @@ class WordpressSaleOrder(orm.Model):
         'wp_id': fields.integer('Worpress ID of order'),
         'total': fields.float('Total', digits=(10, 2)),
         'shipping_total': fields.float('Shipping total', digits=(10, 2)),
+        'real_shipping_total': fields.float(
+            'Spedizione effettiva', digits=(10, 2)),
         'currency': fields.char('Currency'),
         'date_order': fields.date('Date order'),
 

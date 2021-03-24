@@ -73,6 +73,7 @@
                                 <field name="wp_date_completed" />
                                 <field name="payment"/>
                                 <field name="shipping_total"/>
+                                <field name="real_shipping_total"/>
                                 <field name="total"/>
                                 <field name="currency"/>
                             </group>
@@ -135,10 +136,36 @@
                     <field name="partner_phone"/>
 
                     <field name="payment"/>
-                    <field name="shipping_total" sum="Shipping"/>
-                    <field name="total" sum="Total"/>
+                    <field name="real_shipping_total" sum="Spedizione reale"/>
+                    <field name="shipping_total" sum="Spedizione applicata"/>
+                    <field name="total" sum="Totale"/>
                     <field name="currency"/>
                     <field name="state" />
+                </tree>
+            </field>
+        </record>
+        <record id="wordpress_sale_order_insert_transport_view_tree" model="ir.ui.view">
+            <field name="name">wordpress.sale.order.transport.tree</field>
+            <field name="model">wordpress.sale.order</field>
+            <field name="arch" type="xml">
+                <tree string="Wordpress Order" editable="bottom" colors="red:state in ('cancelled', 'trash', 'failed'); grey: state in ('pending', 'on-hold'); blue: state == 'processing'; green: state == 'completed'; brown: state == 'refunded'">
+                    <field name="name" readonly="1"/>
+                    <field name="key" readonly="1"/>
+                    <field name="date_order" readonly="1"/>
+                    <field name="wp_date_created" invisible="1"/>
+                    <field name="wp_date_modified" invisible="1"/>
+                    <field name="wp_date_paid" readonly="1"/>
+                    <field name="wp_date_completed" readonly="1" />
+                    <field name="partner_name" readonly="1"/>
+                    <field name="partner_email" readonly="1"/>
+                    <field name="partner_phone" readonly="1"/>
+
+                    <field name="payment" readonly="1"/>
+                    <field name="real_shipping_total" sum="Spedizione reale"/>
+                    <field name="shipping_total" sum="Spedizione applicata" readonly="1"/>
+                    <field name="total" sum="Totale" readonly="1"/>
+                    <field name="currency" readonly="1"/>
+                    <field name="state" readonly="1" />
                 </tree>
             </field>
         </record>
@@ -147,7 +174,15 @@
             <field name="name">Wordpress order</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
+            <field name="view_id" ref="wordpress_sale_order_view_tree"/>
             <field name="view_mode">tree,form</field>
+        </record>
+        <record id="wordpress_sale_order_transport_view_action" model="ir.actions.act_window">
+            <field name="name">Wordpress order</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_id" ref="wordpress_sale_order_insert_transport_view_tree"/>
+            <field name="res_model">wordpress.sale.order</field>
+            <field name="view_mode">tree</field>
         </record>
 
         <menuitem
@@ -161,6 +196,12 @@
                 id="menu_wordpress_sale_order_view_action"
                 action="wordpress_sale_order_view_action"
                 sequence="10"
+                />
+            <menuitem
+                parent="menu_connector_wordpress_order"
+                id="menu_wordpress_sale_order_transport_view_action"
+                action="wordpress_sale_order_transport_view_action"
+                sequence="20"
                 />
     </data>
 </openerp>
