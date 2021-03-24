@@ -134,6 +134,8 @@ class ConnectorServer(orm.Model):
 
         excel_pool = self.pool.get('excel.writer')
         line_pool = self.pool.get('wordpress.sale.order.line')
+        web_product_pool = self.pool.get('product.product.web.server')
+        connector_id = ids[0]
 
         # Utility:
         def get_standard_data_line(excel_pool, ws_name, row, line):
@@ -436,11 +438,15 @@ class ConnectorServer(orm.Model):
             'Codice', 'Prodotto',
             'Venduto q.', 'Fatturato',
             'Ultimo p.d.v.', 'Ultima vendita',
+            'Esistenza web',
+            'Prezzo ODOO', 'Prezzo web',
         ]
         product_width = [
             15, 40,
             10, 10,
             10, 12,
+            10,
+            10, 10,
         ]
 
         excel_pool.create_worksheet(ws_name)
@@ -466,14 +472,43 @@ class ConnectorServer(orm.Model):
         color = excel_format['white']  # TODO parameter
 
         for product in sorted(product_stats, key=lambda x: x.default_code):
+            # 1. Order data:
             order_data = product_stats[product]
+
+            # 2. Web product data:
+            web_product_ids = web_product_pool.search(cr, uid, [
+                ('connector_id', '=', connector_id),
+                ('product_id', '=', product.id),
+            ], context=context)
+            if web_product_ids:
+                web_product = web_product_pool.browse(
+                    cr, uid, web_product_ids, context=context)[0]
+                stock_qty, stock_comment = \
+                    self.get_existence_for_product(
+                        cr, uid, web_product, context=context)
+                multiplier = web_product.price_multi or 1
+                if multiplier > 1:
+                    stock_qty = stock_qty // multiplier
+                odoo_price = web_product.force_price or web_product.lst_price
+                price = self.get_wp_price(web_product)
+            else:
+                stock_qty = 0.0
+                stock_comment = ''
+                odoo_price = ''
+                price = ''
+
             product_data = [
                 product.default_code or '',
                 product.name or '',
                 (order_data['quantity'] or '', color['number']),
                 (order_data['total'] or '', color['number']),
-                (order_data['last_price'] or '', color['number']),
                 order_data['last_date'] or '',
+                (order_data['last_price'] or '', color['number']),
+
+                (stock_qty, color['number']),
+                # stock_comment
+                (odoo_price, color['number']),
+                (price, color['number']),
             ]
             # Write line:
             excel_pool.write_xls_line(
