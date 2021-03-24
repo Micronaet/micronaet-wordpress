@@ -212,7 +212,7 @@ class ConnectorServer(orm.Model):
             'working': [],  # working order
             'waiting': [],  # waiting for payment
             'shipping': [],  # transport present
-            'invoiced': [],  # invoiced
+            'invoiced': {},  # invoiced
         }
         today = ('%s' % (datetime.now() - timedelta(days=1)))[:10]
 
@@ -221,7 +221,6 @@ class ConnectorServer(orm.Model):
         order_ids = order_pool.search(cr, uid, [
             ('connector_id', '=', connector_id),
         ], context=context)
-        pdb.set_trace()
         for order in order_pool.browse(
                 cr, uid, order_ids, context=context):
             state = order.state
