@@ -201,6 +201,7 @@
                 parent="menu_connector_wordpress_order"
                 id="menu_wordpress_sale_order_transport_view_action"
                 action="wordpress_sale_order_transport_view_action"
+                groups="wp_order.group_order_transport_manager"
                 sequence="20"
                 />
     </data>
