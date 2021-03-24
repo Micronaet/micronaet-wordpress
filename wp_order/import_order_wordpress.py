@@ -213,7 +213,23 @@ class ConnectorServer(orm.Model):
             'shipping': [],  # transport present
         }
         today = ('%s' % (datetime.now() - timedelta(days=1)))[:10]
+
+        # ---------------------------------------------------------------------
+        # Product analysis database (init setup):
         product_stats = {}
+        web_product_ids = web_product_pool.search(cr, uid, [
+            ('connector_id', '=', connector_id),
+        ], context=context)
+        for web_product in web_product_pool.browse(
+                cr, uid, web_product_ids, context=context):
+            product = web_product.product_id
+            product_stats[product] = {
+                'quantity': 0.0,
+                'total': 0.0,
+                'last_price': 0.0,
+                'last_date': False,
+            }
+
         for line in line_pool.browse(cr, uid, line_ids, context=context):
             order = line.order_id
             state = order.state
@@ -437,7 +453,7 @@ class ConnectorServer(orm.Model):
         product_header = [
             'Codice', 'Prodotto',
             'Venduto q.', 'Fatturato',
-            'Ultimo p.d.v.', 'Ultima vendita',
+            'Ultima vendita', 'Ultimo p.d.v.',
             'Esistenza web',
             'Prezzo ODOO', 'Prezzo web',
         ]
@@ -464,7 +480,7 @@ class ConnectorServer(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, product_header,
             default_format=excel_format['header'])
-        excel_pool.autofilter(ws_name, row, 0, row, len(product_width) - 1)
+        excel_pool.autofilter(ws_name, row, 0, row, 1)
         row += 1
 
         if False in product_stats:
