@@ -464,12 +464,11 @@ class ConnectorServer(orm.Model):
         if False in product_stats:
             del(product_stats[False])
 
-        pdb.set_trace()
         for product in sorted(product_stats, key=lambda x: x.default_code):
             order_data = product_stats[product]
             product_data = [
-                '',  # product.default_code,
-                '',  # product.name,
+                product.default_code or '',
+                product.name or '',
                 order_data['quantity'] or '',
                 order_data['total'] or '',
                 order_data['last_price'] or '',
@@ -478,7 +477,7 @@ class ConnectorServer(orm.Model):
             # Write line:
             excel_pool.write_xls_line(
                 ws_name, row, product_data,
-                default_format=excel_format['white'])
+                default_format=excel_format['white']['text'])
             row += 1
 
         # ---------------------------------------------------------------------
