@@ -438,7 +438,7 @@ class ConnectorServer(orm.Model):
             'Ultimo p.d.v.', 'Ultima vendita',
         ]
         product_width = [
-            15, 30,
+            15, 40,
             10, 10,
             10, 12,
         ]
@@ -463,21 +463,22 @@ class ConnectorServer(orm.Model):
 
         if False in product_stats:
             del(product_stats[False])
+        color = excel_format['white']  # TODO parameter
 
         for product in sorted(product_stats, key=lambda x: x.default_code):
             order_data = product_stats[product]
             product_data = [
                 product.default_code or '',
                 product.name or '',
-                order_data['quantity'] or '',
-                order_data['total'] or '',
-                order_data['last_price'] or '',
+                (order_data['quantity'] or '', color['number']),
+                (order_data['total'] or '', color['number']),
+                (order_data['last_price'] or '', color['number']),
                 order_data['last_date'] or '',
             ]
             # Write line:
             excel_pool.write_xls_line(
                 ws_name, row, product_data,
-                default_format=excel_format['white']['text'])
+                default_format=color['text'])
             row += 1
 
         # ---------------------------------------------------------------------
