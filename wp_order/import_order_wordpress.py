@@ -455,7 +455,7 @@ class ConnectorServer(orm.Model):
         if False in product_stats:
             del(product_stats[False])
 
-        for line in sorted(product_stats, key=lambda x: x.default_code):
+        for product in sorted(product_stats, key=lambda x: x.default_code):
             order_data = product_stats[product]
             product_data = [
                 product.name,
