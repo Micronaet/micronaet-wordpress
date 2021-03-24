@@ -234,19 +234,19 @@ class ConnectorServer(orm.Model):
                 _logger.error('No order date error (%s)!' % order.name)
                 continue
             if period not in report_data['invoiced']:
-                report_data['invoiced'] = [
+                report_data['invoiced'][period] = [
                     0.0, 0.0, 0.0,  # done, pending, cancel
                     0.0, 0.0  # shipping, real_shipping
                 ]
 
             if state in ('completed', ):
-                report_data['invoiced'][0] += total
-                report_data['invoiced'][3] += shipping
-                report_data['invoiced'][4] += real_shipping
+                report_data['invoiced'][period][0] += total
+                report_data['invoiced'][period][3] += shipping
+                report_data['invoiced'][period][4] += real_shipping
             elif state in ('pending', 'processing', 'on-hold'):  # pending
-                report_data['invoiced'][1] += total
+                report_data['invoiced'][period][1] += total
             elif state in ('refunded', 'failed', 'trash', 'cancelled'):
-                report_data['invoiced'][2] += total
+                report_data['invoiced'][period][2] += total
 
         # ---------------------------------------------------------------------
         # Product analysis database (init setup):
@@ -433,7 +433,6 @@ class ConnectorServer(orm.Model):
         row += 1
 
         color = excel_format['white']
-        pdb.set_trace()
         for period in sorted(report_data['invoiced']):
             invoiced_data = report_data['invoiced'][period]
             data = [
