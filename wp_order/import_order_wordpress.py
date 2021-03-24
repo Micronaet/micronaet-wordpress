@@ -221,6 +221,7 @@ class ConnectorServer(orm.Model):
         order_ids = order_pool.search(cr, uid, [
             ('connector_id', '=', connector_id),
         ], context=context)
+        pdb.set_trace()
         for order in order_pool.browse(
                 cr, uid, order_ids, context=context):
             state = order.state
@@ -236,7 +237,7 @@ class ConnectorServer(orm.Model):
             if period not in report_data['invoiced']:
                 report_data['invoiced'][period] = [
                     0.0, 0.0, 0.0,  # done, pending, cancel
-                    0.0, 0.0  # shipping, real_shipping
+                    0.0, 0.0,  # shipping, real_shipping
                 ]
 
             if state in ('completed', ):
