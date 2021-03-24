@@ -484,7 +484,7 @@ class ConnectorServer(orm.Model):
                 web_product = web_product_pool.browse(
                     cr, uid, web_product_ids, context=context)[0]
                 stock_qty, stock_comment = \
-                    self.get_existence_for_product(
+                    web_product_pool.get_existence_for_product(
                         cr, uid, web_product, context=context)
                 multiplier = web_product.price_multi or 1
                 if multiplier > 1:
