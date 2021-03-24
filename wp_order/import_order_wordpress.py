@@ -431,6 +431,7 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Shipping order:
         # ---------------------------------------------------------------------
+        """
         ws_name = 'Analisi prodotti'
         product_header = [
             'Codice', 'Prodotto',
@@ -479,7 +480,7 @@ class ConnectorServer(orm.Model):
                 ws_name, row, product_data,
                 default_format=excel_format['white'])
             row += 1
-
+        """
         # ---------------------------------------------------------------------
         # Return excel file:
         if send_group:
