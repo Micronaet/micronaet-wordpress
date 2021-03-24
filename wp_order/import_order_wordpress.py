@@ -134,6 +134,7 @@ class ConnectorServer(orm.Model):
 
         excel_pool = self.pool.get('excel.writer')
         line_pool = self.pool.get('wordpress.sale.order.line')
+        order_pool = self.pool.get('wordpress.sale.order')
         web_product_pool = self.pool.get('product.product.web.server')
         connector_id = ids[0]
 
@@ -211,8 +212,41 @@ class ConnectorServer(orm.Model):
             'working': [],  # working order
             'waiting': [],  # waiting for payment
             'shipping': [],  # transport present
+            'invoiced': [],  # invoiced
         }
         today = ('%s' % (datetime.now() - timedelta(days=1)))[:10]
+
+        # ---------------------------------------------------------------------
+        # Order invoiced:
+        order_ids = web_product_pool.search(cr, uid, [
+            ('connector_id', '=', connector_id),
+        ], context=context)
+        for order in web_product_pool.browse(
+                cr, uid, order_ids, context=context):
+            state = order.state
+            date = order.date_order
+            period = date[:7]
+            total = order.total
+            shipping = order.shipping_total
+            real_shipping = order.real_shipping_total
+            # currency = order.currency
+            if not date:
+                _logger.error('No order date error (%s)!' % order.name)
+                continue
+            if period not in report_data['invoiced']:
+                report_data['invoiced'] = [
+                    0.0, 0.0, 0.0,  # done, pending, cancel
+                    0.0, 0.0  # shipping, real_shipping
+                ]
+
+            if state in ('completed', ):
+                report_data['invoiced'][0] += total
+                report_data['invoiced'][3] += shipping
+                report_data['invoiced'][4] += real_shipping
+            elif state in ('pending', 'processing', 'on-hold'):  # pending
+                report_data['invoiced'][1] += total
+            elif state in ('refunded', 'failed', 'trash', 'cancelled'):
+                report_data['invoiced'][2] += total
 
         # ---------------------------------------------------------------------
         # Product analysis database (init setup):
@@ -363,6 +397,51 @@ class ConnectorServer(orm.Model):
                            key=lambda x: (
                                 x.order_id.wp_date_completed, x.wp_id)):
             get_standard_data_line(excel_pool, ws_name, row, line)
+            row += 1
+
+        # ---------------------------------------------------------------------
+        # Order invoiced per period:
+        # ---------------------------------------------------------------------
+        ws_name = 'Ordini fatturati per periodo'
+        invoiced_header = [
+            'Periodo',
+            'Tot. pendenti', 'Tot. annullati', 'Tot. fatturati',
+            'Trasp. esp.', 'Trasp. reale',
+        ]
+        invoiced_width = [
+            12,
+            15, 15, 15,
+            15, 15,
+        ]
+        excel_pool.create_worksheet(ws_name)
+        row = 0
+        excel_pool.column_width(ws_name, invoiced_width)
+
+        # 1 Title
+        excel_pool.write_xls_line(
+            ws_name, row, [
+                'Elenco ordini fatturati raggruppati per anno-mese'],
+            default_format=excel_format['title'])
+        row += 2
+
+        # 2 Header
+        excel_pool.write_xls_line(
+            ws_name, row, invoiced_header,
+            default_format=excel_format['header'])
+        excel_pool.autofilter(
+            ws_name, row, 0, row, len(invoiced_width) - 1)
+        row += 1
+
+        color = excel_format['white']
+        for period in sorted(report_data['invoiced']):
+            invoiced_data = report_data['invoiced'][period]
+            data = [
+                (period, color['text']),
+                invoiced_data[1], invoiced_data[2], invoiced_data[0],
+                invoiced_data[3], invoiced_data[4],
+            ]
+            excel_pool.write_xls_line(
+                ws_name, row, data, default_format=color['number'])
             row += 1
 
         # ---------------------------------------------------------------------
