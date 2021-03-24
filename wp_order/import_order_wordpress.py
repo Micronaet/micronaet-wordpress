@@ -433,6 +433,7 @@ class ConnectorServer(orm.Model):
         row += 1
 
         color = excel_format['white']
+        pdb.set_trace()
         for period in sorted(report_data['invoiced']):
             invoiced_data = report_data['invoiced'][period]
             data = [
