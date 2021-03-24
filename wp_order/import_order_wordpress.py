@@ -218,10 +218,10 @@ class ConnectorServer(orm.Model):
 
         # ---------------------------------------------------------------------
         # Order invoiced:
-        order_ids = web_product_pool.search(cr, uid, [
+        order_ids = order_pool.search(cr, uid, [
             ('connector_id', '=', connector_id),
         ], context=context)
-        for order in web_product_pool.browse(
+        for order in order_pool.browse(
                 cr, uid, order_ids, context=context):
             state = order.state
             date = order.date_order
