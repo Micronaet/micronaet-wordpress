@@ -139,6 +139,13 @@ class ConnectorServer(orm.Model):
         connector_id = ids[0]
 
         # Utility:
+        def get_extra_cost(mode, period, total):
+            """ Extract extra cost
+            """
+            if mode == 'micronaet':
+                if period >= '2021-03':
+                    return total * 0.05
+
         def get_standard_data_line(excel_pool, ws_name, row, line):
             """ Return list of fields for this line
             """
@@ -409,7 +416,9 @@ class ConnectorServer(orm.Model):
         color = excel_format['white']
         for period in sorted(report_data['invoiced']):
             invoiced_data = report_data['invoiced'][period]
-            net = invoiced_data[0]  # TODO
+            micronaet_cost = get_extra_cost(
+                'micronaet', period, invoiced_data[0])
+            net = invoiced_data[0] - micronaet_cost  # TODO
             data = [
                 (period, color['text']),
                 invoiced_data[1], invoiced_data[2], invoiced_data[0],
