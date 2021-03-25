@@ -145,6 +145,7 @@ class ConnectorServer(orm.Model):
             if mode == 'micronaet':
                 if period >= '2021-03':
                     return total * 0.05
+            return 0.0
 
         def get_standard_data_line(excel_pool, ws_name, row, line):
             """ Return list of fields for this line
@@ -423,7 +424,7 @@ class ConnectorServer(orm.Model):
                 (period, color['text']),
                 invoiced_data[1], invoiced_data[2], invoiced_data[0],
                 invoiced_data[3], invoiced_data[4],
-                0.0, 0.0, net,
+                micronaet_cost, 0.0, net,
             ]
             excel_pool.write_xls_line(
                 ws_name, row, data, default_format=color['number'])
