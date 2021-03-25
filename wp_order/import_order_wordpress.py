@@ -379,12 +379,13 @@ class ConnectorServer(orm.Model):
         invoiced_header = [
             'Periodo',
             'Tot. pendenti', 'Tot. annullati', 'Tot. fatturati',
-            'Trasp. esp.', 'Trasp. reale',
+            'Trasp. esp.', 'Trasp. reale', 'Micronaet', 'Keywords', 'Netto',
         ]
         invoiced_width = [
             12,
             15, 15, 15,
             15, 15,
+            15, 15, 15,
         ]
         excel_pool.create_worksheet(ws_name)
         row = 0
@@ -408,10 +409,12 @@ class ConnectorServer(orm.Model):
         color = excel_format['white']
         for period in sorted(report_data['invoiced']):
             invoiced_data = report_data['invoiced'][period]
+            net = invoiced_data[0]  # TODO
             data = [
                 (period, color['text']),
                 invoiced_data[1], invoiced_data[2], invoiced_data[0],
                 invoiced_data[3], invoiced_data[4],
+                0.0, 0.0, net,
             ]
             excel_pool.write_xls_line(
                 ws_name, row, data, default_format=color['number'])
