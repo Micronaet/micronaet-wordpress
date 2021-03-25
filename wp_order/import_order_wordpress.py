@@ -221,7 +221,6 @@ class ConnectorServer(orm.Model):
         order_ids = order_pool.search(cr, uid, [
             ('connector_id', '=', connector_id),
         ], context=context)
-        prova = ''
         for order in order_pool.browse(
                 cr, uid, order_ids, context=context):
             state = order.state
@@ -244,14 +243,11 @@ class ConnectorServer(orm.Model):
                 report_data['invoiced'][period][0] += total
                 report_data['invoiced'][period][3] += shipping
                 report_data['invoiced'][period][4] += real_shipping
-                if period == '2021-03':
-                    prova += ' + %s' % shipping
             elif state in ('pending', 'processing', 'on-hold'):  # pending
                 report_data['invoiced'][period][1] += total
             elif state in ('refunded', 'failed', 'trash', 'cancelled'):
                 report_data['invoiced'][period][2] += total
-        print(prova)
-        pdb.set_trace()
+
         # ---------------------------------------------------------------------
         # Product analysis database (init setup):
         product_stats = {}
