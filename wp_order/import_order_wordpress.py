@@ -221,6 +221,7 @@ class ConnectorServer(orm.Model):
         order_ids = order_pool.search(cr, uid, [
             ('connector_id', '=', connector_id),
         ], context=context)
+        prova = ''
         for order in order_pool.browse(
                 cr, uid, order_ids, context=context):
             state = order.state
@@ -243,11 +244,14 @@ class ConnectorServer(orm.Model):
                 report_data['invoiced'][period][0] += total
                 report_data['invoiced'][period][3] += shipping
                 report_data['invoiced'][period][4] += real_shipping
+                if period == '2021-03':
+                    prova += ' + %s' % shipping
             elif state in ('pending', 'processing', 'on-hold'):  # pending
                 report_data['invoiced'][period][1] += total
             elif state in ('refunded', 'failed', 'trash', 'cancelled'):
                 report_data['invoiced'][period][2] += total
-
+        print(prova)
+        pdb.set_trace()
         # ---------------------------------------------------------------------
         # Product analysis database (init setup):
         product_stats = {}
@@ -373,33 +377,6 @@ class ConnectorServer(orm.Model):
             row += 1
 
         # ---------------------------------------------------------------------
-        # Completed order:
-        # ---------------------------------------------------------------------
-        ws_name = 'Ordini chiusi da ieri'
-        excel_pool.create_worksheet(ws_name)
-        row = 0
-        excel_pool.column_width(ws_name, width)
-
-        # 1 Title
-        excel_pool.write_xls_line(
-            ws_name, row, [
-                'Elenco righe ordine chiusi da ieri'],
-            default_format=excel_format['title'])
-        row += 2
-
-        # 2 Header
-        excel_pool.write_xls_line(
-            ws_name, row, header, default_format=excel_format['header'])
-        excel_pool.autofilter(ws_name, row, 0, row, len(width) - 1)
-        row += 1
-
-        for line in sorted(report_data['completed'],
-                           key=lambda x: (
-                                x.order_id.wp_date_completed, x.wp_id)):
-            get_standard_data_line(excel_pool, ws_name, row, line)
-            row += 1
-
-        # ---------------------------------------------------------------------
         # Order invoiced per period:
         # ---------------------------------------------------------------------
         ws_name = 'Ordini fatturati per periodo'
@@ -442,6 +419,33 @@ class ConnectorServer(orm.Model):
             ]
             excel_pool.write_xls_line(
                 ws_name, row, data, default_format=color['number'])
+            row += 1
+
+        # ---------------------------------------------------------------------
+        # Completed order:
+        # ---------------------------------------------------------------------
+        ws_name = 'Ordini chiusi da ieri'
+        excel_pool.create_worksheet(ws_name)
+        row = 0
+        excel_pool.column_width(ws_name, width)
+
+        # 1 Title
+        excel_pool.write_xls_line(
+            ws_name, row, [
+                'Elenco righe ordine chiusi da ieri'],
+            default_format=excel_format['title'])
+        row += 2
+
+        # 2 Header
+        excel_pool.write_xls_line(
+            ws_name, row, header, default_format=excel_format['header'])
+        excel_pool.autofilter(ws_name, row, 0, row, len(width) - 1)
+        row += 1
+
+        for line in sorted(report_data['completed'],
+                           key=lambda x: (
+                                x.order_id.wp_date_completed, x.wp_id)):
+            get_standard_data_line(excel_pool, ws_name, row, line)
             row += 1
 
         # ---------------------------------------------------------------------
