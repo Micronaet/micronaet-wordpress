@@ -683,7 +683,7 @@ class ConnectorServer(orm.Model):
                 stock_qty = 0.0
                 stock_comment = odoo_price = price = published = ''
 
-            if published:
+            if not published:
                 color = excel_format['grey']
             elif stock_qty > 0:
                 color = excel_format['white']
