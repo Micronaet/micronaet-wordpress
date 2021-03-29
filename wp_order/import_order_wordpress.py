@@ -263,12 +263,12 @@ class ConnectorServer(orm.Model):
                     'cancel': 0.0,
                 }
 
-            report_data['invoiced'][period]['missed'] += missed
-            report_data['invoiced'][period]['order'] += 1
             if state in ('completed', ):
                 report_data['invoiced'][period]['done'] += total
                 report_data['invoiced'][period]['done_shipping'] += shipping
                 report_data['invoiced'][period]['done_tax'] += tax
+                report_data['invoiced'][period]['missed'] += missed
+                report_data['invoiced'][period]['order'] += 1
             elif state in ('pending', 'processing', 'on-hold'):  # pending
                 report_data['invoiced'][period]['pending'] += total
                 report_data['invoiced'][period]['pending_shipping'] += shipping
@@ -622,7 +622,7 @@ class ConnectorServer(orm.Model):
             'Venduto q.', 'Fatturato',
             'Ultima vendita', 'Ultimo p.d.v.',
             'Esistenza web',
-            'Prezzo ODOO', 'Prezzo web',
+            'Prezzo ODOO', 'Prezzo web', 'Costo Adwords',
         ]
         product_width = [
             8,
@@ -630,7 +630,7 @@ class ConnectorServer(orm.Model):
             10, 10,
             10, 12,
             10,
-            10, 10,
+            10, 10, 10,
         ]
 
         excel_pool.create_worksheet(ws_name)
@@ -653,7 +653,6 @@ class ConnectorServer(orm.Model):
 
         if False in product_stats:
             del(product_stats[False])
-        color = excel_format['white']  # TODO parameter
 
         for product in sorted(product_stats, key=lambda x: x.default_code):
             # 1. Order data:
@@ -680,6 +679,10 @@ class ConnectorServer(orm.Model):
                 stock_qty = 0.0
                 stock_comment = odoo_price = price = published = ''
 
+            if stock_qty > 0:
+                color = excel_format['white']
+            else:
+                color = excel_format['red']
             product_data = [
                 'X' if published else '',
                 product.default_code or '',
@@ -693,6 +696,7 @@ class ConnectorServer(orm.Model):
                 # stock_comment
                 (odoo_price, color['number']),
                 (price, color['number']),
+                ('', color['number']),  # Adwords cost
             ]
             # Write line:
             excel_pool.write_xls_line(
