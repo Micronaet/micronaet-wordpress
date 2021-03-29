@@ -679,10 +679,12 @@ class ConnectorServer(orm.Model):
                 stock_qty = 0.0
                 stock_comment = odoo_price = price = published = ''
 
-            if stock_qty > 0:
+            if published:
+                color = excel_format['red']
+            elif stock_qty > 0:
                 color = excel_format['white']
             else:
-                color = excel_format['red']
+                color = excel_format['yellow']
             product_data = [
                 'X' if published else '',
                 product.default_code or '',
