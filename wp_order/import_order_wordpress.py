@@ -419,8 +419,8 @@ class ConnectorServer(orm.Model):
             '',
             'Totale',
             'Totale', 'Trasporto', 'Imposte',
-            'Totale', 'Trasporto', 'Spese access.', 'Imposte',
-            'Micronaet', 'Keywords', '', ''
+            'Totale', 'Trasporto', 'Imposte',
+            'Micronaet', 'Keywords', 'Spese access.', ''
             '', '',
         ]
 
@@ -452,14 +452,14 @@ class ConnectorServer(orm.Model):
             default_format=excel_format['header'])
 
         # Setup header:
-        excel_pool.merge_cell(ws_name, [row, 0, row + 1, 0])
-        excel_pool.merge_cell(ws_name, [row, 11, row + 1, 11])
-        excel_pool.merge_cell(ws_name, [row, 12, row + 1, 12])
-        excel_pool.merge_cell(ws_name, [row, 13, row + 1, 13])
+        excel_pool.merge_cell(ws_name, [row, 0, row + 1, 0])  # Periodo
+        excel_pool.merge_cell(ws_name, [row, 11, row + 1, 11])  # Netto
+        excel_pool.merge_cell(ws_name, [row, 12, row + 1, 12])  # #Ordini
+        excel_pool.merge_cell(ws_name, [row, 13, row + 1, 13])  # Trasp. manc
 
-        excel_pool.merge_cell(ws_name, [row, 2, row, 4])
-        excel_pool.merge_cell(ws_name, [row, 5, row, 7])
-        excel_pool.merge_cell(ws_name, [row, 8, row, 9])
+        excel_pool.merge_cell(ws_name, [row, 2, row, 4])  # Pendenti
+        excel_pool.merge_cell(ws_name, [row, 5, row, 7])  # Completi
+        excel_pool.merge_cell(ws_name, [row, 8, row, 10])  # Costi
         row += 1
 
         # Part B:
@@ -474,6 +474,9 @@ class ConnectorServer(orm.Model):
         for period in sorted(report_data['invoiced'], reverse=True):
             invoiced_data = report_data['invoiced'][period]
             micronaet_cost = 0.0
+            keyword_cost = 0.0
+            accessory_cost = 0.0
+
             # get_extra_cost('micronaet', period, invoiced_data[0])
             net = invoiced_data['done'] - invoiced_data['done_tax'] - \
                   invoiced_data['done_shipping'] - micronaet_cost  # TODO
@@ -486,7 +489,13 @@ class ConnectorServer(orm.Model):
                 invoiced_data['done'], invoiced_data['done_shipping'],
                 invoiced_data['done_tax'],
 
-                micronaet_cost, 0.0, net,
+                micronaet_cost,
+                keyword_cost,
+                accessory_cost,
+
+                net,
+                invoiced_data['order'],
+                invoiced_data['missed'],
             ]
 
             excel_pool.write_xls_line(
