@@ -464,7 +464,11 @@ class ConnectorServer(orm.Model):
                 (period, color['text']),
                 invoiced_data['cancel'],
                 invoiced_data['pending'], invoiced_data['pending_shipping'],
+                invoiced_data['pending_tax'],
+
                 invoiced_data['done'], invoiced_data['done_shipping'],
+                invoiced_data['done_tax'],
+
                 micronaet_cost, 0.0, net,
             ]
 
