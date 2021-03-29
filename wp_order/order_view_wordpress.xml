@@ -74,6 +74,7 @@
                                 <field name="payment"/>
                                 <field name="shipping_total"/>
                                 <field name="real_shipping_total"/>
+                                <field name="total_tax"/>
                                 <field name="total"/>
                                 <field name="currency"/>
                             </group>
@@ -138,6 +139,7 @@
                     <field name="payment"/>
                     <field name="real_shipping_total" sum="Spedizione reale"/>
                     <field name="shipping_total" sum="Spedizione applicata"/>
+                    <field name="total_tax" sum="Tasse"/>
                     <field name="total" sum="Totale"/>
                     <field name="currency"/>
                     <field name="state" />

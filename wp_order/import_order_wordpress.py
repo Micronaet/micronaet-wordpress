@@ -43,6 +43,7 @@ class WordpressSaleOrder(orm.Model):
         'key': fields.char('Order key'),
         'wp_id': fields.integer('Worpress ID of order'),
         'total': fields.float('Total', digits=(10, 2)),
+        'total_tax': fields.float('Totale tasse', digits=(10, 2)),
         'shipping_total': fields.float('Shipping total', digits=(10, 2)),
         'real_shipping_total': fields.float(
             'Spedizione effettiva', digits=(10, 2)),
@@ -235,24 +236,30 @@ class ConnectorServer(orm.Model):
             date = order.date_order
             period = date[:7]
             total = order.total
-            shipping = order.shipping_total
-            real_shipping = order.real_shipping_total
+            tax = 0.0 or order.total_tax
+            shipping = order.real_shipping_total or order.shipping_total
             # currency = order.currency
             if not date:
                 _logger.error('No order date error (%s)!' % order.name)
                 continue
             if period not in report_data['invoiced']:
-                report_data['invoiced'][period] = [
-                    0.0, 0.0, 0.0,  # done, pending, cancel
-                    0.0, 0.0,  # shipping, real_shipping
-                ]
+                report_data['invoiced'][period] = {
+                    'done': 0.0,
+                    'done_shipping': 0.0,
+                    # 'done_real': 0.0,   # shipping
+                    'pending': 0.0,
+                    'pending_shipping': 0.0,
+                    'cancel': 0.0,
+                }
 
             if state in ('completed', ):
-                report_data['invoiced'][period][0] += total
-                report_data['invoiced'][period][3] += shipping
-                report_data['invoiced'][period][4] += real_shipping
+                report_data['invoiced'][period]['done'] += total
+                report_data['invoiced'][period]['done_shipping'] += shipping
+                report_data['invoiced'][period]['done_tax'] += tax
             elif state in ('pending', 'processing', 'on-hold'):  # pending
-                report_data['invoiced'][period][1] += total
+                report_data['invoiced'][period]['pending'] += total
+                report_data['invoiced'][period]['pending_shipping'] += shipping
+                report_data['invoiced'][period]['pending_tax'] += shipping
             elif state in ('refunded', 'failed', 'trash', 'cancelled'):
                 report_data['invoiced'][period][2] += total
 
@@ -386,12 +393,15 @@ class ConnectorServer(orm.Model):
         ws_name = 'Ordini fatturati per periodo'
         invoiced_header = [
             'Periodo',
-            'Tot. pendenti', 'Tot. annullati', 'Tot. fatturati',
-            'Trasp. esp.', 'Trasp. reale', 'Micronaet', 'Keywords', 'Netto',
+            'Tot. annullati',
+            'Tot. pendenti', 'Trasp. pend.',
+            'Tot. fatturati', 'Trasp. fatt.',
+            'Micronaet', 'Keywords', 'Netto',
         ]
         invoiced_width = [
             12,
-            15, 15, 15,
+            15,
+            15, 15,
             15, 15,
             15, 15, 15,
         ]
@@ -422,10 +432,12 @@ class ConnectorServer(orm.Model):
             net = invoiced_data[0] - micronaet_cost  # TODO
             data = [
                 (period, color['text']),
-                invoiced_data[1], invoiced_data[2], invoiced_data[0],
-                invoiced_data[3], invoiced_data[4],
+                invoiced_data['cancel'],
+                invoiced_data['pending'], invoiced_data['pending_shipping'],
+                invoiced_data['done'], invoiced_data['done_shipping'],
                 micronaet_cost, 0.0, net,
             ]
+
             excel_pool.write_xls_line(
                 ws_name, row, data, default_format=color['number'])
             row += 1
@@ -784,6 +796,7 @@ class ConnectorServer(orm.Model):
                     'note': record['customer_note'],
                     'payment': record['payment_method_title'],
                     'total': record['total'],
+                    'total_tax': record['total_tax'],
                 }
                 if order_ids:  # XXX No update of header
                     run_mode = 'write'
