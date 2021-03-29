@@ -454,7 +454,7 @@ class ConnectorServer(orm.Model):
         row += 1
 
         color = excel_format['white']
-        for period in sorted(report_data['invoiced']):
+        for period in sorted(report_data['invoiced'], reverse=True):
             invoiced_data = report_data['invoiced'][period]
             micronaet_cost = 0.0
             # get_extra_cost('micronaet', period, invoiced_data[0])
