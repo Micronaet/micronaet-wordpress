@@ -356,8 +356,8 @@ class ConnectorServer(orm.Model):
                 'number': excel_pool.get_format('bg_orange_number'),
             },
             'grey': {
-                'text': excel_pool.get_format('bg_orange'),
-                'number': excel_pool.get_format('bg_orange_number'),
+                'text': excel_pool.get_format('bg_grey'),
+                'number': excel_pool.get_format('bg_grey_number'),
             },
             'green': {
                 'text': excel_pool.get_format('bg_green'),
@@ -684,11 +684,11 @@ class ConnectorServer(orm.Model):
                 stock_comment = odoo_price = price = published = ''
 
             if published:
-                color = excel_format['red']
+                color = excel_format['grey']
             elif stock_qty > 0:
                 color = excel_format['white']
             else:
-                color = excel_format['yellow']
+                color = excel_format['red']
             product_data = [
                 'X' if published else '',
                 product.default_code or '',
