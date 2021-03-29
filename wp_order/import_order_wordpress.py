@@ -264,7 +264,7 @@ class ConnectorServer(orm.Model):
                 report_data['invoiced'][period]['pending_shipping'] += shipping
                 report_data['invoiced'][period]['pending_tax'] += shipping
             elif state in ('refunded', 'failed', 'trash', 'cancelled'):
-                report_data['invoiced'][period][2] += total
+                report_data['invoiced'][period]['cancel'] += total
 
         # ---------------------------------------------------------------------
         # Product analysis database (init setup):
