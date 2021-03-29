@@ -446,7 +446,8 @@ class ConnectorServer(orm.Model):
             invoiced_data = report_data['invoiced'][period]
             micronaet_cost = 0.0
             # get_extra_cost('micronaet', period, invoiced_data[0])
-            net = invoiced_data[0] - micronaet_cost  # TODO
+            net = invoiced_data['done'] - invoiced_data['done_tax'] - \
+                  invoiced_data['done_shipping'] - micronaet_cost  # TODO
             data = [
                 (period, color['text']),
                 invoiced_data['cancel'],
