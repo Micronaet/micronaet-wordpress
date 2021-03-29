@@ -355,6 +355,10 @@ class ConnectorServer(orm.Model):
                 'text': excel_pool.get_format('bg_orange'),
                 'number': excel_pool.get_format('bg_orange_number'),
             },
+            'grey': {
+                'text': excel_pool.get_format('bg_orange'),
+                'number': excel_pool.get_format('bg_orange_number'),
+            },
             'green': {
                 'text': excel_pool.get_format('bg_green'),
                 'number': excel_pool.get_format('bg_green_number'),
