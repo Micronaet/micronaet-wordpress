@@ -238,12 +238,20 @@ class ConnectorServer(orm.Model):
             total = order.total
             tax = order.total_tax
             shipping = order.real_shipping_total or order.shipping_total
+            if order.shipping_total and not order.real_shipping_total:
+                missed = 1
+            else:
+                missed = 0
+
             # currency = order.currency
             if not date:
                 _logger.error('No order date error (%s)!' % order.name)
                 continue
             if period not in report_data['invoiced']:
                 report_data['invoiced'][period] = {
+                    'missed': 0,  # transport
+                    'order': 0,  # total order
+
                     'done': 0.0,
                     'done_shipping': 0.0,
                     'done_tax': 0.0,
@@ -255,6 +263,8 @@ class ConnectorServer(orm.Model):
                     'cancel': 0.0,
                 }
 
+            report_data['invoiced'][period]['missed'] += missed
+            report_data['invoiced'][period]['order'] += 1
             if state in ('completed', ):
                 report_data['invoiced'][period]['done'] += total
                 report_data['invoiced'][period]['done_shipping'] += shipping
@@ -386,7 +396,8 @@ class ConnectorServer(orm.Model):
         row += 1
 
         for line in sorted(report_data['all'],
-                           key=lambda x: (x.order_id.name, x.wp_id)):
+                           key=lambda x: (x.order_id.name, x.wp_id),
+                           reverse=True):
             get_standard_data_line(excel_pool, ws_name, row, line)
             row += 1
 
@@ -399,15 +410,18 @@ class ConnectorServer(orm.Model):
             'Annullati',
             'Pendenti', '', '',
             'Completati', '', '',
-            'Costi', '', 'Netto',
+            'Costi', '', '', 'Netto',
+            '# Ordini', 'Trasp. manc.'
+
         ]
 
         invoiced_header_b = [
             '',
             'Totale',
             'Totale', 'Trasporto', 'Imposte',
-            'Totale', 'Trasporto', 'Imposte',
-            'Micronaet', 'Keywords', '',
+            'Totale', 'Trasporto', 'Spese access.', 'Imposte',
+            'Micronaet', 'Keywords', '', ''
+            '', '',
         ]
 
         invoiced_width = [
@@ -415,7 +429,8 @@ class ConnectorServer(orm.Model):
             15,  # Cancel
             15, 15, 15,  # Pending
             15, 15, 15,  # Completed
-            15, 15, 15,
+            15, 15, 15, 15,
+            10, 10,
         ]
         excel_pool.create_worksheet(ws_name)
         row = 0
@@ -438,7 +453,9 @@ class ConnectorServer(orm.Model):
 
         # Setup header:
         excel_pool.merge_cell(ws_name, [row, 0, row + 1, 0])
-        excel_pool.merge_cell(ws_name, [row, 10, row + 1, 10])
+        excel_pool.merge_cell(ws_name, [row, 11, row + 1, 11])
+        excel_pool.merge_cell(ws_name, [row, 12, row + 1, 12])
+        excel_pool.merge_cell(ws_name, [row, 13, row + 1, 13])
 
         excel_pool.merge_cell(ws_name, [row, 2, row, 4])
         excel_pool.merge_cell(ws_name, [row, 5, row, 7])
