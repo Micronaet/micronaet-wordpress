@@ -246,9 +246,12 @@ class ConnectorServer(orm.Model):
                 report_data['invoiced'][period] = {
                     'done': 0.0,
                     'done_shipping': 0.0,
-                    # 'done_real': 0.0,   # shipping
+                    'done_tax': 0.0,
+
                     'pending': 0.0,
                     'pending_shipping': 0.0,
+                    'pending_tax': 0.0,
+
                     'cancel': 0.0,
                 }
 
