@@ -439,7 +439,9 @@ class ConnectorServer(orm.Model):
         # 1 Title
         excel_pool.write_xls_line(
             ws_name, row, [
-                'Elenco ordini fatturati raggruppati per anno-mese'],
+                'Elenco ordini fatturati raggruppati per anno-mese [DB: %s]' %
+                cr.dbname,
+            ],
             default_format=excel_format['title'])
         row += 2
 
