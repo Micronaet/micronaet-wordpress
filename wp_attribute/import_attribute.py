@@ -56,6 +56,34 @@ class ProductProductWebServerIntegration(orm.Model):
     # -------------------------------------------------------------------------
     # Button event:
     # -------------------------------------------------------------------------
+    def open_variant_detail_form(self, cr, uid, ids, context=None):
+        """ Open variant form
+        """
+        model_pool = self.pool.get('ir.model.data')
+        tree_view_id = model_pool.get_object_reference(
+            cr, uid,
+            'wp_attribute',
+            'view_product_product_web_server_wp_variant_tree')[1]
+        form_view_id = model_pool.get_object_reference(
+            cr, uid,
+            'wp_attribute',
+            'view_product_product_web_server_wp_full_detail_form')[1]
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Variante'),
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            'res_id': ids[0],
+            'res_model': 'product.product.web.server',
+            'view_id': form_view_id,
+            'views': [(form_view_id, 'form'), (tree_view_id, 'tree')],
+            'domain': [],
+            'context': context,
+            'target': 'current',
+            'nodestroy': False,
+            }
+
     def clean_wp_reference(self, cr, uid, ids, context=None):
         """ Clean procedure for WP product deleted
         """
@@ -1239,6 +1267,7 @@ class ProductPublicCategory(orm.Model):
                             )
                         res = self.wp_loopcall(
                             wcapi, 'put', call, data=data).json()
+                        # TODO permalink update
                         # del(current_variant[fabric_code]) #for clean operat.
 
                         # =====================================================
@@ -1266,6 +1295,7 @@ class ProductPublicCategory(orm.Model):
                         call = 'products/%s/variations' % wp_id
                         res = self.wp_loopcall(
                             wcapi, 'post', call, data=data).json()
+                        # TODO permalink update
 
                         # =====================================================
                         # Excel log:
