@@ -236,7 +236,7 @@ class ConnectorServer(orm.Model):
             date = order.date_order
             period = date[:7]
             total = order.total
-            tax = 0.0 or order.total_tax
+            tax = order.total_tax
             shipping = order.real_shipping_total or order.shipping_total
             # currency = order.currency
             if not date:
@@ -391,18 +391,27 @@ class ConnectorServer(orm.Model):
         # Order invoiced per period:
         # ---------------------------------------------------------------------
         ws_name = 'Ordini fatturati per periodo'
-        invoiced_header = [
+        invoiced_header_a = [
             'Periodo',
-            'Tot. annullati',
-            'Tot. pendenti', 'Trasp. pend.',
-            'Tot. fatturati', 'Trasp. fatt.',
+            'Annullati',
+            'Pendenti', '', '',
+            'Completati', '', '',
             'Micronaet', 'Keywords', 'Netto',
         ]
+
+        invoiced_header_b = [
+            '',
+            '',
+            'Totale', 'Trasporto', 'Imposte',
+            'Totale', 'Trasporto', 'Imposte',
+            '', '', '',
+        ]
+
         invoiced_width = [
             12,
-            15,
-            15, 15,
-            15, 15,
+            15,  # Cancel
+            15, 15, 15,  # Pending
+            15, 15, 15,  # Completed
             15, 15, 15,
         ]
         excel_pool.create_worksheet(ws_name)
@@ -418,10 +427,15 @@ class ConnectorServer(orm.Model):
 
         # 2 Header
         excel_pool.write_xls_line(
-            ws_name, row, invoiced_header,
+            ws_name, row, invoiced_header_a,
             default_format=excel_format['header'])
         excel_pool.autofilter(
-            ws_name, row, 0, row, len(invoiced_width) - 1)
+            ws_name, row, 0, row + 1, len(invoiced_width) - 1)
+        row += 1
+
+        excel_pool.write_xls_line(
+            ws_name, row, invoiced_header_b,
+            default_format=excel_format['header'])
         row += 1
 
         color = excel_format['white']
