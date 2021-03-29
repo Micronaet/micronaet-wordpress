@@ -399,15 +399,15 @@ class ConnectorServer(orm.Model):
             'Annullati',
             'Pendenti', '', '',
             'Completati', '', '',
-            'Micronaet', 'Keywords', 'Netto',
+            'Costi', '', 'Netto',
         ]
 
         invoiced_header_b = [
             '',
-            '',
+            'Totale',
             'Totale', 'Trasporto', 'Imposte',
             'Totale', 'Trasporto', 'Imposte',
-            '', '', '',
+            'Micronaet', 'Keywords', '',
         ]
 
         invoiced_width = [
@@ -438,18 +438,19 @@ class ConnectorServer(orm.Model):
 
         # Setup header:
         excel_pool.merge_cell(ws_name, [row, 0, row + 1, 0])
-        excel_pool.merge_cell(ws_name, [row, 1, row + 1, 1])
-        excel_pool.merge_cell(ws_name, [row, 8, row + 1, 8])
-        excel_pool.merge_cell(ws_name, [row, 9, row + 1, 9])
         excel_pool.merge_cell(ws_name, [row, 10, row + 1, 10])
-        excel_pool.autofilter(
-            ws_name, row, 0, row + 1, len(invoiced_width) - 1)
+
+        excel_pool.merge_cell(ws_name, [row, 2, row, 4])
+        excel_pool.merge_cell(ws_name, [row, 5, row, 7])
+        excel_pool.merge_cell(ws_name, [row, 8, row, 9])
         row += 1
 
         # Part B:
         excel_pool.write_xls_line(
             ws_name, row, invoiced_header_b,
             default_format=excel_format['header'])
+        excel_pool.autofilter(
+            ws_name, row, 0, row + 1, len(invoiced_width) - 1)
         row += 1
 
         color = excel_format['white']
