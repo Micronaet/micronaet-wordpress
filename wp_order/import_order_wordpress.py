@@ -430,10 +430,10 @@ class ConnectorServer(orm.Model):
 
         invoiced_width = [
             12,
-            15,  # Cancel
-            15, 15, 15,  # Pending
-            15, 15, 15,  # Completed
-            15, 15, 15, 15,
+            10,  # Cancel
+            10, 10, 10,  # Pending
+            10, 10, 10,  # Completed
+            10, 10, 10, 15,
             10, 10,
         ]
         excel_pool.create_worksheet(ws_name)
