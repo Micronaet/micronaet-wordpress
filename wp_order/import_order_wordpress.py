@@ -792,17 +792,13 @@ class ConnectorServer(orm.Model):
 
         # Telegram management:
         connector = self.browse(cr, uid, connector_id, context=context)
-        telegram_message = connector.telegram_message
+        telegram_message = False  # connector.telegram_message
         telegram_token = connector.telegram_token
         telegram_group = connector.telegram_group
         if telegram_message:
-            import telepot
-            bot = telepot.Bot(telegram_token)
-            bot.getMe()
-
             message = 'Inizio lettura ordini Wordpress'
             self.telegram_send_message(
-                bot, message, telegram_token, telegram_group)
+                message, telegram_token, telegram_group)
         telegram_message = False
 
         # Read WP Order present:
