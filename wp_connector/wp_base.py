@@ -324,13 +324,17 @@ class ConnectorServer(orm.Model):
             self, message, token, group):
         """ Send message with Telegram
         """
-        bot = telepot.Bot(str(token))
-        bot.getMe()
+        try:
+            bot = telepot.Bot(str(token))
+            bot.getMe()
 
-        bot.sendMessage(
-            group,
-            message,
-        )
+            bot.sendMessage(
+                group,
+                message,
+            )
+        except:
+            _logger.error('Error sending Telegram message')
+            return False
         return True
 
     _columns = {
