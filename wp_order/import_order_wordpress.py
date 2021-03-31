@@ -792,7 +792,7 @@ class ConnectorServer(orm.Model):
 
         # Telegram management:
         connector = self.browse(cr, uid, connector_id, context=context)
-        telegram_message = False  # connector.telegram_message
+        telegram_message = connector.telegram_message
         telegram_token = connector.telegram_token
         telegram_group = connector.telegram_group
         if telegram_message:
