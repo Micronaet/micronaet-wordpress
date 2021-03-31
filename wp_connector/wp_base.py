@@ -325,7 +325,7 @@ class ConnectorServer(orm.Model):
         """ Send message with Telegram
         """
         pdb.set_trace()
-        bot = telepot.Bot(token)
+        bot = telepot.Bot(str(token))
         bot.getMe()
 
         bot.sendMessage(
