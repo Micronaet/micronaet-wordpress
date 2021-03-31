@@ -320,11 +320,10 @@ class ConnectorServer(orm.Model):
             return ean13
         return ''
 
-    def telegram_send_message(self, message, telegram_token, telegram_group):
+    def telegram_send_message(
+            self, bot, message, telegram_token, telegram_group):
         """ Send message with Telegram
         """
-        bot = telepot.Bot(telegram_token)
-        bot.getMe()
         bot.sendMessage(
             telegram_group,
             message,
