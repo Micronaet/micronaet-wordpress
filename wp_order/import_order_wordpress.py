@@ -795,6 +795,10 @@ class ConnectorServer(orm.Model):
         telegram_message = connector.telegram_message
         telegram_token = connector.telegram_token
         telegram_group = connector.telegram_group
+        if telegram_message:
+            message = 'Inizio lettura ordini Wordpress'
+            self.telegram_send_message(
+                message, telegram_token, telegram_group)
 
         # Read WP Order present:
         wcapi = self.get_wp_connector(
@@ -1005,6 +1009,11 @@ class ConnectorServer(orm.Model):
             except:
                 _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
                 continue
+
+        if telegram_message:
+            message = 'Fine lettura ordini Wordpress'
+            self.telegram_send_message(
+                message, telegram_token, telegram_group)
 
         if report_log:  # Send mail to manager group
             ctx = context.copy()

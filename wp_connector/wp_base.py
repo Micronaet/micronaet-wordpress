@@ -365,8 +365,8 @@ class ConnectorServer(orm.Model):
             'Attiva notifica Telegram',
             help='Ad ogni nuovo ordine viene comunicato in Telegram nel gruppo'
                  'di amministrazione sito'),
-        'telegram_token': fields.char('Telegram Token', size=30),
-        'telegram_group': fields.char('Telegram Token', size=30),
+        'telegram_token': fields.char('Telegram Token', size=50),
+        'telegram_group': fields.char('Telegram Token', size=50),
     }
 
     _defaults = {
