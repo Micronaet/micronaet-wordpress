@@ -790,6 +790,12 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         connector_id = ids[0]
 
+        # Telegram management:
+        connector = self.browse(cr, uid, connector_id, contextx=context)
+        telegram_message = connector.telegram_message
+        telegram_token = connector.telegram_token
+        telegram_group = connector.telegram_group
+
         # Read WP Order present:
         wcapi = self.get_wp_connector(
             cr, uid, connector_id, context=context)
@@ -878,6 +884,18 @@ class ConnectorServer(orm.Model):
                     _logger.info('Yet found (update only line) %s' % number)
                 else:  # Read data:
                     run_mode = 'create'
+
+                    # Telegram message:
+                    if telegram_message:
+                        message = \
+                            'Nuovo ordine [%s]\n Data: %s\nTotale: %s' % (
+                                order_header['number'],
+                                order_header['date_order'],
+                                order_header['total'],
+                            )
+                        self.telegram_send_message(
+                            message, telegram_token, telegram_group)
+
                     # Address:
                     billing = record['billing']
                     shipping = record['shipping']

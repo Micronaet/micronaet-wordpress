@@ -97,13 +97,13 @@ class API(object):
             'consumer_key': self.consumer_key,
             'consumer_secret': self.consumer_secret
             })
-        #if self.is_ssl is True and self.query_string_auth is False:
-        #elif self.is_ssl is True and self.query_string_auth is True:
+        # if self.is_ssl is True and self.query_string_auth is False:
+        # elif self.is_ssl is True and self.query_string_auth is True:
         #    params.update({
         #        'consumer_key': self.consumer_key,
         #        'consumer_secret': self.consumer_secret
         #        })
-        #else:
+        # else:
         #    print 'ERROR'
 
         if data is not None:
@@ -113,7 +113,7 @@ class API(object):
         return request(
             method=method,
             url=url,
-            #verify=self.verify_ssl,
+            # verify=self.verify_ssl,
             auth=auth,
             params=params,
             data=data,

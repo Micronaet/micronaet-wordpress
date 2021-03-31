@@ -29,6 +29,7 @@ import sys
 import pdb
 import requests
 import pickle
+import telepot
 from datetime import datetime
 from openerp.osv import fields, osv, expression, orm
 from openerp.tools.translate import _
@@ -318,6 +319,17 @@ class ConnectorServer(orm.Model):
         if line.connector_id.wp_ean_gtin and ean13:
             return ean13
         return ''
+
+    def telegram_send_message(self, message, telegram_token, telegram_group):
+        """ Send message with Telegram
+        """
+        bot = telepot.Bot(telegram_token)
+        bot.getMe()
+        bot.sendMessage(
+            telegram_group,
+            message,
+        )
+        return True
 
     _columns = {
         'wp_publish_image': fields.boolean('Pubblica immagini'),
