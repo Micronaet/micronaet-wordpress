@@ -795,10 +795,11 @@ class ConnectorServer(orm.Model):
         telegram_message = connector.telegram_message
         telegram_token = connector.telegram_token
         telegram_group = connector.telegram_group
+        pdb.set_trace()
         if telegram_message:
-            message = 'Inizio lettura ordini Wordpress'
             self.telegram_send_message(
-                message, telegram_token, telegram_group)
+                'Inizio lettura ordini Wordpress',
+                telegram_token, telegram_group)
 
         # Read WP Order present:
         wcapi = self.get_wp_connector(
@@ -890,15 +891,15 @@ class ConnectorServer(orm.Model):
                     run_mode = 'create'
 
                     # Telegram message:
+                    pdb.set_trace()
                     if telegram_message:
-                        message = \
+                        self.telegram_send_message(
                             'Nuovo ordine [%s]\n Data: %s\nTotale: %s' % (
                                 order_header['number'],
                                 order_header['date_order'],
                                 order_header['total'],
-                            )
-                        self.telegram_send_message(
-                            message, telegram_token, telegram_group)
+                            ),
+                            telegram_token, telegram_group)
 
                     # Address:
                     billing = record['billing']
@@ -1010,10 +1011,11 @@ class ConnectorServer(orm.Model):
                 _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
                 continue
 
+        pdb.set_trace()
         if telegram_message:
-            message = 'Fine lettura ordini Wordpress'
             self.telegram_send_message(
-                message, telegram_token, telegram_group)
+                'Fine lettura ordini Wordpress',
+                telegram_token, telegram_group)
 
         if report_log:  # Send mail to manager group
             ctx = context.copy()
