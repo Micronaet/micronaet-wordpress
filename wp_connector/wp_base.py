@@ -321,7 +321,7 @@ class ConnectorServer(orm.Model):
         return ''
 
     def telegram_send_message(
-            self, bot, message, telegram_token, telegram_group):
+            self, message, telegram_token, telegram_group):
         """ Send message with Telegram
         """
         bot = telepot.Bot(telegram_token)
