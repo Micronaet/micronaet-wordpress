@@ -799,7 +799,6 @@ class ConnectorServer(orm.Model):
             message = 'Inizio lettura ordini Wordpress'
             self.telegram_send_message(
                 message, telegram_token, telegram_group)
-        telegram_message = False
 
         # Read WP Order present:
         wcapi = self.get_wp_connector(
