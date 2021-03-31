@@ -795,7 +795,6 @@ class ConnectorServer(orm.Model):
         telegram_message = connector.telegram_message
         telegram_token = connector.telegram_token
         telegram_group = connector.telegram_group
-        pdb.set_trace()
         if telegram_message:
             self.telegram_send_message(
                 'Inizio lettura ordini Wordpress',
@@ -891,7 +890,6 @@ class ConnectorServer(orm.Model):
                     run_mode = 'create'
 
                     # Telegram message:
-                    pdb.set_trace()
                     if telegram_message:
                         self.telegram_send_message(
                             'Nuovo ordine [%s]\n Data: %s\nTotale: %s' % (
@@ -1011,7 +1009,6 @@ class ConnectorServer(orm.Model):
                 _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
                 continue
 
-        pdb.set_trace()
         if telegram_message:
             self.telegram_send_message(
                 'Fine lettura ordini Wordpress',
