@@ -7,19 +7,19 @@
             <field name="inherit_id" ref="connector_web_base.view_connector_server_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//header/button" position="after">
-                    <button name="get_sale_order_now" string="Load order" type="object" 
-                        confirm="Load order procedure, confirm?" 
+                    <button name="get_sale_order_now" string="Load order" type="object"
+                        confirm="Load order procedure, confirm?"
                         class="oe_highlight" icon="gtk-refresh" attrs="{'invisible': [('wordpress','=',False)]}" />
                 </xpath>
             </field>
-        </record>   
+        </record>
 
         <record model="ir.ui.view" id="view_res_partner_invoice_tree">
             <field name="name">res.partner.tree</field>
             <field name="model">res.partner</field>
             <field name="priority" eval="40"/>
             <field name="arch" type="xml">
-                <tree string="String" colors="blue:wordpress_invoice==True">        
+                <tree string="String" colors="blue:wordpress_invoice==True">
                     <field name="name" />
                     <field name="parent_id" />
                     <field name="street" />
@@ -36,7 +36,7 @@
                 </tree>
             </field>
         </record>
-        <!--res.partner-->         
+        <!--res.partner-->
         <record model="ir.actions.act_window" id="action_res_partner_wp">
             <field name="name">Partner</field>
             <field name="res_model">res.partner</field>
@@ -56,13 +56,13 @@
             <field name="domain">[('wordpress', '=', True),('parent_id', '!=', False)]</field>
         </record>
         <!--TODO destination?-->
-        
+
         <record model="ir.ui.view" id="view_sale_order_alert_form">
             <field name="name">sale.order.form</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form" />
-            <field name="arch" type="xml">            
-                <field name="partner_id" position="before"> 
+            <field name="arch" type="xml">
+                <field name="partner_id" position="before">
                     <field name="wordpress_invoice" invisible="1" />
                     <field name="wp_id" invisible="1" />
                     <div style="background-color: red; text-align: center; font-weight:bold; color: white;">
@@ -76,11 +76,11 @@
             <field name="name">sale.order.form</field>
             <field name="model">sale.order</field>
             <field name="arch" type="xml">
-                <form string="Metadata" version="7.0">        
+                <form string="Metadata" version="7.0">
                     <header>
                         <button name="dummy" string="Save" type="object" />
                     </header>
-                    <sheet>                        
+                    <sheet>
                         <group col="4" colspan="4">
                             <field name="name" readonly="1"/>
                             <field name="date_order"  readonly="1"/>
@@ -90,11 +90,11 @@
                             <separator string="Wordpress Metadata:" colspan="4"/>
                             <field name="worpress_record" colspan="4" nolabel="1" readonly="1"/>
                         </group>
-                    </sheet>        
+                    </sheet>
                 </form>
             </field>
         </record>
-        
+
         <record model="ir.ui.view" id="view_sale_order_wordpress_tree">
             <field name="name">sale.order.tree</field>
             <field name="model">sale.order</field>
@@ -115,10 +115,10 @@
                     <field name="state"/>
                     <button name="button_wordpress_detail" string="Wordpress metadata" type="object" icon="gtk-goto-last"/>
                     <button name="button_payment_confirmed" string="Payment confirmed" type="object" attrs="{'invisible': [('wp_payment_confirmed','=',True)]}" icon="STOCK_APPLY" confirm="If payment is confirmed the order will go in confirmed status too, confirm?"/>
-                </tree>            
+                </tree>
             </field>
         </record>
-        
+
         <record model="ir.actions.act_window" id="action_sale_order_wp">
             <field name="name">Wordpress order</field>
             <field name="res_model">sale.order</field>
@@ -137,40 +137,40 @@
             <field name="context">{}</field>
             <field name="domain">[('wp_id', '>', 0),('wp_payment_confirmed', '=', False)]</field>
         </record>
-        
-        <menuitem 
-            parent="wp_connector.menu_connector_worppress_root" 
-            id="menu_connector_worppress_order" 
+
+        <menuitem
+            parent="wp_connector.menu_connector_worppress_root"
+            id="menu_connector_worppress_order"
             name="Order"
             sequence="20"
             />
-            <menuitem 
-                parent="menu_connector_worppress_order" 
-                id="menu_connector_worppress_partner" 
+            <menuitem
+                parent="menu_connector_worppress_order"
+                id="menu_connector_worppress_partner"
                 action="action_res_partner_wp"
                 sequence="10"
-                />    
-            <menuitem 
-                parent="menu_connector_worppress_order" 
-                id="menu_connector_worppress_partner_address" 
+                />
+            <menuitem
+                parent="menu_connector_worppress_order"
+                id="menu_connector_worppress_partner_address"
                 action="action_res_partner_address_wp"
                 sequence="10"
-                />    
+                />
 
-            <menuitem 
-                parent="menu_connector_worppress_order" 
-                id="menu_connector_worppress_order_all" 
+            <menuitem
+                parent="menu_connector_worppress_order"
+                id="menu_connector_worppress_order_all"
                 action="action_sale_order_wp"
                 sequence="20"
                 />
-            <menuitem 
-                parent="menu_connector_worppress_order" 
-                id="menu_connector_worppress_order_payment" 
+            <menuitem
+                parent="menu_connector_worppress_order"
+                id="menu_connector_worppress_order_payment"
                 action="action_sale_order_wp_payment"
                 sequence="30"
                 />
-                
-            
-        
+
+
+
     </data>
 </openerp>
