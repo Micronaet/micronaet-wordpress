@@ -791,7 +791,7 @@ class ConnectorServer(orm.Model):
         connector_id = ids[0]
 
         # Telegram management:
-        connector = self.browse(cr, uid, connector_id, contextx=context)
+        connector = self.browse(cr, uid, connector_id, context=context)
         telegram_message = connector.telegram_message
         telegram_token = connector.telegram_token
         telegram_group = connector.telegram_group
