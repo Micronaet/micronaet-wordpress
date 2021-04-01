@@ -795,7 +795,8 @@ class ConnectorServer(orm.Model):
         telegram_message = connector.telegram_message
         telegram_token = connector.telegram_token
         telegram_group = connector.telegram_group
-        if telegram_message:
+        start_stop_message = False
+        if start_stop_message and telegram_message:
             self.telegram_send_message(
                 'Inizio lettura ordini Wordpress',
                 telegram_token, telegram_group)
@@ -1009,7 +1010,7 @@ class ConnectorServer(orm.Model):
                 _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
                 continue
 
-        if telegram_message:
+        if start_stop_message and telegram_message:
             self.telegram_send_message(
                 'Fine lettura ordini Wordpress',
                 telegram_token, telegram_group)
