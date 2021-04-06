@@ -174,10 +174,9 @@ for order in orders:
         else:
             brand = ''
             category = ''
-
+        vat = ''
         if billing['company']:
             contact_type = 'A'
-            vat = ''
             for item in meta_data:
                 if item['key'] == '_billing_vat':
                     vat = item['value'] or ''
