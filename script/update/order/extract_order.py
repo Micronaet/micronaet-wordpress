@@ -90,7 +90,7 @@ for root, folders, files in os.walk('..'):
 # Use first company order only:
 order_ids = odoo_db['fia']['order'].search()
 orders = odoo_db['fia']['order'].browse(order_ids)
-order_file = open(os.path.join('./data', 'wordpress.order.csv'), 'a')
+order_file = open(os.path.join('./data', 'wordpress.order.csv'), 'w')
 log_message(f_log, 'Reading %s order from company %s\n' % (
     len(order_ids), company))
 
@@ -108,7 +108,7 @@ for order in orders:
             clean_char(order.name, 10),  # Order number
             clean_char(order.state, 15),  # State of order (Causale)
             clean_date(order.date_order),  # Date order (AAAAMMGG)
-            'F',  # TODO A or F (Azienda or Persona Fisica)
+            'F',  # TODO A or F (Azienda or Persona Fisica) (1 Char)
             clean_char(order.partner_name, 30),  # Last name
             clean_char('', 30),  # First name (non importato, unito al cognome)
             clean_char('', 16),  # Fiscal code (non presente)
@@ -132,9 +132,10 @@ for order in orders:
             # Footer
             clean_char(order.payment, 10),  # Payment
             (order.real_shipping_total or order.shipping_total),  # Trans. 10.2
-            '',  # S = esente IVA
+            '',  # S = esente IVA (1 char)
             clean_char('', 10),  # Sconto ordine
             clean_char('', 10),  # Coupon sconto
         )
         order_file.write(mask % data)
+        order_file.flush()
 
