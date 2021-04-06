@@ -42,15 +42,19 @@ def get_product(line, odoo_db, cache):
     return cache['product'].get(sku)
 
 
-def get_web_product(line, odoo_db, cache):
+def get_web_product(line, connectors, odoo_db, cache):
     """ Extract web product from line
     """
     if 'web' not in cache:
         cache['web'] = {}
 
-    connector_id = line.order_id.connector_id.id
     product = line.product_id
     sku = line.sku
+    if product:
+        connector_id = connectors[company_1]
+    else:
+        connector_id = connectors[company_2]
+
     if sku not in cache['web']:
         if product:
             pool = odoo_db[company_1]['web']
@@ -66,7 +70,6 @@ def get_web_product(line, odoo_db, cache):
                  pool.browse(web_ids)[0]
 
     return cache['web'].get(sku)
-
 
 
 def clean_date(value):
@@ -96,6 +99,7 @@ from_date = '2021-03-01'
 
 odoo_db = {}
 product_cache = {}
+connectors = {}
 
 for root, folders, files in os.walk('..'):
     for cfg_file in files:
@@ -115,6 +119,7 @@ for root, folders, files in os.walk('..'):
         port = config.get('dbaccess', 'port')
         connector_id = int(config.get('dbaccess', 'connector_id'))
         send_message = eval(config.get('dbaccess', 'send_message'))
+        connectors[company] = connector_id
 
         # ---------------------------------------------------------------------
         # Connect to ODOO:
@@ -159,7 +164,7 @@ for order in orders:
             cost = 0.0
 
         # Data from web product:
-        web_product = get_web_product(line, odoo_db, product_cache)
+        web_product = get_web_product(line, connectors, odoo_db, product_cache)
         if web_product:
             category = brand = ''
             if web_product.brand_id:
