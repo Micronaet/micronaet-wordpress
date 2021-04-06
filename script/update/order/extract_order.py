@@ -74,7 +74,7 @@ orders = odoo_db['fia']['order'].browse(order_ids)
 order_file = open(os.path.join('./data', 'wordpress.order.csv'), 'a')
 mask = '%-10s%-15s%8s\n'
 for order in orders:
-    for line in order.order_line:
+    for line in order.line_ids:
         product = get_product(line, odoo_db)
         web_product = get_web_product(line, odoo_db)
         order_file.write(mask % (
