@@ -140,6 +140,7 @@ for root, folders, files in os.walk('..'):
 # Use first company order only:
 order_ids = odoo_db[company_1]['order'].search([
     ('date_order', '>=', from_date),
+    ('name', '=', '55608),
 ])
 orders = odoo_db[company_1]['order'].browse(order_ids)
 order_file = open(os.path.join('./data', 'wordpress.order.csv'), 'w')
