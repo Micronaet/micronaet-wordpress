@@ -105,7 +105,7 @@ for order in orders:
             ('')[:30],  # Category (more than one!)
             ('NR')[:5],  # UOM  (sempre NR?)
             line.quantity,  # Q.  (10.2)
-            '',  # Cost  (10.2)
+            0.0,  # Cost  (10.2)
             line.list_price,  # List price  (10.2)
 
             # Footer
