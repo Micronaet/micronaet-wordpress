@@ -2,6 +2,7 @@ import os
 import sys
 import erppeek
 import ConfigParser
+import pdb
 from datetime import datetime
 
 
@@ -82,7 +83,7 @@ for order in orders:
     for line in order.line_ids:
         product = get_product(line, odoo_db)
         web_product = get_web_product(line, odoo_db)
-        order_file.write(mask % (
+        data = (
             # Header:
             (order.name or '')[:10],  # Order number
             (order.state or '')[:15],  # State of order (Causale)
@@ -113,5 +114,8 @@ for order in orders:
             (order.real_shipping_total or order.shipping_total),  # Trans. 10.2
             '',  # S = esente IVA
             ('')[:10],  # Sconto ordine
-            '',  #('')[:10],  # Coupon sconto
-        ))
+            ('')[:10],  # Coupon sconto
+        )
+        pdb.set_trace()
+        order_file.write(mask % data)
+
