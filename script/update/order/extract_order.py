@@ -193,7 +193,7 @@ for order in orders:
             contact_type,  # A(zienda) or F(isica) (1 char)
             clean_char(billing['last_name'], 30),  # Last name
             clean_char(billing['first_name'], 30),  # First name
-            clean_char('', 16),  # Fiscal code (non presente)
+            clean_char(vat, 16),  # Fiscal code (VAT for now)
             clean_char('%s %s' % (
                 billing['address_1'], billing['address_2']), 30),  # Address
             clean_char(billing['postcode'], 5),  # ZIP
