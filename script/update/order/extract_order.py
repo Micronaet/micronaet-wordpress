@@ -20,7 +20,8 @@ def log_message(log_file, message, mode='info', verbose=True):
 
 
 def get_product(line, odoo_db, cache):
-    """ Extract product from line
+    """ Extract product from line if present (primary company)
+        Extract product from secondary company with sku
     """
     if 'product' not in cache:
         cache['product'] = {}
@@ -31,12 +32,12 @@ def get_product(line, odoo_db, cache):
         if product:
             cache['product'][sku] = product
         else:
-            product_ids = odoo_db['product'].search([
+            product_ids = odoo_db['gpb']['product'].search([
                 ('default_code', '=', sku),
             ])
             if product_ids:
                  cache['product'][sku] = \
-                     odoo_db['product'].browse(product_ids)[0]
+                     odoo_db['gpb']['product'].browse(product_ids)[0]
 
     return cache['product'].get(sku)
 
