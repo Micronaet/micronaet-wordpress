@@ -196,7 +196,7 @@ for order in orders:
                 billing['address_1'], billing['address_2']), 30),  # Address
             clean_char(billing['postcode'], 5),  # ZIP
             clean_char(billing['city'], 30),  # City
-            clean_char(billing['country'], 2),  # City
+            clean_char(billing['country'], 2),  # County
             clean_date(''),  # Birthday (AAAAMMGG) Non presente
             clean_char(order.partner_email, 35),  # Email
             clean_char(order.partner_phone, 30),  # Phone
