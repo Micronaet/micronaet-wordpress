@@ -40,11 +40,10 @@ def clean_date(value):
 def clean_char(value, limit):
     """ Clean not ascii char
     """
-    value = value or ''
     res = ''
-    for c in value:
+    for c in (value or ''):
         if ord(c) < 127:
-            res += ''
+            res += c
         else:
             res += '#'
     return res[:limit]
