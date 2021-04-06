@@ -107,7 +107,7 @@ for order in orders:
             ('NR')[:5],  # UOM  (sempre NR?)
             line.quantity,  # Q.  (10.2)
             0.0,  # Cost  (10.2)
-            line.list_price,  # List price  (10.2)
+            line.price,  # List price  (10.2)
 
             # Footer
             (order.payment)[:10],  # Payment
