@@ -150,7 +150,7 @@ mask = '%-10s%-15s%8s%1s%-30s%-30s%-16s%-30s%-5s%-30s%-8s%-35s%-30s' \
        '%-18s%-45s%-20s%-30s%-5s' \
        '%-10.2f%-10.2f%-10.2f' \
        '%-20s%-10.2f%-1s%-10s%-10s\n'  # TODO \r
-pdb.set_trace()
+
 for order in orders:
     wp_record = eval(order.wp_record)
     billing = wp_record['billing']
