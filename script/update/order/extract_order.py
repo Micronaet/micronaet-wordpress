@@ -146,7 +146,7 @@ order_file = open(os.path.join('./data', 'wordpress.order.csv'), 'w')
 log_message(f_log, 'Reading %s order from company %s\n' % (
     len(order_ids), company))
 
-mask = '%-10s%-15s%8s%1s%-30s%-30s%-16s%-30s%-5s%-30s%-8s%-35s%-30s' \
+mask = '%-10s%-15s%8s%1s%-30s%-30s%-16s%-30s%-5s%-30s%2s%-8s%-35s%-30s' \
        '%-18s%-45s%-20s%-30s%-5s' \
        '%-10.2f%-10.2f%-10.2f' \
        '%-20s%-10.2f%-1s%-10s%-10s\n'  # TODO \r
@@ -196,6 +196,7 @@ for order in orders:
                 billing['address_1'], billing['address_2']), 30),  # Address
             clean_char(billing['postcode'], 5),  # ZIP
             clean_char(billing['city'], 30),  # City
+            clean_char(billing['country'], 2),  # City
             clean_date(''),  # Birthday (AAAAMMGG) Non presente
             clean_char(order.partner_email, 35),  # Email
             clean_char(order.partner_phone, 30),  # Phone
