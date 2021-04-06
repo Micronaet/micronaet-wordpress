@@ -181,6 +181,7 @@ for order in orders:
             for item in meta_data:
                 if item['key'] == '_billing_vat':
                     vat = item['value'] or ''
+                    break
         else:
             contact_type = 'F'
         data = (
