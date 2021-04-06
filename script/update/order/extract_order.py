@@ -59,7 +59,7 @@ def get_web_product(line, odoo_db, cache):
 
         web_ids = pool.search([
             ('connector_id', '=', connector_id),
-            ('default_code', '=', sku),
+            ('product_id.default_code', '=', sku),
         ])
         if web_ids:
              cache['web'][sku] = \
