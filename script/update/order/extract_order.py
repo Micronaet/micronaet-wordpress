@@ -113,5 +113,5 @@ for order in orders:
             (order.real_shipping_total or order.shipping_total),  # Trans. 10.2
             '',  # S = esente IVA
             ('')[:10],  # Sconto ordine
-            ('')[:10],  # Coupon sconto
+            '',  #('')[:10],  # Coupon sconto
         ))
