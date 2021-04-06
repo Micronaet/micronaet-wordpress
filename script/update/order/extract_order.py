@@ -151,8 +151,9 @@ for order in orders:
         # Data from web product:
         web_product = get_web_product(line, odoo_db, product_cache)
         if web_product:
-            brand = web_product.brand_id.name or ''
-            category = ''
+            category = brand = ''
+            if web_product.brand_id:
+                brand = web_product.brand_id.name or ''
             if web_product.wordpress_categ_ids:
                 category = web_product.wordpress_categ_ids[0].name  # first!
         else:
