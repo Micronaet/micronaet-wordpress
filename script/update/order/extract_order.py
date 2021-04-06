@@ -37,7 +37,7 @@ def clean_date(value):
     return (value or '').replace('-', '')
 
 
-def clean_char(value, max):
+def clean_char(value, limit):
     """ Clean not ascii char
     """
     value = value or ''
@@ -47,7 +47,7 @@ def clean_char(value, max):
             res += ''
         else:
             res += '#'
-    return res[:max]
+    return res[:limit]
 
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
