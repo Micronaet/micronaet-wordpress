@@ -162,12 +162,16 @@ for order in orders:
             brand = ''
             category = ''
 
+        if billing['company']:
+            contact_type = 'A'
+        else:
+            contact_type = 'F'
         data = (
             # Header:
             clean_char(order.name, 10),  # Order number
             clean_char(order.state, 15),  # State of order (Causale)
             clean_date(order.date_order),  # Date order (AAAAMMGG)
-            'F',  # TODO A or F (Azienda or Persona Fisica) (1 Char)
+            contact_type,  # A(zienda) or F(isica) (1 char)
             clean_char(billing['last_name'], 30),  # Last name
             clean_char(billing['first_name'], 30),  # First name
             clean_char('', 16),  # Fiscal code (non presente)
