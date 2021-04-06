@@ -95,7 +95,7 @@ def clean_char(value, limit):
 # Parameters:
 company_1 = 'gpb'
 company_2 = 'fia'
-from_date = '2021-03-01'
+from_date = '2019-03-01'
 
 odoo_db = {}
 product_cache = {}
