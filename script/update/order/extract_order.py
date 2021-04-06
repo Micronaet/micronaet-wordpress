@@ -31,6 +31,12 @@ def get_web_product(line, odoo_db):
     return True
 
 
+def clean_date(value):
+    """ Clean not ascii char
+    """
+    return (value or '').replace('-', '')
+
+
 def clean_char(value, max):
     """ Clean not ascii char
     """
@@ -101,7 +107,7 @@ for order in orders:
             # Header:
             clean_char(order.name, 10),  # Order number
             clean_char(order.state, 15),  # State of order (Causale)
-            clean_char(order.date_order or '').replace('-', ''),  # Date order (AAAAMMGG)
+            clean_date(order.date_order),  # Date order (AAAAMMGG)
             'F',  # TODO A or F (Azienda or Persona Fisica)
             clean_char(order.partner_name, 30),  # Last name
             clean_char('', 30),  # First name (non importato, unito al cognome)
@@ -109,7 +115,7 @@ for order in orders:
             clean_char(order.billing, 30),  # Address
             clean_char('', 5),  # ZIP
             clean_char('', 30),  # City
-            '',  # Birthday (AAAAMMGG) Non presente
+            clean_date(''),  # Birthday (AAAAMMGG) Non presente
             clean_char(order.partner_email, 35),  # Email
             clean_char(order.partner_phone, 30),  # Phone
 
