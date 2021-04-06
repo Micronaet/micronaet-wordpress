@@ -27,7 +27,7 @@ def get_product(line, odoo_db, cache):
         cache['product'] = {}
 
     product = line.product_id
-    sku = line.sky
+    sku = line.sku
     if sku not in cache['product']:
         if product:
             cache['product'][sku] = product
@@ -47,7 +47,26 @@ def get_web_product(line, odoo_db, cache):
     """
     if 'web' not in cache:
         cache['web'] = {}
-    return True
+
+    connector_id = line.order_id.connector_id.id
+    product = line.product_id
+    sku = line.sku
+    if sku not in cache['web']:
+        if product:
+            pool = odoo_db['fia']['web']
+        else:
+            pool = odoo_db['gpb']['web']
+
+        web_ids = pool.search([
+            ('connector_id', '=', connector_id),
+            ('default_code', '=', sku),
+        ])
+        if web_ids:
+             cache['web'][sku] = \
+                 pool.browse(web_ids)[0]
+
+    return cache['web'].get(sku)
+
 
 
 def clean_date(value):
@@ -132,8 +151,10 @@ for order in orders:
         # Data from web product:
         web_product = get_web_product(line, odoo_db, product_cache)
         if web_product:
-            brand = ''
+            brand = web_product.brand_id.name or ''
             category = ''
+            if web_product.wordpress_categ_ids:
+                category = web_product.wordpress_categ_ids[0].name  # first!
         else:
             brand = ''
             category = ''
