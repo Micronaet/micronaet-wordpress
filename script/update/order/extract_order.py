@@ -24,10 +24,24 @@ def get_product(line, odoo_db):
     """
     return True
 
+
 def get_web_product(line, odoo_db):
     """ Extract web product from line
     """
     return True
+
+
+def clean_char(value, max):
+    """ Clean not ascii char
+    """
+    value = value or ''
+    res = ''
+    for c in value:
+        if ord(c) < 127:
+            res += ''
+        else:
+            res += '#'
+    return res[:max]
 
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
@@ -85,36 +99,36 @@ for order in orders:
         web_product = get_web_product(line, odoo_db)
         data = (
             # Header:
-            (order.name or '')[:10],  # Order number
-            (order.state or '')[:15],  # State of order (Causale)
-            (order.date_order or '').replace('-', ''),  # Date order (AAAAMMGG)
+            clean_char(order.name, 10),  # Order number
+            clean_char(order.state, 15),  # State of order (Causale)
+            clean_char(order.date_order or '').replace('-', ''),  # Date order (AAAAMMGG)
             'F',  # TODO A or F (Azienda or Persona Fisica)
-            (order.partner_name or '')[:30],  # Last name
-            ('')[:30],  # First name (non importato, unito al cognome)
-            ('')[:16],  # Fiscal code (non presente)
-            (order.billing or '')[:30],  # Address
-            ('')[:5],  # ZIP
-            ('')[:30],  # City
+            clean_char(order.partner_name, 30),  # Last name
+            clean_char('', 30),  # First name (non importato, unito al cognome)
+            clean_char('', 16),  # Fiscal code (non presente)
+            clean_char(order.billing, 30),  # Address
+            clean_char('', 5),  # ZIP
+            clean_char('', 30),  # City
             '',  # Birthday (AAAAMMGG) Non presente
-            (order.partner_email or '')[:35],  # Email
-            (order.partner_phone or '')[:30],  # Phone
+            clean_char(order.partner_email, 35),  # Email
+            clean_char(order.partner_phone, 30),  # Phone
 
             # Line:
-            (line.sku or '')[:18],  # SKU
-            (line.name or '')[:35],  # Product description
-            ('')[:20],  # Brand
-            ('')[:30],  # Category (more than one!)
-            ('NR')[:5],  # UOM  (sempre NR?)
+            clean_char(line.sku, 18),  # SKU
+            clean_char(line.name, 35),  # Product description
+            clean_char('', 20),  # Brand
+            clean_char('', 30),  # Category (more than one!)
+            clean_char('NR', 5),  # UOM  (sempre NR?)
             line.quantity,  # Q.  (10.2)
             0.0,  # Cost  (10.2)
             line.price,  # List price  (10.2)
 
             # Footer
-            (order.payment)[:10],  # Payment
+            clean_char(order.payment, 10),  # Payment
             (order.real_shipping_total or order.shipping_total),  # Trans. 10.2
             '',  # S = esente IVA
-            ('')[:10],  # Sconto ordine
-            ('')[:10],  # Coupon sconto
+            clean_char('', 10),  # Sconto ordine
+            clean_char('', 10),  # Coupon sconto
         )
         order_file.write(mask % data)
 
