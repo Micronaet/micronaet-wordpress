@@ -258,7 +258,6 @@ class ConnectorServer(orm.Model):
     def get_sale_order_now(self, cr, uid, ids, context=None):
         """ Get sale order list
             """
-        pdb.set_trace()
         if context is None:
             context = {}
 
