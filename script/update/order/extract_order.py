@@ -19,15 +19,33 @@ def log_message(log_file, message, mode='info', verbose=True):
         print(message.strip())
 
 
-def get_product(line, odoo_db):
+def get_product(line, odoo_db, cache):
     """ Extract product from line
     """
-    return True
+    if 'product' not in cache:
+        cache['product'] = {}
+
+    product = line.product_id
+    sku = line.sky
+    if sku not in cache['product']:
+        if product:
+            cache['product'][sku] = product
+        else:
+            product_ids = odoo_db['product'].search([
+                ('default_code', '=', sku),
+            ])
+            if product_ids:
+                 cache['product'][sku] = \
+                     odoo_db['product'].browse(product_ids)[0]
+
+    return cache['product'].get(sku)
 
 
-def get_web_product(line, odoo_db):
+def get_web_product(line, odoo_db, cache):
     """ Extract web product from line
     """
+    if 'web' not in cache:
+        cache['web'] = {}
     return True
 
 
@@ -52,6 +70,8 @@ def clean_char(value, limit):
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
 odoo_db = {}
+product_cache = {}
+
 for root, folders, files in os.walk('..'):
     for cfg_file in files:
         if not cfg_file.startswith('openerp'):
@@ -96,12 +116,27 @@ log_message(f_log, 'Reading %s order from company %s\n' % (
 mask = '%-10s%-15s%8s%1s%-30s%-30s%-16s%-30s%-5s%-30s%-8s%-35s%-30s' \
        '%-18s%-45s%-20s%-30s%-5s' \
        '%-10.2f%-10.2f%-10.2f' \
-       '%-20s%-10.2f%-1s%-10s%-10s\n'
+       '%-20s%-10.2f%-1s%-10s%-10s\n'  # TODO \r
 
 for order in orders:
+    wp_record = eval(order.wp_record)
     for line in order.line_ids:
-        product = get_product(line, odoo_db)
-        web_product = get_web_product(line, odoo_db)
+        # Data from product:
+        product = get_product(line, odoo_db, product_cache)
+        if product:
+            cost = product.standard_price
+        else:
+            cost = 0.0
+
+        # Data from web product:
+        web_product = get_web_product(line, odoo_db, product_cache)
+        if web_product:
+            brand = ''
+            category = ''
+        else:
+            brand = ''
+            category = ''
+
         data = (
             # Header:
             clean_char(order.name, 10),  # Order number
@@ -121,11 +156,11 @@ for order in orders:
             # Line:
             clean_char(line.sku, 18),  # SKU
             clean_char(line.name, 45),  # Product description
-            clean_char('', 20),  # Brand
-            clean_char('', 30),  # Category (more than one!)
+            clean_char(brand, 20),  # Brand
+            clean_char(category, 30),  # Category (more than one!)
             clean_char('NR', 5),  # UOM  (sempre NR?)
             line.quantity,  # Q.  (10.2)
-            0.0,  # Cost  (10.2)
+            cost,  # Cost  (10.2)
             line.price,  # List price  (10.2)
 
             # Footer
