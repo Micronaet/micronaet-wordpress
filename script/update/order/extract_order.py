@@ -118,6 +118,7 @@ for root, folders, files in os.walk('..'):
             'http://%s:%s' % (server, port),
             db=dbname, user=user, password=pwd,
             )
+        odoo.context = {'lang': 'it_IT'}
         odoo_db[company] = {
             'order': odoo.model('wordpress.sale.order'),
             'product': odoo.model('product.product'),
