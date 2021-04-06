@@ -141,6 +141,7 @@ mask = '%-10s%-15s%8s%1s%-30s%-30s%-16s%-30s%-5s%-30s%-8s%-35s%-30s' \
 
 for order in orders:
     wp_record = eval(order.wp_record)
+    billing = wp_record['billing']
     for line in order.line_ids:
         # Data from product:
         product = get_product(line, odoo_db, product_cache)
@@ -167,12 +168,13 @@ for order in orders:
             clean_char(order.state, 15),  # State of order (Causale)
             clean_date(order.date_order),  # Date order (AAAAMMGG)
             'F',  # TODO A or F (Azienda or Persona Fisica) (1 Char)
-            clean_char(order.partner_name, 30),  # Last name
-            clean_char('', 30),  # First name (non importato, unito al cognome)
+            clean_char(billing['last_name'], 30),  # Last name
+            clean_char(billing['first_name'], 30),  # First name
             clean_char('', 16),  # Fiscal code (non presente)
-            clean_char(order.billing, 30),  # Address
-            clean_char('', 5),  # ZIP
-            clean_char('', 30),  # City
+            clean_char('%s %s' % (
+                billing['address_1'], billing['address_2']), 30),  # Address
+            clean_char(billing['post_code'], 5),  # ZIP
+            clean_char(billing['city'], 30),  # City
             clean_date(''),  # Birthday (AAAAMMGG) Non presente
             clean_char(order.partner_email, 35),  # Email
             clean_char(order.partner_phone, 30),  # Phone
