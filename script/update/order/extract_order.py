@@ -32,12 +32,12 @@ def get_product(line, odoo_db, cache):
         if product:
             cache['product'][sku] = product
         else:
-            product_ids = odoo_db['gpb']['product'].search([
+            product_ids = odoo_db[company_2]['product'].search([
                 ('default_code', '=', sku),
             ])
             if product_ids:
                  cache['product'][sku] = \
-                     odoo_db['gpb']['product'].browse(product_ids)[0]
+                     odoo_db[company_2]['product'].browse(product_ids)[0]
 
     return cache['product'].get(sku)
 
@@ -53,9 +53,9 @@ def get_web_product(line, odoo_db, cache):
     sku = line.sku
     if sku not in cache['web']:
         if product:
-            pool = odoo_db['fia']['web']
+            pool = odoo_db[company_1]['web']
         else:
-            pool = odoo_db['gpb']['web']
+            pool = odoo_db[company_2]['web']
 
         web_ids = pool.search([
             ('connector_id', '=', connector_id),
@@ -91,6 +91,8 @@ def clean_char(value, limit):
 # -----------------------------------------------------------------------------
 odoo_db = {}
 product_cache = {}
+company_1 = 'gpb'
+company_2 = 'fia'
 
 for root, folders, files in os.walk('..'):
     for cfg_file in files:
@@ -128,8 +130,8 @@ for root, folders, files in os.walk('..'):
     break
 
 # Use first company order only:
-order_ids = odoo_db['fia']['order'].search()
-orders = odoo_db['fia']['order'].browse(order_ids)
+order_ids = odoo_db[company_1]['order'].search()
+orders = odoo_db[company_1]['order'].browse(order_ids)
 order_file = open(os.path.join('./data', 'wordpress.order.csv'), 'w')
 log_message(f_log, 'Reading %s order from company %s\n' % (
     len(order_ids), company))
@@ -142,6 +144,7 @@ mask = '%-10s%-15s%8s%1s%-30s%-30s%-16s%-30s%-5s%-30s%-8s%-35s%-30s' \
 for order in orders:
     wp_record = eval(order.wp_record)
     billing = wp_record['billing']
+    meta_data = wp_record['meta_data']
     for line in order.line_ids:
         # Data from product:
         product = get_product(line, odoo_db, product_cache)
@@ -164,6 +167,10 @@ for order in orders:
 
         if billing['company']:
             contact_type = 'A'
+            vat = ''
+            for item in meta_data:
+                if item['key'] == '_billing_vat':
+                    vat = item['value'] or ''
         else:
             contact_type = 'F'
         data = (
