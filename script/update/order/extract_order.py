@@ -89,10 +89,13 @@ def clean_char(value, limit):
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
-odoo_db = {}
-product_cache = {}
+# Parameters:
 company_1 = 'gpb'
 company_2 = 'fia'
+from_date = '2021-03-01'
+
+odoo_db = {}
+product_cache = {}
 
 for root, folders, files in os.walk('..'):
     for cfg_file in files:
@@ -130,7 +133,9 @@ for root, folders, files in os.walk('..'):
     break
 
 # Use first company order only:
-order_ids = odoo_db[company_1]['order'].search()
+order_ids = odoo_db[company_1]['order'].search([
+    ('date_order', '>=', from_date),
+])
 orders = odoo_db[company_1]['order'].browse(order_ids)
 order_file = open(os.path.join('./data', 'wordpress.order.csv'), 'w')
 log_message(f_log, 'Reading %s order from company %s\n' % (
