@@ -142,6 +142,7 @@ mask = '%-10s%-15s%8s%1s%-30s%-30s%-16s%-30s%-5s%-30s%-8s%-35s%-30s' \
 for order in orders:
     wp_record = eval(order.wp_record)
     billing = wp_record['billing']
+    pdb.set_trace()
     for line in order.line_ids:
         # Data from product:
         product = get_product(line, odoo_db, product_cache)
