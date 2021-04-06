@@ -479,13 +479,13 @@ class ConnectorServer(orm.Model):
         color = excel_format['white']
         for period in sorted(report_data['invoiced'], reverse=True):
             invoiced_data = report_data['invoiced'][period]
-            micronaet_cost = get_extra_cost(
-                'micronaet', period, invoiced_data[0])
             keyword_cost = 0.0
             accessory_cost = 0.0
 
             net = invoiced_data['done'] - invoiced_data['done_tax'] - \
-                  invoiced_data['done_shipping'] - micronaet_cost  # TODO
+                  invoiced_data['done_shipping']  # First level
+            micronaet_cost = get_extra_cost('micronaet', period, net)
+            net -= micronaet_cost  # Second level
             data = [
                 (period, color['text']),
                 invoiced_data['cancel'],
