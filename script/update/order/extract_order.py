@@ -116,6 +116,5 @@ for order in orders:
             ('')[:10],  # Sconto ordine
             ('')[:10],  # Coupon sconto
         )
-        pdb.set_trace()
         order_file.write(mask % data)
 
