@@ -63,7 +63,7 @@ for root, folders, files in os.walk('..'):
         odoo_db[company] = {
             'order': odoo.model('wordpress.sale.order'),
             'product': odoo.model('product.product'),
-            'web': odoo.model('product.product.server.web'),
+            'web': odoo.model('product.product.web.server'),
         }
         log_message(f_log, 'Connect with ODOO, company %s\n' % company)
     break
