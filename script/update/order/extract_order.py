@@ -119,6 +119,7 @@ for root, folders, files in os.walk('..'):
         port = config.get('dbaccess', 'port')
         connector_id = int(config.get('dbaccess', 'connector_id'))
         send_message = eval(config.get('dbaccess', 'send_message'))
+        extract_path = config.get('extract', 'path')
         connectors[company] = connector_id
 
         # ---------------------------------------------------------------------
@@ -142,7 +143,7 @@ order_ids = odoo_db[company_1]['order'].search([
     ('date_order', '>=', from_date),
 ])
 orders = odoo_db[company_1]['order'].browse(order_ids)
-order_file = open(os.path.join('./data', 'wordpress.order.csv'), 'w')
+order_file = open(os.path.join(extract_path, 'wordpress.order.csv'), 'w')
 log_message(f_log, 'Reading %s order from company %s\n' % (
     len(order_ids), company))
 
@@ -218,7 +219,6 @@ for order in orders:
             clean_char('', 10),  # Sconto ordine
             clean_char('', 10),  # Coupon sconto
         )
-        print data
         order_file.write(mask % data)
         order_file.flush()
 
