@@ -159,7 +159,7 @@ for order in orders:
         # Data from product:
         product = get_product(line, odoo_db, product_cache)
         if product:
-            cost = product.inventory_cost_no_more or product.standard_price
+            cost = (product.inventory_cost_no_more or product.standard_price or 0.0)
         else:
             cost = 0.0
 
