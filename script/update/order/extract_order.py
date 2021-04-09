@@ -218,6 +218,7 @@ for order in orders:
             clean_char('', 10),  # Sconto ordine
             clean_char('', 10),  # Coupon sconto
         )
+        print data
         order_file.write(mask % data)
         order_file.flush()
 
