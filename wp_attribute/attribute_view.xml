@@ -275,11 +275,6 @@
                                         <field name="price_extra" />
                                     </group>
                                 </page>
-                                <!--<page string="Linked">
-                                    <group colspan="4" col="4">
-                                        <field name="linked_ids" domain="[('id', '!=', active_id), ('connector_id', '=', connector_id)]" widget="many2many_tags"/>
-                                    </group>
-                                </page>-->
                                 <page string="Material">
                                     <group colspan="4" col="4">
                                         <field name="material_ids" widget="many2many_tags"/>
@@ -447,7 +442,10 @@
                                 </page>
                                 <page string="Linked:">
                                      <group colspan="4" col="4">
-                                         <field name="linked_ids" domain="[('id', '!=', active_id), ('connector_id', '=', connector_id), ('wp_parent_template', '=', True)]" widget="many2many_tags"/>
+                                         <separator string="Prodotti Cross sell:" colspan="4"/>
+                                         <field name="cross_ids" domain="[('id', '!=', active_id), ('connector_id', '=', connector_id), ('wp_parent_template', '=', True)]" widget="many2many_tags" nolabel="1"/>
+                                         <separator string="Prodotti Upsell:" colspan="4"/>
+                                         <field name="linked_ids" domain="[('id', '!=', active_id), ('connector_id', '=', connector_id), ('wp_parent_template', '=', True)]" widget="many2many_tags" nolabel="1"/>
                                      </group>
                                 </page>
                             </notebook>
