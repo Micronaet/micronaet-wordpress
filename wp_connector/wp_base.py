@@ -1390,7 +1390,7 @@ class ProductProductWebServer(orm.Model):
             'product_id', 'linked_id',
             'Prodotti crosssell'),
 
-        'uppsell_ids': fields.many2many(
+        'upsell_ids': fields.many2many(
             'product.product.web.server', 'web_server_upsell_rel',
             'product_id', 'linked_id',
             'Prodotti upsell'),
