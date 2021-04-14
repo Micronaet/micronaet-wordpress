@@ -443,9 +443,9 @@
                                 <page string="Linked:">
                                      <group colspan="4" col="4">
                                          <separator string="Prodotti Cross sell:" colspan="4"/>
-                                         <field name="cross_ids" domain="[('id', '!=', active_id), ('connector_id', '=', connector_id), ('wp_parent_template', '=', True)]" widget="many2many_tags" nolabel="1"/>
-                                         <separator string="Prodotti Upsell:" colspan="4"/>
                                          <field name="linked_ids" domain="[('id', '!=', active_id), ('connector_id', '=', connector_id), ('wp_parent_template', '=', True)]" widget="many2many_tags" nolabel="1"/>
+                                         <separator string="Prodotti Upsell:" colspan="4"/>
+                                         <field name="upsell_ids" domain="[('id', '!=', active_id), ('connector_id', '=', connector_id), ('wp_parent_template', '=', True)]" widget="many2many_tags" nolabel="1"/>
                                      </group>
                                 </page>
                             </notebook>

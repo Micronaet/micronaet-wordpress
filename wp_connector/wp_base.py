@@ -1011,19 +1011,19 @@ class ProductProductWebServer(orm.Model):
                 # -------------------------------------------------------------
                 # Linked blocks:
                 # -------------------------------------------------------------
-                # Upsell:
-                wp_upsell_ids = []
+                # Cross sell:
+                wp_cross_sell_ids = []
                 for related in item.linked_ids:
                     related_wp_id = eval('related.wp_%s_id' % lang)
                     if related_wp_id:
-                        wp_upsell_ids.append(related_wp_id)
+                        wp_cross_sell_ids.append(related_wp_id)
 
                 # Cross sell:
-                wp_cross_sell_ids = []
-                for related in item.cross_ids:
+                wp_upsell_ids = []
+                for related in item.upsell_ids:
                     related_wp_id = eval('related.wp_%s_id' % lang)
                     if related_wp_id:
-                        wp_cross_sell_ids.append(related_wp_id)
+                        wp_upsell_ids.append(related_wp_id)
 
                 # -------------------------------------------------------------
                 # Images block:
@@ -1388,12 +1388,12 @@ class ProductProductWebServer(orm.Model):
         'linked_ids': fields.many2many(
             'product.product.web.server', 'web_server_linked_rel',
             'product_id', 'linked_id',
-            'Prodotti upsell'),
+            'Prodotti crosssell'),
 
-        'cross_ids': fields.many2many(
-            'product.product.web.server', 'web_server_cross_rel',
+        'uppsell_ids': fields.many2many(
+            'product.product.web.server', 'web_server_upsell_rel',
             'product_id', 'linked_id',
-            'Prodotti cross sell'),
+            'Prodotti upsell'),
 
         # ---------------------------------------------------------------------
         # Material link
