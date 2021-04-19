@@ -140,6 +140,7 @@ for company in database:
                 print('Error updating master %s menu order\n\n%s' % (
                     master_code,
                     reply.text if verbose else ''))
+            continue
 
             """
             multipack = str(int(variation.price_multi)) \
