@@ -92,6 +92,7 @@ wcapi = woocommerce.API(
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
 empty_stock = []
+pdb.set_trace()
 for company in database:
     cfg_file = database[company]
 
@@ -132,7 +133,7 @@ for company in database:
                 'lang': wp_lang,
                 'menu_order': master.wp_sequence,  # Update also sequence
             }
-            product_id = wp_data['product_id']
+            product_id = variant_db[wp_lang][master_code]['product_id']
             call = 'products/%s' % product_id
             reply = wcapi.put(call, data)
             if reply.status_code >= 300:
