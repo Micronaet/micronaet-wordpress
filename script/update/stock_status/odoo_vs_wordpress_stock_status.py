@@ -92,7 +92,6 @@ wcapi = woocommerce.API(
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
 empty_stock = []
-pdb.set_trace()
 for company in database:
     cfg_file = database[company]
 
@@ -135,7 +134,13 @@ for company in database:
             }
             product_id = variant_db[wp_lang][master_code]['product_id']
             call = 'products/%s' % product_id
-            reply = wcapi.put(call, data)
+            try:
+                reply = wcapi.put(call, data)
+            except:
+                print('Error updating master %s menu order\n\n%s' % (
+                    master_code,
+                    reply.text if verbose else ''))
+                continue
             if reply.status_code >= 300:
                 print('Error updating master %s menu order\n\n%s' % (
                     master_code,
