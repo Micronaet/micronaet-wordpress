@@ -133,9 +133,9 @@ for company in database:
                 'lang': wp_lang,
                 'menu_order': master.wp_sequence,  # Update also sequence
             }
-            product_id = variant_db[wp_lang][master_code]['product_id']
-            call = 'products/%s' % product_id
             try:
+                product_id = variant_db[wp_lang][master_code]['product_id']
+                call = 'products/%s' % product_id
                 reply = wcapi.put(call, data)
             except:
                 print('Error updating master %s menu order\n\n%s' % (
