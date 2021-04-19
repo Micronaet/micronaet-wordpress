@@ -126,6 +126,7 @@ for company in database:
             ])
 
         for master in web_product_pool.browse(web_product_ids):
+            """
             # Block: Update pack (after remove)
             master_code = master.product_id.default_code
 
@@ -149,7 +150,7 @@ for company in database:
 
             print('Update %s' % master_code)
             continue
-
+            """
             """
             multipack = str(int(variation.price_multi)) \
                 if variation.price_multi and variation.price_multi > 1 \
