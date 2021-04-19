@@ -1051,6 +1051,7 @@ class ProductProductWebServer(orm.Model):
 
                     # It doesn't update:
                     'wp_type': item.wp_type,
+                    'menu_order': item.wp_sequence,
 
                     # TODO 'weight': weight,
                     }
@@ -1314,6 +1315,7 @@ class ProductProductWebServer(orm.Model):
             help='Log cambi quantità magazzino forzato manualmente', ),
         'wp_it_id': fields.integer('WP it ID'),
         'wp_en_id': fields.integer('WP en ID'),
+        'wp_sequence': fields.integer('Sequenza'),
 
         'brand_id': fields.many2one('product.product.web.brand', 'Brand'),
 

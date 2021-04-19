@@ -1191,6 +1191,7 @@ class ProductPublicCategory(orm.Model):
                         'description': description,
                         'lang': lang,
                         'weight': '%s' % line.wp_volume,  # X Used for volume
+                        'menu_order': parent.wp_sequence,
                         'dimensions': {
                             'length': '%s' % line.pack_l,
                             'height': '%s' % line.pack_h,

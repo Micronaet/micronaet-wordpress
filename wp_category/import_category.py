@@ -65,8 +65,8 @@ class ProductPublicCategory(orm.Model):
     _inherit = 'connector.server'
 
     def clean_and_republish_id_now(self, cr, uid, ids, context=None):
-        ''' Procedure used for recreate category deleted from backupffice
-        '''
+        """ Procedure used for recreate category deleted from backupffice
+        """
         category_pool = self.pool.get('product.public.category')
         category_ids = category_pool.search(cr, uid, [
             ('connector_id', '=', ids[0]),
@@ -78,10 +78,10 @@ class ProductPublicCategory(orm.Model):
         return self.publish_category_now(cr, uid, ids, context=context)
 
     def publish_category_now(self, cr, uid, ids, context=None):
-        ''' Publish now button
+        """ Publish now button
             Used also for more than one elements (not only button click)
             Note all product must be published on the same web server!
-            '''
+            """
         if context is None:
             context = {}
 
@@ -226,9 +226,9 @@ class ProductPublicCategory(orm.Model):
                         odoo_id = category_ids[0]
                         category_pool.write(cr, uid, category_ids, {
                             # No parent update for update (it was created)
-                            #'parent_id': wp_id2odoo_id.get(
+                            # 'parent_id': wp_id2odoo_id.get(
                             #    wp_parent_id, False),
-                            #'sequence': record['menu_order'],
+                            # 'sequence': record['menu_order'],
                             'name': name,
                             }, context=context_lang)
                         _logger.info('Update %s' % name)
