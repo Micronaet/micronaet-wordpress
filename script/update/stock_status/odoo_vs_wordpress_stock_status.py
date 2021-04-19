@@ -126,6 +126,18 @@ for company in database:
             ])
 
         for master in web_product_pool.browse(web_product_ids):
+            # Update pack (after remove)
+            data = {
+                'lang': wp_lang,
+                'menu_order': master.wp_sequence,  # Update also sequence
+            }
+            product_id = wp_data['product_id']
+            call = 'products/%s' % product_id
+            reply = wcapi.put(call, data)
+            if reply.status_code >= 300:
+                print('Error updating master menu order\n\n%s' % (
+                    reply.text if verbose else ''))
+
             """
             multipack = str(int(variation.price_multi)) \
                 if variation.price_multi and variation.price_multi > 1 \
