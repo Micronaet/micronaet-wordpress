@@ -147,7 +147,7 @@ for company in database:
                     master_code,
                     reply.text if verbose else ''))
 
-            print('Update %s' % master_code
+            print('Update %s' % master_code)
             continue
 
             """
