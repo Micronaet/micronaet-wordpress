@@ -127,6 +127,7 @@ for company in database:
 
         for master in web_product_pool.browse(web_product_ids):
             # Update pack (after remove)
+            master_code = master.product_id.default_code
             data = {
                 'lang': wp_lang,
                 'menu_order': master.wp_sequence,  # Update also sequence
@@ -135,7 +136,8 @@ for company in database:
             call = 'products/%s' % product_id
             reply = wcapi.put(call, data)
             if reply.status_code >= 300:
-                print('Error updating master menu order\n\n%s' % (
+                print('Error updating master %s menu order\n\n%s' % (
+                    master_code,
                     reply.text if verbose else ''))
 
             """
