@@ -217,6 +217,7 @@ for company in database:
                     # 'multipack': multipack,
                     # 'stock_status': 'instock',
                     # instock (def.), outofstock, onbackorder
+                    'menu_order': master.wp_sequence,  # Update also sequence
 
                     # TODO update more other things?
                     }
