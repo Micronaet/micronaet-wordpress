@@ -126,8 +126,9 @@ for company in database:
             ])
 
         for master in web_product_pool.browse(web_product_ids):
-            # Update pack (after remove)
+            # Block: Update pack (after remove)
             master_code = master.product_id.default_code
+
             data = {
                 'lang': wp_lang,
                 'menu_order': master.wp_sequence,  # Update also sequence
@@ -145,6 +146,8 @@ for company in database:
                 print('Error updating master %s menu order\n\n%s' % (
                     master_code,
                     reply.text if verbose else ''))
+
+            print('Update %s' % master_code
             continue
 
             """
