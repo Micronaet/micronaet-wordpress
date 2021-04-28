@@ -891,7 +891,8 @@ class ConnectorServer(orm.Model):
                     run_mode = 'create'
 
                     # Telegram message:
-                    if telegram_message:
+                    # TODO Debug: if telegram_message:
+                    try:
                         self.telegram_send_message(
                             'Nuovo ordine [%s]\n Data: %s\nTotale: %s' % (
                                 order_header['number'],
@@ -899,6 +900,8 @@ class ConnectorServer(orm.Model):
                                 order_header['total'],
                             ),
                             telegram_token, telegram_group)
+                    except:
+                        pass  # Error comunicating new order
 
                     # Address:
                     billing = record['billing']
