@@ -529,8 +529,8 @@ class ConnectorServer(orm.Model):
                         [c.name for c in line.wordpress_categ_ids])),
                     stock_qty,
                     product.q_x_pack,
-                    '',  # mutliplier
-                    product.standard_price,
+                    line.price_multi or '',
+                    product.inventory_cost_no_move or product.standard_price,
                     price,
                     line.weight,
 
