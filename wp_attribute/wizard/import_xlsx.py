@@ -185,7 +185,7 @@ class ProductProductImportWorpdress(orm.Model):
         current_proxy = self.browse(cr, uid, xlsx_id, context=context)
         connector_id = current_proxy.connector_id.id
         first_supplier_id = current_proxy.first_supplier_id.id
-        row_start = current_proxy.from_line or 1
+        row_start = (current_proxy.from_line or 1) - 1
 
         # ---------------------------------------------------------------------
         # Save file passed:
