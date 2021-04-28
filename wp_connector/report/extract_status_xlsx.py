@@ -149,7 +149,7 @@ class ConnectorServer(orm.Model):
             'Pubbl.', 'Codice', 'GTIN', 'Colore', 'Brand',
             'Nome', 'Descrizione',
             '(Name)', '(Description)',
-            'Categorie', 'Mag.', 'Dett. mag.', 'Extra', 'Molt.',
+            'Categorie', 'Mag.', 'Dett. mag.', 'Extra prezzo', 'Molt.',
             'Venduto',
             'Prezzo ODOO', 'Forz.', 'Prezzo WP', 'Scontato',
             'Cat. Stat.', 'Peso',
@@ -424,5 +424,120 @@ class ConnectorServer(orm.Model):
                     product.name,
                     product.statistic_category or '',
                     ], default_format=excel_format['black']['text'])
+
+        return excel_pool.return_attachment(cr, uid, 'web_product')
+
+    def extract_wordpress_accounting_report(self, cr, uid, ids, context=None):
+        """ Extract list of published elements for accounting:
+        """
+        # Pool used:
+        excel_pool = self.pool.get('excel.writer')
+        connector_pool = self.pool.get('product.product.web.server')
+
+        # ---------------------------------------------------------------------
+        #                         Excel report:
+        # ---------------------------------------------------------------------
+        connector = self.browse(cr, uid, ids, context=context)[0]
+        ws_name = 'Gestionale'
+        excel_pool.create_worksheet(ws_name)
+
+        # Load formats:
+        excel_format = {
+            'title': excel_pool.get_format('title'),
+            'header': excel_pool.get_format('header'),
+            'black': {
+                'text': excel_pool.get_format('text'),
+                'number': excel_pool.get_format('number'),
+                },
+            'red': {
+                'text': excel_pool.get_format('bg_red'),
+                'number': excel_pool.get_format('bg_red_number'),
+                },
+            'yellow': {
+                'text': excel_pool.get_format('bg_yellow'),
+                'number': excel_pool.get_format('bg_yellow_number'),
+                },
+            }
+
+        # ---------------------------------------------------------------------
+        # Published product:
+        # ---------------------------------------------------------------------
+        # Width
+        excel_pool.column_width(ws_name, [
+            5, 15, 20, 5, 20,
+            30, 10, 5, 5,
+            15, 15,
+            15, 12, 12, 12,
+            15,
+            ])
+
+        # Print header
+        row = 0
+        excel_pool.write_xls_line(
+            ws_name, row, [
+            'Pubbl.', 'Codice', 'Nome', 'UM', 'Colore', 'Brand',
+            'Categorie', 'Magazzino', 'Q x pack', 'Molt.',
+            'Costo', 'Prezzo',
+            'Peso', 'H', 'W', 'L',
+            'Vol.',
+            ], default_format=excel_format['header'])
+
+        line_ids = connector_pool.search(cr, uid, [
+            ('connector_id', '=', connector.id),
+            ], context=context)
+
+        for line in sorted(connector_pool.browse(
+                cr, uid, line_ids, context=context),
+                key=lambda p: (
+                    p.product_id.default_code,
+                    p.product_id.name),
+                ):
+            product = line.product_id
+            default_code = product.default_code or ''
+
+            # -----------------------------------------------------------------
+            # Parameters:
+            # -----------------------------------------------------------------
+            # Stock:
+            stock_qty, stock_comment = \
+                connector_pool.get_existence_for_product(
+                    cr, uid, line, context=context)
+
+            multiplier = line.price_multi or 1
+            if multiplier > 1:
+                stock_qty = stock_qty // multiplier
+
+            published = 'X' if line.published else ''
+            if not published:
+                color_format = excel_format['yellow']
+            elif stock_qty <= 0:
+                color_format = excel_format['red']
+            else:
+                color_format = excel_format['black']
+
+            row += 1
+            price = connector_pool.get_wp_price(line)
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    published,
+                    default_code,
+                    product.name,
+                    product.uom_id.name,
+                    line.wp_color_id.name or '',
+                    line.brand_id.name or '',
+                    ', '.join(tuple(
+                        [c.name for c in line.wordpress_categ_ids])),
+                    stock_qty,
+                    product.q_x_pack,
+                    '',  # mutliplier
+                    product.standard_price,
+                    price,
+                    line.weight,
+
+                    line.pack_h,
+                    line.pack_l,
+                    line.pack_p,
+                    line.wp_volume,
+                    ], default_format=color_format['text'])
 
         return excel_pool.return_attachment(cr, uid, 'web_product')
