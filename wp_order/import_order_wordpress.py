@@ -712,7 +712,6 @@ class ConnectorServer(orm.Model):
 
         # ---------------------------------------------------------------------
         # Return excel file:
-        pdb.set_trace()
         if send_group:
             excel_pool.send_mail_to_group(
                 cr, uid,
