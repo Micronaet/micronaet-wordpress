@@ -901,7 +901,7 @@ class ConnectorServer(orm.Model):
                             ),
                             telegram_token, telegram_group)
                     except:
-                        pass  # Error comunicating new order
+                        pass  # Error comunication of new order
 
                     # Address:
                     billing = record['billing']

@@ -150,7 +150,7 @@ log_message(f_log, 'Reading %s order from company %s\n' % (
 mask = '%-10s%-15s%8s%1s%-30s%-30s%-16s%-30s%-5s%-30s%2s%-8s%-35s%-30s' \
        '%-18s%-45s%-20s%-30s%-5s' \
        '%-10.2f%-10.2f%-10.2f' \
-       '%-20s%-10.2f%-1s%-10s%-10s\n'  # TODO \r
+       '%-20s%-10.2f%-1s%-10s%-10s%-3s\n'  # TODO \r
 
 for order in orders:
     wp_record = eval(order.wp_record)
@@ -184,6 +184,12 @@ for order in orders:
                     break
         else:
             contact_type = 'F'
+
+        if order.partner_email.endswith('marketplace.amazon.it'):
+            marketplace = 'AMZ'
+        else:
+            marketplace = 'WP'
+
         data = (
             # Header:
             clean_char(order.name, 10),  # Order number
@@ -218,6 +224,7 @@ for order in orders:
             '',  # S = esente IVA (1 char)
             clean_char('', 10),  # Sconto ordine
             clean_char('', 10),  # Coupon sconto
+            clean_char(marketplace, 3),   # Marketplace
         )
         order_file.write(mask % data)
         order_file.flush()
