@@ -66,14 +66,10 @@ class WordpressSaleOrder(orm.Model):
             )
             server_pool.server_send_telegram_message(
                 cr, uid, [order.connector_id.id], message, context=context)
-            # Only alert when line is present
-            self.write(cr, uid, ids, {
-                'alert': True,
-            }, context=context)
+            return True
         except:
             _logger.error('Error send message, insert only order!')
             return False
-        return True
 
     # def create(self, cr, uid, vals, context=None):
     #    """ Message when create
@@ -89,6 +85,9 @@ class WordpressSaleOrder(orm.Model):
         res = super(WordpressSaleOrder, self).write(cr, uid, ids, vals, context=context)
         if not order.alert and not vals.get('alert'):
             self.new_wordpress_order_message(cr, uid, [order_id], context=context)
+            self.write(cr, uid, ids, {
+                'alert': True,
+            }, context=context)
         return res
 
     _columns = {
