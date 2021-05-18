@@ -253,7 +253,7 @@
 
                         <separator string="Telegram" colspan="4"/>
                         <field name="telegram_message"/>
-                        <button name="telegram_text" type="object" string="Test message" colspan="2"/>
+                        <button name="telegram_test" type="object" string="Test message" colspan="2" attrs="{'invisible': [('telegram_message', '=', False)]}"/>
                         <field name="telegram_token" attrs="{'invisible': [('telegram_message', '=', False)], 'required': [('telegram_message', '=', True)]}"/>
                         <field name="telegram_group" attrs="{'invisible': [('telegram_message', '=', False)], 'required': [('telegram_message', '=', True)]}"/>
 
