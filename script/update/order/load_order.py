@@ -66,4 +66,9 @@ for root, folders, files in os.walk('..'):
         connector_pool = odoo.model('connector.server')
         res = connector_pool.get_sale_order_now([connector_id])
         log_message(f_log, 'End updating order for %s company\n' % company)
+
+        order_pool = odoo.model('wordpress.sale.order')
+        order_pool.raise_message_new_order(False)
+        log_message(f_log, 'Raise new order in Telegram %s company\n' % company)
+
     break

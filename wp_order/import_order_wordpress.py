@@ -38,16 +38,24 @@ class WordpressSaleOrder(orm.Model):
     _name = 'wordpress.sale.order'
     _description = 'Wordpress order'
 
+    def raise_message_new_order(self, cr, uid, ids, context=None):
+        """ Raise message for new order
+        """
+        order_ids = self.search(cr, uid, [
+            ('alert', '=', False),
+        ], context=context)
+        if not order_ids:
+            return False
+        for order_id in order_ids:
+            self.new_wordpress_order_message(cr, uid, [order_id], context=context)
+        return True
+
     def new_wordpress_order_message(self, cr, uid, ids, context=None):
         """ Telegram message when new order
         """
         order_id = ids[0]
         try:
             order = self.browse(cr, uid, order_id, context=context)
-            if not order.line_ids:
-                _logger.warning('Order without line, no message!')
-                return False
-            _logger.warning('Order with line, sending message!')
             server_pool = self.pool.get('connector.server')
             if (order.partner_email or '').endswith('@marketplace.amazon.it'):
                 marketplace = 'Amazon'
@@ -70,29 +78,12 @@ class WordpressSaleOrder(orm.Model):
                         )
             server_pool.server_send_telegram_message(
                 cr, uid, [order.connector_id.id], message, context=context)
-            return True
+            return self.write(cr, uid, [order_id], {
+                'alert': True,
+            }, context=context)
         except:
             _logger.error('Error send message, insert only order!')
             return False
-
-    # def create(self, cr, uid, vals, context=None):
-    #    """ Message when create
-    #    """
-    #    order_id = super(WordpressSaleOrder, self).create(cr, uid, vals, context=context)
-    #    return order_id
-
-    def write(self, cr, uid, ids, vals, context=None):
-        """ Sent create message only when first write
-        """
-        order_id = ids[0]
-        order = self.browse(cr, uid, order_id, context=context)
-        res = super(WordpressSaleOrder, self).write(cr, uid, ids, vals, context=context)
-        if not order.alert and not vals.get('alert'):
-            if self.new_wordpress_order_message(cr, uid, [order_id], context=context):
-                super(WordpressSaleOrder, self).write(cr, uid, ids, {
-                    'alert': True,
-                }, context=context)
-        return res
 
     _columns = {
         'alert': fields.boolean('Alert inviato'),
