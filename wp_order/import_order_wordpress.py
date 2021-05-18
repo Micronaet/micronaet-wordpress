@@ -41,7 +41,6 @@ class WordpressSaleOrder(orm.Model):
     def create(self, cr, uid, vals, context=None):
         """ Message when create
         """
-        pdb.set_trace()
         order_id = super(WordpressSaleOrder, self).create(cr, uid, vals, context=context)
         order = self.browse(cr, uid, order_id, context=context)
 
