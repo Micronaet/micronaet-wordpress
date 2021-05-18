@@ -44,7 +44,10 @@ class WordpressSaleOrder(orm.Model):
         order_id = ids[0]
         try:
             order = self.browse(cr, uid, order_id, context=context)
-
+            if not order.ine_ids:
+                _logger.warning('Order without line, no message!')
+                return False
+            _logger.warning('Order with line, sending message!')
             server_pool = self.pool.get('connector.server')
             if (order.partner_email or '').endswith('@marketplace.amazon.it'):
                 marketplace = 'Amazon'
@@ -63,6 +66,10 @@ class WordpressSaleOrder(orm.Model):
             )
             server_pool.server_send_telegram_message(
                 cr, uid, [order.connector_id.id], message, context=context)
+            # Only alert when line is present
+            self.write(cr, uid, ids, {
+                'alert': True,
+            }, context=context)
         except:
             _logger.error('Error send message, insert only order!')
             return False
@@ -79,10 +86,8 @@ class WordpressSaleOrder(orm.Model):
         """
         order_id = ids[0]
         order = self.browse(cr, uid, order_id, context=context)
-        if not order.alert:
-            vals['alert'] = True
         res = super(WordpressSaleOrder, self).write(cr, uid, ids, vals, context=context)
-        if vals.get('alert'):  # updated here
+        if not order.alert and not vals['alert']:
             self.new_wordpress_order_message(cr, uid, [order_id], context=context)
         return res
 
