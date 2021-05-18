@@ -246,7 +246,7 @@ class ConnectorServer(orm.Model):
             _logger.warning('Create new product %s' % default_code)
             return product_pool.create(cr, uid, {
                 'name': name,
-                'default_code': default_code, # Create with masked code!
+                'default_code': default_code,  # Create with masked code!
                 'lst_price': price,
                 }, context=context)
 

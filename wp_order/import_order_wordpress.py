@@ -38,6 +38,22 @@ class WordpressSaleOrder(orm.Model):
     _name = 'wordpress.sale.order'
     _description = 'Wordpress order'
 
+    def create(self, cr, uid, vals, context=None):
+        """ Message when create
+        """
+        order_id = super(WordpressSaleOrder, self).create(cr, uid, vals, context=context)
+        order = self.browse(cr, uid, order_id, context=context)
+
+        server_pool = self.pool.get('connector.server')
+        message = 'Nuovo ordine [%s]\n Data: %s\nTotale: %s' % (
+                order.name,
+                order.date_order,
+                order.total,
+            )
+        server_pool.server_send_telegram_message(
+            cr, uid, [order.connector_id.id], message, context=context)
+        return order_id
+
     _columns = {
         'name': fields.char('Order number'),
         'key': fields.char('Order key'),
