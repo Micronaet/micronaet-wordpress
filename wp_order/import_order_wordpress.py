@@ -51,17 +51,21 @@ class WordpressSaleOrder(orm.Model):
             server_pool = self.pool.get('connector.server')
             if (order.partner_email or '').endswith('@marketplace.amazon.it'):
                 marketplace = 'Amazon'
+                shipping = 'Incluso'
             else:
                 marketplace = 'Wordpress'
+                shipping = order.shipping_total or '/'
             detail = ''
             for line in order.line_ids:
                 detail += ' > %s x [%s] %s\n' % (line.quantity, line.sku, line.name)
-            message = 'Marketplace: %s [Totale: %s]\nOrdine: %s del %s\nConsegna: %s\nDettagli:\n%s' % (
+            message = 'Marketplace: %s [Totale: %s]\nOrdine: %s del %s\nConsegna: %s\n' \
+                      'Trasporto esposto: %s\nDettagli:\n%s' % (
                 marketplace,
                 order.total,
                 order.name,
                 order.date_order,
                 order.shipping.split(',')[-1],
+                shipping,
                 detail,
             )
             server_pool.server_send_telegram_message(
