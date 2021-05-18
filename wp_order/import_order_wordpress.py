@@ -42,6 +42,7 @@ class WordpressSaleOrder(orm.Model):
         """ Telegram message when new order
         """
         order_id = ids[0]
+        pdb.set_trace()
         try:
             order = self.browse(cr, uid, order_id, context=context)
             if not order.ine_ids:
