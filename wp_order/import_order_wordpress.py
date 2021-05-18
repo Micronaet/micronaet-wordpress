@@ -61,7 +61,7 @@ class WordpressSaleOrder(orm.Model):
                 order.total,
                 order.name,
                 order.date_order,
-                order.shipping.split('>>')[-1],
+                order.shipping.split(',')[-1],
                 detail,
             )
             server_pool.server_send_telegram_message(
