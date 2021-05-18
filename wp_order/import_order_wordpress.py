@@ -87,7 +87,7 @@ class WordpressSaleOrder(orm.Model):
         return res
 
     _columns = {
-        'alert': fields.Boolean('Alert inviato'),
+        'alert': fields.boolean('Alert inviato'),
         'name': fields.char('Order number'),
         'key': fields.char('Order key'),
         'wp_id': fields.integer('Worpress ID of order'),
