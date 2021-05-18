@@ -84,10 +84,10 @@ class WordpressSaleOrder(orm.Model):
         order = self.browse(cr, uid, order_id, context=context)
         res = super(WordpressSaleOrder, self).write(cr, uid, ids, vals, context=context)
         if not order.alert and not vals.get('alert'):
-            self.new_wordpress_order_message(cr, uid, [order_id], context=context)
-            self.write(cr, uid, ids, {
-                'alert': True,
-            }, context=context)
+            if self.new_wordpress_order_message(cr, uid, [order_id], context=context):
+                super(WordpressSaleOrder, self).write(cr, uid, ids, {
+                    'alert': True,
+                }, context=context)
         return res
 
     _columns = {
