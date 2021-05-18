@@ -38,10 +38,10 @@ class WordpressSaleOrder(orm.Model):
     _name = 'wordpress.sale.order'
     _description = 'Wordpress order'
 
-    def create(self, cr, uid, vals, context=None):
-        """ Message when create
+    def new_wordpress_order_message(self, cr, uid, ids, context=None):
+        """ Telegram message when new order
         """
-        order_id = super(WordpressSaleOrder, self).create(cr, uid, vals, context=context)
+        order_id = ids[0]
         try:
             order = self.browse(cr, uid, order_id, context=context)
 
@@ -54,20 +54,40 @@ class WordpressSaleOrder(orm.Model):
             for line in order.line_ids:
                 detail += ' - %s\n' % line.name
             message = 'Marketplace: %s - [Totale: %s]\nOrdine: %s del %s\nConsegna: %s\nDettagli: %s' % (
-                    marketplace,
-                    order.name,
-                    order.date_order,
-                    order.shipping,
-                    order.total,
-                    detail,
-                )
+                marketplace,
+                order.total,
+                order.name,
+                order.date_order,
+                order.shipping.split('>>')[-1],
+                detail,
+            )
             server_pool.server_send_telegram_message(
                 cr, uid, [order.connector_id.id], message, context=context)
         except:
             _logger.error('Error send message, insert only order!')
-        return order_id
+            return False
+        return True
+
+    # def create(self, cr, uid, vals, context=None):
+    #    """ Message when create
+    #    """
+    #    order_id = super(WordpressSaleOrder, self).create(cr, uid, vals, context=context)
+    #    return order_id
+
+    def write(self, cr, uid, ids, vals, context=None):
+        """ Sent create message only when first write
+        """
+        order_id = ids[0]
+        order = self.browse(cr, uid, order_id, context=context)
+        if not order.alert:
+            vals['alert'] = True
+        res = super(WordpressSaleOrder, self).write(cr, uid, ids, vals, context=context)
+        if vals.get('alert'):  # updated here
+            self.new_wordpress_order_message(cr, uid, [order_id], context=context)
+        return res
 
     _columns = {
+        'alert': fields.Boolean('Alert inviato'),
         'name': fields.char('Order number'),
         'key': fields.char('Order key'),
         'wp_id': fields.integer('Worpress ID of order'),
