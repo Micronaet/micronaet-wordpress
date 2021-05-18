@@ -42,16 +42,29 @@ class WordpressSaleOrder(orm.Model):
         """ Message when create
         """
         order_id = super(WordpressSaleOrder, self).create(cr, uid, vals, context=context)
-        order = self.browse(cr, uid, order_id, context=context)
+        try:
+            order = self.browse(cr, uid, order_id, context=context)
 
-        server_pool = self.pool.get('connector.server')
-        message = 'Nuovo ordine [%s]\n Data: %s\nTotale: %s' % (
-                order.name,
-                order.date_order,
-                order.total,
-            )
-        server_pool.server_send_telegram_message(
-            cr, uid, [order.connector_id.id], message, context=context)
+            server_pool = self.pool.get('connector.server')
+            if (order.partner_email or '').endswith('@marketplace.amazon.it'):
+                marketplace = 'Amazon'
+            else:
+                marketplace = 'Wordpress'
+            detail = ''
+            for line in order.line_ids:
+                detail += ' - %s\n' % line.name
+            message = 'Marketplace: %s - [Totale: %s]\nOrdine: %s del %s\nConsegna: %s\nDettagli: %s' % (
+                    marketplace,
+                    order.name,
+                    order.date_order,
+                    order.shipping,
+                    order.total,
+                    detail,
+                )
+            server_pool.server_send_telegram_message(
+                cr, uid, [order.connector_id.id], message, context=context)
+        except:
+            _logger.error('Error send message, insert only order!')
         return order_id
 
     _columns = {
