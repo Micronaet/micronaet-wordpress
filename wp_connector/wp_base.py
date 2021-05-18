@@ -320,9 +320,32 @@ class ConnectorServer(orm.Model):
             return ean13
         return ''
 
+    def server_send_telegram_message(self, cr, uid, ids, message, context=None):
+        """ Send message with server
+        """
+        server = self.browse(cr, uid, ids, context=context)[0]
+        if not server.telegram_message:
+            _logger.error('Not setup for send Telegram messages')
+            return False
+        token = server.telegram_token
+        group = server.telegram_group
+
+        try:
+            bot = telepot.Bot(str(token))
+            bot.getMe()
+
+            bot.sendMessage(
+                group,
+                message,
+            )
+        except:
+            _logger.error('Error sending Telegram message')
+            return False
+        return True
+
     def telegram_send_message(
             self, message, token, group):
-        """ Send message with Telegram
+        """ Send message with Telegram (externally called)
         """
         try:
             bot = telepot.Bot(str(token))
