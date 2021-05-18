@@ -360,6 +360,12 @@ class ConnectorServer(orm.Model):
             return False
         return True
 
+    def telegram_test(self, cr, uid, ids, context=None):
+        """ Send test message
+        """
+        return self.server_send_telegram_message(
+            cr, uid, ids, 'Test message', context=context)
+
     _columns = {
         'wp_publish_image': fields.boolean('Pubblica immagini'),
         'wp_ean_gtin': fields.boolean('EAN GTIN', help='Use EAN code in GTIN'),
