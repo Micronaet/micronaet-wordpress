@@ -55,7 +55,7 @@ class WordpressSaleOrder(orm.Model):
                 marketplace = 'Wordpress'
             detail = ''
             for line in order.line_ids:
-                detail += ' > %s\n' % line.name
+                detail += ' > %s x [%s] %s\n' % (line.quantity, line.sku, line.name)
             message = 'Marketplace: %s - [Totale: %s]\nOrdine: %s del %s\nConsegna: %s\nDettagli:\n%s' % (
                 marketplace,
                 order.total,
