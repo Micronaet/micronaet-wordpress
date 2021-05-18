@@ -42,10 +42,9 @@ class WordpressSaleOrder(orm.Model):
         """ Telegram message when new order
         """
         order_id = ids[0]
-        pdb.set_trace()
         try:
             order = self.browse(cr, uid, order_id, context=context)
-            if not order.ine_ids:
+            if not order.line_ids:
                 _logger.warning('Order without line, no message!')
                 return False
             _logger.warning('Order with line, sending message!')
