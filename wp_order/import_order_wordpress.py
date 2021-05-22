@@ -54,7 +54,7 @@ class WordpressSaleOrder(orm.Model):
             while loop:
                 try:
                     self.new_wordpress_order_message(cr, uid, [order_id], context=context)
-                    time.sleep(5)
+                    time.sleep(3)
                     loop = False
                 except Exception:
                     _logger.warning('Warning cannot raise telegram order: %s' % order_id)
