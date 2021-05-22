@@ -24,6 +24,8 @@
 import sys
 import logging
 import pdb
+import time
+
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
 from openerp.tools.translate import _
@@ -46,8 +48,20 @@ class WordpressSaleOrder(orm.Model):
         ], context=context)
         if not order_ids:
             return False
-        for order_id in order_ids:
-            self.new_wordpress_order_message(cr, uid, [order_id], context=context)
+        for order_id in sorted(order_ids, reverse=True):
+            loop = True
+            max_loop = 20
+            while loop:
+                try:
+                    self.new_wordpress_order_message(cr, uid, [order_id], context=context)
+                    loop = False
+                except Exception:
+                    _logger.warning('Warning cannot raise telegram order: %s' % order_id)
+                    max_loop -= 1
+                    time.sleep(10)
+                    if max_loop <= 0:
+                        _logger.error('Error cannot raise telegram order 20 times: %s' % order_id)
+                        loop = False
         return True
 
     def new_wordpress_order_message(self, cr, uid, ids, context=None):

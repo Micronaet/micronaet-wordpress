@@ -70,5 +70,4 @@ for root, folders, files in os.walk('..'):
         order_pool = odoo.model('wordpress.sale.order')
         order_pool.raise_message_new_order(False)
         log_message(f_log, 'Raise new order in Telegram %s company\n' % company)
-
     break
