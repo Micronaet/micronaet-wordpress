@@ -332,12 +332,11 @@ class ConnectorServer(orm.Model):
                 server = self.browse(cr, uid, server_ids, context=context)[0]
                 _logger.error('Not setup for send Telegram messages, use first')
             else:
-                _logger.error('Not setup for send Telegram messages, use first')
+                _logger.error('Not setup for send Telegram messages! Message not sent')
                 return False
 
         token = server.telegram_token
         group = server.telegram_group
-
         try:
             bot = telepot.Bot(str(token))
             bot.getMe()
