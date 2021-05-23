@@ -325,8 +325,16 @@ class ConnectorServer(orm.Model):
         """
         server = self.browse(cr, uid, ids, context=context)[0]
         if not server.telegram_message:
-            _logger.error('Not setup for send Telegram messages')
-            return False
+            server_ids = self.search(cr, uid, [
+                ('telegram_token', '!=', False),
+            ], context=context)
+            if server_ids:
+                server = self.browse(cr, uid, server_ids, context=context)[0]
+                _logger.error('Not setup for send Telegram messages, use first')
+            else:
+                _logger.error('Not setup for send Telegram messages, use first')
+                return False
+
         token = server.telegram_token
         group = server.telegram_group
 
