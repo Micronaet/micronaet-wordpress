@@ -326,7 +326,7 @@ class ConnectorServer(orm.Model):
         server = self.browse(cr, uid, ids, context=context)[0]
         if not server.telegram_message:
             server_ids = self.search(cr, uid, [
-                ('telegram_token', '!=', False),
+                ('telegram_message', '=', True),
             ], context=context)
             if server_ids:
                 server = self.browse(cr, uid, server_ids, context=context)[0]
