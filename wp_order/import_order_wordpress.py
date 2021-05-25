@@ -913,6 +913,8 @@ class ConnectorServer(orm.Model):
         new_order_ids = []
         _logger.warning('Order found %s' % (len(wp_order), ))
         for record in wp_order:
+            if record['number'] == '78828':
+                pdb.set_trace()
             try:
                 wp_id = record['id']
                 # TODO Date will show not correct (+2 hours)
