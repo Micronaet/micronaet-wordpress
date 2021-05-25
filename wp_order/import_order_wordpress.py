@@ -913,8 +913,6 @@ class ConnectorServer(orm.Model):
         new_order_ids = []
         _logger.warning('Order found %s' % (len(wp_order), ))
         for record in wp_order:
-            if record['number'] == '78828':
-                pdb.set_trace()
             try:
                 wp_id = record['id']
                 # TODO Date will show not correct (+2 hours)
@@ -938,7 +936,7 @@ class ConnectorServer(orm.Model):
                 marketplace = order_pool.get_marketplace(partner_email)
 
                 if marketplace == 'Amazon':
-                    total_tax = total * 0.22 / 1.22
+                    total_tax = float(total) * 0.22 / 1.22
                     # todo get shipping included total:
                     shipping_total = 0.0
                 else:  # Worpress
@@ -1082,8 +1080,8 @@ class ConnectorServer(orm.Model):
                             }, context=force_context)
 
                     if marketplace == 'Amazon':
-                        line_total = line['total'] / 1.22
-                        line_price = line['price'] / 1.22
+                        line_total = float(line['total']) / 1.22
+                        line_price = float(line['price']) / 1.22
                     else:  # Wordpress
                         line_total = line['total']
                         line_price = line['price']
@@ -1100,7 +1098,6 @@ class ConnectorServer(orm.Model):
                     line_pool.create(cr, uid, order_line, context=context)
 
             except:
-                pdb.set_trace()
                 _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
                 continue
 
