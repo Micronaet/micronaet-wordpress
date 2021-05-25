@@ -65,6 +65,14 @@ class WordpressSaleOrder(orm.Model):
                         loop = False
         return True
 
+    def get_marketplace(self, email):
+        """ Get market place from email
+        """
+        if (email or '').endswith('@marketplace.amazon.it'):
+            return 'Amazon'
+        else:
+            return 'Wordpress'
+
     def new_wordpress_order_message(self, cr, uid, ids, context=None):
         """ Telegram message when new order
         """
@@ -72,11 +80,10 @@ class WordpressSaleOrder(orm.Model):
         try:
             order = self.browse(cr, uid, order_id, context=context)
             server_pool = self.pool.get('connector.server')
-            if (order.partner_email or '').endswith('@marketplace.amazon.it'):
-                marketplace = 'Amazon'
+            marketplace = self.get_marketplace(order.partner_email)
+            if marketplace == 'Amazon':
                 shipping = 'Incluso'
-            else:
-                marketplace = 'Wordpress'
+            else:  # Wordpress
                 shipping = order.shipping_total or 'Non presente'
             detail = ''
             for line in order.line_ids:
@@ -859,10 +866,10 @@ class ConnectorServer(orm.Model):
         telegram_token = connector.telegram_token
         telegram_group = connector.telegram_group
         start_stop_message = False
-        if start_stop_message and telegram_message:
-            self.telegram_send_message(
-                'Inizio lettura ordini Wordpress',
-                telegram_token, telegram_group)
+        # if start_stop_message and telegram_message:
+        #    self.telegram_send_message(
+        #        'Inizio lettura ordini Wordpress',
+        #        telegram_token, telegram_group)
 
         # Read WP Order present:
         wcapi = self.get_wp_connector(
@@ -900,7 +907,7 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Insert order
         # ---------------------------------------------------------------------
-        force_context = context.copy()  # Used for update manual stock mngmnt
+        force_context = context.copy()  # Used for update manual stock manag.
 
         # Sorted so parent first:
         new_order_ids = []
@@ -923,6 +930,18 @@ class ConnectorServer(orm.Model):
                     ('wp_id', '=', wp_id),
                     ], context=context)
                 number = record['number']
+
+                partner_email = record['billing']['email']
+                total = record['total']
+                marketplace = order_pool.get_marketplace(partner_email)
+
+                if marketplace == 'Amazon':
+                    total_tax = total * 0.22 / 1.22
+                    # todo get shipping included total:
+                    shipping_total = 0.0
+                else:  # Worpress
+                    total_tax = record['total_tax']
+                    shipping_total = record['shipping_total']
                 order_header = {  # Fields used also for update:
                     'connector_id': connector_id,
                     'wp_id': wp_id,
@@ -941,8 +960,9 @@ class ConnectorServer(orm.Model):
                     'state': record['status'],
                     'note': record['customer_note'],
                     'payment': record['payment_method_title'],
-                    'total': record['total'],
-                    'total_tax': record['total_tax'],
+                    'total': total,
+                    'total_tax': total_tax,
+                    'shipping_total': shipping_total,
                 }
                 if order_ids:  # XXX No update of header
                     run_mode = 'write'
@@ -955,16 +975,16 @@ class ConnectorServer(orm.Model):
 
                     # Telegram message:
                     # TODO Debug: if telegram_message:
-                    try:
-                        self.telegram_send_message(
-                            'Nuovo ordine [%s]\n Data: %s\nTotale: %s' % (
-                                order_header['number'],
-                                order_header['date_order'],
-                                order_header['total'],
-                            ),
-                            telegram_token, telegram_group)
-                    except:
-                        pass  # Error comunication of new order
+                    #try:
+                    #    self.telegram_send_message(
+                    #        'Nuovo ordine [%s]\n Data: %s\nTotale: %s' % (
+                    #            order_header['number'],
+                    #            order_header['date_order'],
+                    #            order_header['total'],
+                    #        ),
+                    #        telegram_token, telegram_group)
+                    #except:
+                    #    pass  # Error comunication of new order
 
                     # Address:
                     billing = record['billing']
@@ -975,7 +995,7 @@ class ConnectorServer(orm.Model):
                         billing['company'] or '/',
                     )
 
-                    partner_email = billing['email']
+                    # partner_email = billing['email']
                     partner_phone = billing['phone']
 
                     partner_billing = '%s %s, %s-%s [%s Naz. %s]' % (
@@ -1005,7 +1025,6 @@ class ConnectorServer(orm.Model):
                         'partner_phone': partner_phone,
                         'billing': partner_billing,
                         'shipping': partner_shipping,
-                        'shipping_total': record['shipping_total'],
                     })
 
                     # ---------------------------------------------------------
@@ -1060,14 +1079,20 @@ class ConnectorServer(orm.Model):
                                 'force_this_stock': new_qty,
                             }, context=force_context)
 
+                    if marketplace == 'Amazon':
+                        line_total = line['total'] / 1.22
+                        line_price = line['price'] / 1.22
+                    else:  # Wordpress
+                        line_total = line['total']
+                        line_price = line['price']
                     order_line = {
                         'order_id': order_id,
                         'wp_id': line['id'],
                         'name': name,
                         'sku': sku,
                         'quantity': quantity,
-                        'price': line['price'],
-                        'total': line['total'],
+                        'price': line_price,
+                        'total': line_total,
                         'product_id': product_id,
                         }
                     line_pool.create(cr, uid, order_line, context=context)
