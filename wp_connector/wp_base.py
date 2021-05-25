@@ -320,7 +320,8 @@ class ConnectorServer(orm.Model):
             return ean13
         return ''
 
-    def server_send_telegram_message(self, cr, uid, ids, message, context=None):
+    def server_send_telegram_message(
+            self, cr, uid, ids, message, context=None):
         """ Send message with server
         """
         server = self.browse(cr, uid, ids, context=context)[0]
@@ -330,9 +331,11 @@ class ConnectorServer(orm.Model):
             ], context=context)
             if server_ids:
                 server = self.browse(cr, uid, server_ids, context=context)[0]
-                _logger.error('Not setup for send Telegram messages, use first')
+                _logger.error(
+                    'Not setup for send Telegram messages, use first')
             else:
-                _logger.error('Not setup for send Telegram messages! Message not sent')
+                _logger.error('Not setup for send Telegram messages! '
+                              'Message not sent')
                 return False
 
         token = server.telegram_token
