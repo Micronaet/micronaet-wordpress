@@ -1108,7 +1108,6 @@ class ConnectorServer(orm.Model):
                         'total': order_total + order_tax,
                     }, context=context)
 
-
             except:
                 _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
                 continue
