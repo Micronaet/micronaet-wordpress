@@ -88,7 +88,7 @@ class WordpressSaleOrder(orm.Model):
             detail = ''
             for line in order.line_ids:
                 detail += ' > %s x [%s] %s\n' % (line.quantity, line.sku, line.name)
-            message = 'Marketplace: %s [Totale: %s]\nOrdine: %s del %s\nConsegna: %s\n' \
+            message = 'Marketplace: *%s* [Totale: *%s*]\nOrdine: %s del %s\nConsegna: %s\n' \
                       'Trasporto esposto: %s\nDettagli:\n%s' % (
                             marketplace,
                             order.total,
@@ -861,11 +861,11 @@ class ConnectorServer(orm.Model):
         connector_id = ids[0]
 
         # Telegram management:
-        connector = self.browse(cr, uid, connector_id, context=context)
-        telegram_message = connector.telegram_message
-        telegram_token = connector.telegram_token
-        telegram_group = connector.telegram_group
-        start_stop_message = False
+        # connector = self.browse(cr, uid, connector_id, context=context)
+        # telegram_message = connector.telegram_message
+        # telegram_token = connector.telegram_token
+        # telegram_group = connector.telegram_group
+        # start_stop_message = False
         # if start_stop_message and telegram_message:
         #    self.telegram_send_message(
         #        'Inizio lettura ordini Wordpress',
@@ -1101,10 +1101,10 @@ class ConnectorServer(orm.Model):
                 _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
                 continue
 
-        if start_stop_message and telegram_message:
-            self.telegram_send_message(
-                'Fine lettura ordini Wordpress',
-                telegram_token, telegram_group)
+        # if start_stop_message and telegram_message:
+        #    self.telegram_send_message(
+        #        'Fine lettura ordini Wordpress',
+        #        telegram_token, telegram_group)
 
         if report_log:  # Send mail to manager group
             ctx = context.copy()
