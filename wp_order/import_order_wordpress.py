@@ -1086,6 +1086,7 @@ class ConnectorServer(orm.Model):
                     else:  # Wordpress
                         line_price = float(line['price'])
                         line_total = float(line['price']) * float(line['quantity'])
+                    order_total += line_total
 
                     order_line = {
                         'order_id': order_id,
@@ -1098,6 +1099,15 @@ class ConnectorServer(orm.Model):
                         'product_id': product_id,
                         }
                     line_pool.create(cr, uid, order_line, context=context)
+
+                # Update total:
+                order_tax = order_total * 0.22
+                order_pool.write(
+                    cr, uid, [order_id], {
+                        'total_tax': order_tax,
+                        'total': order_total + order_tax,
+                    }, context=context)
+
 
             except:
                 _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
