@@ -347,6 +347,7 @@ class ConnectorServer(orm.Model):
             bot.sendMessage(
                 group,
                 message,
+                parse_mode='Markdown',
             )
         except:
             _logger.error('Error sending Telegram message')
