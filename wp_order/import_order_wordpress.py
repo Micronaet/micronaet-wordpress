@@ -1045,6 +1045,7 @@ class ConnectorServer(orm.Model):
                     }, context=context)
 
                 # Update
+                order_total = 0.0
                 for line in record['line_items']:
                     name = line['name']
                     sku = self.wp_clean_code(line['sku'])
@@ -1080,11 +1081,12 @@ class ConnectorServer(orm.Model):
                             }, context=force_context)
 
                     if marketplace == 'Amazon':
-                        line_total = float(line['total']) / 1.22
                         line_price = float(line['price']) / 1.22
+                        line_total = float(line['price']) * float(line['quantity']) / 1.22
                     else:  # Wordpress
-                        line_total = line['total']
-                        line_price = line['price']
+                        line_price = float(line['price'])
+                        line_total = float(line['price']) * float(line['quantity'])
+
                     order_line = {
                         'order_id': order_id,
                         'wp_id': line['id'],
