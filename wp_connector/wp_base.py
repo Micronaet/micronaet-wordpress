@@ -349,6 +349,7 @@ class ConnectorServer(orm.Model):
                 message,
                 parse_mode='Markdown',
             )
+            _logger.warning('Telegram message: %s' % message)
         except:
             _logger.error('Error sending Telegram message')
             return False
