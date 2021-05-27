@@ -87,7 +87,7 @@ class WordpressSaleOrder(orm.Model):
                 shipping = order.shipping_total or 'Non presente'
             detail = ''
             for line in order.line_ids:
-                detail += ' > %s x [%s] %s\n' % (line.quantity, line.sku, line.name)
+                detail += ' >> %s x *%s* %s\n' % (line.quantity, line.sku, line.name)
             message = 'Marketplace: *%s* Totale: *%s* \nOrdine: %s del %s\nConsegna: %s\n' \
                       'Trasporto esposto: %s\nDettagli:\n%s' % (
                             marketplace,
