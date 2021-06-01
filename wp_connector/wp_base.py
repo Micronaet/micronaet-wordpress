@@ -425,6 +425,12 @@ class ConnectorServer(orm.Model):
                  'di amministrazione sito'),
         'telegram_token': fields.char('Telegram Token', size=50),
         'telegram_group': fields.char('Telegram Token', size=50),
+
+        # Auto order:
+        'wp_auto_order': fields.boolean('Ordine automatico'),
+        'wp_auto_partner_id': fields.many2one(
+            'res.partner', 'Cliente ordine automatico'),
+        'wp_auto_fees_mode': fields.boolean('Modalità corrispettivo'),
     }
 
     _defaults = {
