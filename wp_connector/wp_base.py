@@ -321,9 +321,18 @@ class ConnectorServer(orm.Model):
         return ''
 
     def server_send_telegram_message(
-            self, cr, uid, ids, message, context=None):
+            self, cr, uid, ids, this_message, context=None):
         """ Send message with server
+            Manage missed comunications
         """
+        # Load pickle files with previous comunication messages:
+        pickle_path = os.path.expanduser('~/cron/wordpress/order/log/pickle')
+        pickle_filename = os.path.join(
+            pickle_path, 'telegram.%s.pickle' % cr.dbname)
+        current_message = pickle.load(open(pickle_filename, 'rb')) or []
+        current_message.append(this_message)
+        unsent_message = []
+
         server = self.browse(cr, uid, ids, context=context)[0]
         if not server.telegram_message:
             server_ids = self.search(cr, uid, [
@@ -336,22 +345,28 @@ class ConnectorServer(orm.Model):
             else:
                 _logger.error('Not setup for send Telegram messages! '
                               'Message not sent')
+                unsent_message.append(this_message)
+                pickle.dump(unsent_message, open(pickle_filename, 'wb'))
                 return False
 
         token = server.telegram_token
         group = server.telegram_group
-        try:
-            bot = telepot.Bot(str(token))
-            bot.getMe()
-
-            bot.sendMessage(
-                group,
-                message,
-                parse_mode='Markdown',
-            )
-            _logger.warning('Telegram message: %s' % message)
-        except:
-            _logger.error('Error sending Telegram message')
+        for message in current_message:
+            try:
+                bot = telepot.Bot(str(token))
+                bot.getMe()
+                bot.sendMessage(
+                    group,
+                    message,
+                    parse_mode='Markdown',
+                )
+                _logger.warning('Sent telegram message: %s' % message)
+                time.sleep(5)
+            except:
+                unsent_message.append(message)
+                _logger.error('Error sending Telegram message: %s' % message)
+        if unsent_message:
+            pickle.dump(unsent_message, open(pickle_filename, 'wb'))
             return False
         return True
 
