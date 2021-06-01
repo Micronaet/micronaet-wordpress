@@ -56,7 +56,7 @@ class WordpressSaleOrder(orm.Model):
                 order_line.append(line)
 
         # Header:
-        client_order_ref = 'WP: ' % wp_order.name
+        client_order_ref = 'WP.%s' % wp_order.name
         partner_id = connector.wp_auto_partner_id.id
 
         # Check if yet present (for sure)
