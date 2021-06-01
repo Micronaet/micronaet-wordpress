@@ -1086,6 +1086,7 @@ class ConnectorServer(orm.Model):
                     'total': total,
                     'total_tax': total_tax,
                     'shipping_total': shipping_total,
+                    'need_sale_order': True,
                 }
                 if order_ids:  # XXX No update of header
                     run_mode = 'write'
