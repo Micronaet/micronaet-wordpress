@@ -68,6 +68,7 @@
                             </group>
                             <group colspan="2" col="2">
                                 <field name="key"/>
+                                <field name="sale_order_id"/>
                                 <field name="date_order"/>
                                 <field name="wp_date_paid"/>
                                 <field name="wp_date_completed" />
@@ -156,12 +157,16 @@
                 <tree string="Wordpress Order" editable="bottom" colors="red:state in ('cancelled', 'trash', 'failed'); grey: state in ('pending', 'on-hold'); blue: state == 'processing'; green: state == 'completed'; brown: state == 'refunded'">
                     <field name="name" readonly="1"/>
                     <field name="key" readonly="1"/>
+
                     <field name="date_order" readonly="1"/>
                     <field name="wp_date_created" invisible="1"/>
+
                     <field name="wp_date_modified" invisible="1"/>
                     <field name="wp_date_paid" readonly="1"/>
+
                     <field name="wp_date_completed" readonly="1" />
                     <field name="partner_name" readonly="1"/>
+
                     <field name="partner_email" readonly="1"/>
                     <field name="partner_phone" readonly="1"/>
 
