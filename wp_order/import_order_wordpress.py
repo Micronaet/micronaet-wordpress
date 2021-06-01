@@ -99,7 +99,12 @@ class WordpressSaleOrder(orm.Model):
         order_id = order_pool.create(
             cr, uid, header_data, context=context)
         order = order_pool.browse(cr, uid, order_id, context=context)
-        pdb.set_trace()
+
+        # Update wordpress order:
+        self.write(cr, uid, [wp_order_id], {
+            'sale_order_id': order_id,
+            'need_sale_order': False,
+        }, context=context)
 
         # Create order line:
         sequence = 0
