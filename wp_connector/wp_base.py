@@ -330,7 +330,10 @@ class ConnectorServer(orm.Model):
         pickle_path = os.path.expanduser('~/cron/wordpress/order/log/pickle')
         pickle_filename = os.path.join(
             pickle_path, 'telegram.%s.pickle' % cr.dbname)
-        current_message = pickle.load(open(pickle_filename, 'rb')) or []
+        try:
+            current_message = pickle.load(open(pickle_filename, 'rb'))
+        except:
+            current_message = []
         current_message.append(this_message)
         unsent_message = []
 
