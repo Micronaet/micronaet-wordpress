@@ -88,7 +88,6 @@ class WordpressSaleOrder(orm.Model):
             }, context=context)
 
         date_order = wp_order.date_order
-        pdb.set_trace()
         header_data.update({
             'wordpress_order_id': wp_order_id,
             'partner_id': partner_id,
@@ -99,7 +98,8 @@ class WordpressSaleOrder(orm.Model):
         })
         order_id = order_pool.create(
             cr, uid, header_data, context=context)
-        order = self.browse(cr, uid, order_id, context=context)
+        order = order_pool.browse(cr, uid, order_id, context=context)
+        pdb.set_trace()
 
         # Create order line:
         sequence = 0
