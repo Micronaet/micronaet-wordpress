@@ -40,6 +40,113 @@ class WordpressSaleOrder(orm.Model):
     _name = 'wordpress.sale.order'
     _description = 'Wordpress order'
 
+    def generate_sale_order(self, cr, uid, ids, context=None):
+        """ Generate sale order if there's some product of this database
+        """
+        order_pool = self.pool.get('sale.order')
+        line_pool = self.pool.get('sale.order.line')
+
+        wp_order_id = ids[0]
+        wp_order = self.browse(cr, uid, wp_order_id, context=context)
+        order_line = []
+        connector = wp_order.connector_id
+        for line in wp_order.line_ids:
+            if line.product_id:
+                order_line.append(line)
+
+        # Header:
+        client_order_ref = 'WP: ' % wp_order.name
+        partner_id = connector.wp_auto_partner_id.id
+
+        # Check if yet present (for sure)
+        order_ids = order_pool.search(cr, uid, [
+            ('client_order_ref', '=', client_order_ref),
+            ('partner_id', '=', partner_id),
+        ], context=context)
+        if order_ids:
+            _logger.error(
+                'Order yet present, no generation: %s' % client_order_ref)
+            return self.write(cr, uid, ids, {
+                'need_sale_order': False,
+            }, context=context)
+
+        if not order_line:
+            _logger.error(
+                'No order line for this DB, order: %s' % client_order_ref)
+            return self.write(cr, uid, ids, {
+                'need_sale_order': False,
+            }, context=context)
+
+        # Generate order
+        try:
+            header_data = order_pool.onchange_partner_id(
+                cr, uid, [], partner_id, context=context).get('value', {})
+        except:
+            _logger.error('Error generating onchange partner')
+            return self.write(cr, uid, ids, {
+                'need_sale_order': False,
+            }, context=context)
+
+        date_order = wp_order.date
+        header_data.update({
+            'wordpress_order_id': wp_order_id,
+            'partner_id': partner_id,
+            'date_order': date_order,
+            'date_deadline': date_order,
+            'client_order_ref': client_order_ref,
+            'destination_partner_id': partner_id,
+        })
+        order_id = order_pool.create(
+            cr, uid, header_data, context=context)
+        order = self.browse(cr, uid, order_id, context=context)
+
+        # Create order line:
+        sequence = 0
+        for line in order_line:
+            product = line.product_id
+            sequence += 1
+            product_uom_qty = line.quantity
+
+            line_data = line_pool.product_id_change_with_wh(
+                cr, uid, False,
+                order.pricelist_id.id,
+                product.id,
+                product_uom_qty,
+                False,
+                product_uom_qty,
+                False,
+                product.name,
+                partner_id,
+                False,
+                True,
+                date_order,
+                False,
+                order.fiscal_position.id,
+                False,
+                order.warehouse_id.id,
+                context=context,
+                ).get('value', {})
+
+            # TODO update discount?
+            line_data.update({
+                'order_id': order_id,
+                'product_id': product.id,
+                'name': line.name,
+                'product_uom': product.uom_id.id,
+                'product_uom_qty': product_uom_qty,
+                'product_uos_qty': product_uom_qty,
+                'price_unit': product.lst_price,
+                # wp_id
+            })
+            line_pool.create(cr, uid, line_data, context=context)
+
+        # todo Confirm order created:
+
+        # Generated or not no more generation
+        return self.write(cr, uid, ids, {
+            'need_sale_order': False,
+        }, context=context)
+
     def raise_message_new_order(self, cr, uid, ids, context=None):
         """ Raise message for new order
         """
@@ -146,6 +253,17 @@ class WordpressSaleOrder(orm.Model):
         'note': fields.text('Note'),
 
         'wp_record': fields.text('Worpress record'),
+
+        # Auto order:
+        'need_sale_order': fields.boolean(
+            'Richiesto generazione',
+            help='Richiesta la generazione di ordine di vendita '
+                 'appena importato'),
+        'sale_order_id': fields.many2one(
+            'sale.order', 'Ordine ufficiale',
+            help='Ordine ufficiale se presente almeno un articolo di questo '
+                 'database'),
+
         'state': fields.selection([
             ('pending', 'Pending'),
             ('processing', 'Processing'),
@@ -1114,3 +1232,15 @@ class ConnectorServer(orm.Model):
                 'target': 'current',
                 'nodestroy': False,
                 }
+
+
+class SaleOrder(orm.Model):
+    """ Model name: Sale Order
+    """
+
+    _inherit = 'sale.order'
+
+    _columns = {
+        'wordpress_order_id': fields.many2one(
+            'wordpress.sale.order', 'Ordine Wordpress')
+    }

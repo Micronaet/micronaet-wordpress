@@ -240,7 +240,7 @@
                 </button>-->
 
                 <field name="password" position="after">
-                    <notebook attrs="{'invisible': [('wordpress','=',False)]}">
+                    <notebook attrs="{'invisible': [('wordpress','=',False)]}" colspan="4">
                         <page name="wordpress_block" string="Wordpress">
                             <group colspan="4" col="4">
                                 <separator string="Gestione Wordpress:" colspan="4"/>
