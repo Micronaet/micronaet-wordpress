@@ -366,6 +366,8 @@ class ConnectorServer(orm.Model):
                 unsent_message.append(message)
                 _logger.error('Error sending Telegram message: %s' % message)
         if unsent_message:
+            _logger.error('Stored %s messages in %s file' % (
+                len(unsent_message), pickle_filename))
             pickle.dump(unsent_message, open(pickle_filename, 'wb'))
             return False
         return True
