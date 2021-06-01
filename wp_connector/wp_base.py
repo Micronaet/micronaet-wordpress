@@ -325,18 +325,11 @@ class ConnectorServer(orm.Model):
         """ Send message with server
             Manage missed comunications
         """
-        # Load pickle files with previous comunication messages:
-        pickle_path = os.path.expanduser('~/cron/wordpress/order/log/pickle')
-        pickle_filename = os.path.join(
-            pickle_path, 'telegram.%s.pickle' % cr.dbname)
-        try:
-            current_message = pickle.load(open(pickle_filename, 'rb')) or []
-        except:
-            current_message = []
-        current_message.append(this_message)
-        unsent_message = []
-
         server = self.browse(cr, uid, ids, context=context)[0]
+
+        # ---------------------------------------------------------------------
+        # If not connection use Telegram server searching first:
+        # ---------------------------------------------------------------------
         if not server.telegram_message:
             server_ids = self.search(cr, uid, [
                 ('telegram_message', '=', True),
@@ -352,6 +345,19 @@ class ConnectorServer(orm.Model):
                 # pickle.dump(unsent_message, open(pickle_filename, 'wb'))
                 # todo if not present a telegram server this DB not use it!
                 return False
+
+        # ---------------------------------------------------------------------
+        # Load pickle files with previous communication messages:
+        # ---------------------------------------------------------------------
+        pickle_path = os.path.expanduser('~/cron/wordpress/order/log/pickle')
+        pickle_filename = os.path.join(
+            pickle_path, 'telegram.%s.pickle' % cr.dbname)
+        try:
+            current_message = pickle.load(open(pickle_filename, 'rb')) or []
+        except:
+            current_message = []
+        current_message.append(this_message)
+        unsent_message = []
 
         token = server.telegram_token
         group = server.telegram_group
