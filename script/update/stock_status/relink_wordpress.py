@@ -87,14 +87,14 @@ for lang in master_db:
                 ('wp_parent_template', '=', True),
                 ('product_id.default_code', '=', sku),
                 (field, '!=', wp_id),
-                #(field, '=', 0),
+                # (field, '=', 0),
             ])
             # TODO double?
             if web_ids:
                 total += 1
-                print '%s [%s]: Update %s with %s: %s' % (
+                print('%s [%s]: Update %s with %s: %s' % (
                     company, lang, sku, field, wp_id,
-                )
+                ))
                 if not demo:
                     model.write(web_ids, {
                         field: wp_id,
