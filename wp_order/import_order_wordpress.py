@@ -149,7 +149,8 @@ class WordpressSaleOrder(orm.Model):
             })
             line_pool.create(cr, uid, line_data, context=context)
 
-        # todo Confirm order created:
+        # Confirm order created:
+        order_pool.action_button_confirm(cr, uid, [order_id], context=context)
 
         # Generated or not no more generation
         return self.write(cr, uid, ids, {

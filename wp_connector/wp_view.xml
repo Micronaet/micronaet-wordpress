@@ -252,6 +252,7 @@
 
                                 <field name="wp_version" attrs="{'required': [('wordpress', '=', True)]}"/>
                                 <field name="album_ids" widget="many2many_tags"/>
+
                             </group>
                         </page>
                         <page name="telegram_block" string="Telegram">
