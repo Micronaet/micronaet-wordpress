@@ -43,7 +43,6 @@ class WordpressSaleOrder(orm.Model):
     def generate_sale_order(self, cr, uid, ids, context=None):
         """ Generate sale order if there's some product of this database
         """
-        pdb.set_trace()
         order_pool = self.pool.get('sale.order')
         line_pool = self.pool.get('sale.order.line')
 
@@ -88,7 +87,8 @@ class WordpressSaleOrder(orm.Model):
                 'need_sale_order': False,
             }, context=context)
 
-        date_order = wp_order.date
+        date_order = wp_order.date_order
+        pdb.set_trace()
         header_data.update({
             'wordpress_order_id': wp_order_id,
             'partner_id': partner_id,
