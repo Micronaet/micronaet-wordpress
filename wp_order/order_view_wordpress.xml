@@ -142,7 +142,7 @@
                     <field name="total_tax" sum="Tasse"/>
                     <field name="total" sum="Totale"/>
                     <field name="currency"/>
-                    <field name="need_sale_order" invisible="1"/>
+                    <field name="need_sale_order" /><!--invisible="1"-->
                     <field name="sale_order_id"/>
                     <field name="state" />
                     <button name="generate_sale_order" type="object" string="Crea ordine" attrs="{'invisible': [('need_sale_order', '=', False)]}" icon="gtk-execute"/>
