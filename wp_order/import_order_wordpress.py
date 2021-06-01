@@ -48,6 +48,8 @@ class WordpressSaleOrder(orm.Model):
 
         wp_order_id = ids[0]
         wp_order = self.browse(cr, uid, wp_order_id, context=context)
+        if not wp_order.need_sale_order:
+            _logger.error('Yet created, no more sale order: %s' % wp_order_id)
         order_line = []
         connector = wp_order.connector_id
         for line in wp_order.line_ids:
