@@ -68,6 +68,7 @@ class WordpressSaleOrder(orm.Model):
                 'Order yet present, no generation: %s' % client_order_ref)
             return self.write(cr, uid, ids, {
                 'need_sale_order': False,
+                'sale_order_id': order_ids[0],
             }, context=context)
 
         if not order_line:
