@@ -43,6 +43,7 @@ class WordpressSaleOrder(orm.Model):
     def generate_sale_order(self, cr, uid, ids, context=None):
         """ Generate sale order if there's some product of this database
         """
+        pdb.set_trace()
         order_pool = self.pool.get('sale.order')
         line_pool = self.pool.get('sale.order.line')
 
