@@ -326,6 +326,7 @@ class ConnectorServer(orm.Model):
             Manage missed comunications
         """
         # Load pickle files with previous comunication messages:
+        pdb.set_trace()
         pickle_path = os.path.expanduser('~/cron/wordpress/order/log/pickle')
         pickle_filename = os.path.join(
             pickle_path, 'telegram.%s.pickle' % cr.dbname)

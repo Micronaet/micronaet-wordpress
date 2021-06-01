@@ -53,15 +53,19 @@ class WordpressSaleOrder(orm.Model):
             max_loop = 20
             while loop:
                 try:
-                    self.new_wordpress_order_message(cr, uid, [order_id], context=context)
+                    self.new_wordpress_order_message(
+                        cr, uid, [order_id], context=context)
                     time.sleep(3)
                     loop = False
                 except Exception:
-                    _logger.warning('Warning cannot raise telegram order: %s' % order_id)
+                    _logger.warning(
+                        'Warning cannot raise telegram order: %s' % order_id)
                     max_loop -= 1
                     time.sleep(10)
                     if max_loop <= 0:
-                        _logger.error('Error cannot raise telegram order 20 times: %s' % order_id)
+                        _logger.error(
+                            'Error cannot raise telegram order 20 times: '
+                            '%s' % order_id)
                         loop = False
         return True
 
@@ -87,8 +91,10 @@ class WordpressSaleOrder(orm.Model):
                 shipping = order.shipping_total or 'Non presente'
             detail = ''
             for line in order.line_ids:
-                detail += ' >> %s x *%s* %s\n' % (line.quantity, line.sku, line.name)
-            message = 'Marketplace: *%s* Totale: *%s* \nOrdine: %s del %s\nConsegna: %s\n' \
+                detail += ' >> %s x *%s* %s\n' % (
+                    line.quantity, line.sku, line.name)
+            message = 'Marketplace: *%s* Totale: *%s* \nOrdine: %s del %s\n' \
+                      'Consegna: %s\n' \
                       'Trasporto esposto: %s\nDettagli:\n%s' % (
                             marketplace,
                             order.total,
