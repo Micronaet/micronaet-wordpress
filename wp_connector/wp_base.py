@@ -355,23 +355,6 @@ class ConnectorServer(orm.Model):
             return False
         return True
 
-    def telegram_send_message(
-            self, message, token, group):
-        """ Send message with Telegram (externally called)
-        """
-        try:
-            bot = telepot.Bot(str(token))
-            bot.getMe()
-
-            bot.sendMessage(
-                group,
-                message,
-            )
-        except:
-            _logger.error('Error sending Telegram message')
-            return False
-        return True
-
     def telegram_test(self, cr, uid, ids, context=None):
         """ Send test message
         """

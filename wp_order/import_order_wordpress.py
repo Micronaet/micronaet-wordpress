@@ -860,17 +860,6 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         connector_id = ids[0]
 
-        # Telegram management:
-        # connector = self.browse(cr, uid, connector_id, context=context)
-        # telegram_message = connector.telegram_message
-        # telegram_token = connector.telegram_token
-        # telegram_group = connector.telegram_group
-        # start_stop_message = False
-        # if start_stop_message and telegram_message:
-        #    self.telegram_send_message(
-        #        'Inizio lettura ordini Wordpress',
-        #        telegram_token, telegram_group)
-
         # Read WP Order present:
         wcapi = self.get_wp_connector(
             cr, uid, connector_id, context=context)
@@ -972,19 +961,6 @@ class ConnectorServer(orm.Model):
                     _logger.info('Yet found (update only line) %s' % number)
                 else:  # Read data:
                     run_mode = 'create'
-
-                    # Telegram message:
-                    # TODO Debug: if telegram_message:
-                    #try:
-                    #    self.telegram_send_message(
-                    #        'Nuovo ordine [%s]\n Data: %s\nTotale: %s' % (
-                    #            order_header['number'],
-                    #            order_header['date_order'],
-                    #            order_header['total'],
-                    #        ),
-                    #        telegram_token, telegram_group)
-                    #except:
-                    #    pass  # Error comunication of new order
 
                     # Address:
                     billing = record['billing']
@@ -1111,11 +1087,6 @@ class ConnectorServer(orm.Model):
             except:
                 _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
                 continue
-
-        # if start_stop_message and telegram_message:
-        #    self.telegram_send_message(
-        #        'Fine lettura ordini Wordpress',
-        #        telegram_token, telegram_group)
 
         if report_log:  # Send mail to manager group
             ctx = context.copy()
