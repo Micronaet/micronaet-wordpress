@@ -326,7 +326,6 @@ class ConnectorServer(orm.Model):
             Manage missed comunications
         """
         # Load pickle files with previous comunication messages:
-        pdb.set_trace()
         pickle_path = os.path.expanduser('~/cron/wordpress/order/log/pickle')
         pickle_filename = os.path.join(
             pickle_path, 'telegram.%s.pickle' % cr.dbname)
@@ -349,8 +348,9 @@ class ConnectorServer(orm.Model):
             else:
                 _logger.error('Not setup for send Telegram messages! '
                               'Message not sent')
-                unsent_message.append(this_message)
-                pickle.dump(unsent_message, open(pickle_filename, 'wb'))
+                # unsent_message.append(this_message)
+                # pickle.dump(unsent_message, open(pickle_filename, 'wb'))
+                # todo if not present a telegram server this DB not use it!
                 return False
 
         token = server.telegram_token
