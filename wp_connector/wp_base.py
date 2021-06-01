@@ -331,7 +331,7 @@ class ConnectorServer(orm.Model):
         pickle_filename = os.path.join(
             pickle_path, 'telegram.%s.pickle' % cr.dbname)
         try:
-            current_message = pickle.load(open(pickle_filename, 'rb'))
+            current_message = pickle.load(open(pickle_filename, 'rb')) or []
         except:
             current_message = []
         current_message.append(this_message)
