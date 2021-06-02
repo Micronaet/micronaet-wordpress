@@ -50,6 +50,14 @@ class WordpressSaleOrder(orm.Model):
         wp_order = self.browse(cr, uid, wp_order_id, context=context)
         if not wp_order.need_sale_order:
             _logger.error('Yet created, no more sale order: %s' % wp_order_id)
+
+        if wp_order.state in ('refunded', 'failed', 'trash', 'cancelled'):
+            _logger.error('Order not in active state: %s' % wp_order_id)
+            # todo cancel related order?
+            return self.write(cr, uid, ids, {
+                'need_sale_order': False,
+            }, context=context)
+
         order_line = []
         connector = wp_order.connector_id
         for line in wp_order.line_ids:
