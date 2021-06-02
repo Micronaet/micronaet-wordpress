@@ -349,39 +349,39 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # Load pickle files with previous communication messages:
         # ---------------------------------------------------------------------
-        pickle_path = os.path.expanduser('~/cron/wordpress/order/log/pickle')
-        pickle_filename = os.path.join(
-            pickle_path, 'telegram.%s.pickle' % cr.dbname)
-        try:
-            # current_message = pickle.load(open(pickle_filename, 'rb')) or []
-            current_message = []
-        except:
-            current_message = []
-        current_message.append(this_message)
-        unsent_message = []
+        # pickle_path = os.path.expanduser('~/cron/wordpress/order/log/pickle')
+        # pickle_filename = os.path.join(
+        #    pickle_path, 'telegram.%s.pickle' % cr.dbname)
+        # try:
+        #    # current_message = pickle.load(open(pickle_filename, 'rb')) or []
+        #    current_message = []
+        # except:
+        #    current_message = []
+        # current_message.append(this_message)
+        # unsent_message = []
 
         token = server.telegram_token
         group = server.telegram_group
-        for message in current_message:
-            try:
-                bot = telepot.Bot(str(token))
-                bot.getMe()
-                bot.sendMessage(
-                    group,
-                    message,
-                    parse_mode='Markdown',
-                )
-                _logger.warning('Sent telegram message: %s' % message)
-                time.sleep(5)
-            except:
-                unsent_message.append(message)
-                _logger.error('Error sending Telegram message: %s' % message)
-        if unsent_message:
-            _logger.error('Telegram; Stored %s messages in %s file' % (
-                len(unsent_message), pickle_filename))
-            pickle.dump(unsent_message, open(pickle_filename, 'wb'))
-            return False
-        _logger.info('Telegram: All message sent!')
+        # for message in current_message:
+        try:
+            bot = telepot.Bot(str(token))
+            bot.getMe()
+            bot.sendMessage(
+                group,
+                this_message,
+                parse_mode='Markdown',
+            )
+            _logger.warning('Sent telegram message: %s' % this_message)
+            time.sleep(5)
+        except:
+            # unsent_message.append(this_message)
+            _logger.error('Error sending Telegram message: %s' % this_message)
+        # if unsent_message:
+        #    _logger.error('Telegram; Stored %s messages in %s file' % (
+        #        len(unsent_message), pickle_filename))
+        #    pickle.dump(unsent_message, open(pickle_filename, 'wb'))
+        #    return False
+        # _logger.info('Telegram: All message sent!')
         return True
 
     def telegram_test(self, cr, uid, ids, context=None):

@@ -1092,7 +1092,7 @@ class ConnectorServer(orm.Model):
                     'total': total,
                     'total_tax': total_tax,
                     'shipping_total': shipping_total,
-                    'need_sale_order': False,
+                    # 'need_sale_order': False,
                 }
                 if order_ids:  # XXX No update of header
                     run_mode = 'write'
@@ -1193,16 +1193,20 @@ class ConnectorServer(orm.Model):
                                 new_qty = 0
                             force_context['forced_manual_stock_comment'] = \
                                 'Scalato ordine: %s' % number
+
+                            # todo update stock quantity (remove order gen.?)
                             web_product_pool.write(cr, uid, web_product_ids, {
                                 'force_this_stock': new_qty,
                             }, context=force_context)
 
                     if marketplace == 'Amazon':
                         line_price = float(line['price']) / 1.22
-                        line_total = float(line['price']) * float(line['quantity']) / 1.22
+                        line_total = float(line['price']) * \
+                                     float(line['quantity']) / 1.22
                     else:  # Wordpress
                         line_price = float(line['price'])
-                        line_total = float(line['price']) * float(line['quantity'])
+                        line_total = float(line['price']) * \
+                                     float(line['quantity'])
                     order_total += line_total
 
                     order_line = {
