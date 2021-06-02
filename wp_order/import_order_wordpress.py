@@ -202,6 +202,7 @@ class WordpressSaleOrder(orm.Model):
     def new_wordpress_order_message(self, cr, uid, ids, context=None):
         """ Telegram message when new order
         """
+        pdb.set_trace()
         order_id = ids[0]
         try:
             order = self.browse(cr, uid, order_id, context=context)
