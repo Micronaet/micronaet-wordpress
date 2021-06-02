@@ -145,7 +145,7 @@
                     <field name="currency"/>
                     <field name="sale_order_id"/>
                     <field name="state" />
-                    <field name="need_sale_order" />
+                    <field name="need_sale_order" invisible="1"/>
                     <button name="generate_sale_order" type="object" string="Crea ordine" icon="gtk-execute" attrs="{'invisible': [('need_sale_order', '=', False)]}" />
                 </tree>
             </field>
@@ -176,6 +176,8 @@
                     <field name="total" sum="Totale" readonly="1"/>
                     <field name="currency" readonly="1"/>
                     <field name="state" readonly="1" />
+                    <field name="need_sale_order" />
+                    <button name="generate_sale_order" type="object" string="Crea ordine" icon="gtk-execute" attrs="{'invisible': [('need_sale_order', '=', False)]}" />
                 </tree>
             </field>
         </record>
