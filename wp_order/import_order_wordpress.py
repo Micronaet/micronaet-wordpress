@@ -69,8 +69,8 @@ class WordpressSaleOrder(orm.Model):
             _logger.error(
                 'Order yet present, no generation: %s' % client_order_ref)
             return self.write(cr, uid, ids, {
-                'need_sale_order': False,
                 'sale_order_id': order_ids[0],
+                'need_sale_order': False,
             }, context=context)
 
         if not order_line:
@@ -86,9 +86,6 @@ class WordpressSaleOrder(orm.Model):
                 cr, uid, [], partner_id, context=context).get('value', {})
         except:
             _logger.error('Error generating onchange partner')
-            return self.write(cr, uid, ids, {
-                'need_sale_order': False,
-            }, context=context)
 
         date_order = wp_order.date_order
         header_data.update({
@@ -288,6 +285,7 @@ class WordpressSaleOrder(orm.Model):
 
     _defaults = {
         'state': lambda *x: 'pending',
+        'need_sale_order': lambda *x: True,
     }
 
 
@@ -1086,7 +1084,7 @@ class ConnectorServer(orm.Model):
                     'total': total,
                     'total_tax': total_tax,
                     'shipping_total': shipping_total,
-                    'need_sale_order': True,
+                    'need_sale_order': False,
                 }
                 if order_ids:  # XXX No update of header
                     run_mode = 'write'
