@@ -330,7 +330,6 @@ class ConnectorServer(orm.Model):
         # ---------------------------------------------------------------------
         # If not connection use Telegram server searching first:
         # ---------------------------------------------------------------------
-        pdb.set_trace()
         if not server.telegram_message:
             server_ids = self.search(cr, uid, [
                 ('telegram_message', '=', True),
