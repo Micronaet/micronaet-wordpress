@@ -176,8 +176,10 @@
                     <field name="total" sum="Totale" readonly="1"/>
                     <field name="currency" readonly="1"/>
                     <field name="state" readonly="1" />
+                    <!--todo admin button-->
                     <field name="need_sale_order" />
                     <button name="generate_sale_order" type="object" string="Crea ordine" icon="gtk-execute" attrs="{'invisible': [('need_sale_order', '=', False)]}" />
+                    <button name="new_wordpress_order_message" type="object" string="Telegram" icon="gtk-send" />
                 </tree>
             </field>
         </record>
