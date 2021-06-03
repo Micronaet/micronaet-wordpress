@@ -432,6 +432,9 @@ class ConnectorServer(orm.Model):
         'wp_auto_order': fields.boolean('Ordine automatico'),
         'wp_auto_partner_id': fields.many2one(
             'res.partner', 'Cliente ordine automatico'),
+        'wp_auto_destination_id': fields.many2one(
+            'res.partner', 'Destinazione ordine automatico',
+            domain="[('parent_id', '=', wp_auto_partner_id)]"),
         'wp_auto_fees_mode': fields.boolean('Modalità corrispettivo'),
     }
 

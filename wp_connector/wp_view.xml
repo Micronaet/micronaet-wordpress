@@ -281,6 +281,7 @@
                                 <separator string="Gestione Ordini:" colspan="4"/>
                                 <field name="wp_auto_order" />
                                 <field name="wp_auto_partner_id" attrs="{'required': [('wp_auto_order', '=', True)], 'invisible': [('wp_auto_order', '=', False)]}"/>
+                                <field name="wp_auto_destination_id" attrs="{'invisible': [('wp_auto_order', '=', False)]}"/>
                                 <field name="wp_auto_fees_mode" attrs="{'invisible': [('wp_auto_order', '=', False)]}"/>/>
                             </group>
                         </page>
