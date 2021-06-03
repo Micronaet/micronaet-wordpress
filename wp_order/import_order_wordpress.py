@@ -68,6 +68,8 @@ class WordpressSaleOrder(orm.Model):
         # Header:
         client_order_ref = 'WP.%s' % wp_order.name
         partner_id = connector.wp_auto_partner_id.id
+        destination_id = connector.wp_auto_destination_id.id or \
+            connector.wp_auto_partner_id.id
 
         # Check if yet present (for sure)
         order_ids = order_pool.search(cr, uid, [
@@ -103,7 +105,7 @@ class WordpressSaleOrder(orm.Model):
             'date_order': date_order,
             'date_deadline': date_order,
             'client_order_ref': client_order_ref,
-            'destination_partner_id': partner_id,
+            'destination_partner_id': destination_id,
         })
         order_id = order_pool.create(
             cr, uid, header_data, context=context)
