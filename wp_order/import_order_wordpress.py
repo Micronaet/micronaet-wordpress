@@ -41,6 +41,33 @@ class WordpressSaleOrder(orm.Model):
     _description = 'Wordpress order'
     _order = 'name desc'
 
+    def cancel_all_sale_order_removed(self, cr, uid, ids, context=None):
+        """ Cancel sale order no more needed
+        """
+        order_pool = self.pool.get('sale.order')
+        removed_ids = self.search(cr, uid, [
+            ('state', 'in', ('failed', 'trash', 'cancelled')),  # todo refunded
+            ('sale_order_id.state', 'not in', ('cancel', 'sent', 'draft')),
+        ], context=context)
+        _logger.warning('Cancel # %s order' % len(removed_ids))
+        pdb.set_trace()
+        for order in order_pool.browse(cr, uid, removed_ids, context=context):
+            _logger.info('Cancelling order: %s' % order.name)
+            order.action_cancel()
+        return True
+
+    def confirm_all_new_sale_order(self, cr, uid, ids, context=None):
+        """ Loop on all generated sale order
+        """
+        new_ids = self.search(cr, uid, [
+            ('need_sale_order', '=', True),
+        ], context=context)
+        _logger.warning('Confirm # %s order' % len(new_ids))
+        for order in self.browse(cr, uid, new_ids, context=context):
+            # todo put here telegram message!
+            self.generate_sale_order(cr, uid, [order.id], context=None)
+        return True
+
     def generate_sale_order(self, cr, uid, ids, context=None):
         """ Generate sale order if there's some product of this database
         """

@@ -71,4 +71,14 @@ for root, folders, files in os.walk('..'):
         order_pool.raise_message_new_order(False)
         log_message(
             f_log, 'Raise new order in Telegram %s company\n' % company)
+        if send_message:
+            # Generate ODOO order
+            log_message(
+                f_log, 'Generate ODOO order: %s\n' % company)
+            order_pool.confirm_all_new_sale_order()
+
+            # Cancel removed order
+            log_message(
+                f_log, 'Cancel not confirmed order: %s\n' % company)
+            order_pool.cancel_all_sale_order_removed()
     break
