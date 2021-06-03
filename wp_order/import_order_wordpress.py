@@ -50,7 +50,6 @@ class WordpressSaleOrder(orm.Model):
             ('sale_order_id.state', 'not in', ('cancel', 'sent', 'draft')),
         ], context=context)
         _logger.warning('Cancel # %s order' % len(removed_ids))
-        pdb.set_trace()
         for order in order_pool.browse(cr, uid, removed_ids, context=context):
             _logger.info('Cancelling order: %s' % order.name)
             order.action_cancel()
