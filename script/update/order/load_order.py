@@ -24,7 +24,7 @@ def log_message(log_file, message, mode='info', verbose=True):
 for root, folders, files in os.walk('..'):
     for cfg_file in files:
         if not cfg_file.startswith('openerp'):
-            print('Not a config file: %s' % cfg_file)
+            print('[ERROR] Not a config file: %s' % cfg_file)
             continue
         company = cfg_file.split('.')[1]
         f_log = open(os.path.join('./log', company), 'a')
