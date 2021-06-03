@@ -39,6 +39,7 @@ class WordpressSaleOrder(orm.Model):
 
     _name = 'wordpress.sale.order'
     _description = 'Wordpress order'
+    _order = 'name desc'
 
     def generate_sale_order(self, cr, uid, ids, context=None):
         """ Generate sale order if there's some product of this database
