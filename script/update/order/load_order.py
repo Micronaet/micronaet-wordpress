@@ -29,7 +29,7 @@ for root, folders, files in os.walk('..'):
         company = cfg_file.split('.')[1]
         f_log = open(os.path.join('./log', company), 'a')
 
-        log_message(f_log, 'Updating order for %s company' % company)
+        log_message(f_log, '[INFO] Updating order for %s company' % company)
 
         cfg_file = os.path.expanduser(os.path.join('../', cfg_file))
         config = ConfigParser.ConfigParser()
@@ -51,7 +51,7 @@ for root, folders, files in os.walk('..'):
             )
         argv = sys.argv
         if len(argv) != 2:
-            print('Call python ./load_order.py [all or yesterday]')
+            print('[INFO] Call python ./load_order.py [all or yesterday]')
             continue
 
         # Check call parameters:
@@ -61,24 +61,24 @@ for root, folders, files in os.walk('..'):
             # Send message with all order from wordpress to the manager group
             if send_message:
                 odoo.context = {'report_log': True}
-        log_message(f_log, 'Call mode %s' % argv[1])
+        log_message(f_log, '[INFO] Call mode %s' % argv[1])
 
         connector_pool = odoo.model('connector.server')
         res = connector_pool.get_sale_order_now([connector_id])
-        log_message(f_log, 'End updating order for %s company\n' % company)
+        log_message(f_log, '[INFO] End updating order for %s company\n' % company)
 
         order_pool = odoo.model('wordpress.sale.order')
         order_pool.raise_message_new_order(False)
         log_message(
-            f_log, 'Raise new order in Telegram %s company\n' % company)
+            f_log, '[INFO] Raise new order in Telegram %s company\n' % company)
         if send_message:
             # Generate ODOO order
             log_message(
-                f_log, 'Generate ODOO order: %s\n' % company)
+                f_log, '[INFO] Generate ODOO order: %s\n' % company)
             order_pool.confirm_all_new_sale_order()
 
             # Cancel removed order
             log_message(
-                f_log, 'Cancel not confirmed order: %s\n' % company)
+                f_log, '[INFO] Cancel not confirmed order: %s\n\n' % company)
             order_pool.cancel_all_sale_order_removed()
     break
