@@ -435,8 +435,9 @@ class ConnectorServer(orm.Model):
             else:
                 color = excel_format['white']
 
-            marketplace = 'MP'
+
             data = [
+                order.marketplace,
                 line.sku,
                 line.name,
 
@@ -628,7 +629,7 @@ class ConnectorServer(orm.Model):
         }
 
         header = [
-            'SKU', 'Prodotto',
+            'Marketplace', 'SKU', 'Prodotto',
             'Q.', 'Prezzo', 'Subtotale',
 
             'Data', 'Pagato', 'Completo',
@@ -636,7 +637,7 @@ class ConnectorServer(orm.Model):
             'Val.', 'Trasporto', 'Totale', 'Netto',
             ]
         width = [
-            16, 40,
+            15, 16, 40,
             6, 6, 8,
             9, 16, 16,
             7, 35, 20, 18,
