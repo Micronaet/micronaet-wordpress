@@ -44,13 +44,13 @@ class WordpressSaleOrder(orm.Model):
     def cancel_all_sale_order_removed(self, cr, uid, ids, context=None):
         """ Cancel sale order no more needed
         """
-        pdb.set_trace()
         order_pool = self.pool.get('sale.order')
         removed_ids = self.search(cr, uid, [
             ('state', 'in', ('failed', 'trash', 'cancelled')),  # todo refunded
             ('sale_order_id.state', 'not in', ('cancel', 'sent', 'draft')),
         ], context=context)
         _logger.warning('Cancel # %s order' % len(removed_ids))
+        pdb.set_trace()
         for order in order_pool.browse(cr, uid, removed_ids, context=context):
             _logger.info('Cancelling order: %s' % order.name)
             try:
