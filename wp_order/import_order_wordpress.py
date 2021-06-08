@@ -54,7 +54,8 @@ class WordpressSaleOrder(orm.Model):
         for order in order_pool.browse(cr, uid, removed_ids, context=context):
             _logger.info('Cancelling order: %s' % order.name)
             try:
-                order.action_cancel()
+                order_pool.action_cancel(
+                    cr, uid, [order.id], context=context)
                 _logger.error('%s cancelled order: %s' % order.name)
             except:
                 _logger.error('Error removing order: %s' % order.name)
