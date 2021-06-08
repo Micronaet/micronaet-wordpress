@@ -1272,7 +1272,6 @@ class ConnectorServer(orm.Model):
                     else:  # Wordpress
                         line_price = line_price_lord
                         line_total = line_price_lord * line_quantity
-                        order_total += line_total + float(shipping_total)
 
                     order_line = {
                         'order_id': order_id,
@@ -1285,6 +1284,9 @@ class ConnectorServer(orm.Model):
                         'product_id': product_id,
                         }
                     line_pool.create(cr, uid, order_line, context=context)
+
+                if marketplace == 'WP':
+                    order_total += float(shipping_total)
 
                 # Update total:
                 order_tax = order_total * 0.22
