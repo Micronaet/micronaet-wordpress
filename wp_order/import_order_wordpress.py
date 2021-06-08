@@ -1212,6 +1212,7 @@ class ConnectorServer(orm.Model):
 
                 # Update
                 order_total = 0.0
+                shipping_line_total = 0.0
                 for line in record['line_items']:
                     name = line['name']
                     sku = self.wp_clean_code(line['sku'])
@@ -1248,8 +1249,18 @@ class ConnectorServer(orm.Model):
                                 'force_this_stock': new_qty,
                             }, context=force_context)
 
+                    # Calc for line shipping (for all included):
+                    if not shipping_total and product_id:
+                        product = product_pool.browse(
+                            cr, uid, product_id, context=context)
+                        shipping_line = product.wp_included_shipping
+                        shipping_line_total += shipping_line
+                    else:
+                        shipping_line = 0.0
+
                     if marketplace != 'WP':
                         line_price = float(line['price']) / 1.22
+                        line_price -= shipping_line
                         line_total = float(line['price']) * \
                                      float(line['quantity']) / 1.22
                     else:  # Wordpress
@@ -1271,12 +1282,15 @@ class ConnectorServer(orm.Model):
                     line_pool.create(cr, uid, order_line, context=context)
 
                 # Update total:
+                update_date = {
+                    'total_tax': order_tax,
+                    'total': order_total + order_tax,
+                    }
+                if not shipping_total and shipping_line_total:
+                    update_date['shipping_total'] = shipping_line_total
                 order_tax = order_total * 0.22
                 order_pool.write(
-                    cr, uid, [order_id], {
-                        'total_tax': order_tax,
-                        'total': order_total + order_tax,
-                    }, context=context)
+                    cr, uid, [order_id], update_date, context=context)
 
             except:
                 _logger.error('Error creating order!\n%s' % (sys.exc_info(), ))
@@ -1313,4 +1327,18 @@ class SaleOrder(orm.Model):
     _columns = {
         'wordpress_order_id': fields.many2one(
             'wordpress.sale.order', 'Ordine Wordpress')
+    }
+
+
+class ProductProduct(orm.Model):
+    """ Model name: Product
+    """
+
+    _inherit = 'product.product'
+
+    _columns = {
+        'wp_included_shipping': fields.float(
+            'Trasporto incluso',
+            help='Per i Marketplace dove è inserito il tasporto incluso nel '
+                 'costo prodotto'),
     }
