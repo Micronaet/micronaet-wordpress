@@ -1265,10 +1265,11 @@ class ConnectorServer(orm.Model):
                         line_price = line_price_lord / 1.22  # No VAT
                         line_price -= shipping_included  # No ship
                         line_total = line_price * line_quantity
+                        order_total += line_total + shipping_line_total  # line
                     else:  # Wordpress
                         line_price = line_price_lord
                         line_total = line_price_lord * line_quantity
-                    order_total += line_total + shipping_line_total
+                        order_total += line_total + shipping_total  # header
 
                     order_line = {
                         'order_id': order_id,
