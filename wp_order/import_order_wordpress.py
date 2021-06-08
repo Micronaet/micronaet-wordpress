@@ -1263,7 +1263,7 @@ class ConnectorServer(orm.Model):
                     if marketplace != 'WP':
                         line_price = line_price_org / 1.22  # No VAT
                         line_price -= shipping_line * line_quantity  # No ship
-                        line_total = line_price * line_quantity
+                        line_total = line_price_org * line_quantity
                     else:  # Wordpress
                         line_price = line_price_org
                         line_total = line_price_org * line_quantity
