@@ -1272,6 +1272,7 @@ class ConnectorServer(orm.Model):
                     else:  # Wordpress
                         line_price = line_price_lord
                         line_total = line_price_lord * line_quantity
+                        order_total += line_total
 
                     order_line = {
                         'order_id': order_id,
