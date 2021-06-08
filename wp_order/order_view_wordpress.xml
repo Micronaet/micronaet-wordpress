@@ -195,7 +195,7 @@
             <field name="name">product.product.wp.transport.tree</field>
             <field name="model">product.product</field>
             <field name="arch" type="xml">
-                <tree string="Wordpress Order" colors="blue:wp_included_shipping &gt; 0">
+                <tree string="Wordpress Order" colors="blue:wp_included_shipping &gt; 0" editable="bottom">
                     <field name="default_code" readonly="1"/>
                     <field name="name" readonly="1"/>
                     <field name="uom_id" readonly="1"/>
