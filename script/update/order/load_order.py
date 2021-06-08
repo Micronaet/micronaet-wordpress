@@ -81,5 +81,5 @@ for root, folders, files in os.walk('..'):
             # Cancel removed order
             log_message(
                 f_log, '[INFO] Cancel not confirmed order: %s\n' % company)
-            order_pool.cancel_all_sale_order_removed()
+            # order_pool.cancel_all_sale_order_removed()
     break
