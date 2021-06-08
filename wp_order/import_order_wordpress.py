@@ -1282,13 +1282,13 @@ class ConnectorServer(orm.Model):
                     line_pool.create(cr, uid, order_line, context=context)
 
                 # Update total:
+                order_tax = order_total * 0.22
                 update_date = {
                     'total_tax': order_tax,
                     'total': order_total + order_tax,
                     }
                 if not shipping_total and shipping_line_total:
                     update_date['shipping_total'] = shipping_line_total
-                order_tax = order_total * 0.22
                 order_pool.write(
                     cr, uid, [order_id], update_date, context=context)
 
@@ -1339,6 +1339,6 @@ class ProductProduct(orm.Model):
     _columns = {
         'wp_included_shipping': fields.float(
             'Trasporto incluso',
-            help='Per i Marketplace dove è inserito il tasporto incluso nel '
+            help='Per i Marketplace dove è inserito il trasporto incluso nel '
                  'costo prodotto'),
     }
