@@ -1119,7 +1119,7 @@ class ConnectorServer(orm.Model):
                     shipping_total = 0.0
                 else:  # Worpress
                     total_tax = record['total_tax']
-                    shipping_total = record['shipping_total']
+                    shipping_total = float(record['shipping_total'])
                 order_header = {  # Fields used also for update:
                     'connector_id': connector_id,
                     'wp_id': wp_id,
@@ -1285,7 +1285,7 @@ class ConnectorServer(orm.Model):
                     line_pool.create(cr, uid, order_line, context=context)
 
                 if marketplace == 'WP':
-                    order_total += float(shipping_total)
+                    order_total += shipping_total
 
                 # Update total:
                 order_tax = order_total * 0.22
