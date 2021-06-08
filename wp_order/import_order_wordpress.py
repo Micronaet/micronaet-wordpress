@@ -44,6 +44,7 @@ class WordpressSaleOrder(orm.Model):
     def cancel_all_sale_order_removed(self, cr, uid, ids, context=None):
         """ Cancel sale order no more needed
         """
+        pdb.set_trace()
         order_pool = self.pool.get('sale.order')
         removed_ids = self.search(cr, uid, [
             ('state', 'in', ('failed', 'trash', 'cancelled')),  # todo refunded

@@ -86,5 +86,4 @@ for root, folders, files in os.walk('..'):
                 order_pool.cancel_all_sale_order_removed()
             except:
                 print(str(sys.exc_info()))
-                pdb.set_trace()
     break
