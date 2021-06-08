@@ -1255,19 +1255,20 @@ class ConnectorServer(orm.Model):
                     if not shipping_total and product_id:
                         product = product_pool.browse(
                             cr, uid, product_id, context=context)
-                        shipping_line = product.wp_included_shipping
-                        shipping_line_total += shipping_line * line_quantity
+                        shipping_included = product.wp_included_shipping
+                        shipping_line_total += \
+                            shipping_included * line_quantity
                     else:
-                        shipping_line = 0.0
+                        shipping_included = shipping_line_total = 0.0
 
                     if marketplace != 'WP':
                         line_price = line_price_lord / 1.22  # No VAT
-                        line_price -= shipping_line  # No ship
+                        line_price -= shipping_included  # No ship
                         line_total = line_price * line_quantity
                     else:  # Wordpress
                         line_price = line_price_lord
                         line_total = line_price_lord * line_quantity
-                    order_total += line_total
+                    order_total += line_total + shipping_line_total
 
                     order_line = {
                         'order_id': order_id,
