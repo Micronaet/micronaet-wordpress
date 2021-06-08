@@ -1252,7 +1252,7 @@ class ConnectorServer(orm.Model):
                     # Calc for line shipping (for all included):
                     line_quantity = float(line['quantity'])
                     line_price_lord = float(line['price'])
-                    if not shipping_total and product_id:
+                    if marketplace != 'WP' and product_id:
                         product = product_pool.browse(
                             cr, uid, product_id, context=context)
                         shipping_included = product.wp_included_shipping
