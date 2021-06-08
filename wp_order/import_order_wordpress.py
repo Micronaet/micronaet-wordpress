@@ -1258,15 +1258,15 @@ class ConnectorServer(orm.Model):
                     else:
                         shipping_line = 0.0
 
+                    line_quantity = float(line['quantity'])
+                    line_price = float(line['price'])
                     if marketplace != 'WP':
-                        line_price = float(line['price']) / 1.22
-                        line_price -= shipping_line
-                        line_total = float(line['price']) * \
-                                     float(line['quantity']) / 1.22
+                        line_price /= 1.22  # No VAT
+                        line_price -= shipping_line * line_quantity  # No ship
+                        line_total = line_price * line_quantity
                     else:  # Wordpress
-                        line_price = float(line['price'])
-                        line_total = float(line['price']) * \
-                                     float(line['quantity'])
+                        line_price = line_quantity
+                        line_total = line_price * line_quantity
                     order_total += line_total
 
                     order_line = {
