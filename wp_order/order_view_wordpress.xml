@@ -191,6 +191,27 @@
             </field>
         </record>
 
+        <record id="wordpress_product_product_cost" model="ir.ui.view">
+            <field name="name">product.product.wp.transport.tree</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <tree string="Wordpress Order" colors="blue:wp_included_shipping &gt; 0">
+                    <field name="default_code" readonly="1"/>
+                    <field name="name" readonly="1"/>
+                    <field name="uom_id" readonly="1"/>
+                    <field name="wp_included_shipping"/>
+                    <field name="state" readonly="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_wordpress_product_product_cost" model="ir.actions.act_window">
+            <field name="name">Costi trasporto inclusi</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.product</field>
+            <field name="view_id" ref="wordpress_product_product_cost"/>
+            <field name="view_mode">tree,form</field>
+        </record>
+
         <record id="wordpress_sale_order_view_action" model="ir.actions.act_window">
             <field name="name">Wordpress order</field>
             <field name="type">ir.actions.act_window</field>
@@ -224,6 +245,13 @@
                 action="wordpress_sale_order_transport_view_action"
                 groups="wp_order.group_order_transport_manager"
                 sequence="20"
+                />
+            <menuitem
+                parent="menu_connector_wordpress_order"
+                id="menu_wordpress_product_product_cost"
+                action="action_wordpress_product_product_cost"
+                groups="wp_order.group_order_transport_manager"
+                sequence="30"
                 />
     </data>
 </openerp>
