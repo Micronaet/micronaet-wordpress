@@ -303,11 +303,13 @@ class WordpressSaleOrder(orm.Model):
             'connector.server', 'Connector',
             help='Connector Marketplace, is the origin web site'),
 
-        'marketplace': fields.function(selection=[
+        'marketplace': fields.function(
+            'get_marketplace_field',
+            selection=[
             ('AMZ', 'Amazon'),
             ('EBA', 'Ebay'),
             ('WP', 'Wordpress'),
-            ], string='Marketplace', compute='get_marketplace_field',
+            ], string='Marketplace',
             type='selection', store=True,
         ),
         'note': fields.text('Note'),
