@@ -223,8 +223,11 @@ class WordpressSaleOrder(orm.Model):
     def get_marketplace(self, email):
         """ Get market place from email
         """
-        if (email or '').endswith('@marketplace.amazon.it'):
+        email = email or ''
+        if email.endswith('@marketplace.amazon.it'):
             return 'Amazon'
+        elif email.endswith('@members.ebay.com'):
+            return 'Ebay'
         else:
             return 'Wordpress'
 
@@ -236,7 +239,7 @@ class WordpressSaleOrder(orm.Model):
             order = self.browse(cr, uid, order_id, context=context)
             server_pool = self.pool.get('connector.server')
             marketplace = self.get_marketplace(order.partner_email)
-            if marketplace == 'Amazon':
+            if marketplace != 'Wordpress':
                 shipping = 'Incluso'
             else:  # Wordpress
                 shipping = order.shipping_total or 'Non presente'
@@ -1093,7 +1096,7 @@ class ConnectorServer(orm.Model):
                 total = record['total']
                 marketplace = order_pool.get_marketplace(partner_email)
 
-                if marketplace == 'Amazon':
+                if marketplace != 'Wordpress':
                     total_tax = float(total) * 0.22 / 1.22
                     # todo get shipping included total:
                     shipping_total = 0.0
@@ -1228,7 +1231,7 @@ class ConnectorServer(orm.Model):
                                 'force_this_stock': new_qty,
                             }, context=force_context)
 
-                    if marketplace == 'Amazon':
+                    if marketplace != 'Wordpress':
                         line_price = float(line['price']) / 1.22
                         line_total = float(line['price']) * \
                                      float(line['quantity']) / 1.22
