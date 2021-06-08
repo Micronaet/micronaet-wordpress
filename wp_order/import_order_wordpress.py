@@ -256,7 +256,7 @@ class WordpressSaleOrder(orm.Model):
             message = 'Marketplace: *%s* Totale: *%s* \nOrdine: %s del %s\n' \
                       'Consegna: %s\n' \
                       'Trasporto esposto: %s\nDettagli:\n%s' % (
-                            marketplace,
+                            order.marketplace,
                             order.total,
                             order.name,
                             order.date_order,
