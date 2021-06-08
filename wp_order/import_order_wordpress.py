@@ -221,15 +221,22 @@ class WordpressSaleOrder(orm.Model):
         return True
 
     def get_marketplace(self, email):
+        """ Extract Marketplace from email
+        """
+        if email.endswith('@marketplace.amazon.it'):
+            return 'AMZ'
+        elif email.endswith('@members.ebay.com'):
+            return 'EBA'
+        else:
+            return 'WP'
+
+    def get_marketplace_field(self, cr, uid, ids, fields, args, context=None):
         """ Get market place from email
         """
-        email = email or ''
-        if email.endswith('@marketplace.amazon.it'):
-            return 'Amazon'
-        elif email.endswith('@members.ebay.com'):
-            return 'Ebay'
-        else:
-            return 'Wordpress'
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = self.get_marketplace(order.email or '')
+        return res
 
     def new_wordpress_order_message(self, cr, uid, ids, context=None):
         """ Telegram message when new order
@@ -238,8 +245,7 @@ class WordpressSaleOrder(orm.Model):
         try:
             order = self.browse(cr, uid, order_id, context=context)
             server_pool = self.pool.get('connector.server')
-            marketplace = self.get_marketplace(order.partner_email)
-            if marketplace != 'Wordpress':
+            if order.marketplace != 'WP':
                 shipping = 'Incluso'
             else:  # Wordpress
                 shipping = order.shipping_total or 'Non presente'
@@ -297,6 +303,13 @@ class WordpressSaleOrder(orm.Model):
             'connector.server', 'Connector',
             help='Connector Marketplace, is the origin web site'),
 
+        'marketplace': fields.function(selection=[
+            ('AMZ', 'Amazon'),
+            ('EBA', 'Ebay'),
+            ('WP', 'Wordpress'),
+            ], string='Marketplace', compute='get_marketplace_field',
+            type='selection', store=True,
+        ),
         'note': fields.text('Note'),
 
         'wp_record': fields.text('Worpress record'),
@@ -420,6 +433,7 @@ class ConnectorServer(orm.Model):
             else:
                 color = excel_format['white']
 
+            marketplace = 'MP'
             data = [
                 line.sku,
                 line.name,
@@ -1096,7 +1110,7 @@ class ConnectorServer(orm.Model):
                 total = record['total']
                 marketplace = order_pool.get_marketplace(partner_email)
 
-                if marketplace != 'Wordpress':
+                if marketplace != 'WP':
                     total_tax = float(total) * 0.22 / 1.22
                     # todo get shipping included total:
                     shipping_total = 0.0
@@ -1231,7 +1245,7 @@ class ConnectorServer(orm.Model):
                                 'force_this_stock': new_qty,
                             }, context=force_context)
 
-                    if marketplace != 'Wordpress':
+                    if marketplace != 'WP':
                         line_price = float(line['price']) / 1.22
                         line_total = float(line['price']) * \
                                      float(line['quantity']) / 1.22

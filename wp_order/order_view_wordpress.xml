@@ -22,6 +22,7 @@
             <field name="model">wordpress.sale.order</field>
             <field name="arch" type="xml">
                 <search string="Search order" version="7.0">
+                    <field name="marketplace" />
                     <field name="name" />
                     <field name="key" />
                     <field name="date_order" />
@@ -37,6 +38,7 @@
                     <filter name="state_error" string="Error states" domain="[('state','in',('trash', 'cancelled', 'failed'))]"/>
                     <group expand="0" string="Group By...">
                         <filter name="group_partner_name" string="Partner" context="{'group_by': 'partner_name'}"/>
+                        <filter string="Marketplace" context="{'group_by': 'marketplace'}" />
                         <filter string="Connector" context="{'group_by': 'connector_id'}" />
                         <filter string="Payment" context="{'group_by': 'payment'}" />
                         <filter string="Date" context="{'group_by': 'date_order'}" />
@@ -61,6 +63,7 @@
                     <sheet>
                         <group col="4">
                             <group colspan="2" col="2">
+                                <field name="marketplace"/>
                                 <field name="name"/>
                                 <field name="partner_name"/>
                                 <field name="partner_email"/>
@@ -126,6 +129,7 @@
             <field name="model">wordpress.sale.order</field>
             <field name="arch" type="xml">
                 <tree string="Wordpress Order" colors="red:state in ('cancelled', 'trash', 'failed'); grey: state in ('pending', 'on-hold'); blue: state == 'processing'; green: state == 'completed'; brown: state == 'refunded'">
+                    <field name="marketplace"/>
                     <field name="name"/>
                     <field name="key"/>
                     <field name="date_order"/>
@@ -155,6 +159,7 @@
             <field name="model">wordpress.sale.order</field>
             <field name="arch" type="xml">
                 <tree string="Wordpress Order" editable="bottom" colors="red:state in ('cancelled', 'trash', 'failed'); grey: state in ('pending', 'on-hold'); blue: state == 'processing'; green: state == 'completed'; brown: state == 'refunded'">
+                    <field name="marketplace" readonly="1"/>
                     <field name="name" readonly="1"/>
                     <field name="key" readonly="1"/>
 
