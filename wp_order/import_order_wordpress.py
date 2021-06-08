@@ -304,7 +304,7 @@ class WordpressSaleOrder(orm.Model):
             help='Connector Marketplace, is the origin web site'),
 
         'marketplace': fields.function(
-            'get_marketplace_field',
+            get_marketplace_field,
             selection=[
             ('AMZ', 'Amazon'),
             ('EBA', 'Ebay'),
