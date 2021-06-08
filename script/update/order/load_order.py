@@ -1,4 +1,5 @@
 import os
+import pdb
 import sys
 import erppeek
 import ConfigParser
@@ -81,5 +82,9 @@ for root, folders, files in os.walk('..'):
             # Cancel removed order
             log_message(
                 f_log, '[INFO] Cancel not confirmed order: %s\n' % company)
-            # order_pool.cancel_all_sale_order_removed()
+            try:
+                order_pool.cancel_all_sale_order_removed()
+            except:
+                print(str(sys.exc_info()))
+                pdb.set_trace()
     break
