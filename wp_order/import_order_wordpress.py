@@ -55,7 +55,9 @@ class WordpressSaleOrder(orm.Model):
             try:
                 order.action_cancel()
             except:
+                pdb.set_trace()
                 _logger.error('Error removing order: %s' % order.name)
+                continue
         return True
 
     def confirm_all_new_sale_order(self, cr, uid, ids, context=None):
