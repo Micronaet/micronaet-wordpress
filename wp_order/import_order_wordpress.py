@@ -55,7 +55,6 @@ class WordpressSaleOrder(orm.Model):
             try:
                 order.action_cancel()
             except:
-                pdb.set_trace()
                 _logger.error('Error removing order: %s' % order.name)
                 continue
         return True
@@ -1257,7 +1256,8 @@ class ConnectorServer(orm.Model):
                     # Calc for line shipping (for all included):
                     line_quantity = float(line['quantity'])
                     line_price_lord = float(line['price'])
-
+                    if number == '79372':
+                        pdb.set_trace()
                     if marketplace != 'WP' and product_id:
                         product = product_pool.browse(
                             cr, uid, product_id, context=context)
