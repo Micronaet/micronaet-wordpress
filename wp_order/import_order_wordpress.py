@@ -310,7 +310,7 @@ class WordpressSaleOrder(orm.Model):
             ('EBA', 'Ebay'),
             ('WP', 'Wordpress'),
             ], string='Marketplace',
-            type='selection', store=True,
+            type='selection', store=False,
         ),
         'note': fields.text('Note'),
 
