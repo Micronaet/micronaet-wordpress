@@ -235,7 +235,7 @@ class WordpressSaleOrder(orm.Model):
         """
         res = {}
         for order in self.browse(cr, uid, ids, context=context):
-            res[order.id] = self.get_marketplace(order.email or '')
+            res[order.id] = self.get_marketplace(order.partner_email or '')
         return res
 
     def new_wordpress_order_message(self, cr, uid, ids, context=None):
