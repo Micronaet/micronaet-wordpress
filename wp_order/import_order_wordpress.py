@@ -52,7 +52,10 @@ class WordpressSaleOrder(orm.Model):
         _logger.warning('Cancel # %s order' % len(removed_ids))
         for order in order_pool.browse(cr, uid, removed_ids, context=context):
             _logger.info('Cancelling order: %s' % order.name)
-            order.action_cancel()
+            try:
+                order.action_cancel()
+            except:
+                _logger.error('Error removing order: %s' % order.name)
         return True
 
     def confirm_all_new_sale_order(self, cr, uid, ids, context=None):
