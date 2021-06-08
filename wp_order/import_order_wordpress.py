@@ -1250,8 +1250,6 @@ class ConnectorServer(orm.Model):
                             }, context=force_context)
 
                     # Calc for line shipping (for all included):
-                    if number == '79422':
-                        pdb.set_trace()
                     line_quantity = float(line['quantity'])
                     line_price_lord = float(line['price'])
 
