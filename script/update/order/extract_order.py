@@ -188,7 +188,6 @@ for order in orders:
         marketplace = order.marketplace
         last_name = billing['last_name']
         first_name = billing['first_name']
-        sku = line.sku.replace('#', ' ')
         data = (
             # Header:
             clean_char(order.name, 10),  # Order number
@@ -208,7 +207,7 @@ for order in orders:
             clean_char(order.partner_phone, 30),  # Phone
 
             # Line:
-            clean_char(sku, 18),  # SKU
+            clean_char(line.sku, 18),  # SKU
             clean_char(line.name, 45),  # Product description
             clean_char(brand, 20),  # Brand
             clean_char(category, 30),  # Category (more than one!)
