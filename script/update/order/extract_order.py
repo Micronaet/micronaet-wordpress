@@ -185,13 +185,7 @@ for order in orders:
         else:
             contact_type = 'F'
 
-        if order.partner_email.endswith('marketplace.amazon.it'):
-            marketplace = 'AMZ'
-        elif order.partner_email.endswith('@members.ebay.com'):
-            marketplace = 'EBA'
-        else:
-            marketplace = 'WP'
-
+        marketplace = order.marketplace
         data = (
             # Header:
             clean_char(order.name, 10),  # Order number
