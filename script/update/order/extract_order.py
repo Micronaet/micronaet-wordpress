@@ -187,7 +187,7 @@ for order in orders:
 
         if order.partner_email.endswith('marketplace.amazon.it'):
             marketplace = 'AMZ'
-        if order.partner_email.endswith('@members.ebay.com'):
+        elif order.partner_email.endswith('@members.ebay.com'):
             marketplace = 'EBA'
         else:
             marketplace = 'WP'
