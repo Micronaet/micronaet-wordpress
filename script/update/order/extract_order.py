@@ -186,14 +186,17 @@ for order in orders:
             contact_type = 'F'
 
         marketplace = order.marketplace
+        last_name = billing['last_name']
+        first_name = billing['first_name']
+        sku = line.sku.replace('#', ' ')
         data = (
             # Header:
             clean_char(order.name, 10),  # Order number
             clean_char(order.state, 15),  # State of order (Causale)
             clean_date(order.date_order),  # Date order (AAAAMMGG)
             contact_type,  # A(zienda) or F(isica) (1 char)
-            clean_char(billing['last_name'], 30),  # Last name
-            clean_char(billing['first_name'], 30),  # First name
+            clean_char(last_name or first_name, 30),  # Last name
+            clean_char(first_name or last_name, 30),  # First name
             clean_char(vat, 16),  # Fiscal code (VAT for now)
             clean_char('%s %s' % (
                 billing['address_1'], billing['address_2']), 30),  # Address
@@ -205,7 +208,7 @@ for order in orders:
             clean_char(order.partner_phone, 30),  # Phone
 
             # Line:
-            clean_char(line.sku, 18),  # SKU
+            clean_char(sku, 18),  # SKU
             clean_char(line.name, 45),  # Product description
             clean_char(brand, 20),  # Brand
             clean_char(category, 30),  # Category (more than one!)
@@ -224,4 +227,3 @@ for order in orders:
         )
         order_file.write(mask % data)
         order_file.flush()
-
