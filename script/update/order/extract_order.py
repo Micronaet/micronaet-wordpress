@@ -86,7 +86,7 @@ def clean_char(value, limit):
         if ord(c) < 127:
             res += c
         else:
-            res += '#'
+            res += ' '
     return res[:limit]
 
 # -----------------------------------------------------------------------------
