@@ -375,6 +375,9 @@ class WordpressSaleOrder(orm.Model):
             'sale.order', 'Ordine ufficiale',
             help='Ordine ufficiale se presente almeno un articolo di questo '
                  'database'),
+        'picking_id': fields.many2one(
+            'stock.picking', 'Corrispettivo',
+            help='Corrispettivo correlato alla vendita'),
 
         'state': fields.selection([
             ('pending', 'Pending'),

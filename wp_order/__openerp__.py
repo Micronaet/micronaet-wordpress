@@ -34,6 +34,7 @@
     'depends': [
         'base',
         'sale',
+        'stock',
         'wp_connector',
         'connector_web_base',
         'order_destination',
