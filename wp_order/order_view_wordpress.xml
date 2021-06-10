@@ -161,12 +161,16 @@
                 <tree string="Wordpress Order" editable="bottom" colors="red:state in ('cancelled', 'trash', 'failed'); grey: state in ('pending', 'on-hold'); blue: state == 'processing'; green: state == 'completed'; brown: state == 'refunded'">
                     <field name="marketplace" readonly="1"/>
                     <field name="name" readonly="1"/>
+
                     <!--todo admin button-->
-                    <field name="need_sale_order" />
+                    <field name="need_sale_order" string="Forza &gt;&gt;"/>
                     <button name="generate_sale_order" type="object" string="Crea ordine" icon="gtk-execute" attrs="{'invisible': [('need_sale_order', '=', False)]}" />
                     <field name="sale_order_id" readonly="1"/>
                     <button name="action_delivery_fees" type="object" string="Crea Corrispettivo" icon="gtk-file" attrs="{'invisible': ['|', ('picking_id', '!=', False), ('sale_order_id', '=', False)]}" />
                     <field name="picking_id" readonly="1"/>
+
+                    <field name="real_shipping_total" sum="Spedizione reale"/>
+                    <field name="shipping_total" sum="Spedizione applicata" readonly="1"/>
 
                     <field name="key" readonly="1"/>
 
@@ -183,8 +187,6 @@
                     <field name="partner_phone" readonly="1"/>
 
                     <field name="payment" readonly="1"/>
-                    <field name="real_shipping_total" sum="Spedizione reale"/>
-                    <field name="shipping_total" sum="Spedizione applicata" readonly="1"/>
                     <field name="total" sum="Totale" readonly="1"/>
                     <field name="currency" readonly="1"/>
                     <field name="state" readonly="1" />
