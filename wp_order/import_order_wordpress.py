@@ -78,6 +78,11 @@ class WordpressSaleOrder(orm.Model):
             picking_id = sale_pool._create_pickings_from_wizard(
                 cr, uid, order, pick_line_ids, context=context)
 
+            # Linked to WP order:
+            self.write(cr, uid, [wp_order.id], {
+                'picking_id': picking_id,
+            }, context=context)
+
             # Create Fess from picking:
             picking_pool.do_corresponding(
                 cr, uid, [picking_id], context=context)
