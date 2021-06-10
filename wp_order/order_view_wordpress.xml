@@ -186,6 +186,7 @@
                     <field name="need_sale_order" />
                     <field name="sale_order_id"/>
                     <button name="generate_sale_order" type="object" string="Crea ordine" icon="gtk-execute" attrs="{'invisible': [('need_sale_order', '=', False)]}" />
+                    <button name="action_delivery_fees" type="object" string="Crea Corrispettivo" icon="gtk-file" attrs="{'invisible': [('sale_order_id', '=', False)]}" />
                     <button name="new_wordpress_order_message" type="object" string="Telegram" icon="gtk-dialog-info" />
                 </tree>
             </field>

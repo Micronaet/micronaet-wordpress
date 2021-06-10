@@ -41,6 +41,50 @@ class WordpressSaleOrder(orm.Model):
     _description = 'Wordpress order'
     _order = 'name desc'
 
+    def generate_fees(self, cr, uid, ids, context=None):
+        """
+        """
+
+    def action_delivery_fees(self, cr, uid, ids, context=None):
+        """ Event for button done the delivery
+        """
+        if context is None:
+            context = {}
+
+        context['force_date_deadline'] = str(datetime.now())[:10]
+
+        # Pool used:
+        sale_pool = self.pool.get('sale.order')
+        picking_pool = self.pool.get('stock.picking')
+
+        for wp_order in self.browse(cr, uid, ids, context=context):
+            order = wp_order.sale_order_id
+            if not order:
+                _logger.error(
+                    'WP order %s not generate sale order' % wp_order.name)
+                continue
+            if order.state in ('draft', 'sent', 'cancel'):
+                _logger.error(
+                    'Sale order %s not in active status' % order.name)
+                continue
+
+            # Generate line to pick out:
+            pick_line_ids = {}
+            for line in order.order_line:
+                # Always delivered all present:
+                pick_line_ids[line.id] = line.product_uom_qty
+
+            # Create pick out with new procedure (not standard):
+
+            picking_id = sale_pool._create_pickings_from_wizard(
+                cr, uid, order, pick_line_ids, context=context)
+
+            # Create Fess from picking:
+            picking_pool.do_corresponding(
+                cr, uid, [picking_id], context=context)
+        return True
+
+
     def cancel_all_sale_order_removed(self, cr, uid, ids, context=None):
         """ Cancel sale order no more needed
         """
