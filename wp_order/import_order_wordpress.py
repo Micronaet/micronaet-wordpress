@@ -44,7 +44,6 @@ class WordpressSaleOrder(orm.Model):
     def confirm_wp_order_pending(self, cr, uid, ids, context=None):
         """ Confirm order after check status
         """
-        pdb.set_trace()
         server_pool = self.pool.get('connector.server')
         order_pool = self.pool.get('sale.order')
 
