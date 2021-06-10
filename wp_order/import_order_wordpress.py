@@ -94,7 +94,7 @@ class WordpressSaleOrder(orm.Model):
                     continue
 
                 # Mark as complete in ODOO
-                order_pool.write(cr, uid, [sale_order.id], {
+                order_pool.write(cr, uid, [order_id], {
                     'state': 'completed',
                 }, context=context)
             else:
