@@ -56,7 +56,7 @@ class WordpressSaleOrder(orm.Model):
         # Pool used:
         sale_pool = self.pool.get('sale.order')
         picking_pool = self.pool.get('stock.picking')
-
+        pdb.set_trace()
         for wp_order in self.browse(cr, uid, ids, context=context):
             order = wp_order.sale_order_id
             if not order:
@@ -75,7 +75,6 @@ class WordpressSaleOrder(orm.Model):
                 pick_line_ids[line.id] = line.product_uom_qty
 
             # Create pick out with new procedure (not standard):
-
             picking_id = sale_pool._create_pickings_from_wizard(
                 cr, uid, order, pick_line_ids, context=context)
 
@@ -83,7 +82,6 @@ class WordpressSaleOrder(orm.Model):
             picking_pool.do_corresponding(
                 cr, uid, [picking_id], context=context)
         return True
-
 
     def cancel_all_sale_order_removed(self, cr, uid, ids, context=None):
         """ Cancel sale order no more needed
