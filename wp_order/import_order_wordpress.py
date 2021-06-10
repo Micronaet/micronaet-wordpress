@@ -56,7 +56,6 @@ class WordpressSaleOrder(orm.Model):
         # Pool used:
         sale_pool = self.pool.get('sale.order')
         picking_pool = self.pool.get('stock.picking')
-        pdb.set_trace()
         for wp_order in self.browse(cr, uid, ids, context=context):
             order = wp_order.sale_order_id
             if not order:
