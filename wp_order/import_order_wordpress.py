@@ -69,13 +69,12 @@ class WordpressSaleOrder(orm.Model):
                 _logger.error('%s. Error: %s' % (order_id, reply.text))
                 continue
 
-            records = reply.json()
-            if not records:
+            record = reply.json()
+            if not record:
                 _logger.error('%s. Not found order: %s' % (
                     order_id, reply.text))
                 continue
 
-            record = records[0]  # only one!
             status = record['status']
             sale_order = order.sale_order_id
             if status == 'processing':
