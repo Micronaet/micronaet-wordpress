@@ -97,6 +97,11 @@ class WordpressSaleOrder(orm.Model):
                 order_pool.write(cr, uid, [order_id], {
                     'state': 'completed',
                 }, context=context)
+
+                # Create picking in needed:
+                if order.sale_order_id and not order.picking_id:
+                    self.action_delivery_fees(
+                        cr, uid, ids, [order_id], context=context)
             else:
                 # Update order status in other cases:
                 if status != order.state:
