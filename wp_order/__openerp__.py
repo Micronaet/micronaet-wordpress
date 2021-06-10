@@ -37,7 +37,12 @@
         'wp_connector',
         'connector_web_base',
         'order_destination',
-        'force_as_corresponding', # Unload material with corresponding pick
+        'force_as_corresponding',  # Unload material with corresponding pick
+
+        # Fees generation:
+        'sale_stock',
+        'sale_delivery_partial',
+        'force_as_corresponding',
         ],
     'init_xml': [],
     'demo': [],
