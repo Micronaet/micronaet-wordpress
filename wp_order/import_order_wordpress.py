@@ -41,9 +41,78 @@ class WordpressSaleOrder(orm.Model):
     _description = 'Wordpress order'
     _order = 'name desc'
 
-    def generate_fees(self, cr, uid, ids, context=None):
+    def confirm_wp_order_pending(self, cr, uid, ids, context=None):
+        """ Confirm order after check status
         """
-        """
+        pdb.set_trace()
+        server_pool = self.pool.get('connector.server')
+        order_pool = self.pool.get('sale.order')
+
+        old_connector_id = False
+        for order in self.browse(cr, uid, ids, context=context):
+            # Update connector capi object:
+            connector_id = order.connector_id.id
+            order_id = order.name
+            if connector_id != old_connector_id:
+                old_connector_id = connector_id
+                wcapi = server_pool.get_wp_connector(
+                    cr, uid, [connector_id], context=context)
+
+            try:
+                reply = wcapi.get('"orders/%s' % order_id)
+            except:
+                _logger.error('%s. Error calling WP: \n%s' % (
+                    order_id, sys.exc_info(),
+                ))
+                continue
+            if not reply.ok:
+                _logger.error('%s. Error: %s' % (order_id, reply.text))
+                continue
+
+            records = reply.json()
+            if not records:
+                _logger.error('%s. Not found order: %s' % (
+                    order_id, reply.text))
+                continue
+
+            record = records[0]  # only one!
+            status = record['status']
+            sale_order = order.sale_order_id
+            if status == 'processing':
+                # Mark as complete in WP:
+                data = {
+                    'status': 'completed',
+                }
+
+
+                try:
+                    reply = wcapi.put('orders/%s' % order_id, data)
+                except:
+                    _logger.error('%s. Error updating order: \n%s' % (
+                        order_id, sys.exc_info(),
+                    ))
+                    continue
+                if not reply.ok:
+                    _logger.error('%s. Error: %s' % (order_id, reply.text))
+                    continue
+
+                # Mark as complete in ODOO
+                order_pool.write(cr, uid, [sale_order.id], {
+                    'state': 'completed',
+                }, context=context)
+            else:
+                # Update order status in other cases:
+                if status != order.state:
+                    self.write(cr, uid, [order.id], {
+                        'state': status,
+                    }, context=context)
+
+                # Cancel if in deleted status:
+                if status in ('failed', 'trash', 'cancelled') and \
+                        sale_order.state not in (
+                            'cancel', 'sent', 'draft'):
+                    order_pool.action_cancel(
+                            cr, uid, [sale_order.id], context=context)
 
     def action_delivery_fees(self, cr, uid, ids, context=None):
         """ Event for button done the delivery
