@@ -83,8 +83,6 @@ class WordpressSaleOrder(orm.Model):
                 data = {
                     'status': 'completed',
                 }
-
-
                 try:
                     reply = wcapi.put('orders/%s' % order_id, data)
                 except:

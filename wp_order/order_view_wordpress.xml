@@ -168,7 +168,7 @@
                     <field name="sale_order_id" readonly="1"/>
                     <button name="action_delivery_fees" type="object" string="Crea Corrispettivo" icon="gtk-file" attrs="{'invisible': ['|', ('picking_id', '!=', False), ('sale_order_id', '=', False)]}" />
                     <field name="picking_id" readonly="1"/>
-                    <button name="confirm_wp_order_pending" type="object" string="Aggiorna WP" icon="gtk-refresh" attrs="{'invisible': [('state', '=', 'pending')]}" />
+                    <button name="confirm_wp_order_pending" type="object" string="Aggiorna WP" icon="gtk-refresh" attrs="{'invisible': [('state', '!=', 'processing')]}" />
 
                     <field name="real_shipping_total" sum="Spedizione reale"/>
                     <field name="shipping_total" sum="Spedizione applicata" readonly="1"/>
