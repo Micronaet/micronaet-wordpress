@@ -59,7 +59,7 @@ class WordpressSaleOrder(orm.Model):
                     cr, uid, [connector_id], context=context)
 
             try:
-                reply = wcapi.get('"orders/%s' % order_id)
+                reply = wcapi.get('orders/%s' % order_id)
             except:
                 _logger.error('%s. Error calling WP: \n%s' % (
                     order_id, sys.exc_info(),
