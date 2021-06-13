@@ -73,7 +73,7 @@ for root, folders, files in os.walk('..'):
         order_pool.raise_message_new_order(False)
         log_message(
             f_log, '[INFO] Raise new order in Telegram %s company\n' % company)
-        if send_message:
+        if send_message:  # Manage order only in send message database!
             # Generate ODOO order
             log_message(
                 f_log, '[INFO] Generate ODOO order: %s\n' % company)
@@ -86,4 +86,13 @@ for root, folders, files in os.walk('..'):
                 order_pool.cancel_all_sale_order_removed()
             except:
                 print(str(sys.exc_info()))
+
+            # Confirm picking for wp order confirmed
+            log_message(
+                f_log, '[INFO] Check completed order: %s\n' % company)
+            try:
+                order_pool.unload_stock_for_sale_order_completed()
+            except:
+                print(str(sys.exc_info()))
+
     break

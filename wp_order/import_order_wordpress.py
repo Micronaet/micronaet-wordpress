@@ -157,6 +157,27 @@ class WordpressSaleOrder(orm.Model):
                 cr, uid, [picking_id], context=context)
         return True
 
+    def unload_stock_for_sale_order_completed(self, cr, uid, ids, context=None):
+        """ Unload generation fees for sale order generate without picking
+        """
+        return True
+        # todo check when all order with problem are removed
+        order_pool = self.pool.get('sale.order')
+        stock_order_ids = self.search(cr, uid, [
+            # Completed WP order:
+            ('state', '=', 'completed'),
+
+            # Without picking:
+            ('picking_id', '=', False),
+
+            # With order not delete:
+            ('sale_order_id.state', '!=', False),
+            ('sale_order_id.state', 'not in', ('cancel', 'sent', 'draft')),
+        ], context=context)
+        _logger.warning('Unload with fees # %s order' % len(stock_order_ids))
+
+
+
     def cancel_all_sale_order_removed(self, cr, uid, ids, context=None):
         """ Cancel sale order no more needed
         """

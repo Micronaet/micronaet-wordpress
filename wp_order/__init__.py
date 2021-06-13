@@ -22,3 +22,5 @@
 ###############################################################################
 
 from . import import_order_wordpress
+from . import carrier
+
