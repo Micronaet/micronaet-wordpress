@@ -162,6 +162,7 @@ class WordpressSaleOrder(orm.Model):
         """ Unload generation fees for sale order generate without picking
             Note: Invoice need to be generated manually before confirm order!
         """
+        return True  # todo check this part
         stock_order_ids = self.search(cr, uid, [
             # Completed WP order:
             ('state', '=', 'completed'),
