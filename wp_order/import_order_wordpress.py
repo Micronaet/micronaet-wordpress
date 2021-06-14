@@ -160,10 +160,8 @@ class WordpressSaleOrder(orm.Model):
     def unload_stock_for_sale_order_completed(
             self, cr, uid, ids, context=None):
         """ Unload generation fees for sale order generate without picking
-            Note: Invoice need to be genderated manually before confirm order!
+            Note: Invoice need to be generated manually before confirm order!
         """
-        return True
-        # todo check when all order with problem are removed (unload twice)
         stock_order_ids = self.search(cr, uid, [
             # Completed WP order:
             ('state', '=', 'completed'),
@@ -177,7 +175,13 @@ class WordpressSaleOrder(orm.Model):
         ], context=context)
         _logger.warning('Unload with fees # %s order' % len(stock_order_ids))
         for wp_order in self.browse(cr, uid, stock_order_ids, context=context):
+            date_order = wp_order.date_order
+            if date_order <= '2021-06-07':
+                # Check when all order with problem are removed (unload twice)
+                _logger.info('Unload not sure for order: %s' % wp_order.name)
+                continue
             try:
+                pdb.set_trace()
                 self.action_delivery_fees(
                     cr, uid, [wp_order.id], context=context)
                 _logger.info('Generate Fees for order: %s' % wp_order.name)
