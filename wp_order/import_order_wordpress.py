@@ -182,7 +182,6 @@ class WordpressSaleOrder(orm.Model):
                 continue
             try:
                 _logger.info('Generate Fees for order: %s' % wp_order.name)
-                pdb.set_trace()
                 self.action_delivery_fees(
                     cr, uid, [wp_order.id], context=context)
                 # Mark as updated from web:
