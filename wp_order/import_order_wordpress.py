@@ -517,6 +517,15 @@ class WordpressSaleOrderLine(orm.Model):
     _name = 'wordpress.sale.order.line'
     _description = 'Wordpress order line'
 
+    def get_database_order(self, cr, uid, ids, fields, args, context=None):
+        """
+        """
+        res = {}
+        dbname = cr.dbname
+        for line in self.browse(cr, uid, ids, context=context):
+            res[line.id] = dbname if line.product_id else 'Altro'
+        return res
+
     _columns = {
         'order_id': fields.many2one(
             'wordpress.sale.order', 'Order', ondelete='cascade'),
@@ -527,6 +536,11 @@ class WordpressSaleOrderLine(orm.Model):
         'quantity': fields.float('Q.', digits=(10, 2)),
         'price': fields.float('Price', digits=(10, 2)),
         'total': fields.float('Total', digits=(10, 2)),
+        'database': fields.function(
+            get_database_order,
+            string='DB',
+            type='char', store=True,
+        ),
     }
 
 
@@ -604,6 +618,7 @@ class ConnectorServer(orm.Model):
 
             data = [
                 order.marketplace,
+                line.database,
                 line.sku,
                 line.name,
 
@@ -795,7 +810,7 @@ class ConnectorServer(orm.Model):
         }
 
         header = [
-            'Marketplace', 'SKU', 'Prodotto',
+            'Marketplace', 'DB', 'SKU', 'Prodotto',
             'Q.', 'Prezzo', 'Subtotale',
 
             'Data', 'Pagato', 'Completo',
@@ -803,7 +818,7 @@ class ConnectorServer(orm.Model):
             'Val.', 'Trasporto', 'Totale', 'Netto',
             ]
         width = [
-            15, 16, 40,
+            15, 10, 16, 40,
             6, 6, 8,
             9, 16, 16,
             7, 35, 20, 18,
