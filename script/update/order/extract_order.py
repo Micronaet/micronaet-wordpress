@@ -82,7 +82,7 @@ def clean_char(value, limit):
     """ Clean not ascii char
     """
     res = ''
-    for c in (value or ''):
+    for c in (value or '').strip():
         if ord(c) < 127:
             res += c
         else:
