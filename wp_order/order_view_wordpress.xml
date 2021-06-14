@@ -36,6 +36,7 @@
                     <filter name="state_closed" string="Closed states" domain="[('state','=','completed')]"/>
                     <filter name="state_refunded" string="Refunded states" domain="[('state','=','refunded')]"/>
                     <filter name="state_error" string="Error states" domain="[('state','in',('trash', 'cancelled', 'failed'))]"/>
+                    <filter name="is_from_web" string="Error states" domain="[('from_web','=',True)]"/>
                     <group expand="0" string="Group By...">
                         <filter name="group_partner_name" string="Partner" context="{'group_by': 'partner_name'}"/>
                         <filter string="Marketplace" context="{'group_by': 'marketplace'}" />
@@ -110,10 +111,11 @@
                                         <field name="note" colspan="4" nolabel="1"/>
                                     </group>
                                 </page>
-                                <page name="order_detail" string="Techical">
+                                <page name="order_detail" string="Note tecniche">
                                     <group col="4">
                                         <field name="wp_id"/>
                                         <field name="connector_id"/>
+                                        <field name="from_web" invisible="1"/>
                                         <separator string="Record:" colspan="4"/>
                                         <field name="wp_record" colspan="4" nolabel="1"/>
                                     </group>
@@ -129,6 +131,7 @@
             <field name="model">wordpress.sale.order</field>
             <field name="arch" type="xml">
                 <tree string="Wordpress Order" colors="red:state in ('cancelled', 'trash', 'failed'); grey: state in ('pending', 'on-hold'); blue: state == 'processing'; green: state == 'completed'; brown: state == 'refunded'">
+                    <field name="from_web" invisible="1"/>
                     <field name="marketplace"/>
                     <field name="name"/>
                     <field name="key"/>
@@ -174,6 +177,7 @@
                     <field name="shipping_total" sum="Spedizione applicata" readonly="1"/>
 
                     <field name="key" readonly="1"/>
+                    <field name="from_web" invisible="1"/>
 
                     <field name="date_order" readonly="1"/>
                     <field name="wp_date_created" invisible="1"/>

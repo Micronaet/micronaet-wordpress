@@ -185,6 +185,10 @@ class WordpressSaleOrder(orm.Model):
                 pdb.set_trace()
                 self.action_delivery_fees(
                     cr, uid, [wp_order.id], context=context)
+                # Mark as updated from web:
+                self.write(cr, uid, [wp_order.id], {
+                    'from_web': True,
+                }, context=context)
             except:
                 _logger.error('Error unloading order: %s' % wp_order.name)
                 continue
@@ -430,6 +434,9 @@ class WordpressSaleOrder(orm.Model):
             return False
 
     _columns = {
+        'from_web': fields.boolean(
+            'Scaricato dal web',
+            help='Ordine chiuso da web e scaricato durante la sincro ordini'),
         'alert': fields.boolean('Alert inviato'),
         'name': fields.char('Order number'),
         'key': fields.char('Order key'),
