@@ -191,6 +191,7 @@ class WordpressSaleOrder(orm.Model):
             except:
                 _logger.error('Error unloading order: %s' % wp_order.name)
                 continue
+        return True
 
     def cancel_all_sale_order_removed(self, cr, uid, ids, context=None):
         """ Cancel sale order no more needed
