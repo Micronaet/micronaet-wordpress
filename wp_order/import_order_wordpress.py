@@ -157,12 +157,12 @@ class WordpressSaleOrder(orm.Model):
                 cr, uid, [picking_id], context=context)
         return True
 
-    def unload_stock_for_sale_order_completed(self, cr, uid, ids, context=None):
+    def unload_stock_for_sale_order_completed(
+            self, cr, uid, ids, context=None):
         """ Unload generation fees for sale order generate without picking
+            Note: Invoice need to be genderated manually before confirm order!
         """
-        return True
         # todo check when all order with problem are removed
-        order_pool = self.pool.get('sale.order')
         stock_order_ids = self.search(cr, uid, [
             # Completed WP order:
             ('state', '=', 'completed'),
@@ -171,12 +171,18 @@ class WordpressSaleOrder(orm.Model):
             ('picking_id', '=', False),
 
             # With order not delete:
-            ('sale_order_id.state', '!=', False),
+            ('sale_order_id', '!=', False),
             ('sale_order_id.state', 'not in', ('cancel', 'sent', 'draft')),
         ], context=context)
         _logger.warning('Unload with fees # %s order' % len(stock_order_ids))
-
-
+        for wp_order in self.browse(cr, uid, stock_order_ids, context=context):
+            try:
+                self.action_delivery_fees(
+                    cr, uid, [wp_order.id], context=context)
+                _logger.info('Generate Fees for order: %s' % wp_order.name)
+            except:
+                _logger.error('Error unloading order: %s' % wp_order.name)
+                continue
 
     def cancel_all_sale_order_removed(self, cr, uid, ids, context=None):
         """ Cancel sale order no more needed
