@@ -56,8 +56,11 @@ for root, folders, files in os.walk('..'):
             continue
 
         # Check call parameters:
-        if argv[1].lower() == 'yesterday':
-            odoo.context = {'from_yesterday': True}
+        argument = argv[1].lower()
+        if argument == 'yesterday':
+            odoo.context = {'from_period': 'yesterday'}
+        elif argument == 'month':
+            odoo.context = {'from_period': 'month'}
         else:
             # Send message with all order from wordpress to the manager group
             if send_message:

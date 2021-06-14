@@ -1199,6 +1199,7 @@ class ConnectorServer(orm.Model):
         """ Get sale order list
             Context parameters:
                 'from_yesterday' for check from yesterday)
+                'from_month' for check from month)
                 'report_log' for send email with status report
         """
         # Utility:
@@ -1212,7 +1213,9 @@ class ConnectorServer(orm.Model):
 
         if context is None:
             context = {}
-        from_yesterday = context.get('from_yesterday')
+        from_period = context.get('from_period')
+        # from_yesterday = context.get('from_yesterday')
+        # from_month = context.get('from_month')
         report_log = context.get('report_log')
 
         # Pool used:
@@ -1222,8 +1225,8 @@ class ConnectorServer(orm.Model):
         web_product_pool = self.pool.get('product.product.web.server')
 
         _logger.warning(
-            'Read order on wordpress [from_yesterday=%s, report_log=%s]' % (
-                from_yesterday, report_log))
+            'Read order on wordpress [from_period=%s, report_log=%s]' % (
+                from_period, report_log))
 
         # ---------------------------------------------------------------------
         #                        CREATE ORDERS OPERATION:
@@ -1243,9 +1246,13 @@ class ConnectorServer(orm.Model):
             'page': 0,
             # TODO 'after': '2019-05-01T00:00:00' Add clause from search
             }
-        if from_yesterday:
+        if from_period == 'yesterday':
             parameter['after'] = (
                 datetime.now() - timedelta(days=1)).strftime(
+                    '%Y-%m-%dT00:00:00')
+        elif from_period == 'month':
+            parameter['after'] = (
+                datetime.now() - timedelta(days=31)).strftime(
                     '%Y-%m-%dT00:00:00')
 
         wp_order = []
