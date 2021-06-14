@@ -36,7 +36,8 @@
                     <filter name="state_closed" string="Closed states" domain="[('state','=','completed')]"/>
                     <filter name="state_refunded" string="Refunded states" domain="[('state','=','refunded')]"/>
                     <filter name="state_error" string="Error states" domain="[('state','in',('trash', 'cancelled', 'failed'))]"/>
-                    <filter name="is_from_web" string="Error states" domain="[('from_web','=',True)]"/>
+                    <filter name="is_from_web" string="Confermato web" domain="[('from_web','=',True)]"/>
+                    <filter name="need_picking" string="Da scaricare" domain="[('sale_order_id','!=',False), ('picking_id','=',False)]"/>
                     <group expand="0" string="Group By...">
                         <filter name="group_partner_name" string="Partner" context="{'group_by': 'partner_name'}"/>
                         <filter string="Marketplace" context="{'group_by': 'marketplace'}" />
