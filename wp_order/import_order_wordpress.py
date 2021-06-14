@@ -181,10 +181,10 @@ class WordpressSaleOrder(orm.Model):
                 _logger.info('Unload not sure for order: %s' % wp_order.name)
                 continue
             try:
+                _logger.info('Generate Fees for order: %s' % wp_order.name)
                 pdb.set_trace()
                 self.action_delivery_fees(
                     cr, uid, [wp_order.id], context=context)
-                _logger.info('Generate Fees for order: %s' % wp_order.name)
             except:
                 _logger.error('Error unloading order: %s' % wp_order.name)
                 continue
