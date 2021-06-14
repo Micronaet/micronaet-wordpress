@@ -162,7 +162,8 @@ class WordpressSaleOrder(orm.Model):
         """ Unload generation fees for sale order generate without picking
             Note: Invoice need to be genderated manually before confirm order!
         """
-        # todo check when all order with problem are removed
+        return True
+        # todo check when all order with problem are removed (unload twice)
         stock_order_ids = self.search(cr, uid, [
             # Completed WP order:
             ('state', '=', 'completed'),
