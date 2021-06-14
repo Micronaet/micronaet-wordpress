@@ -539,7 +539,7 @@ class WordpressSaleOrderLine(orm.Model):
         'database': fields.function(
             get_database_order,
             string='DB',
-            type='char', store=True,
+            type='char', store=False,
         ),
     }
 
