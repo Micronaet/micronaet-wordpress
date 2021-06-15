@@ -61,6 +61,8 @@ for root, folders, files in os.walk('..'):
             odoo.context = {'from_period': 'yesterday'}
         elif argument == 'month':
             odoo.context = {'from_period': 'month'}
+            if send_message:
+                odoo.context = {'report_log': True}
         else:
             odoo.context = {'from_period': 'all'}
 
