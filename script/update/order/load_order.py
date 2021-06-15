@@ -62,6 +62,8 @@ for root, folders, files in os.walk('..'):
         elif argument == 'month':
             odoo.context = {'from_period': 'month'}
         else:
+            odoo.context = {'from_period': 'all'}
+
             # Send message with all order from wordpress to the manager group
             if send_message:
                 odoo.context = {'report_log': True}

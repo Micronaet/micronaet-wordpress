@@ -1214,8 +1214,6 @@ class ConnectorServer(orm.Model):
         if context is None:
             context = {}
         from_period = context.get('from_period')
-        # from_yesterday = context.get('from_yesterday')
-        # from_month = context.get('from_month')
         report_log = context.get('report_log')
 
         # Pool used:
@@ -1254,6 +1252,7 @@ class ConnectorServer(orm.Model):
             parameter['after'] = (
                 datetime.now() - timedelta(days=31)).strftime(
                     '%Y-%m-%dT00:00:00')
+        # all nothing!
 
         wp_order = []
         while theres_data:
