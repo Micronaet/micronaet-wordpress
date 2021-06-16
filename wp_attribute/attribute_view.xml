@@ -467,6 +467,14 @@
                                          <field name="upsell_ids" domain="[('id', '!=', active_id), ('connector_id', '=', connector_id), ('wp_parent_template', '=', True)]" widget="many2many_tags" nolabel="1"/>
                                      </group>
                                 </page>
+                                <page string="Corriere:">
+                                     <group colspan="4" col="4">
+                                        <separator string="Corriere:" colspan="4"/>
+                                        <field name="wp_carrier_weight" />
+                                        <field name="wp_carrier_volumetric" />
+                                        <field name="wp_carrier_mode" widget="many2many_tags"/>
+                                     </group>
+                                </page>
                             </notebook>
 
                             <separator string="Wordpress link:" colspan="3"/>
