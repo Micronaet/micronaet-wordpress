@@ -607,6 +607,12 @@
 
         <menuitem
             parent="wp_connector.menu_connector_worppress_configuration"
+            id="menu_connector_carrier_shipping_form"
+            action="action_connector_carrier_shipping_form"
+            sequence="50"
+            />
+        <menuitem
+            parent="wp_connector.menu_connector_worppress_configuration"
             id="menu_action_connector_product_color_dot"
             action="action_connector_product_color_dot"
             sequence="30"
@@ -617,13 +623,5 @@
                 action="action_connector_product_color_dot_bottom"
                 sequence="10"
                 />
-            <menuitem
-                parent="menu_action_connector_product_color_dot"
-                id="menu_connector_carrier_shipping_form"
-                action="action_connector_carrier_shipping_form"
-                sequence="20"
-                />
-
-
     </data>
 </openerp>
