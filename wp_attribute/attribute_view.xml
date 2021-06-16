@@ -565,6 +565,15 @@
             <field name="context">{'form_view_ref': 'wp_attribute.view_product_product_web_server_wp_parent_form'}</field>
             <field name="domain">[('wp_parent_template', '=', True)]</field>
         </record>
+        <record model="ir.actions.act_window" id="action_product_product_transport_tree">
+            <field name="name">Prodotto trasporti</field>
+            <field name="res_model">product.product.web.server</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_product_product_web_server_wp_transport_tree"/>
+            <field name="context">{'form_view_ref': 'wp_attribute.view_product_product_web_server_wp_parent_form'}</field>
+            <field name="domain">[('wp_parent_template', '=', True)]</field>
+        </record>
         <record model="ir.actions.act_window" id="action_product_product_variant_tree">
             <field name="name">Prodotto variant</field>
             <field name="res_model">product.product.web.server</field>
@@ -639,6 +648,12 @@
                 id="menu_product_product_manual_stock"
                 action="action_product_product_variant_manual_stock_tree"
                 sequence="40"
+                />
+            <menuitem
+                parent="menu_product_product_parent"
+                id="menu_product_product_transport_tree"
+                action="action_product_product_transport_tree"
+                sequence="50"
                 />
 
         <menuitem
