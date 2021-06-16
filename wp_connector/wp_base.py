@@ -1334,6 +1334,9 @@ class ProductProductWebServer(orm.Model):
                     item.manual_pack_h)
                 self.write(cr, uid, [item.id], {
                     'wp_volume': volume / 5000.0,
+
+                    # New fields:
+
                 }, context=context)
                 _logger.warning(
                     'Manual volume updated: %s' % product.default_code)

@@ -134,6 +134,7 @@ class ConnectorServer(orm.Model):
             10,  # Sold
             10, 10, 5, 10,
             10, 10,
+            10, 10, 35,  # Trasport
             5, 20, 30, 7,
             7,
             10, 5, 15, 6, 6,
@@ -153,6 +154,7 @@ class ConnectorServer(orm.Model):
             'Venduto',
             'Prezzo ODOO', 'Forz.', 'Prezzo WP', 'Scontato',
             'Cat. Stat.', 'Peso',
+            'Peso spediz.', 'Peso volum. sped.', 'Tipi sped.',
             'Mod. imb.', 'Imballo', 'Dimensioni prodotto', 'Vol.',
             'Garanzia',
             'Tipo WP', 'Master', 'Padre', 'WPID it.', 'WPID en.',
@@ -179,6 +181,7 @@ class ConnectorServer(orm.Model):
                     p.product_id.default_code,
                     p.product_id.name),
                 ):
+            parent = line.wp_parent_id
             product = line.product_id
             default_code = product.default_code or ''
             sold = sold_product.get(default_code, '')
@@ -267,6 +270,12 @@ class ConnectorServer(orm.Model):
 
                     product.statistic_category or '',
                     line.weight,
+
+                    # Transport:
+                    parent.wp_carrier_weight,
+                    parent.wp_carrier_volumetric,
+                    ', '.join(
+                        [item.name for item in parent.wp_carrier_mode_ids]),
                     'X' if product.model_package_id else '',
                     '%s x %s x %s' % (
                         line.pack_l, line.pack_h, line.pack_p),
