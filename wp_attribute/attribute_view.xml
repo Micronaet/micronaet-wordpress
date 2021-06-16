@@ -200,6 +200,42 @@
                 </tree>
             </field>
         </record>
+        <record model="ir.ui.view" id="view_product_product_web_server_wp_transport_tree">
+            <field name="name">product.product.web.server.transport.tree</field>
+            <field name="model">product.product.web.server</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <tree string="Product" color="blue:wp_parent_code!=False" editable="bottom">
+                    <field name="published" readonly="1"/>
+                    <field name="product_id" readonly="1"/>
+                    <field name="connector_id" readonly="1"/>
+                    <field name="wp_color_id" readonly="1"/>
+                    <field name="wp_type" readonly="1"/>
+
+                    <field name="wp_carrier_weight" />
+                    <field name="wp_carrier_volumetric" />
+                    <field name="wp_carrier_mode_ids" widget="many2many_tags"/>
+
+                    <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]" readonly="1"/>
+                    <field name="wp_it_id" invisible="1"/>
+                    <field name="wp_en_id" invisible="1" />
+                    <!--<field name="force_name"/>
+                    <field name="force_description"/>
+                    <field name="force_q_x_pack"/>
+                    <field name="force_ean13"/>
+                    <field name="force_price"/>
+                    <field name="force_min_stock"/>-->
+                    <button name="publish_master_now" string="Publish this now" type="object" icon="gtk-refresh"/>
+
+                    <field name="need_update" invisible="1"/>
+                    <button name="mark_need_update" string="Aggiornare schedulato" type="object" icon="terp-calendar" attrs="{'invisible': [('need_update', '=', True)]}"/>
+                    <button name="unmark_need_update" string="Annulla aggiorna schedulato" type="object" icon="gtk-cancel" attrs="{'invisible': [('need_update', '=', False)]}"/>
+
+                    <button name="publish_master_now" string="Non pubblicato" type="object" icon="gtk-new" attrs="{'invisible': ['|', ('wp_it_id', '!=', 0), ('wp_en_id', '!=', 0)]}"/>
+
+                </tree>
+            </field>
+        </record>
         <record model="ir.ui.view" id="view_product_product_web_server_wp_variant_tree">
             <field name="name">product.product.web.server.variant.tree</field>
             <field name="model">product.product.web.server</field>
@@ -506,7 +542,7 @@
                                         <separator string="Corriere:" colspan="4"/>
                                         <field name="wp_carrier_weight" />
                                         <field name="wp_carrier_volumetric" />
-                                        <field name="wp_carrier_mode" widget="many2many_tags"/>
+                                        <field name="wp_carrier_mode_ids" widget="many2many_tags"/>
                                      </group>
                                 </page>
                             </notebook>

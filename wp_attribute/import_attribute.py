@@ -352,7 +352,7 @@ class ProductProductWebServerIntegration(orm.Model):
         'wp_carrier_volumetric': fields.float(
             'Peso volumetrico', digits=(16, 2),
             help='Peso volumetrico usato per la spedizione'),
-        'wp_carrier_mode': fields.many2many(
+        'wp_carrier_mode_ids': fields.many2many(
             'connector.carrier.shipping', 'product_carrier_rel', 'product_id',
             'mode_id', 'Modo spedizione'),
     }
