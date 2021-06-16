@@ -45,6 +45,8 @@
         'wizard/import_xlsx_wizard.xml',
 
         'scheduler.xml',
+
+        'data/carrier_mode.xml',
         ],
     'active': False,
     'installable': True,

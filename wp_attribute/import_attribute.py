@@ -47,6 +47,20 @@ _logger = logging.getLogger(__name__)
 vat_rate = 1.22
 
 
+class ConnectorCarrierShipping(orm.Model):
+    """ Carrier shipping mode
+    """
+    _name = 'connector.carrier.shipping'
+    _description = 'Carrier shipping'
+    _order = 'name'
+
+    _columns = {
+        'code': fields.char(
+            'Codice', size=35, help='Utilizzato per Wordpress', required=True),
+        'name': fields.char('Tipo', size=35, required=True),
+    }
+
+
 class ProductProductWebServerIntegration(orm.Model):
     """ Model name: ProductProductWebServer
     """
@@ -331,7 +345,17 @@ class ProductProductWebServerIntegration(orm.Model):
             _get_wp_pricelist_for_web, method=True, multi=True, readonly=True,
             type='float', string='Prezzo scontato web',
             help='Prezzo esposto sul sito come scontato'),
-        }
+
+        'wp_carrier_weight': fields.float(
+            'Peso fisico', digits=(16, 2),
+            help='Peso fisico usato per la spedizione'),
+        'wp_carrier_volumetric': fields.float(
+            'Peso volumetrico', digits=(16, 2),
+            help='Peso volumetrico usato per la spedizione'),
+        'wp_carrier_mode': fields.many2many(
+            'connector.carrier.shipping', 'product_carrier_rel', 'product_id',
+            'mode_id', 'Modo spedizione'),
+    }
 
     _sql_constraints = [
         ('parent_code_uniq', 'unique (wp_parent_code)',
@@ -899,7 +923,8 @@ class ProductPublicCategory(orm.Model):
                             key = record['name'][:-3]
                             wp_id = record['id']
                             if not wp_id:  # TODO manage error:
-                                _logger.error('Not Updated wp_id for %s' % wp_id)
+                                _logger.error(
+                                    'Not Updated wp_id for %s' % wp_id)
                                 continue
 
                             # Update for language not IT (default):
