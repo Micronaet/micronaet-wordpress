@@ -568,11 +568,11 @@ class ConnectorServer(orm.Model):
         line_pool = self.pool.get('wordpress.sale.order.line')
 
         connector_id = ids[0]
-        today = ('%s' % (datetime.now() - timedelta(days=1)))[:10]
+        today = str(datetime.now())[:10]
 
         # Order invoiced:
         line_ids = line_pool.search(cr, uid, [
-            ('order_id.wp_date_completed', '>=', today),
+            ('order_id.date_order', '=', today),
             ('order_id.connector_id', '=', ids[0]),
         ], context=context)
 
