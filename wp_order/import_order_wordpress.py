@@ -359,6 +359,7 @@ class WordpressSaleOrder(orm.Model):
         ], context=context)
         if not order_ids:
             return False
+        total_raised = 0
         for order_id in sorted(order_ids, reverse=True):
             loop = True
             max_loop = 20
@@ -367,6 +368,7 @@ class WordpressSaleOrder(orm.Model):
                     self.new_wordpress_order_message(
                         cr, uid, [order_id], context=context)
                     time.sleep(2)
+                    total_raised += 1
                     loop = False
                 except Exception:
                     _logger.warning(
@@ -378,7 +380,7 @@ class WordpressSaleOrder(orm.Model):
                             'Error cannot raise telegram order 20 times: '
                             '%s' % order_id)
                         loop = False
-        return True
+        return total_raised
 
     def get_marketplace(self, email):
         """ Extract Marketplace from email

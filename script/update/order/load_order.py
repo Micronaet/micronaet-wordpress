@@ -77,7 +77,7 @@ for root, folders, files in os.walk('..'):
             f_log, '[INFO] End updating order for %s company\n' % company)
 
         order_pool = odoo.model('wordpress.sale.order')
-        order_pool.raise_message_new_order(False)
+        total_raised = order_pool.raise_message_new_order(False)
         log_message(
             f_log, '[INFO] Raise new order in Telegram %s company\n' % company)
         if send_message:  # Manage order only in send message database!
@@ -102,10 +102,14 @@ for root, folders, files in os.walk('..'):
             except:
                 print(str(sys.exc_info()))
 
-            log_message(
-                f_log, '[INFO] Send starts on Telegram: %s\n' % company)
-            try:
-                connector_pool.sent_today_stats([connector_id])
-            except:
-                print(str(sys.exc_info()))
+            if total_raised > 0:
+                log_message(
+                    f_log, '[INFO] Send starts on Telegram: %s\n' % company)
+                try:
+                    connector_pool.sent_today_stats([connector_id])
+                except:
+                    print(str(sys.exc_info()))
+            else:
+                log_message(
+                    f_log, '[INFO] No order so no message: %s\n' % company)
     break
