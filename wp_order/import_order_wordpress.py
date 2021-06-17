@@ -605,6 +605,7 @@ class ConnectorServer(orm.Model):
 
         self.server_send_telegram_message(
             cr, uid, connector_id, message, context=context)
+        return True
 
     def status_wordpress_order_report(self, cr, uid, ids, context=None):
         """ Status order excel report
