@@ -571,9 +571,10 @@ class ConnectorServer(orm.Model):
         today = str(datetime.now())[:10]
 
         # Order invoiced:
+        _logger.info('Extract stats for: %s' % today)
         line_ids = line_pool.search(cr, uid, [
-            ('order_id.date_order', '=', today),
-            ('order_id.connector_id', '=', ids[0]),
+            ('order_id.date_order', '>=', today),
+            ('order_id.connector_id', '=', connector_id),
         ], context=context)
 
         total_order = total_invoiced = total_cancel = 0.0
@@ -595,10 +596,13 @@ class ConnectorServer(orm.Model):
                 # Total invoiced
                 total_invoiced += line.total
 
-        message = '[RIEPILOGO ODIERNO]:\nTotale ordini: *%s*\n' \
+        message = '[RIEPILOGO ODIERNO]:\n' \
+                  'Totale ordini: *%s*\n' \
+                  'Totale righe: *%s*\n' \
                   'Totale fatturato: *%s* \n' \
                   'Totale annullati: %s' % (
                       int(total_order),
+                      len(line_ids),
                       total_invoiced,
                       int(total_cancel),
                   )
