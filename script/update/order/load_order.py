@@ -108,5 +108,4 @@ for root, folders, files in os.walk('..'):
                 connector_pool.sent_today_stats([connector_id])
             except:
                 print(str(sys.exc_info()))
-
     break
