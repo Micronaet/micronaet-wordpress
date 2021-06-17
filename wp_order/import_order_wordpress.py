@@ -590,7 +590,7 @@ class ConnectorServer(orm.Model):
                 total_order += 1
 
             # Cancel order:
-            if state in ('cancelling', 'trash', 'failed'):
+            if state in ('cancelled', 'trash', 'failed'):
                 total_cancel += 1
             else:
                 # Total invoiced
