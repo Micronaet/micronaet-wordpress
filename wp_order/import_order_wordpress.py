@@ -366,7 +366,7 @@ class WordpressSaleOrder(orm.Model):
                 try:
                     self.new_wordpress_order_message(
                         cr, uid, [order_id], context=context)
-                    time.sleep(3)
+                    time.sleep(2)
                     loop = False
                 except Exception:
                     _logger.warning(
