@@ -598,9 +598,9 @@ class ConnectorServer(orm.Model):
         message = '[RIEPILOGO ODIERNO]:\nTotale ordini: *%s*\n' \
                   'Totale fatturato: *%s* \n' \
                   'Totale annullati: %s' % (
-                      total_order,
+                      int(total_order),
                       total_invoiced,
-                      total_cancel,
+                      int(total_cancel),
                   )
 
         self.server_send_telegram_message(
@@ -658,7 +658,6 @@ class ConnectorServer(orm.Model):
                 color = excel_format['green']
             else:
                 color = excel_format['white']
-
 
             data = [
                 order.marketplace,
