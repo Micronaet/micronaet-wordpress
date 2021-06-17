@@ -562,6 +562,50 @@ class ConnectorServer(orm.Model):
 
     _inherit = 'connector.server'
 
+    def sent_today_stats(self, cr, uid, ids, context=None):
+        """ Send invoiced till now for today stats
+        """
+        line_pool = self.pool.get('wordpress.sale.order.line')
+
+        connector_id = ids[0]
+        today = ('%s' % (datetime.now() - timedelta(days=1)))[:10]
+
+        # Order invoiced:
+        line_ids = line_pool.search(cr, uid, [
+            ('order_id.wp_date_completed', '>=', today),
+            ('order_id.connector_id', '=', ids[0]),
+        ], context=context)
+
+        total_order = total_invoiced = total_cancel = 0.0
+        orders = []  # just for total
+        for line in line_pool.browse(
+                cr, uid, line_ids, context=context):
+            order = line.order_id
+            state = order.state
+
+            # Total order:
+            if order not in orders:
+                orders.append(order)
+                total_order += 1
+
+            # Cancel order:
+            if state in ('cancelling', 'trash', 'failed'):
+                total_cancel += 1
+            else:
+                # Total invoiced
+                total_invoiced += line.total
+
+        message = '[RIEPILOGO ODIERNO]:\nTotale ordini: *%s*\n' \
+                  'Totale fatturato: *%s* \n' \
+                  'Totale annullati: %s' % (
+                      total_order,
+                      total_invoiced,
+                      total_cancel,
+                  )
+
+        self.server_send_telegram_message(
+            cr, uid, connector_id, message, context=context)
+
     def status_wordpress_order_report(self, cr, uid, ids, context=None):
         """ Status order excel report
             context: send_group > name of group if file will be sent

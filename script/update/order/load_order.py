@@ -102,4 +102,11 @@ for root, folders, files in os.walk('..'):
             except:
                 print(str(sys.exc_info()))
 
+            log_message(
+                f_log, '[INFO] Send starts on Telegram: %s\n' % company)
+            try:
+                connector_pool.sent_today_stats(connector_id)
+            except:
+                print(str(sys.exc_info()))
+
     break
