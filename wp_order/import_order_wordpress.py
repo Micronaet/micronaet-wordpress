@@ -598,7 +598,7 @@ class ConnectorServer(orm.Model):
                 # Total invoiced
                 total_invoiced += line.total
 
-        message = '*RIEPILOGO ODIERNO*:\n' \
+        message = '*PROGRESSIVI GIORNALIERI*:\n' \
                   'Totale ordini: *%s*\n' \
                   'Totale righe: *%s*\n' \
                   'Totale fatturato: *%s* \n' \
