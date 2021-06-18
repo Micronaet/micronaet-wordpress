@@ -579,7 +579,7 @@ class ConnectorServer(orm.Model):
         pdb.set_trace()
         for message_id in summary_message_ids:
             try:
-                reply = bot.deleteMessage(
+                reply = bot.deleteMessage(  # todo not working!
                     message_id,
                 )
                 _logger.warning('Delete message ID: %s' % message_id)
