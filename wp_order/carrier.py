@@ -87,68 +87,179 @@ class CarrierConnection(orm.Model):
     }
 
     _defaults = {
-        'wsdl_root': lambda *x:
-            'https://www.onlinembe.it/wsdl/OnlineMbeSOAP.wsdl',
+        'location': lambda *x:
+            'https://api.mbeonline.it/ws',
         'system': lambda *x: 'IT',
         'internal_reference': lambda *x: 'MI030-lg',
         }
 
 
-'''class CarrierSupplier(orm.Model):
-    """ Model name: Carrier Connection
-    """
-    _name = 'carrier.supplier'
-    _description = 'Carrier supplier'
-    _order = 'name'
 
-    # todo
+class CarrierSupplier(orm.Model):
+    """ Model name: Parcels supplier
+    """
+
+    _name = 'carrier.supplier'
+    _description = 'Parcel supplier'
+    _rec_name = 'name'
+
+    # -------------------------------------------------------------------------
+    #                                   COLUMNS:
+    # -------------------------------------------------------------------------
     _columns = {
+        'hidden': fields.boolean('Nascosto'),
+        'name': fields.char('Nome'),
+        'account_ref': fields.char('Codice'),
+        'mode': fields.selection(
+            string='Mode',
+            selection=[
+                ('carrier', 'Corriere'),
+                ('courier', 'Spedizioniere'),
+            ], required=True, default='carrier'),
+        'mode_id': fields.many2one(
+            'carrier.supplier.mode', 'Modalità',
+            domain="[('supplier_id.mode', '=', 'carrier')]",
+            help='Modalità dello spedizioniere'),
+
         'carrier_connection_id': fields.many2one(
             comodel_name='carrier.connection',
             string='Carrier Connection'),
-    }'''
+        }
 
 
-'''class CarrierSupplierMode(orm.Model):
-    """ Model name: Parcels supplier mode
+class CarrierSupplierMode(orm.Model):
+    """ Model name: Parcels supplier mode of delivery
     """
 
     _name = 'carrier.supplier.mode'
     _description = 'Carrier mode'
+    _rec_name = 'name'
 
-    # todo
+    # -------------------------------------------------------------------------
+    #                                   COLUMNS:
+    # -------------------------------------------------------------------------
     _columns = {
-        'cups_printer_id': fields.many2one(
-            'cups.printer', 'CUPS printer', help='Label order print with this')
-    }'''
+        'name': fields.char('Nome', required=True),
+        'account_ref': fields.car('Account ref.'),
+        'supplier_id': fields.many2one(
+            'carrier.supplier', 'Carrier', required=True),
+        'hidden': fields.boolean('Nascosto'),
+        # 'cups_printer_id': fields.many2one(
+        #    'cups.printer', 'CUPS printer',
+        #    help='Label order print with this')
+    }
 
 
-'''class CarrierParcelTemplate(orm.Model):
+class CarrierParcelTemplate(orm.Model):
     """ Model name: Parcels template
     """
 
     _name = 'carrier.parcel.template'
-    _description = 'Carrier template'
+    _description = 'Parcel template'
+    _rec_name = 'name'
 
-    # todo
+    def _get_volumetric_weight(
+            self, cr, uid, ids, fields=None, args=None, context=None):
+        """ Compute volumetric weight, return value
+        """
+        res = {}
+        for template in self.browse(cr, uid, ids, context=context):
+            res[template.id] = (
+                template.length * template.width * template.height / 5000.0)
+        return res
+
+    # -------------------------------------------------------------------------
+    #                                   COLUMNS:
+    # -------------------------------------------------------------------------
     _columns = {
+        'is_active': fields.boolean('Attivo'),
+        'name': fields.char('Name'),
+        'no_label': fields.boolean('No label'),
+        'carrier_supplier_id': fields.many2one('carrier.supplier', 'Carrier'),
+        'length': fields.float('Length', digits=(16, 2), required=True),
+        'width': fields.float('Width', digits=(16, 2), required=True),
+        'height': fields.float('Height', digits=(16, 2), required=True),
+        'dimension_uom_id': fields.many2one('product.uom', 'Product UOM'),
+        'weight': fields.function(
+            'Weight volumetric', digits=(16, 2), type='float',
+            compute='_get_volumetric_weight',
+            help='Volumetric weight (H x L x P / 5000)', readonly=True),
+        'weight_uom_id': fields.many2one('product.uom', 'Product UOM'),
         'carrier_connection_id': fields.many2one(
             comodel_name='carrier.connection',
             string='Carrier Connection',
             help='Force carrier connection for small package'),
 
-        'package_type': fields.Selection(
+        'package_type': fields.selection(
             string='Package type', required=True,
             selection=[
                 ('GENERIC', 'Generic'),
                 ('ENVELOPE', 'Envelope'),
                 ('DOCUMENTS', 'Documents'),
             ]),
-        }
-    
+    }
+
     _defaults = {
         'package_type': lambda *x: 'GENERIC',
-    }'''
+    }
+
+
+class SaleOrderParcel(orm.Model):
+    """ Model name: Parcels for sale order
+    """
+
+    _name = 'sale.order.parcel'
+    _description = 'Sale order parcel'
+    _rec_name = 'weight'
+
+    @api.multi
+    def _get_volumetric_weight(self):
+        """ Compute volumetric weight, return value
+        """
+        for line in self:
+            weight = (  # Volumetric:
+                line.length * line.width * line.height / 5000.0)
+            real_weight = line.real_weight
+            if line.use_real_weight:
+                used_weight = line.real_weight  # Real
+            else:  # Greater evaluation:
+                if weight > real_weight:
+                    used_weight = weight
+                else:
+                    used_weight = real_weight
+            line.weight = weight  # volumetric
+            line.used_weight = used_weight
+
+    # -------------------------------------------------------------------------
+    #                                   COLUMNS:
+    # -------------------------------------------------------------------------
+    _columns = {
+        'order_id': fields.many2one('wordpress.sale.order', 'Ordine WP'),
+
+        # Dimension:
+        'length': fields.float('Length', digits=(16, 2), required=True),
+        'width': fields.float('Width', digits=(16, 2), required=True),
+        'height': fields.float('Height', digits=(16, 2), required=True),
+        'dimension_uom_id': fields.many2one('product.uom', 'Product UOM'),
+        'use_real_weight': fields.boolean(
+            string='Use real', help='Pass real weight instead of greater'),
+
+        # Weight:
+        'real_weight': fields.float(
+            'Real weight', digits=(16, 2),
+            ),
+        'weight': fields.function(
+            'Volumetric weight', digits=(16, 2), type='float',
+            compute='_get_volumetric_weight',
+            readonly=True,
+        ),
+        'used_weight': fields.function(
+            'Used weight', digits=(16, 2), type='float',
+            compute='_get_volumetric_weight', readonly=True,
+        ),
+        'weight_uom_id': fields.many2one('product.uom', 'Product UOM'),
+        'no_label': fields.boolean('No label'),
+    }
 
 
 class WordpressSaleOrder(orm.Model):
@@ -157,6 +268,88 @@ class WordpressSaleOrder(orm.Model):
     _inherit = 'wordpress.sale.order'
 
     _columns = {
+        'carrier_ok': fields.boolean(
+            'Carrier OK',
+            help='Carrier must be confirmed when done!'),
+
+        # Master Carrier:
+        'carrier_supplier_id ': fields.many2one(
+            'carrier.supplier', 'Carrier',
+            domain="[('mode', '=', 'carrier')]"),
+        'carrier_mode_id ': fields.many2one(
+            'carrier.supplier.mode', 'Carrier service',
+            domain="[('supplier_id', '=', carrier_supplier_id)]",
+        ),
+
+        'courier_supplier_id ': fields.many2one(
+            'carrier.supplier', 'Courier',
+            domain="[('hidden', '=', False), "
+                   "('mode', '=', 'courier'),"
+                   "('mode_id', '=', carrier_mode_id)]"),
+        'courier_mode_id ': fields.many2one(
+            'carrier.supplier.mode', 'Courier service',
+            domain="[('hidden', '=', False), "
+                   "('supplier_id', '=', courier_supplier_id)]",
+        ),
+
+        'carrier_parcel_template_id ': fields.many2one(
+            'carrier.parcel.template', 'Parcel template'),
+        'carrier_check ': fields.text(
+            'Carrier check', help='Check carrier address', multi=True,
+            compute='_get_carrier_check_address', widget='html'),
+        'carrier_check_error ': fields.text(
+            'Carrier check', help='Check carrier address error', multi=True,
+            compute='_get_carrier_check_address', widget='html'),
+
+        'carrier_description ': fields.text('Carrier description'),
+        'carrier_note ': fields.text('Carrier note'),
+        'carrier_stock_note ': fields.text('Stock operator note'),
+        'carrier_total ': fields.float('Goods value', digits=(16, 2)),
+        'carrier_ensurance ': fields.float('Ensurance', digits=(16, 2)),
+        'carrier_cash_delivery ': fields.float('Cash on delivery', digits=(16, 2)),
+        'carrier_pay_mode ': fields.selection([
+            ('CASH', 'Cash'),
+            ('CHECK', 'Check'),
+            ], 'Pay mode', default='CASH'),
+        'parcel_ids ': fields.one2many('sale.order.parcel', 'order_id', 'Parcels'),
+        'parcel_detail ': fields.text('Parcel detail', compute='_get_parcel_detail'),
+        'real_parcel_total ': fields.integer(
+            string='Colli', compute='_get_carrier_parcel_total'),
+        'destination_country_id ': fields.many2one(
+            'res.country', 'Destination',
+            related='partner_shipping_id.country_id',
+        ),
+
+        # Data from Carrier:
+        'carrier_cost ': fields.float(
+            'Cost', digits=(16, 2), help='Net shipment price'),
+        'carrier_cost_total ': fields.float(
+            'Cost', digits=(16, 2), help='Net shipment total price'),
+        'carrier_cost_lossy ': fields.boolean(
+            'Under carrier cost', help='Carrier cost payed less that request!',
+            compute='_check_carrier_cost_value',
+            store=True,
+        ),
+        'carrier_track_id ': fields.char(
+            'Track ID', size=64),
+        # TODO extra data needed!
+
+        'has_cod ': fields.boolean('Has COD'),  # CODAvailable
+        'has_insurance ': fields.boolean(
+            'Has Insurance'),  # InsuranceAvailable
+        'has_safe_value ': fields.boolean(
+            'Has safe value'),  # MBESafeValueAvailable
+
+        'carrier_delivery_date ': fields.datetime(
+            'Delivery date', readonly=True),
+        'carrier_delivery_sign ': fields.datetime(
+            'Delivery sign', readonly=True),
+
+        # 'NetShipmentTotalPrice': Decimal('6.80'),  # ??
+        # 'IdSubzone': 125,
+        # 'SubzoneDesc': 'Italia-Zona A',
+
+        # MBE Portal:
         'parcel_weight_tree': fields.float(
             'Weight', help='Tree view only for fast insert parcel'),
         'carrier_connection_id': fields.many2one(
