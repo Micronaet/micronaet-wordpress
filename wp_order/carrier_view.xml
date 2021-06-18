@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-        <record model="ir.ui.view" id="view_sale_order_logistic_search">
-            <field name="name">wordpress.sale.order.logistic.search</field>
+        <record model="ir.ui.view" id="view_sale_order_carrier_search">
+            <field name="name">wordpress.sale.order.carrier.search</field>
             <field name="model">wordpress.sale.order</field>
             <field name="inherit_id" ref="wordpress_sale_order_view_search"/>
             <field name="arch" type="xml">
@@ -10,7 +10,7 @@
                     <field name="carrier_track_id" />
                     <field name="carrier_supplier_id" />
                     <field name="carrier_mode_id" />
-                    <field name="courier_supplier_id" />
+                    <!--<field name="courier_supplier_id" />-->
                     <field name="courier_mode_id" />
 
                     <filter name="carrier_track_id_assigned" string="LDV generated" domain="[('carrier_track_id','!=',False)]"/>

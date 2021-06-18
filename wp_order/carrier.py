@@ -372,7 +372,7 @@ class WordpressSaleOrder(orm.Model):
         return res
 
     def _get_carrier_parcel_total(
-            self, cr, uid, ids, fields = None, args = None, context = None):
+            self, cr, uid, ids, fields = None, args=None, context=None):
         """ Return total depend on type of delivery: manual or shippy
         """
         res = {}
