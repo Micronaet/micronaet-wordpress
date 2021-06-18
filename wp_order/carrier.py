@@ -323,7 +323,7 @@ class WordpressSaleOrder(orm.Model):
         'parcel_detail ': fields.function(
             'Parcel detail', type='text', compute='_get_parcel_detail'),
         'real_parcel_total ': fields.function(
-            string='Colli', type='integer',
+            'Colli', type='integer',
             compute='_get_carrier_parcel_total'),
         'destination_country_id ': fields.many2one(
             'res.country', 'Destination',
