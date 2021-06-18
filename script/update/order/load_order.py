@@ -107,6 +107,7 @@ for root, folders, files in os.walk('..'):
                 log_message(
                     f_log, '[INFO] Send starts on Telegram: %s\n' % company)
                 try:
+                    pdb.set_trace()
                     message_id = connector_pool.sent_today_stats(
                         [connector_id])
 
