@@ -576,6 +576,7 @@ class ConnectorServer(orm.Model):
         group = server.telegram_group
         bot = telepot.Bot(str(token))
         bot.getMe()
+        pdb.set_trace()
         for message_id in summary_message_ids:
             try:
                 reply = bot.deleteMessage(
