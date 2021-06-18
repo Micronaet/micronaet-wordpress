@@ -141,7 +141,7 @@ class CarrierSupplierMode(orm.Model):
     # -------------------------------------------------------------------------
     _columns = {
         'name': fields.char('Nome', required=True),
-        'account_ref': fields.car('Account ref.'),
+        'account_ref': fields.char('Account ref.'),
         'supplier_id': fields.many2one(
             'carrier.supplier', 'Carrier', required=True),
         'hidden': fields.boolean('Nascosto'),
@@ -317,7 +317,7 @@ class WordpressSaleOrder(orm.Model):
         'carrier_pay_mode ': fields.selection([
             ('CASH', 'Cash'),
             ('CHECK', 'Check'),
-            ], 'Pay mode', default='CASH'),
+            ], 'Pay mode'),
         'parcel_ids ': fields.one2many(
             'sale.order.parcel', 'order_id', 'Parcels'),
         'parcel_detail ': fields.function(
@@ -369,30 +369,28 @@ class WordpressSaleOrder(orm.Model):
             help='Carrier connection used for better quotation'),
         'carrier_id': fields.integer(string='Carrier ID'),
         'carrier_state': fields.selection(
-            string='Carrier state',
-            selection=[
+            [
                 ('draft', 'Draft'),
                 ('pending', 'Pending'),
                 ('sent', 'Sent'),
                 ('delivered', 'Delivered'),  # Closed
-            ]),
+            ], 'Carrier state', required=True),
         'delivery_state': fields.selection(
-            string='Delivery state',
-            selection=[
+            [
                 ('WAITING_DELIVERY', 'Waiting'),
                 ('PARTIALLY_DELIVERED', 'Partially delivered'),
                 ('DELIVERED', 'Delivered'),
                 ('EXCEPTION', 'Exception'),
                 ('NOT_AVAILABLE', 'Not available'),
-            ]),
+            ], 'Delivery state', required=True),
         'master_tracking_id': fields.char('Master Tracking', size=20),
         'system_reference_id': fields.char('System reference ID', size=20),
         'shipper_type': fields.selection(
-            string='Shipper type', required=True,
-            selection=[
+            [
                 ('COURIERLDV', 'Courier LDV'),
                 ('MBE', 'MBE'),
-            ]),
+            ], 'Shipper type', required=True,
+            ),
 
         'ship_type': fields.selection(
             [
@@ -409,6 +407,7 @@ class WordpressSaleOrder(orm.Model):
     }
 
     _defaults = {
+        'carrier_pay_mode': lambda *x: 'CASH',
         'carrier_state': lambda *x: 'draft',
         'delivery_state': lambda *x: 'WAITING_DELIVERY',
         'shipper_type': lambda *x: 'COURIERLDV',
