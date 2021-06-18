@@ -119,8 +119,9 @@ for root, folders, files in os.walk('..'):
                     except:
                         summary_message_ids = []
 
-                    connector_pool.clean_old_message(
-                        [connector_id], summary_message_ids)
+                    if summary_message_ids:
+                        connector_pool.clean_old_message(
+                            [connector_id], summary_message_ids)
                     summary_message_ids = [message_id]
 
                     # Save for next time:

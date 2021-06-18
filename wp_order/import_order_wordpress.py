@@ -574,17 +574,18 @@ class ConnectorServer(orm.Model):
 
         token = server.telegram_token
         group = server.telegram_group
-        try:
-            bot = telepot.Bot(str(token))
-            bot.getMe()
-            for message_id in summary_message_ids:
+        bot = telepot.Bot(str(token))
+        bot.getMe()
+        for message_id in summary_message_ids:
+            try:
                 reply = bot.deleteMessage(
                     group,
                     message_id,
                 )
-            _logger.warning('Delete message ID: %s' % message_id)
-        except:
-            _logger.error('Cannot Delete message ID: %s' % message_id)
+                _logger.warning('Delete message ID: %s' % message_id)
+            except:
+                _logger.error('Cannot Delete message ID: %s' % message_id)
+        return True
 
     def sent_today_stats(self, cr, uid, ids, context=None):
         """ Send invoiced till now for today stats
