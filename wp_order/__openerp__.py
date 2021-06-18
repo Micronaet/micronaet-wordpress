@@ -52,6 +52,8 @@
         'security/ir.model.access.csv',
         # 'order_view.xml',
         'order_view_wordpress.xml',
+        'carrier_view_xml',
+
         ],
     'active': False,
     'installable': True,

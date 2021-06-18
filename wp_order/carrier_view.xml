@@ -1,0 +1,236 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_sale_order_logistic_search">
+            <field name="name">wordpress.sale.order.logistic.search</field>
+            <field name="model">wordpress.sale.order</field>
+            <field name="inherit_id" ref="wordpress_sale_order_view_search"/>
+            <field name="arch" type="xml">
+                <field name="currency" position="after">
+                    <field name="carrier_track_id" />
+                    <field name="carrier_supplier_id" />
+                    <field name="carrier_mode_id" />
+                    <field name="courier_supplier_id" />
+                    <field name="courier_mode_id" />
+
+                    <filter name="carrier_track_id_assigned" string="LDV generated" domain="[('carrier_track_id','!=',False)]"/>
+
+                </field>
+                <xpath expr="/search/group/filter[2]" position="after">
+                    <filter string="Carrier supplier" domain="[]" context="{'group_by': 'carrier_supplier_id'}"/>
+                    <filter string="Carrier mode" domain="[]" context="{'group_by': 'carrier_mode_id'}"/>
+
+                    <filter string="Courier supplier" domain="[]" context="{'group_by': 'courier_supplier_id'}"/>
+                    <filter string="Courier mode" domain="[]" context="{'group_by': 'courier_mode_id'}"/>
+
+                    <filter string="Carrier delivered date" domain="[]" context="{'group_by': 'carrier_delivery_date'}"/>
+                    <filter string="Carrier signed date" domain="[]" context="{'group_by': 'carrier_delivery_sign'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_sale_order_form">
+            <field name="name">wordpress.sale.order.form</field>
+            <field name="model">wordpress.sale.order</field>
+            <field name="inherit_id" ref="wordpress_sale_order_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[1]" position="after">
+                    <page string="Carrier" name="carrier_page">
+                        <group colspan="4" col="5">
+                            <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="fa-dropbox" colspan="1"/><!--('logistic_state', 'not in', ('order', 'pending')), -->
+                            <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="fa-mail-reply" colspan="1"/>
+                            <newline/>
+                            <field name="carrier_ok" invisible="1" />
+                        </group>
+
+                        <group colspan="4" col="5" >
+                            <field name="carrier_supplier_id" />
+                            <field name="carrier_mode_id" />
+                            <button name="carrier_get_better_option" type="object" string="Get better option" icon="fa-hand-o-left"/>
+
+                            <field name="carrier_parcel_template_id" domain="['|',('carrier_supplier_id','=',False),('carrier_supplier_id','=',carrier_supplier_id)]"/>
+                            <button name="load_template_parcel" string="Add" type="object" attrs="{'invisible': [('carrier_parcel_template_id','=',False)]}" colspan="1" class="oe_highlight"/>
+                            <newline/>
+
+                            <separator string="Parcel:" colspan="4"/>
+                            <field name="parcel_ids" colspan="4" nolabel="1">
+                                <tree string="Parcel" editable="bottom">
+                                    <field name="length" />
+                                    <field name="width" />
+                                    <field name="height" />
+
+                                    <field name="real_weight" sum="total_real"/>
+                                    <field name="use_real_weight" />
+                                    <field name="weight" sum="total_volumetric"/>
+                                    <!--<field name="used_weight" sum="total_weight"/>-->
+                                    <field name="no_label" />
+                                </tree>
+                            </field>
+                            <newline/>
+                        </group>
+
+                        <group colspan="4" col="5">
+                            <separator string="Partner check:" colspan="4"/>
+                            <field name="carrier_check" colspan="4" readonly="1" nolabel="1" widget="html"/>
+                            <newline/>
+                        </group>
+
+                        <group colspan="4" col="5" >
+                            <separator string="Request:" colspan="3"/>
+                            <button name="set_default_carrier_description" string="Force description" type="object" icon="fa-hand-o-down"/>
+                            <field name="carrier_description" colspan="4" />
+                            <newline/>
+
+                            <field name="carrier_note" />
+                            <field name="carrier_stock_note" />
+                            <newline/>
+
+                            <field name="carrier_total" />
+                            <field name="carrier_cash_delivery" />
+                            <newline/>
+
+                            <field name="carrier_ensurance" />
+                            <field name="carrier_pay_mode" />
+                            <newline/>
+                        </group>
+
+                        <!-- Common part: -->
+                        <group colspan="4" col="5">
+                            <separator string="Carrier reply:" colspan="4"/>
+                            <field name="carrier_cost" />
+                            <field name="carrier_track_id" />
+                            <newline/>
+                            <field name="courier_supplier_id" />
+                            <field name="courier_mode_id" />
+                            <newline/>
+                            <field name="carrier_delivery_date" />
+                            <field name="carrier_delivery_sign" />
+                            <newline/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!--carrier.supplier-->
+        <record model="ir.ui.view" id="view_carrier_supplier_tree">
+            <field name="name">carrier.supplier.tree</field>
+            <field name="model">carrier.supplier</field>
+            <field name="arch" type="xml">
+                <tree string="Carrier supplier" editable="bottom">
+                    <field name="hidden" />
+                    <field name="mode_id" />
+                    <field name="name" />
+                    <field name="account_ref" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_carrier_supplier_form">
+            <field name="name">Carrier supplier</field>
+            <field name="res_model">carrier.supplier</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_carrier_supplier_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <!--carrier.supplier.mode-->
+        <record model="ir.ui.view" id="view_carrier_supplier_mode_tree">
+            <field name="name">carrier.supplier.mode.tree</field>
+            <field name="model">carrier.supplier.mode</field>
+            <field name="arch" type="xml">
+                <tree string="Carrier supplier mode" editable="bottom">
+                    <field name="hidden" />
+                    <field name="supplier_id" />
+                    <field name="name" />
+                    <field name="account_ref" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_carrier_supplier_mode">
+            <field name="name">Carrier mode</field>
+            <field name="res_model">carrier.supplier.mode</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_carrier_supplier_mode_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <!--carrier.parcel.template-->
+        <record model="ir.ui.view" id="view_carrier_parcel_template_tree">
+            <field name="name">carrier.parcel.template.tree</field>
+            <field name="model">carrier.parcel.template</field>
+            <field name="arch" type="xml">
+                <tree string="Parcel template" editable="bottom" decoration-primary="carrier_supplier_id==False">
+                    <field name="carrier_supplier_id" />
+
+                    <field name="name" />
+                    <field name="length" />
+                    <field name="width" />
+                    <field name="height" />
+                    <field name="weight" />
+                    <field name="no_label" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_carrier_parcel_template_form">
+            <field name="name">carrier.parcel.template.form</field>
+            <field name="model">carrier.parcel.template</field>
+            <field name="arch" type="xml">
+                <form string="Parcel template">
+                    <sheet>
+                        <group colspan="4" col="6">
+                            <field name="carrier_supplier_id" />
+
+                            <field name="name" />
+                            <field name="weight" />
+
+                            <field name="length" />
+                            <field name="width" />
+                            <field name="height" />
+
+                            <field name="no_label" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_carrier_parcel_template_tree">
+            <field name="name">Parcel template</field>
+            <field name="res_model">carrier.parcel.template</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_carrier_parcel_template_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <menuitem
+            parent="connector_web_base.menu_webserver_root"
+            id="menu_connector_wordpress_carrier"
+            name="Corriere"
+            sequence="30"
+            />
+            <menuitem
+                    parent="menu_connector_wordpress_carrier"
+                    id="menu_parcel_template"
+                    action="action_carrier_parcel_template_tree"
+                    sequence="10"
+                    />
+                <menuitem
+                    parent="menu_connector_wordpress_carrier"
+                    id="menu_carrier_supplier"
+                    action="action_carrier_supplier_form"
+                    sequence="20"
+                    />
+                <menuitem
+                    parent="menu_connector_wordpress_carrier"
+                    id="menu_carrier_supplier_mode"
+                    action="action_carrier_supplier_mode"
+                    sequence="30"
+                    />
+
+    </data>
+</openerp>
