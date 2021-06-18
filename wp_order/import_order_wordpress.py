@@ -359,7 +359,7 @@ class WordpressSaleOrder(orm.Model):
             ('alert', '=', False),
         ], context=context)
         if not order_ids:
-            return False
+            return 0
         total_raised = 0
         for order_id in sorted(order_ids, reverse=True):
             loop = True
