@@ -122,7 +122,7 @@ class CarrierSupplier(orm.Model):
             help='Modalità dello spedizioniere'),
 
         'carrier_connection_id': fields.many2one(
-            comodel_name='carrier.connection',
+            'carrier.connection',
             string='Carrier Connection'),
         }
 
@@ -186,7 +186,7 @@ class CarrierParcelTemplate(orm.Model):
             help='Volumetric weight (H x L x P / 5000)', readonly=True),
         'weight_uom_id': fields.many2one('product.uom', 'Product UOM'),
         'carrier_connection_id': fields.many2one(
-            comodel_name='carrier.connection',
+            'carrier.connection',
             string='Carrier Connection',
             help='Force carrier connection for small package'),
 
@@ -362,7 +362,7 @@ class WordpressSaleOrder(orm.Model):
         'parcel_weight_tree': fields.float(
             'Weight', help='Tree view only for fast insert parcel'),
         'carrier_connection_id': fields.many2one(
-            comodel_name='carrier.connection',
+            'carrier.connection',
             string='Carrier Connection',
             help='Carrier connection used for better quotation'),
         'carrier_id': fields.integer(string='Carrier ID'),
@@ -427,7 +427,7 @@ class SaleOrderParcel(orm.Model):
     # todo
     _columns = {
         'carrier_connection_id': fields.many2one(
-            comodel_name='carrier.connection',
+            'carrier.connection',
             string='Carrier Connection',
             help='Force carrier connection for small package')
     }
