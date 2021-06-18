@@ -213,10 +213,12 @@ class SaleOrderParcel(orm.Model):
     _rec_name = 'weight'
 
     @api.multi
-    def _get_volumetric_weight(self):
+    def _get_volumetric_weight(
+            self, cr, uid, ids, fields=None, args=None, context=None):
         """ Compute volumetric weight, return value
         """
-        for line in self:
+        res = {}
+        for line in self.browse(cr, uid, ids, context=context):
             weight = (  # Volumetric:
                 line.length * line.width * line.height / 5000.0)
             real_weight = line.real_weight
@@ -227,8 +229,11 @@ class SaleOrderParcel(orm.Model):
                     used_weight = weight
                 else:
                     used_weight = real_weight
-            line.weight = weight  # volumetric
-            line.used_weight = used_weight
+            res[line.id] = {
+                'weight': weight,  # volumetric
+                'used_weight': used_weight,
+            }
+        return res
 
     # -------------------------------------------------------------------------
     #                                   COLUMNS:
@@ -237,28 +242,28 @@ class SaleOrderParcel(orm.Model):
         'order_id': fields.many2one('wordpress.sale.order', 'Ordine WP'),
 
         # Dimension:
-        'length': fields.float('Length', digits=(16, 2), required=True),
-        'width': fields.float('Width', digits=(16, 2), required=True),
-        'height': fields.float('Height', digits=(16, 2), required=True),
-        'dimension_uom_id': fields.many2one('product.uom', 'Product UOM'),
+        'length': fields.float('Lunghezza', digits=(16, 2), required=True),
+        'width': fields.float('Larghezza', digits=(16, 2), required=True),
+        'height': fields.float('Altezza', digits=(16, 2), required=True),
+        'dimension_uom_id': fields.many2one('product.uom', 'UM dim.'),
         'use_real_weight': fields.boolean(
-            string='Use real', help='Pass real weight instead of greater'),
+            string='Usa reale', help='Passa perso reale al posto del volum.'),
 
         # Weight:
         'real_weight': fields.float(
-            'Real weight', digits=(16, 2),
+            'Peso reale', digits=(16, 2),
             ),
         'weight': fields.function(
-            'Volumetric weight', digits=(16, 2), type='float',
+            'Peso Volumetrico', digits=(16, 2), type='float',
             compute='_get_volumetric_weight',
             readonly=True,
         ),
         'used_weight': fields.function(
-            'Used weight', digits=(16, 2), type='float',
+            'Larghezza usata', digits=(16, 2), type='float',
             compute='_get_volumetric_weight', readonly=True,
         ),
-        'weight_uom_id': fields.many2one('product.uom', 'Product UOM'),
-        'no_label': fields.boolean('No label'),
+        'weight_uom_id': fields.many2one('product.uom', 'UM peso'),
+        'no_label': fields.boolean('No etichetta'),
     }
 
 
@@ -311,10 +316,13 @@ class WordpressSaleOrder(orm.Model):
             ('CASH', 'Cash'),
             ('CHECK', 'Check'),
             ], 'Pay mode', default='CASH'),
-        'parcel_ids ': fields.one2many('sale.order.parcel', 'order_id', 'Parcels'),
-        'parcel_detail ': fields.text('Parcel detail', compute='_get_parcel_detail'),
-        'real_parcel_total ': fields.integer(
-            string='Colli', compute='_get_carrier_parcel_total'),
+        'parcel_ids ': fields.one2many(
+            'sale.order.parcel', 'order_id', 'Parcels'),
+        'parcel_detail ': fields.function(
+            'Parcel detail', mode=text', compute='_get_parcel_detail'),
+        'real_parcel_total ': fields.function(
+            string='Colli', mode='integer',
+            compute='_get_carrier_parcel_total'),
         'destination_country_id ': fields.many2one(
             'res.country', 'Destination',
             related='partner_shipping_id.country_id',
@@ -325,8 +333,9 @@ class WordpressSaleOrder(orm.Model):
             'Cost', digits=(16, 2), help='Net shipment price'),
         'carrier_cost_total ': fields.float(
             'Cost', digits=(16, 2), help='Net shipment total price'),
-        'carrier_cost_lossy ': fields.boolean(
-            'Under carrier cost', help='Carrier cost payed less that request!',
+        'carrier_cost_lossy ': fields.function(
+            'Under carrier cost', mode='boolean',
+            help='Carrier cost payed less that request!',
             compute='_check_carrier_cost_value',
             store=True,
         ),
