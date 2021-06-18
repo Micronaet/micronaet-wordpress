@@ -102,15 +102,15 @@ for root, folders, files in os.walk('..'):
                 order_pool.unload_stock_for_sale_order_completed()
             except:
                 print(str(sys.exc_info()))
-
+            pdb.set_trace()
             if total_raised > 0:
                 log_message(
                     f_log, '[INFO] Send starts on Telegram: %s\n' % company)
                 try:
-                    pdb.set_trace()
                     message_id = connector_pool.sent_today_stats(
                         [connector_id])
 
+                    """    
                     # Manage delete message in telegram:
                     pickle_file = os.path.expanduser(
                         '~/telegram.message.pickle')
@@ -126,7 +126,7 @@ for root, folders, files in os.walk('..'):
 
                     # Save for next time:
                     pickle.dump(summary_message_ids, open(pickle_file, 'wb'))
-
+                    """
                 except:
                     print(str(sys.exc_info()))
             else:
