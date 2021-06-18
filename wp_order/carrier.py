@@ -274,6 +274,131 @@ class WordpressSaleOrder(orm.Model):
     """
     _inherit = 'wordpress.sale.order'
 
+    def _get_parcel_detail(
+            self, cr, uid, ids, fields=None, args=None, context=None):
+        """ Parcel detail
+        """
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            detail = ''
+            for parcel in order.parcel_ids:
+                detail += '%sx%sx%s\n' % (
+                    int(parcel.height),
+                    int(parcel.width),
+                    int(parcel.length),
+                )
+            res[order.id] = detail
+        return res
+
+    def _get_carrier_check_address(
+            self, cr, uid, ids, fields=None, args=None, context=None):
+        """ Check address for delivery
+        """
+        # self.ensure_one()
+
+        # Function:
+        def format_error(field):
+            return '<font color="red"><b> [%s] </b></font>' % field
+
+        def get_partner_data(partner, check_dimension=False):
+            """ Embedded function to check partner data
+            """
+            name = partner.name or ''
+            street = partner.street or ''
+            street2 = partner.street2 or ''
+            error_check = not all((
+                name,
+                street,
+                partner.zip,
+                partner.city,
+                partner.state_id,
+                partner.country_id,
+                partner.phone,  # mandatory for carrier?
+                # partner.property_account_position_id,
+            ))
+            if check_dimension:
+                if len(name) > check_dimension:
+                    name = format_error(name)
+                if len(street) > check_dimension:
+                    street = format_error(street)
+                if len(street2) > check_dimension:
+                    street2 = format_error(street2)
+
+            return (
+                error_check,
+                '%s %s %s - %s %s [%s %s] %s - %s<br/>' % (
+                    name,
+                    street or format_error(_('Address')),
+                    street2 or '',
+                    partner.zip or format_error(_('ZIP')),
+                    partner.city or format_error(_('City')),
+                    partner.state_id.name or format_error(_('State')),
+                    partner.country_id.name or format_error(_('Country')),
+                    partner.phone or format_error(_('Phone')),
+                    partner.property_account_position_id.name or format_error(
+                        _('Pos. fisc.')),
+                    )
+            )
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            partner = order.partner_invoice_id
+            if order.fiscal_position_id != \
+                    partner.property_account_position_id:
+                check_fiscal = format_error(
+                    _('Fiscal pos.: Order: %s, Partner %s<br/>') % (
+                        order.fiscal_position_id.name,
+                        partner.property_account_position_id.name,
+                        ))
+            else:
+                check_fiscal = ''
+
+            mask = _('%s<b>ORD.:</b> %s\n<b>INV.:</b> %s\n<b>DELIV.:</b> %s')
+            error1, partner1_text = get_partner_data(
+                order.partner_id)
+            error2, partner2_text = get_partner_data(
+                partner)
+            error3, partner3_text = get_partner_data(
+                order.partner_shipping_id)  # check_dimension=34)
+
+            res[order.id] = {
+                'carrier_check': mask % (
+                    check_fiscal,
+                    partner1_text,
+                    partner2_text,
+                    partner3_text,
+                ),
+                'carrier_check_error': error1 or error2 or error3,
+            }
+        return res
+
+    def _get_carrier_parcel_total(
+            self, cr, uid, ids, fields = None, args = None, context = None):
+        """ Return total depend on type of delivery: manual or shippy
+        """
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            if order.carrier_shippy:
+                res[order.id] = len(order.parcel_ids)
+            else:
+                res[order.id] = order.carrier_manual_parcel
+        return res
+
+    def _check_carrier_cost_value(
+            self, cr, uid, ids, fields=None, args=None, context=None):
+        """ Check if total shipment is correct
+        """
+        _logger.warning('Recalculate lossy data!')
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            payed = order.carrier_cost_total
+            if not payed:
+                res[order.id] = False
+                continue
+
+            request = sum([item.price_subtotal for item in order.order_line
+                           if item.product_id.default_code == 'shipment'])
+            res[order.id] = payed > request
+
     _columns = {
         'carrier_ok': fields.boolean(
             'Carrier OK',
@@ -313,7 +438,8 @@ class WordpressSaleOrder(orm.Model):
         'carrier_stock_note ': fields.text('Stock operator note'),
         'carrier_total ': fields.float('Goods value', digits=(16, 2)),
         'carrier_ensurance ': fields.float('Ensurance', digits=(16, 2)),
-        'carrier_cash_delivery ': fields.float('Cash on delivery', digits=(16, 2)),
+        'carrier_cash_delivery ': fields.float(
+            'Cash on delivery', digits=(16, 2)),
         'carrier_pay_mode ': fields.selection([
             ('CASH', 'Cash'),
             ('CHECK', 'Check'),
@@ -325,9 +451,9 @@ class WordpressSaleOrder(orm.Model):
         'real_parcel_total ': fields.function(
             'Colli', type='integer',
             compute='_get_carrier_parcel_total'),
-        'destination_country_id ': fields.many2one(
-            'res.country', 'Destination',
-            related='partner_shipping_id.country_id',
+        'destination_country_id ': fields.related(
+            'partner_shipping_id', 'country_id',
+            'Destination', relation='res.country', type='many2one',
         ),
 
         # Data from Carrier:
@@ -364,10 +490,9 @@ class WordpressSaleOrder(orm.Model):
         'parcel_weight_tree': fields.float(
             'Weight', help='Tree view only for fast insert parcel'),
         'carrier_connection_id': fields.many2one(
-            'carrier.connection',
-            string='Carrier Connection',
+            'carrier.connection', 'Carrier Connection',
             help='Carrier connection used for better quotation'),
-        'carrier_id': fields.integer(string='Carrier ID'),
+        'carrier_id': fields.integer('Carrier ID'),
         'carrier_state': fields.selection(
             [
                 ('draft', 'Draft'),
