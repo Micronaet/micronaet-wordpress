@@ -448,7 +448,7 @@ class WordpressSaleOrder(orm.Model):
             'sale.order.parcel', 'order_id', 'Parcels'),
         'parcel_detail ': fields.function(
             _get_parcel_detail,
-            string='Parcel detail', type='text', ),
+            string='Parcel detail', type='text'),
         'real_parcel_total ': fields.function(
             _get_carrier_parcel_total,
             string='Colli', type='integer',
