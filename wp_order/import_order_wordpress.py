@@ -580,7 +580,6 @@ class ConnectorServer(orm.Model):
         for message_id in summary_message_ids:
             try:
                 reply = bot.deleteMessage(
-                    group,
                     message_id,
                 )
                 _logger.warning('Delete message ID: %s' % message_id)
