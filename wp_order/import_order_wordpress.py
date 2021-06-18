@@ -23,6 +23,7 @@
 
 import sys
 import logging
+import telepot
 import pdb
 import time
 
@@ -426,7 +427,7 @@ class WordpressSaleOrder(orm.Model):
                             shipping,
                             detail,
                         )
-            server_pool.server_send_telegram_message(
+            message_id = server_pool.server_send_telegram_message(
                 cr, uid, [order.connector_id.id], message, context=context)
             return self.write(cr, uid, [order_id], {
                 'alert': True,
@@ -564,6 +565,27 @@ class ConnectorServer(orm.Model):
 
     _inherit = 'connector.server'
 
+    def clean_old_message(
+            self, cr, uid, ids, summary_message_ids, context=None):
+        """ Remove old messages
+        """
+        connector_id = ids[0]
+        server = self.browse(cr, uid, connector_id, context=context)
+
+        token = server.telegram_token
+        group = server.telegram_group
+        try:
+            bot = telepot.Bot(str(token))
+            bot.getMe()
+            for message_id in summary_message_ids:
+                reply = bot.deleteMessage(
+                    group,
+                    message_id,
+                )
+            _logger.warning('Delete message ID: %s' % message_id)
+        except:
+            _logger.error('Cannot Delete message ID: %s' % message_id)
+
     def sent_today_stats(self, cr, uid, ids, context=None):
         """ Send invoiced till now for today stats
         """
@@ -609,9 +631,8 @@ class ConnectorServer(orm.Model):
                       int(total_cancel),
                   )
 
-        self.server_send_telegram_message(
+        return self.server_send_telegram_message(
             cr, uid, connector_id, message, context=context)
-        return True
 
     def status_wordpress_order_report(self, cr, uid, ids, context=None):
         """ Status order excel report

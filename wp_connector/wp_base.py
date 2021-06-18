@@ -363,10 +363,11 @@ class ConnectorServer(orm.Model):
         token = server.telegram_token
         group = server.telegram_group
         # for message in current_message:
+        reply = {}
         try:
             bot = telepot.Bot(str(token))
             bot.getMe()
-            bot.sendMessage(
+            reply = bot.sendMessage(
                 group,
                 this_message,
                 parse_mode='Markdown',
@@ -383,7 +384,7 @@ class ConnectorServer(orm.Model):
         #    pickle.dump(unsent_message, open(pickle_filename, 'wb'))
         #    return False
         # _logger.info('Telegram: All message sent!')
-        return True
+        return reply.get('message_id', False)
 
     def telegram_test(self, cr, uid, ids, context=None):
         """ Send test message

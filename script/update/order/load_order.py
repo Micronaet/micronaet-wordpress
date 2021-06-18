@@ -2,6 +2,7 @@ import os
 import pdb
 import sys
 import erppeek
+import pickle
 import ConfigParser
 from datetime import datetime
 
@@ -106,7 +107,25 @@ for root, folders, files in os.walk('..'):
                 log_message(
                     f_log, '[INFO] Send starts on Telegram: %s\n' % company)
                 try:
-                    connector_pool.sent_today_stats([connector_id])
+                    message_id = connector_pool.sent_today_stats(
+                        [connector_id])
+
+                    # Manage delete message in telegram:
+                    pickle_file = os.path.expanduser(
+                        '~/telegram.message.pickle')
+                    try:
+                        summary_message_ids = pickle.load(
+                            open(pickle_file, 'rb'))
+                    except:
+                        summary_message_ids = []
+
+                    connector_pool.clean_old_message(
+                        [connector_id], summary_message_ids)
+                    summary_message_ids = [message_id]
+
+                    # Save for next time:
+                    pickle.dump(summary_message_ids, open(pickle_file, 'wb'))
+
                 except:
                     print(str(sys.exc_info()))
             else:
