@@ -182,8 +182,8 @@ class CarrierParcelTemplate(orm.Model):
         'height': fields.float('Height', digits=(16, 2), required=True),
         'dimension_uom_id': fields.many2one('product.uom', 'Product UOM'),
         'weight': fields.function(
-            'Weight volumetric', digits=(16, 2), type='float',
-            compute='_get_volumetric_weight',
+            _get_volumetric_weight,
+            string='Weight volumetric', digits=(16, 2), type='float',
             help='Volumetric weight (H x L x P / 5000)', readonly=True),
         'weight_uom_id': fields.many2one('product.uom', 'Product UOM'),
         'carrier_connection_id': fields.many2one(
@@ -252,13 +252,14 @@ class SaleOrderParcel(orm.Model):
         # Weight:
         'real_weight': fields.float('Peso reale', digits=(16, 2)),
         'weight': fields.function(
-            'Peso Volumetrico', digits=(16, 2), type='float',
-            compute='_get_volumetric_weight',
+            _get_volumetric_weight,
+            string='Peso Volumetrico', digits=(16, 2), type='float',
             readonly=True,
         ),
         'used_weight': fields.function(
-            'Larghezza usata', digits=(16, 2), type='float',
-            compute='_get_volumetric_weight', readonly=True,
+            _get_volumetric_weight,
+            string='Larghezza usata', digits=(16, 2), type='float',
+            readonly=True,
         ),
         'weight_uom_id': fields.many2one('product.uom', 'UM peso'),
         'no_label': fields.boolean('No etichetta'),
@@ -447,13 +448,15 @@ class WordpressSaleOrder(orm.Model):
         'parcel_ids ': fields.one2many(
             'sale.order.parcel', 'order_id', 'Parcels'),
         'parcel_detail ': fields.function(
-            'Parcel detail', type='text', compute='_get_parcel_detail'),
+            _get_parcel_detail,
+            string='Parcel detail', type='text', ),
         'real_parcel_total ': fields.function(
-            'Colli', type='integer',
-            compute='_get_carrier_parcel_total'),
+            _get_carrier_parcel_total,
+            string='Colli', type='integer',
+        ),
         'destination_country_id ': fields.related(
             'partner_shipping_id', 'country_id',
-            'Destination', relation='res.country', type='many2one',
+            string='Destination', relation='res.country', type='many2one',
         ),
 
         # Data from Carrier:
@@ -462,9 +465,9 @@ class WordpressSaleOrder(orm.Model):
         'carrier_cost_total ': fields.float(
             'Cost', digits=(16, 2), help='Net shipment total price'),
         'carrier_cost_lossy ': fields.function(
-            'Under carrier cost', mode='boolean',
+            _check_carrier_cost_value,
+            string='Under carrier cost', mode='boolean',
             help='Carrier cost payed less that request!',
-            compute='_check_carrier_cost_value',
             store=True,
         ),
         'carrier_track_id ': fields.char(
