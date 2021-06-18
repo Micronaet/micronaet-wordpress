@@ -625,7 +625,7 @@ class ConnectorServer(orm.Model):
                   'Totale ordini: *%s*\n' \
                   'Totale righe: *%s*\n' \
                   'Totale fatturato: *%s* \n' \
-                  'Totale annullati: %s' % (
+                  'Totale annullati: *%s*' % (
                       int(total_order),
                       len(line_ids),
                       total_invoiced,
