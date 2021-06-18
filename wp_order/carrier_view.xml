@@ -75,13 +75,13 @@
                         </group>
 
                         <group colspan="4" col="5" >
-                            <separator string="Request:" colspan="3"/>
+                            <!--<separator string="Request:" colspan="3"/>
                             <button name="set_default_carrier_description" string="Force description" type="object" icon="fa-hand-o-down"/>
                             <field name="carrier_description" colspan="4" />
                             <newline/>
 
-                            <!--<field name="carrier_note" />-->
-                            <!--<field name="carrier_stock_note" />-->
+                            <field name="carrier_note" />
+                            <field name="carrier_stock_note" />
                             <newline/>
 
                             <field name="carrier_total" />
@@ -89,12 +89,12 @@
                             <newline/>
 
                             <field name="carrier_ensurance" />
-                            <!--<field name="carrier_pay_mode" />-->
-                            <newline/>
+                            <field name="carrier_pay_mode" />
+                            <newline/>-->
                         </group>
 
                         <!-- Common part: -->
-                        <group colspan="4" col="5">
+                        <!--<group colspan="4" col="5">
                             <separator string="Carrier reply:" colspan="4"/>
                             <field name="carrier_cost" />
                             <field name="carrier_track_id" />
@@ -105,7 +105,7 @@
                             <field name="carrier_delivery_date" />
                             <field name="carrier_delivery_sign" />
                             <newline/>
-                        </group>
+                        </group>-->
                     </page>
                 </xpath>
             </field>
