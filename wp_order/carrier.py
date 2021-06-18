@@ -53,7 +53,7 @@ class CarrierConnection(orm.Model):
     _columns = {
         'name': fields.char('Nome', size=64, required=True),
         'company_id': fields.many2one(
-            comodel_name='res.company',
+            'res.company',
             string='Company',
             required=True),
 
@@ -69,7 +69,7 @@ class CarrierConnection(orm.Model):
         'internal_reference': fields.char(
             'Internal reference', size=10,
             help='Code assigned to every call and returned, used as ID'),
-        'customer_id': fields.Integer(
+        'customer_id': fields.integer(
             'Customer ID', required=True, help='Code found in web management'),
         'store_id': fields.char(
             'Store ID', size=4, required=True,
@@ -319,7 +319,7 @@ class WordpressSaleOrder(orm.Model):
         'parcel_ids ': fields.one2many(
             'sale.order.parcel', 'order_id', 'Parcels'),
         'parcel_detail ': fields.function(
-            'Parcel detail', mode=text', compute='_get_parcel_detail'),
+            'Parcel detail', mode='text', compute='_get_parcel_detail'),
         'real_parcel_total ': fields.function(
             string='Colli', mode='integer',
             compute='_get_carrier_parcel_total'),
