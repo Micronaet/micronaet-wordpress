@@ -102,7 +102,6 @@ for root, folders, files in os.walk('..'):
                 order_pool.unload_stock_for_sale_order_completed()
             except:
                 print(str(sys.exc_info()))
-            pdb.set_trace()
             if total_raised > 0:
                 log_message(
                     f_log, '[INFO] Send starts on Telegram: %s\n' % company)
