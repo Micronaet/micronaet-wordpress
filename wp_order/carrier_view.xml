@@ -53,8 +53,8 @@
                             <newline/>
 
                             <separator string="Parcel:" colspan="4"/>
-                            <field name="parcel_ids" colspan="4" nolabel="1">
-                                <!--<tree string="Parcel" editable="bottom">
+                            <!--<field name="parcel_ids" colspan="4" nolabel="1">
+                                <tree string="Parcel" editable="bottom">
                                     <field name="length" />
                                     <field name="width" />
                                     <field name="height" />
@@ -63,8 +63,8 @@
                                     <field name="use_real_weight" />
                                     <field name="weight" sum="total_volumetric"/>
                                     <field name="no_label" />
-                                </tree>-->
-                            </field>
+                                </tree>
+                            </field>-->
                             <newline/>
                         </group>
 
@@ -81,7 +81,7 @@
                             <newline/>
 
                             <!--<field name="carrier_note" />-->
-                            <field name="carrier_stock_note" />
+                            <!--<field name="carrier_stock_note" />-->
                             <newline/>
 
                             <field name="carrier_total" />
