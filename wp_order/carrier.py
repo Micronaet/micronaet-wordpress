@@ -54,7 +54,7 @@ class CarrierConnection(orm.Model):
         'name': fields.char('Nome', size=64, required=True),
         'company_id': fields.many2one(
             'res.company',
-            string='Company',
+            'Company',
             required=True),
 
         'location': fields.char(
@@ -94,7 +94,6 @@ class CarrierConnection(orm.Model):
         }
 
 
-
 class CarrierSupplier(orm.Model):
     """ Model name: Parcels supplier
     """
@@ -111,20 +110,22 @@ class CarrierSupplier(orm.Model):
         'name': fields.char('Nome'),
         'account_ref': fields.char('Codice'),
         'mode': fields.selection(
-            string='Mode',
-            selection=[
+            [
                 ('carrier', 'Corriere'),
                 ('courier', 'Spedizioniere'),
-            ], required=True, default='carrier'),
+            ], 'Mode', required=True),
         'mode_id': fields.many2one(
             'carrier.supplier.mode', 'Modalità',
             domain="[('supplier_id.mode', '=', 'carrier')]",
             help='Modalità dello spedizioniere'),
 
         'carrier_connection_id': fields.many2one(
-            'carrier.connection',
-            string='Carrier Connection'),
+            'carrier.connection', 'Carrier Connection'),
         }
+
+    _defaults = {
+        'mode': lambda *x: 'carrier',
+    }
 
 
 class CarrierSupplierMode(orm.Model):
@@ -187,16 +188,15 @@ class CarrierParcelTemplate(orm.Model):
         'weight_uom_id': fields.many2one('product.uom', 'Product UOM'),
         'carrier_connection_id': fields.many2one(
             'carrier.connection',
-            string='Carrier Connection',
+            'Carrier Connection',
             help='Force carrier connection for small package'),
 
         'package_type': fields.selection(
-            string='Package type', required=True,
-            selection=[
+            [
                 ('GENERIC', 'Generic'),
                 ('ENVELOPE', 'Envelope'),
                 ('DOCUMENTS', 'Documents'),
-            ]),
+            ], 'Package type', required=True),
     }
 
     _defaults = {
@@ -247,12 +247,10 @@ class SaleOrderParcel(orm.Model):
         'height': fields.float('Altezza', digits=(16, 2), required=True),
         'dimension_uom_id': fields.many2one('product.uom', 'UM dim.'),
         'use_real_weight': fields.boolean(
-            string='Usa reale', help='Passa perso reale al posto del volum.'),
+            'Usa reale', help='Passa perso reale al posto del volum.'),
 
         # Weight:
-        'real_weight': fields.float(
-            'Peso reale', digits=(16, 2),
-            ),
+        'real_weight': fields.float('Peso reale', digits=(16, 2)),
         'weight': fields.function(
             'Peso Volumetrico', digits=(16, 2), type='float',
             compute='_get_volumetric_weight',
@@ -264,6 +262,10 @@ class SaleOrderParcel(orm.Model):
         ),
         'weight_uom_id': fields.many2one('product.uom', 'UM peso'),
         'no_label': fields.boolean('No etichetta'),
+        'carrier_connection_id': fields.many2one(
+            'carrier.connection',
+            string='Carrier Connection',
+            help='Force carrier connection for small package')
     }
 
 
@@ -319,9 +321,9 @@ class WordpressSaleOrder(orm.Model):
         'parcel_ids ': fields.one2many(
             'sale.order.parcel', 'order_id', 'Parcels'),
         'parcel_detail ': fields.function(
-            'Parcel detail', mode='text', compute='_get_parcel_detail'),
+            'Parcel detail', type='text', compute='_get_parcel_detail'),
         'real_parcel_total ': fields.function(
-            string='Colli', mode='integer',
+            string='Colli', type='integer',
             compute='_get_carrier_parcel_total'),
         'destination_country_id ': fields.many2one(
             'res.country', 'Destination',
@@ -393,19 +395,17 @@ class WordpressSaleOrder(orm.Model):
             ]),
 
         'ship_type': fields.selection(
-            string='Ship type', required=True,
-            selection=[
+            [
                 ('EXPORT', 'Export'),
                 ('IMPORT', 'Import'),
                 ('RETURN', 'Return'),
-            ]),
+            ], 'Ship type', required=True),
         'package_type': fields.selection(
-            string='Package type', required=True,
-            selection=[
+            [
                 ('GENERIC', 'Generic'),
                 ('ENVELOPE', 'Envelope'),
                 ('DOCUMENTS', 'Documents'),
-            ]),
+            ], 'Package type', required=True),
     }
 
     _defaults = {
@@ -415,20 +415,3 @@ class WordpressSaleOrder(orm.Model):
         'ship_type': lambda *x: 'EXPORT',
         'package_type': lambda *x: 'GENERIC',
     }
-
-
-'''
-class SaleOrderParcel(orm.Model):
-    """ Model name: Parcels for sale order
-    """
-
-    _name = 'sale.order.parcel'
-
-    # todo
-    _columns = {
-        'carrier_connection_id': fields.many2one(
-            'carrier.connection',
-            string='Carrier Connection',
-            help='Force carrier connection for small package')
-    }
-'''
