@@ -212,7 +212,6 @@ class SaleOrderParcel(orm.Model):
     _description = 'Sale order parcel'
     _rec_name = 'weight'
 
-    @api.multi
     def _get_volumetric_weight(
             self, cr, uid, ids, fields=None, args=None, context=None):
         """ Compute volumetric weight, return value
