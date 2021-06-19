@@ -288,10 +288,10 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     def set_default_carrier_description(self, cr, uid, ids, context=None):
         """ Update description from sale order line
         """
-        order_id = uid[0]
+        order_id = ids[0]
         res = {}
         carrier_description = ''
-        for line in self.browse(cr, uid, order_id, context=context).order_line:
+        for line in self.browse(cr, uid, order_id, context=context).line_ids:
             product = line.product_id
             # TODO is_expence is not present:
             if product.type == 'service':  # or product.is_expence:
@@ -302,6 +302,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                  _('Not found')),
                 )
         res[order_id] = self.sanitize_text(carrier_description)
+        return res
 
     def _get_parcel_detail(
             self, cr, uid, ids, fields=None, args=None, context=None):

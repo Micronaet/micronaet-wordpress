@@ -52,8 +52,8 @@
                             <button name="load_template_parcel" string="Add" type="object" attrs="{'invisible': [('carrier_parcel_template_id','=',False)]}" colspan="1" class="oe_highlight"/>
                             <newline/>
 
-                            <separator string="Parcel:" colspan="4"/>
-                            <field name="parcel_ids" colspan="4" nolabel="1">
+                            <separator string="Parcel:" colspan="5"/>
+                            <field name="parcel_ids" colspan="5" nolabel="1">
                                 <tree string="Parcel" editable="bottom">
                                     <field name="length" />
                                     <field name="width" />
@@ -69,15 +69,15 @@
                         </group>
 
                         <group colspan="4" col="5">
-                            <separator string="Partner check:" colspan="4"/>
-                            <field name="carrier_check" colspan="4" readonly="1" nolabel="1" widget="html"/>
+                            <separator string="Partner check:" colspan="5"/>
+                            <field name="carrier_check" colspan="5" readonly="1" nolabel="1" widget="html"/>
                             <newline/>
                         </group>
 
                         <group colspan="4" col="5" >
-                            <separator string="Request:" colspan="3"/>
+                            <separator string="Request:" colspan="4"/>
                             <button name="set_default_carrier_description" string="Force description" type="object" icon="fa-hand-o-down"/>
-                            <field name="carrier_description" colspan="4" />
+                            <field name="carrier_description" colspan="5" />
                             <newline/>
 
                             <field name="carrier_note" />
@@ -95,7 +95,7 @@
 
                         <!-- Common part: -->
                         <group colspan="4" col="5">
-                            <separator string="Carrier reply:" colspan="4"/>
+                            <separator string="Carrier reply:" colspan="5"/>
                             <field name="carrier_cost" />
                             <field name="carrier_track_id" />
                             <newline/>
