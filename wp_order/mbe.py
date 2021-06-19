@@ -284,7 +284,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                         'supplier_id': carrier_id,
                     }, context=context)
 
-                order.write(cr, uid, ids, {
+                self.write(cr, uid, ids, {
                     'carrier_connection_id': connection.id,
                     'carrier_cost': data['NetShipmentPrice'],
                     'carrier_cost_total': data['NetShipmentTotalPrice'],
@@ -295,7 +295,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                     'courier_mode_id': service_id,
                     'carrier_mode_id': carrier_mode_id,
                     'soap_last_error': False,  # Clean error when write
-                })
+                }, context=context)
 
                 # 'IdSubzone': 125,
                 # 'SubzoneDesc': 'Italia-Zona A',
@@ -306,7 +306,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         if not data:  # Or previous update error
             # Reset data:
-            order.write({
+            self.write({
                 'carrier_connection_id': False,
                 'carrier_cost': 0.0,
                 'carrier_mode_id': False,
