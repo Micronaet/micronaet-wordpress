@@ -23,6 +23,7 @@
 
 import os
 import sys
+import re
 import logging
 import openerp
 import openerp.netsvc as netsvc
@@ -273,6 +274,34 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     """ Model name: Wordpress Sale order
     """
     _inherit = 'wordpress.sale.order'
+
+    @api.multi
+    def sanitize_text(self, text):
+        """ Clean HTML tag from text
+        :param text: HTML text to clean
+        :return: clean text
+        """
+        self.ensure_one()
+        tag_re = re.compile(r'<[^>]+>')
+        return tag_re.sub('', text.strip())
+
+    def set_default_carrier_description(self, cr, uid, ids, context=None):
+        """ Update description from sale order line
+        """
+        order_id = uid[0]
+        res = {}
+        carrier_description = ''
+        for line in self.browse(cr, uid, order_id, context=context).order_line:
+            product = line.product_id
+            # TODO is_expence is not present:
+            if product.type == 'service':  # or product.is_expence:
+                continue
+            carrier_description += '(%s X) %s ' % (
+                int(line.product_uom_qty),
+                (line.name or product.description_sale or product.name or
+                 _('Not found')),
+                )
+        res[order_id] = self.sanitize_text(carrier_description)
 
     def _get_parcel_detail(
             self, cr, uid, ids, fields=None, args=None, context=None):
