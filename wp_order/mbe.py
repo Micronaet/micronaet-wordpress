@@ -440,6 +440,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     def shipment_options_request(self, cr, uid, ids, context=None):
         """ 17. API ShippingOptionsRequest: Get better quotation
         """
+        pdb.set_trace()
         assert len(ids) == 1, 'Un ordine alla volta'
         order = self.browse(cr, uid, ids, context=context)[0]
 
