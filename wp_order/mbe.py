@@ -163,8 +163,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         # Filter parameters:
         carrier_mode_search = order.carrier_mode_id.account_ref
-        if carrier_mode_search and carrier_mode_search.isdigit():
-            carrier_mode_search = int(carrier_mode_search)
 
         # Courier:
         courier_supplier_search = order.courier_supplier_id.account_ref
@@ -202,17 +200,17 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 # -------------------------------------------------------------
                 # 1. Check carrier if selected in request:
                 if (carrier_mode_search and carrier_mode_search !=
-                        quotation['Service']):
+                        str(quotation['Service'])):
                     continue
 
                 # 2. Check courier if requested:
                 if (courier_supplier_search and courier_supplier_search !=
-                        quotation['Courier']):
+                        str(quotation['Courier'])):
                     continue
 
                 # 3. Check courier mode if requested:
                 if (courier_mode_search and courier_mode_search !=
-                        quotation['CourierService']):
+                        str(quotation['CourierService'])):
                     continue
 
                 # 4. Check and save best quotation:
@@ -234,8 +232,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 # -------------------------------------------------------------
                 # A. Courier:
                 # -------------------------------------------------------------
-                courier_code = data['Courier']
-                courier_name = data['CourierDesc']
+                courier_code = str(data['Courier'])
+                courier_name = str(data['CourierDesc'])
                 suppliers = supplier_pool.search(cr, uid, [
                     ('account_ref', '=', courier_code),
                     ('mode', '=', 'courier'),
@@ -252,7 +250,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 # -------------------------------------------------------------
                 # B. Courier service:
                 # -------------------------------------------------------------
-                service_code = data['CourierService']
+                service_code = str(data['CourierService'])
                 service_name = data['CourierServiceDesc']
                 services = service_pool.search(cr, uid, [
                     ('account_ref', '=', service_code),
@@ -271,7 +269,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 # C. Carrier service:
                 # -------------------------------------------------------------
                 carrier_id = order.carrier_supplier_id.id
-                carrier_code = data['Service']
+                carrier_code = str(data['Service'])
                 carrier_name = data['ServiceDesc']
                 carriers = service_pool.search(cr, uid, [
                     ('account_ref', '=', carrier_code),
