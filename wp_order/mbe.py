@@ -319,7 +319,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # TODO no need to create 21 nov. 2020?!?:
         # Update order with better quotation:
         data = False
-        pdb.set_trace()
 
         if better:
             connection, data = better
@@ -626,22 +625,24 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         #            Description string 35
         return data
 
-    def update_order_with_soap_reply(self, cr, uid, ids, reply, context=None):
+    def update_order_with_soap_reply(self, cr, uid, ids, data, context=None):
         """ Update order data with SOAP reply (error checked in different call)
         """
-        order = self.browse(cr, uid, ids, context=context)[0]
-        master_tracking_id = reply['MasterTrackingMBE']
-        system_reference_id = reply['SystemReferenceID']
+        pdb.set_trace()
+
+        # order = self.browse(cr, uid, ids, context=context)[0]
+        master_tracking_id = data['MasterTrackingMBE']
+        system_reference_id = data['SystemReferenceID']
 
         try:
-            courier_track_id = reply['CourierMasterTrk']
+            courier_track_id = data['CourierMasterTrk']
             if courier_track_id == master_tracking_id:
                 courier_track_id = False
                 # Download label
             else:
                 # TODO if raise error no label!
                 self.save_order_label(
-                    cr, uid, ids, reply, 'tracking', context=context)
+                    cr, uid, ids, data, 'tracking', context=context)
 
         except:
             courier_track_id = False
@@ -691,11 +692,12 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         data = order.get_request_container(
             customer=False, system=True, connection=carrier_connection)
         data.update({
-            'Recipient': self.get_recipient_container(cr, uid, ids, context=context),
-            'Shipment': self.get_shipment_container(cr, uid, ids, context=context),
+            'Recipient': self.get_recipient_container(
+                cr, uid, ids, context=context),
+            'Shipment': self.get_shipment_container(
+                cr, uid, ids, context=context),
         })
 
-        pdb.set_trace()
         payload = self.get_envelope('ShipmentRequest', data)
         _logger.info('Call: %s' % data)
         reply = requests.post(
@@ -731,7 +733,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # if error:
         #    return error
         return self.update_order_with_soap_reply(
-            cr, uid, ids, reply, context=context)
+            cr, uid, ids, result_data, context=context)
 
     def shipment_options_request(self, cr, uid, ids, context=None):
         """ 17. API ShippingOptionsRequest: Get better quotation
