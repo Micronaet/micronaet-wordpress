@@ -405,83 +405,83 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             help='Carrier must be confirmed when done!'),
 
         # Master Carrier:
-        'carrier_supplier_id ': fields.many2one(
+        'carrier_supplier_id': fields.many2one(
             'carrier.supplier', 'Carrier',
             domain="[('mode', '=', 'carrier')]"),
-        'carrier_mode_id ': fields.many2one(
+        'carrier_mode_id': fields.many2one(
             'carrier.supplier.mode', 'Carrier service',
             domain="[('supplier_id', '=', carrier_supplier_id)]",
         ),
 
-        'courier_supplier_id ': fields.many2one(
+        'courier_supplier_id': fields.many2one(
             'carrier.supplier', 'Courier',
             domain="[('hidden', '=', False), "
                    "('mode', '=', 'courier'),"
                    "('mode_id', '=', carrier_mode_id)]"),
-        'courier_mode_id ': fields.many2one(
+        'courier_mode_id': fields.many2one(
             'carrier.supplier.mode', 'Courier service',
             domain="[('hidden', '=', False), "
                    "('supplier_id', '=', courier_supplier_id)]",
         ),
 
-        'carrier_parcel_template_id ': fields.many2one(
+        'carrier_parcel_template_id': fields.many2one(
             'carrier.parcel.template', 'Parcel template'),
-        'carrier_check ': fields.text(
+        'carrier_check': fields.text(
             'Carrier check', help='Check carrier address', multi=True,
             compute='_get_carrier_check_address', widget='html'),
-        'carrier_check_error ': fields.text(
+        'carrier_check_error': fields.text(
             'Carrier check', help='Check carrier address error', multi=True,
             compute='_get_carrier_check_address', widget='html'),
 
-        'carrier_description ': fields.text('Carrier description'),
-        'carrier_note ': fields.text('Carrier note'),
-        'carrier_stock_note ': fields.text('Stock operator note'),
-        'carrier_total ': fields.float('Goods value', digits=(16, 2)),
-        'carrier_ensurance ': fields.float('Ensurance', digits=(16, 2)),
-        'carrier_cash_delivery ': fields.float(
+        'carrier_description': fields.text('Carrier description'),
+        'carrier_note': fields.text('Carrier note'),
+        'carrier_stock_note': fields.text('Stock operator note'),
+        'carrier_total': fields.float('Goods value', digits=(16, 2)),
+        'carrier_ensurance': fields.float('Ensurance', digits=(16, 2)),
+        'carrier_cash_delivery': fields.float(
             'Cash on delivery', digits=(16, 2)),
-        'carrier_pay_mode ': fields.selection([
+        'carrier_pay_mode': fields.selection([
             ('CASH', 'Cash'),
             ('CHECK', 'Check'),
             ], 'Pay mode'),
-        'parcel_ids ': fields.one2many(
+        'parcel_ids': fields.one2many(
             'sale.order.parcel', 'order_id', 'Parcels'),
-        'parcel_detail ': fields.function(
+        'parcel_detail': fields.function(
             _get_parcel_detail,
             string='Parcel detail', type='text'),
-        'real_parcel_total ': fields.function(
+        'real_parcel_total': fields.function(
             _get_carrier_parcel_total,
             string='Colli', type='integer',
         ),
-        'destination_country_id ': fields.related(
+        'destination_country_id': fields.related(
             'partner_shipping_id', 'country_id',
             string='Destination', relation='res.country', type='many2one',
         ),
 
         # Data from Carrier:
-        'carrier_cost ': fields.float(
+        'carrier_cost': fields.float(
             'Cost', digits=(16, 2), help='Net shipment price'),
-        'carrier_cost_total ': fields.float(
+        'carrier_cost_total': fields.float(
             'Cost', digits=(16, 2), help='Net shipment total price'),
-        'carrier_cost_lossy ': fields.function(
+        'carrier_cost_lossy': fields.function(
             _check_carrier_cost_value,
             string='Under carrier cost', mode='boolean',
             help='Carrier cost payed less that request!',
             store=True,
         ),
-        'carrier_track_id ': fields.char(
+        'carrier_track_id': fields.char(
             'Track ID', size=64),
         # TODO extra data needed!
 
-        'has_cod ': fields.boolean('Has COD'),  # CODAvailable
-        'has_insurance ': fields.boolean(
+        'has_cod': fields.boolean('Has COD'),  # CODAvailable
+        'has_insurance': fields.boolean(
             'Has Insurance'),  # InsuranceAvailable
-        'has_safe_value ': fields.boolean(
+        'has_safe_value': fields.boolean(
             'Has safe value'),  # MBESafeValueAvailable
 
-        'carrier_delivery_date ': fields.datetime(
+        'carrier_delivery_date': fields.datetime(
             'Delivery date', readonly=True),
-        'carrier_delivery_sign ': fields.datetime(
+        'carrier_delivery_sign': fields.datetime(
             'Delivery sign', readonly=True),
 
         # 'NetShipmentTotalPrice': Decimal('6.80'),  # ??

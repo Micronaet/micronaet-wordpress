@@ -44,8 +44,8 @@
                         </group>
 
                         <group colspan="4" col="5" >
-                            <field name="carrier_supplier_id" />
-                            <!--<field name="carrier_mode_id" />
+                            <!--<field name="carrier_supplier_id" />
+                            <field name="carrier_mode_id" />
                             <button name="carrier_get_better_option" type="object" string="Get better option" icon="fa-hand-o-left"/>
 
                             <field name="carrier_parcel_template_id" domain="['|',('carrier_supplier_id','=',False),('carrier_supplier_id','=',carrier_supplier_id)]"/>
