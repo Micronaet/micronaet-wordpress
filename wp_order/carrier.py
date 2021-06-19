@@ -22,6 +22,7 @@
 ###############################################################################
 
 import os
+import pdb
 import sys
 import re
 import logging
@@ -298,6 +299,70 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     """ Model name: Wordpress Sale order
     """
     _inherit = 'wordpress.sale.order'
+
+    def set_carrier_ok_yes(self, cr, uid, ids, context=None):
+        """ Override method for send carrier request
+        """
+        order = self.browse(cr, uid, ids, context=context)
+        pdb.set_trace()
+
+        # ---------------------------------------------------------------------
+        # Check options:
+        # ---------------------------------------------------------------------
+        # Get options if not present (XXX Moved here):
+        if not order.manage_delivery:
+            return order.log_error(
+                _('Order not delivery managed from ODOO'))
+
+        if order.carrier_state in ('sent', 'delivered'):
+            return order.log_error(
+                _('Order sent or delivered cannot confirm!'))
+
+        if not order.carrier_supplier_id or not order.parcel_ids:
+            return order.log_error(
+                _('Need carrier name and parcel data for get quotation'))
+
+        if order.carrier_track_id:
+            return order.log_error(
+                _('Track ID yet present, cannot regenerate, '
+                  'cancel and reassign if needed'))
+
+        # 1. Get options if not present courier:
+        if not order.courier_supplier_id:
+            error = order.shipment_options_request()
+            if error:
+                return order.log_error(error)
+
+        # 2. Create request:
+        error = self.shipment_request(cr, uid, ids, context=context)
+        if error:
+            return order.log_error(error)
+
+        # 3. Print also labels:
+        # if order.soap_connection_id.auto_print_label:
+        #    _logger.warning(_('Auto print label on request!'))
+        #    order.carrier_print_label()
+
+        # self.write_log_chatter_message(_('Carrier data is OK'))
+
+        # Clean error (if present)
+        return self.write(cr, uid, ids, {
+            # 'soap_last_error': False,
+            # Check if order needs to be passed in ready status:
+            'carrier_ok': True,
+        })
+
+    def set_carrier_ok_no(self, cr, uid, ids, context=None):
+        """ Set carrier as UNDO
+        """
+        # self.write_log_chatter_message(
+        #     _('Carrier data is not OK (undo operation)'))
+        # todo nothing else?
+        return self.write(cr, uid, ids, {
+            # 'soap_last_error': False,
+            # Check if order needs to be passed in ready status:
+            'carrier_ok': False,
+        })
 
     def load_template_parcel(self, cr, uid, ids, context=None):
         """ Load this template

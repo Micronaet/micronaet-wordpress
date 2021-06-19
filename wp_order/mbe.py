@@ -27,6 +27,8 @@ import re
 import logging
 import pdb
 import requests
+import subprocess
+import shutil
 from requests.auth import HTTPBasicAuth  # or HTTPDigestAuth, or OAuth1, etc.
 import xml.etree.cElementTree as ElementTree
 import openerp
@@ -155,6 +157,99 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
+    def get_folder_root_path(
+            self, cr, mode, root_path=None):
+        """
+        """
+        if root_path is None:
+            root_path = os.path.expanduser(
+                '~/.local/share/Odoo/filestore/%s/data' % cr.dbname
+                )
+        path = os.path.join(root_path, mode)
+        os.system('mkdir -p %s' % path)
+        return path
+
+    def save_order_label(
+            self, cr, uid, ids, reply, mode='label', context=None):
+        """ Save order label
+        """
+        order = self.browse(cr, uid, ids, context=context)[0]
+        parcels = len(order.parcel_ids)
+        path = order.get_folder_root_path(cr, mode)
+        if mode == 'tracking':
+            label_path = order.get_folder_root_path(
+                cr, 'label', root_path=path)
+            parcel_path = order.get_folder_root_path(
+                cr, 'parcel', root_path=path)
+
+        counter = 0
+        if mode in ('label', 'tracking'):
+            label_list = reply['Labels']['Label']
+        else:
+            label_list = [reply['Pdf']]
+        for label in label_list:
+            if mode in ('label', 'tracking'):
+                counter += 1
+                label_stream = label['Stream']
+                label_type = label['Type']
+                filename = '%s.%s.%s' % (
+                    order.id, counter, label_type)
+                fullname = os.path.join(path, filename)
+            else:
+                label_stream = label
+                fullname = os.path.join(path, '%s.PDF' % (
+                    order.id))
+
+            with open(fullname, 'wb') as label_file:
+                label_file.write(label_stream)
+
+            # Split label for Courier PDF:
+            if mode == 'tracking':
+                fullname_label = os.path.join(label_path, filename)
+                fullname_parcel = os.path.join(parcel_path, filename)
+
+                # Get number of pages:
+                output = subprocess.check_output([
+                    'pdftk', fullname, 'dump_data'])
+                total_pages = int(
+                    ('%s' % output).split('NumberOfPages: ')[-1].split(
+                        '\\')[0])
+
+                # Split label:
+                if total_pages > parcels:
+                    half_page = int(total_pages / 2)
+                    subprocess.check_output([
+                        'pdftk', fullname,
+                        'cat', '1-%s' % half_page,
+                        'output',
+                        fullname_label,
+                    ])
+                else:  # Label complete is label!
+                    shutil.copy(fullname, fullname_label)
+
+                # Split parcel label (if present)
+                if total_pages > parcels:
+                    output = subprocess.check_output([
+                        'pdftk', fullname,
+                        'cat', '%s-%s' % (half_page + 1, total_pages),
+                        'output',
+                        fullname_parcel,
+                    ])
+                else:
+                    _logger.error('No parcel label present')
+
+    def check_size(self, text, size, dotted=False):
+        """ Clean text for SOAP call
+        """
+        text = text or ''
+        if dotted:
+            if len(text) > (size - 3):
+                return '%s...' % text[:size - 3]
+        else:
+            if len(text) > size:
+                return text[:size]
+        return text
+
     def update_with_quotation(
             self, cr, uid, ids, reply_list=None, context=None):
         """ Update order courier fields with reply SOAP
@@ -440,9 +535,200 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             data['StoreID'] = connection.store_id
         return data
 
+    def get_recipient_container(self, cr, uid, ids, context=None):
+        """ Return dict for Partner container
+        """
+        order = self.browse(cr, uid, ids, context=context)[0]
+        wp_record = eval(order.wp_record)
+        shipping = wp_record.get('shipping', {})
+        billing = wp_record.get('billing', {})
+
+        note = wp_record['customer_note'][:35]
+        if shipping['address_2']:
+            address2 = shipping['address_2']
+        else:  # Update partner address with note so always was written
+            # if note:
+            #     partner.write({'street2': note})
+            address2 = note
+
+        name = '%s %s' % (shipping['first_name'], shipping['last_name'])
+        return {
+            'Name': name[:35],
+            'CompanyName': shipping['company'][:35],
+            'Nickname': ''[:100],
+            'Address': shipping['address_1'][:100],
+            'Address2': shipping['address_1'][:35],
+            'Address3': ''[:35],
+            'Phone': billing['phone'][:50],
+            'ZipCode': shipping['postcode'][:12],
+            'City': shipping['city'][:50],
+            'State': shipping['state'][:2],
+            'Country': shipping['country'][:2],
+            'Email': billing['email'][:75],
+            'SubzoneId': '',  # integer
+            'SubzoneDesc': '',
+        }
+
+    def get_shipment_container(self, cr, uid, ids, context=None):
+        """ Return dict for order shipment
+        """
+        order = self.browse(cr, uid, ids, context=context)[0]
+
+        wp_record = eval(order.wp_record)
+        shipping = wp_record.get('shipping', {})
+        billing = wp_record.get('billing', {})
+        note = wp_record['customer_note'][:35]
+
+        data = {
+            'ShipperType': order.shipper_type,
+            'Description': order.check_size(
+                order.name, 100, dotted=True),  # or order.carrier_description
+            'MethodPayment': order.carrier_pay_mode,
+            'Service': order.carrier_mode_id.account_ref or '',
+            'Courier': order.courier_supplier_id.account_ref or '',
+            'CourierService': order.courier_mode_id.account_ref or '',
+            'PackageType': order.package_type,
+            'Referring': order.name,  # * 30
+            'InternalNotes': note,  # TODO * string
+            'Notes': note,
+            'LabelFormat': 'NEW',  # * token (OLD, NEW)
+            'Items': order.get_items_parcel_block(),
+
+            # TODO Option not used for now:
+            'Insurance': False,  # boolean
+            'COD': False,  # boolean
+            # 'CODValue': '',  # * decimal
+            # 'InsuranceValue': '',  # * decimal
+            # 'CourierAccount': '',  # * string
+            # 'Value': '',  # * decimal
+            # 'ShipmentCurrency': '',  # * string
+            # 'SaturdayDelivery': '',  # * boolean
+            # 'SignatureRequired': '',  # * boolean
+            # 'ShipmentOrigin': '',  # * string
+            # 'ShipmentSource': '',  # * int
+            # 'MBESafeValue': '',  # * boolean
+            # 'MBESafeValueValue': '',  # * decimal
+            # 'MBESafeValueDescription': '',  # * string 100
+        }
+
+        # Products* ProductsType
+        #    Product ProductType
+        #        SKUCode string
+        #        Description string
+        #        Quantity decimal
+
+        # ProformaInvoice* ProformaInvoiceType
+        #        ProformaDetail ProformaDetailType
+        #            Amount int
+        #            Currency string 10
+        #            Value decimal
+        #            Unit string 5
+        #            Description string 35
+        return data
+
+    def update_order_with_soap_reply(self, cr, uid, ids, reply, context=None):
+        """ Update order data with SOAP reply (error checked in different call)
+        """
+        order = self.browse(cr, uid, ids, context=context)[0]
+        master_tracking_id = reply['MasterTrackingMBE']
+        system_reference_id = reply['SystemReferenceID']
+
+        try:
+            courier_track_id = reply['CourierMasterTrk']
+            if courier_track_id == master_tracking_id:
+                courier_track_id = False
+                # Download label
+            else:
+                # TODO if raise error no label!
+                self.save_order_label(
+                    cr, uid, ids, reply, 'tracking', context=context)
+
+        except:
+            courier_track_id = False
+
+        # Label if not Courier is not used:
+        # order.save_order_label(reply, 'label')
+
+        # InternalReferenceID 100
+        # TrackingMBE* : {'TrackingMBE': ['RL28102279']
+
+        self.write(cr, uid, ids, {
+            'carrier_state': 'pending',
+            'master_tracking_id': master_tracking_id,
+            'system_reference_id': system_reference_id,
+            'carrier_track_id': courier_track_id,
+        }, context=context)
+
+
     # -------------------------------------------------------------------------
-    # SOAP List of function:
+    # HTML List of function:
     # -------------------------------------------------------------------------
+    def shipment_request(self, cr, uid, ids, context=None):
+        """ 15. API Shipment Request: Insert new carrier request
+        """
+        assert len(ids) == 1, 'Un ordine alla volta'
+        order = self.browse(cr, uid, ids, context=context)[0]
+
+        carrier_connection = order.soap_connection_id
+        if not carrier_connection:
+            return 'Order %s has carrier without SOAP ref.!' % order.name
+        # todo if order.state not in 'draft':
+        #    return 'Order %s not in draft mode so no published!' % order.name
+        if order.carrier_supplier_id:
+            return 'Order %s has SOAP ID %s cannot publish!' % (
+                    order.name, order.carrier_supplier_id)
+
+        # Write description if not present:
+        if not order.carrier_description:
+            order.set_default_carrier_description()
+
+        # -----------------------------------------------------------------
+        # HTML insert call:
+        # -----------------------------------------------------------------
+        header = {'Content-Type': 'text/xml'}
+
+        data = order.get_request_container(customer=False, system=True)
+        data.update({
+            'Recipient': order.get_recipient_container(),
+            'Shipment': order.get_shipment_container(),
+        })
+
+        payload = self.get_envelope('ShipmentRequest', data)
+        _logger.info('Call: %s' % data)
+        reply = requests.post(
+            carrier_connection.location,
+            auth=HTTPBasicAuth(
+                carrier_connection.username,
+                carrier_connection.passphrase),
+            headers=header,
+            data=payload,
+        )
+        if not reply.ok:
+            raise osv.except_osv(
+                _('Errore Server MBE'),
+                _('Risposta non corretta: %s' % reply),
+                )
+        _logger.warning('\n%s\n\n%s\n' % (data, reply))
+
+        # Parse reply:
+        reply_text = reply.text
+        data_block = reply_text.split(
+            '<RequestContainer>')[-1].split('</RequestContainer>')[0]
+
+        data_block = (
+                '<RequestContainer>%s</RequestContainer>' % data_block
+        ).encode('ascii', 'ignore').decode('ascii')
+
+        root = ElementTree.XML(data_block)
+        result_data = XmlDictConfig(root)
+        # error = order.check_reply_status(reply, undo_error=True)
+
+        _logger.warning('\n%s\n\n%s\n' % (data, reply))
+
+        # if error:
+        #    return error
+        order.update_order_with_soap_reply(reply)
+
     def shipment_options_request(self, cr, uid, ids, context=None):
         """ 17. API ShippingOptionsRequest: Get better quotation
         """
@@ -457,9 +743,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                    order.name
         # if order.state not in 'draft':
         #    return 'Ordine %s è a bozza quindi non pubblicato!' % order.name
-        # if order.carrier_soap_id:
+        # if order.carrier_supplier_id:
         #    return 'Order %s has SOAP ID %s cannot publish!' % (
-        #            order.name, order.carrier_soap_id)
+        #            order.name, order.carrier_supplier_id)
 
         # ---------------------------------------------------------------------
         # SOAP insert call:
@@ -482,7 +768,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             context=context,
         )
         data['ShippingParameters'] = order.get_shipment_parameters_container()
-        # data['ShippingParameters']['Service'] = 1 o 2
         payload = self.get_envelope('ShippingOptionsRequest', data)
         _logger.info('Call: %s' % data)
         reply = requests.post(
