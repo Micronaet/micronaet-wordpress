@@ -53,7 +53,7 @@
                             <newline/>
 
                             <separator string="Parcel:" colspan="4"/>
-                            <!--<field name="parcel_ids" colspan="4" nolabel="1">
+                            <field name="parcel_ids" colspan="4" nolabel="1">
                                 <tree string="Parcel" editable="bottom">
                                     <field name="length" />
                                     <field name="width" />
@@ -64,18 +64,18 @@
                                     <field name="weight" sum="total_volumetric"/>
                                     <field name="no_label" />
                                 </tree>
-                            </field>-->
+                            </field>
                             <newline/>
                         </group>
 
                         <group colspan="4" col="5">
-                            <!--<separator string="Partner check:" colspan="4"/>
+                            <separator string="Partner check:" colspan="4"/>
                             <field name="carrier_check" colspan="4" readonly="1" nolabel="1" widget="html"/>
-                            <newline/>-->
+                            <newline/>
                         </group>
 
                         <group colspan="4" col="5" >
-                            <!--<separator string="Request:" colspan="3"/>
+                            <separator string="Request:" colspan="3"/>
                             <button name="set_default_carrier_description" string="Force description" type="object" icon="fa-hand-o-down"/>
                             <field name="carrier_description" colspan="4" />
                             <newline/>
@@ -90,11 +90,11 @@
 
                             <field name="carrier_ensurance" />
                             <field name="carrier_pay_mode" />
-                            <newline/>-->
+                            <newline/>
                         </group>
 
                         <!-- Common part: -->
-                        <!--<group colspan="4" col="5">
+                        <group colspan="4" col="5">
                             <separator string="Carrier reply:" colspan="4"/>
                             <field name="carrier_cost" />
                             <field name="carrier_track_id" />
@@ -105,7 +105,7 @@
                             <field name="carrier_delivery_date" />
                             <field name="carrier_delivery_sign" />
                             <newline/>
-                        </group>-->
+                        </group>
                     </page>
                 </xpath>
             </field>
