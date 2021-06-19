@@ -338,13 +338,13 @@
                             <field name="ship_type" />
                             <field name="package_type" />
 
-                            <button name="shipments_list_request_detail_source" type="object" string="Check MBE information" invisible="1"/>
-
                             <field name="courier_supplier_id" />
                             <field name="courier_mode_id" />
 
                             <field name="carrier_delivery_date" />
                             <field name="carrier_delivery_sign" />
+
+                            <button name="shipments_list_request_detail_source" type="object" string="Check MBE information" invisible="1"/>
                         </group>
                     </page>
                 </xpath>
