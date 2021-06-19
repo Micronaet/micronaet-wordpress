@@ -283,7 +283,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                     }).id
 
                 order.write({
-                    'soap_connection_id': connection.id,
+                    'carrier_connection_id': connection.id,
                     'carrier_cost': data['NetShipmentPrice'],
                     'carrier_cost_total': data['NetShipmentTotalPrice'],
                     'has_cod': data['CODAvailable'],
@@ -305,7 +305,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         if not data:  # Or previous update error
             # Reset data:
             order.write({
-                'soap_connection_id': False,
+                'carrier_connection_id': False,
                 'carrier_cost': 0.0,
                 'carrier_mode_id': False,
                 'courier_supplier_id': False,
@@ -510,17 +510,16 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         root = ElementTree.XML(data_block)
         result_data = XmlDictConfig(root)
-        try:
-            record = result_data['ShippingOptions']['ShippingOption']
-            price = record['NetShipmentTotalPrice']  # NetShipmentPrice
-        except:
-            raise osv.except_osv(
-                _('Errore Server MBE'),
-                _('Risposta errata: %s' % reply),
-                )
-
+        #try:
+        #    record = result_data['ShippingOptions']['ShippingOption']
+        #    price = record[0]['NetShipmentTotalPrice']  # NetShipmentPrice
+        #except:
+        #    raise osv.except_osv(
+        #        _('Errore Server MBE'),
+        #        _('Risposta errata: %s' % reply),
+        #        )
         # error += order.check_reply_status(reply)
-        reply_list.append((carrier_connection, reply))
+        reply_list.append((carrier_connection, result_data))
 
         # if not error:
         # Update SOAP data for real call
