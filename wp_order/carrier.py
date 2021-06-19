@@ -335,7 +335,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 context=context,
                 )
 
-
         if order.carrier_track_id:
             return self.log_error(
                 cr, uid, ids,
@@ -563,7 +562,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 res[order.id] = False
                 continue
 
-            request = sum([item.price_subtotal for item in order.order_line
+            request = sum([item.price_subtotal for item in order.line_ids
                            if item.product_id.default_code == 'shipment'])
             res[order.id] = payed > request
         return res

@@ -187,6 +187,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             label_list = [reply['Labels']['Label']]
         else:
             label_list = [reply['Pdf']]
+        pdb.set_trace()
         for label in label_list:
             if mode in ('label', 'tracking'):
                 counter += 1
