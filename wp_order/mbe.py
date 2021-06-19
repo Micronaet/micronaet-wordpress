@@ -163,6 +163,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         # Filter parameters:
         carrier_mode_search = order.carrier_mode_id.account_ref
+        if carrier_mode_search.isdigit():
+            carrier_mode_search = int(carrier_mode_search)
 
         # Courier:
         courier_supplier_search = order.courier_supplier_id.account_ref
