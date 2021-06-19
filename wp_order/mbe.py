@@ -241,7 +241,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                     ('mode', '=', 'courier'),
                 ], context=context)
                 if suppliers:
-                    supplier_id = suppliers[0].id
+                    supplier_id = suppliers[0]
                 else:
                     supplier_id = supplier_pool.create(cr, uid, {
                         'account_ref': courier_code,
@@ -259,7 +259,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                     ('supplier_id', '=', supplier_id),
                 ], context=context)
                 if services:
-                    service_id = services[0].id
+                    service_id = services[0]
                 else:
                     supplier_id = service_pool.create(cr, uid, {
                         'account_ref': service_code,
@@ -278,7 +278,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                     ('supplier_id', '=', carrier_id),
                 ], context=context)
                 if carriers:
-                    carrier_mode_id = carriers[0].id
+                    carrier_mode_id = carriers[0]
                 else:
                     carrier_mode_id = service_pool.create(cr, uid, {
                         'account_ref': carrier_code,
