@@ -234,36 +234,36 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 # -------------------------------------------------------------
                 courier_code = data['Courier']
                 courier_name = data['CourierDesc']
-                suppliers = supplier_pool.search([
+                suppliers = supplier_pool.search(cr, uid, [
                     ('account_ref', '=', courier_code),
                     ('mode', '=', 'courier'),
-                ])
+                ], context=context)
                 if suppliers:
                     supplier_id = suppliers[0].id
                 else:
-                    supplier_id = supplier_pool.create({
+                    supplier_id = supplier_pool.create(cr, uid, {
                         'account_ref': courier_code,
                         'name': courier_name,
                         'mode': 'courier',
-                    }).id
+                    }, context=context)
 
                 # -------------------------------------------------------------
                 # B. Courier service:
                 # -------------------------------------------------------------
                 service_code = data['CourierService']
                 service_name = data['CourierServiceDesc']
-                services = service_pool.search([
+                services = service_pool.search(cr, uid, [
                     ('account_ref', '=', service_code),
                     ('supplier_id', '=', supplier_id),
-                ])
+                ], context=context)
                 if services:
                     service_id = services[0].id
                 else:
-                    supplier_id = service_pool.create({
+                    supplier_id = service_pool.create(cr, uid, {
                         'account_ref': service_code,
                         'name': service_name,
                         'supplier_id': supplier_id,
-                    }).id
+                    }, context=context)
 
                 # -------------------------------------------------------------
                 # C. Carrier service:
@@ -271,20 +271,20 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 carrier_id = order.carrier_supplier_id.id
                 carrier_code = data['Service']
                 carrier_name = data['ServiceDesc']
-                carriers = service_pool.search([
+                carriers = service_pool.search(cr, uid, [
                     ('account_ref', '=', carrier_code),
                     ('supplier_id', '=', carrier_id),
-                ])
+                ], context=context)
                 if carriers:
                     carrier_mode_id = carriers[0].id
                 else:
-                    carrier_mode_id = service_pool.create({
+                    carrier_mode_id = service_pool.create(cr, uid, {
                         'account_ref': carrier_code,
                         'name': carrier_name,
                         'supplier_id': carrier_id,
-                    }).id
+                    }, context=context)
 
-                order.write({
+                order.write(cr, uid, ids, {
                     'carrier_connection_id': connection.id,
                     'carrier_cost': data['NetShipmentPrice'],
                     'carrier_cost_total': data['NetShipmentTotalPrice'],
