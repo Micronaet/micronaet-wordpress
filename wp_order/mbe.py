@@ -323,13 +323,15 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         for key, value in data.iteritems():
             if type(value) == dict:
                 result += '%s<%s>%s%s%s</%s>%s' % (
-                    spaces, key, cr, data(value, level, cr), spaces, key,
-                    cr)
+                    spaces, key, cr,
+                    self.dict2xml(value, level, cr),
+                    spaces, key, cr)
             elif type(value) == list:
                 for item in value:
                     result += '%s<%s>%s%s%s</%s>%s' % (
-                        spaces, key, cr, data(item, level, cr), spaces,
-                        key, cr)
+                        spaces, key, cr,
+                        self.dict2xml(item, level, cr),
+                        spaces, key, cr)
             else:
                 result += '%s<%s>%s</%s>%s' % (spaces, key, value, key, cr)
         return result
@@ -486,7 +488,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             carrier_connection.location,
             auth=HTTPBasicAuth(
                 carrier_connection.username,
-                carrier_connection.password),
+                carrier_connection.passphrase),
             headers=header,
             data=payload,
         )
