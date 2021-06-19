@@ -398,6 +398,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             request = sum([item.price_subtotal for item in order.order_line
                            if item.product_id.default_code == 'shipment'])
             res[order.id] = payed > request
+        return res
 
     _columns = {
         'carrier_ok': fields.boolean(
@@ -467,7 +468,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             _check_carrier_cost_value,
             string='Under carrier cost', mode='boolean',
             help='Carrier cost payed less that request!',
-            store=True,
+            store=False,
         ),
         'carrier_track_id': fields.char(
             'Track ID', size=64),
