@@ -163,7 +163,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         # Filter parameters:
         carrier_mode_search = order.carrier_mode_id.account_ref
-        if carrier_mode_search.isdigit():
+        if carrier_mode_search and carrier_mode_search.isdigit():
             carrier_mode_search = int(carrier_mode_search)
 
         # Courier:
@@ -226,6 +226,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # TODO no need to create 21 nov. 2020?!?:
         # Update order with better quotation:
         data = False
+        pdb.set_trace()
+
         if better:
             connection, data = better
             try:
@@ -520,7 +522,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         #        _('Risposta errata: %s' % reply),
         #        )
         # error += order.check_reply_status(reply)
-        pdb.set_trace()
         reply_list.append((carrier_connection, result_data))
 
         # if not error:
