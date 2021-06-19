@@ -299,10 +299,25 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     """
     _inherit = 'wordpress.sale.order'
 
-    def carrier_get_better_option(self):
+    def load_template_parcel(self, cr, uid, ids, context=None):
+        """ Load this template
+        """
+        parcel_pool = self.pool.get('sale.order.parcel')
+        order = self.browse(cr, uid, ids, context=context)[0]
+        template = order.carrier_parcel_template_id
+
+        return parcel_pool.create({
+            'order_id': order.id,
+            'length': template.length,
+            'width': template.width,
+            'height': template.height,
+            'no_label': template.no_label,
+            })
+
+    def carrier_get_better_option(self, cr, uid, ids, context=None):
         """ Get better options
         """
-        order = self.browse(cr, uid, ids, context=context)][0]
+        order = self.browse(cr, uid, ids, context=context)[0]
         if not order.carrier_supplier_id:
             raise osv.except_osv(
                 _('Controllo pre chiamata'),
