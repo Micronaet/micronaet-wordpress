@@ -481,7 +481,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         )
         data['ShippingParameters'] = order.get_shipment_parameters_container()
         # data['ShippingParameters']['Service'] = 1 o 2
-        pdb.set_trace()
         payload = self.get_envelope('ShippingOptionsRequest', data)
         _logger.info('Call: %s' % data)
         reply = requests.post(
@@ -519,11 +518,12 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         #        _('Risposta errata: %s' % reply),
         #        )
         # error += order.check_reply_status(reply)
+        pdb.set_trace()
         reply_list.append((carrier_connection, result_data))
 
         # if not error:
         # Update SOAP data for real call
-        order.update_with_quotation(cr, uid, ids, reply_list, context=context)
+        self.update_with_quotation(cr, uid, ids, reply_list, context=context)
         return True   # error
 
     def sanitize_text(self, text):
