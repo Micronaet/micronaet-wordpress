@@ -289,7 +289,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """ Update description from sale order line
         """
         order_id = ids[0]
-        res = {}
         carrier_description = ''
         for line in self.browse(cr, uid, order_id, context=context).line_ids:
             product = line.product_id
@@ -301,8 +300,10 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 (line.name or product.description_sale or product.name or
                  _('Not found')),
                 )
-        res[order_id] = self.sanitize_text(carrier_description)
-        return res
+        return self.write(cr, uid, ids, {
+            'carrier_description': self.sanitize_text(carrier_description)
+            }, context=context)
+
 
     def _get_parcel_detail(
             self, cr, uid, ids, fields=None, args=None, context=None):
