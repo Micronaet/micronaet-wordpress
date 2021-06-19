@@ -293,11 +293,11 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         carrier_description = ''
         for line in self.browse(cr, uid, order_id, context=context).line_ids:
             product = line.product_id
-            # TODO is_expence is not present:
+            # TODO is expense is not present:
             if product.type == 'service':  # or product.is_expence:
                 continue
             carrier_description += '(%s X) %s ' % (
-                int(line.product_uom_qty),
+                int(line.quantity),
                 (line.name or product.description_sale or product.name or
                  _('Not found')),
                 )
