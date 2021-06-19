@@ -109,6 +109,27 @@ class CarrierConnection(orm.Model):
         }
 
 
+class CarrierSupplierMode(orm.Model):
+    """ Model name: Parcels supplier mode of delivery
+    """
+
+    _name = 'carrier.supplier.mode'
+    _description = 'Carrier mode'
+    _rec_name = 'name'
+
+    # -------------------------------------------------------------------------
+    #                                   COLUMNS:
+    # -------------------------------------------------------------------------
+    _columns = {
+        'name': fields.char('Nome', required=True),
+        'account_ref': fields.char('Account ref.'),
+        'hidden': fields.boolean('Nascosto'),
+        # 'cups_printer_id': fields.many2one(
+        #    'cups.printer', 'CUPS printer',
+        #    help='Label order print with this')
+    }
+
+
 class CarrierSupplier(orm.Model):
     """ Model name: Parcels supplier
     """
@@ -143,26 +164,15 @@ class CarrierSupplier(orm.Model):
     }
 
 
-class CarrierSupplierMode(orm.Model):
+class CarrierSupplierModeRelations(orm.Model):
     """ Model name: Parcels supplier mode of delivery
     """
 
-    _name = 'carrier.supplier.mode'
-    _description = 'Carrier mode'
-    _rec_name = 'name'
+    _inherit = 'carrier.supplier.mode'
 
-    # -------------------------------------------------------------------------
-    #                                   COLUMNS:
-    # -------------------------------------------------------------------------
     _columns = {
-        'name': fields.char('Nome', required=True),
-        'account_ref': fields.char('Account ref.'),
         'supplier_id': fields.many2one(
             'carrier.supplier', 'Carrier', required=True),
-        'hidden': fields.boolean('Nascosto'),
-        # 'cups_printer_id': fields.many2one(
-        #    'cups.printer', 'CUPS printer',
-        #    help='Label order print with this')
     }
 
 
@@ -288,14 +298,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     """ Model name: Wordpress Sale order
     """
     _inherit = 'wordpress.sale.order'
-
-    def sanitize_text(self, text):
-        """ Clean HTML tag from text
-        :param text: HTML text to clean
-        :return: clean text
-        """
-        tag_re = re.compile(r'<[^>]+>')
-        return tag_re.sub('', text.strip())
 
     def set_default_carrier_description(self, cr, uid, ids, context=None):
         """ Update description from sale order line
