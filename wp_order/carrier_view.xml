@@ -1,6 +1,68 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <record id="carrier_connection_view_tree" model="ir.ui.view">
+            <field name="name">carrier.connection.view.tree</field>
+            <field name="model">carrier.connection</field>
+            <field name="arch" type="xml">
+                <tree string="Carrier Connection">
+                    <field name="name"/>
+                    <field name="company_id"/>
+                    <field name="location"/>
+                    <field name="username"/>
+                    <field name="passphrase" invisible="1"/>
+                    <field name="system"/>
+                    <field name="internal_reference"/>
+                    <field name="customer_id"/>
+                    <field name="store_id"/>
+                    <field name="sam_id"/>
+                    <field name="department_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="carrier_connection_view_form" model="ir.ui.view">
+            <field name="name">carrier.connection.view.form</field>
+            <field name="model">carrier.connection</field>
+            <field name="arch" type="xml">
+                <form string="Carrier Connection">
+                    <header>
+
+                    </header>
+                    <sheet>
+                        <group col="4" colspan="4">
+                            <field name="name"/>
+                            <field name="company_id"/>
+
+                            <field name="location" colspan="4"/>
+
+                            <field name="username"/>
+                            <field name="passphrase" />
+
+                            <field name="system"/>
+                            <field name="internal_reference"/>
+
+                            <field name="customer_id"/>
+                            <field name="store_id"/>
+
+                            <field name="sam_id"/>
+                            <field name="department_id"/>
+
+                            <field name="auto_print_label" />
+                            <field name="cups_printer_id" />
+
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="carrier_connection_action" model="ir.actions.act_window">
+            <field name="name">Carrier Connection</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">carrier.connection</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
         <record id="res_company_carrier_page_form" model="ir.ui.view">
             <field name="name">res.company.carrier.page.form</field>
             <field name="model">res.company</field>
@@ -79,7 +141,7 @@
             <field name="priority" eval="40"/>
 
             <field name="arch" type="xml">
-                <tree string="Sale order for carrier" editable="bottom" colors="green: carrier_soap_state == 'delivered';blue: carrier_soap_state == 'pending'; grey:carrier_state == 'draft' and (len(parcel_ids) == 0 or not carrier_supplier_id)" >
+                <tree string="Sale order for carrier" editable="bottom" colors="green: carrier_state == 'delivered';blue: carrier_state == 'pending'; grey:carrier_state == 'draft' and (len(parcel_ids) == 0 or not carrier_supplier_id)" >
                     <!--<field name="connector_id"/>
                     <field name="wp_date_created"/>
                     -->
@@ -155,8 +217,6 @@
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
 
-
-
         <record model="ir.ui.view" id="view_sale_order_carrier_search">
             <field name="name">wordpress.sale.order.carrier.search</field>
             <field name="model">wordpress.sale.order</field>
@@ -168,8 +228,15 @@
                     <field name="carrier_mode_id" />
                     <field name="courier_supplier_id" />
                     <field name="courier_mode_id" />
+                    <field name="master_tracking_id" />
+                    <field name="system_reference_id" />
+                    <field name="carrier_state" />
+                    <field name="delivery_state" />
 
                     <filter name="carrier_track_id_assigned" string="LDV generated" domain="[('carrier_track_id','!=',False)]"/>
+                    <filter string="Carrier state" domain="[]" context="{'group_by': 'carrier_state'}"/>
+                    <filter string="Carrier delivery state" domain="[]" context="{'group_by': 'delivery_state'}"/>
+                    <filter name="carrier_parcel_assigned" string="Parcel assigned" domain="[('parcel_ids','!=',False)]"/>
 
                 </field>
                 <xpath expr="/search/group/filter[2]" position="after">
@@ -198,6 +265,7 @@
                         <group colspan="4" col="5">
                             <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="gtk-yes" colspan="1"/>
                             <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="gtk-no" colspan="1"/>
+                            <button name="carrier_print_label" type="object" string="Print label" icon="fa-film fa-2x" attrs="{'invisible': [('carrier_track_id', '=', False)]}"/>
                             <newline/>
                             <field name="carrier_ok" invisible="1" />
                         </group>
@@ -253,17 +321,30 @@
                         </group>
 
                         <!-- Common part: -->
-                        <group colspan="4" col="5">
-                            <separator string="Carrier reply:" colspan="5"/>
+                        <group colspan="4" col="4">
+                            <separator string="Carrier reply:" colspan="4"/>
                             <field name="carrier_cost" />
                             <field name="carrier_track_id" />
-                            <newline/>
+
+                            <field name="master_tracking_id" /><!--readonly="1"-->
+                            <field name="system_reference_id" readonly="1"/>
+
+                            <field name="carrier_soap_state" /><!--TODO readonly="1"-->
+                            <field name="delivery_soap_state" readonly="1"/>
+
+                            <field name="carrier_ok" />   <!--TODO invisible="1"-->
+                            <field name="shipper_type" />
+
+                            <field name="ship_type" />
+                            <field name="package_type" />
+
+                            <button name="shipments_list_request_detail_source" type="object" string="Check MBE information" invisible="1"/>
+
                             <field name="courier_supplier_id" />
                             <field name="courier_mode_id" />
-                            <newline/>
+
                             <field name="carrier_delivery_date" />
                             <field name="carrier_delivery_sign" />
-                            <newline/>
                         </group>
                     </page>
                 </xpath>
@@ -303,6 +384,9 @@
                     <field name="supplier_id" />
                     <field name="name" />
                     <field name="account_ref" />
+                     <!--<field name="cups_printer_id" />-->
+                    <field name="mode" />
+                    <field name="connection_id" attrs="{'required': [('mode', '=', 'carrier')]}"/>
                 </tree>
             </field>
         </record>
@@ -393,6 +477,14 @@
                     action="action_carrier_supplier_mode"
                     sequence="30"
                     />
+
+            <menuitem name="Carrier connection" id="carrier_connection_root_menu" parent="menu_connector_wordpress_carrier" sequence="20"/>
+                <menuitem id="carrier_connection_soap_menu" parent="carrier_connection_root_menu" action="carrier_connection_action" sequence="10"/>
+
+            <menuitem id="carrier_root_menu" parent="menu_connector_wordpress_carrier" name="Carrier" sequence="3"/>
+                <menuitem id="carrier_sale_order_action_menu" parent="carrier_root_menu" action="carrier_sale_order_action" sequence="10"/>
+                <menuitem id="carrier_sale_order_action_sent_menu" parent="carrier_root_menu" action="carrier_sale_order_action_sent" sequence="20"/>
+                <menuitem id="carrier_sale_order_action_delivered_menu" parent="carrier_root_menu" action="carrier_sale_order_action_delivered" sequence="30"/>
 
     </data>
 </openerp>
