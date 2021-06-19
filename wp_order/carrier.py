@@ -300,13 +300,14 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     """
     _inherit = 'wordpress.sale.order'
 
-    def log_error(self, cr, uid, ids, error, context=context):
+    def log_error(self, cr, uid, ids, error, context=None):
         """ Log error in chatter and in console
         """
         order = self.browse(cr, uid, ids, context=context)[0]
         _logger.error('Order: %s [%s]' % (order.name, error))
         # order.write_log_chatter_message(error)
-        return True order.write({'soap_last_error': error,})
+        return True # order.write({'soap_last_error': error,})
+
     def set_carrier_ok_yes(self, cr, uid, ids, context=None):
         """ Override method for send carrier request
         """
