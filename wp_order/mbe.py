@@ -224,7 +224,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # TODO no need to create 21 nov. 2020?!?:
         # Update order with better quotation:
         data = False
-        pdb.set_trace()
 
         if better:
             connection, data = better
