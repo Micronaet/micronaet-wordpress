@@ -670,18 +670,20 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         order = self.browse(cr, uid, ids, context=context)[0]
 
         carrier_connection = order.carrier_connection_id
-        pdb.set_trace()
         if not carrier_connection:
             return 'Order %s has carrier without SOAP ref.!' % order.name
         # todo if order.state not in 'draft':
         #    return 'Order %s not in draft mode so no published!' % order.name
-        if order.carrier_supplier_id:
-            return 'Order %s has SOAP ID %s cannot publish!' % (
-                    order.name, order.carrier_supplier_id)
+
+        # todo verificare che campo era (ex. carrier_soap_id)
+        # if order.carrier_supplier_id:
+        #    return 'Order %s has SOAP ID %s cannot publish!' % (
+        #            order.name, order.carrier_supplier_id)
 
         # Write description if not present:
+        pdb.set_trace()
         if not order.carrier_description:
-            order.set_default_carrier_description()
+            self.set_default_carrier_description(cr, uid, ids, context=context)
 
         # -----------------------------------------------------------------
         # HTML insert call:
