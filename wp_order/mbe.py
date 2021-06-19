@@ -659,7 +659,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             'carrier_track_id': courier_track_id,
         }, context=context)
 
-
     # -------------------------------------------------------------------------
     # HTML List of function:
     # -------------------------------------------------------------------------
@@ -681,7 +680,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         #            order.name, order.carrier_supplier_id)
 
         # Write description if not present:
-        pdb.set_trace()
         if not order.carrier_description:
             self.set_default_carrier_description(cr, uid, ids, context=context)
 
@@ -690,12 +688,14 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # -----------------------------------------------------------------
         header = {'Content-Type': 'text/xml'}
 
-        data = order.get_request_container(customer=False, system=True)
+        data = order.get_request_container(
+            customer=False, system=True, connection=carrier_connection)
         data.update({
-            'Recipient': order.get_recipient_container(),
-            'Shipment': order.get_shipment_container(),
+            'Recipient': self.get_recipient_container(cr, uid, ids, context=context),
+            'Shipment': self.get_shipment_container(cr, uid, ids, context=context),
         })
 
+        pdb.set_trace()
         payload = self.get_envelope('ShipmentRequest', data)
         _logger.info('Call: %s' % data)
         reply = requests.post(
@@ -730,7 +730,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         # if error:
         #    return error
-        order.update_order_with_soap_reply(reply)
+        return self.update_order_with_soap_reply(
+            cr, uid, ids, reply, context=context)
 
     def shipment_options_request(self, cr, uid, ids, context=None):
         """ 17. API ShippingOptionsRequest: Get better quotation
