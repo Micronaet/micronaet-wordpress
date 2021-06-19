@@ -178,9 +178,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         parcels = len(order.parcel_ids)
         path = self.get_folder_root_path(cr, mode)
         if mode == 'tracking':
-            label_path = order.get_folder_root_path(
+            label_path = self.get_folder_root_path(
                 cr, 'label', root_path=path)
-            parcel_path = order.get_folder_root_path(
+            parcel_path = self.get_folder_root_path(
                 cr, 'parcel', root_path=path)
 
         counter = 0
