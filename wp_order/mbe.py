@@ -173,9 +173,10 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             self, cr, uid, ids, reply, mode='label', context=None):
         """ Save order label
         """
+        pdb.set_trace()
         order = self.browse(cr, uid, ids, context=context)[0]
         parcels = len(order.parcel_ids)
-        path = order.get_folder_root_path(cr, mode)
+        path = self.get_folder_root_path(cr, mode)
         if mode == 'tracking':
             label_path = order.get_folder_root_path(
                 cr, 'label', root_path=path)
@@ -628,8 +629,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     def update_order_with_soap_reply(self, cr, uid, ids, data, context=None):
         """ Update order data with SOAP reply (error checked in different call)
         """
-        pdb.set_trace()
-
         # order = self.browse(cr, uid, ids, context=context)[0]
         master_tracking_id = data['MasterTrackingMBE']
         system_reference_id = data['SystemReferenceID']
