@@ -294,7 +294,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                     'courier_supplier_id': supplier_id,
                     'courier_mode_id': service_id,
                     'carrier_mode_id': carrier_mode_id,
-                    'soap_last_error': False,  # Clean error when write
+                    # 'soap_last_error': False,  # Clean error when write
                 }, context=context)
 
                 # 'IdSubzone': 125,
