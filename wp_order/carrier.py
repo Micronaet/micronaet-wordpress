@@ -278,12 +278,12 @@ class SaleOrderParcel(orm.Model):
         'weight': fields.function(
             _get_volumetric_weight,
             string='Peso Volumetrico', digits=(16, 2), type='float',
-            readonly=True,
+            readonly=True, multi=True,
         ),
         'used_weight': fields.function(
             _get_volumetric_weight,
             string='Larghezza usata', digits=(16, 2), type='float',
-            readonly=True,
+            readonly=True, multi=True,
         ),
         'weight_uom_id': fields.many2one('product.uom', 'UM peso'),
         'no_label': fields.boolean('No etichetta'),
@@ -306,13 +306,13 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         order = self.browse(cr, uid, ids, context=context)[0]
         template = order.carrier_parcel_template_id
 
-        return parcel_pool.create({
+        return parcel_pool.create(cr, uid, {
             'order_id': order.id,
             'length': template.length,
             'width': template.width,
             'height': template.height,
             'no_label': template.no_label,
-            })
+            }, context=context)
 
     def carrier_get_better_option(self, cr, uid, ids, context=None):
         """ Get better options
