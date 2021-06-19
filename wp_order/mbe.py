@@ -477,9 +477,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             customer=False, system=True, connection=carrier_connection,
             context=context,
         )
-        pdb.set_trace()
         data['ShippingParameters'] = order.get_shipment_parameters_container()
         # data['ShippingParameters']['Service'] = 1 o 2
+        pdb.set_trace()
         payload = self.get_envelope('ShippingOptionsRequest', data)
         _logger.info('Call: %s' % data)
         reply = requests.post(
