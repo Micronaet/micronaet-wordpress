@@ -304,15 +304,14 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """ Override method for send carrier request
         """
         order = self.browse(cr, uid, ids, context=context)
-        pdb.set_trace()
 
         # ---------------------------------------------------------------------
         # Check options:
         # ---------------------------------------------------------------------
         # Get options if not present (XXX Moved here):
-        if not order.manage_delivery:
-            return order.log_error(
-                _('Order not delivery managed from ODOO'))
+        # if not order.manage_delivery:
+        #    return order.log_error(
+        #        _('Order not delivery managed from ODOO'))
 
         if order.carrier_state in ('sent', 'delivered'):
             return order.log_error(

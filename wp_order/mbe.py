@@ -669,7 +669,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         assert len(ids) == 1, 'Un ordine alla volta'
         order = self.browse(cr, uid, ids, context=context)[0]
 
-        carrier_connection = order.soap_connection_id
+        carrier_connection = order.carrier_connection_id
+        pdb.set_trace()
         if not carrier_connection:
             return 'Order %s has carrier without SOAP ref.!' % order.name
         # todo if order.state not in 'draft':
