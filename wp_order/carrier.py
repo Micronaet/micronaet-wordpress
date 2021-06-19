@@ -44,6 +44,20 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 
+class ResCompany(orm.Model):
+    """ Model name: Company parameters
+    """
+
+    _inherit = 'res.company'
+
+    _columns = {
+        'carrier_save_label': fields.boolean(
+            'Salva etichette', help='Salva le etichette senza stamparle'),
+        'carrier_save_label_path': fields.char(
+            'Carrier_save_label_path', size=100),
+    }
+
+
 class CarrierConnection(orm.Model):
     """ Model name: Carrier Connection
     """
@@ -275,13 +289,11 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     """
     _inherit = 'wordpress.sale.order'
 
-    @api.multi
     def sanitize_text(self, text):
         """ Clean HTML tag from text
         :param text: HTML text to clean
         :return: clean text
         """
-        self.ensure_one()
         tag_re = re.compile(r'<[^>]+>')
         return tag_re.sub('', text.strip())
 

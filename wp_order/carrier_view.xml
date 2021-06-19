@@ -1,7 +1,163 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-        <!--<record model="ir.ui.view" id="view_sale_order_carrier_search">
+        <record id="res_company_carrier_page_form" model="ir.ui.view">
+            <field name="name">res.company.carrier.page.form</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page name="carrier_page" string="Corriere MBE">
+                        <group col="2">
+                            <field name="carrier_save_label" />
+                            <field name="carrier_save_label_path" attrs="{'invisible': [('carrier_save_label', '=', False)], 'required': [('carrier_save_label', '=', True)]}"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+		<record model="ir.actions.server" id="ir_actions_server_order_carrier_confirm">
+			<field name="name">Carrier: confirm orders</field>
+			<field name="model_id" ref="model_wordpress_sale_order"/>
+			<field name="sequence">1</field>
+			<field name="type">ir.actions.server</field>
+			<!--<field name="multi">true</field>-->
+			<field name="state">code</field>
+			<field name="code">
+				for order in records:
+                   order.set_carrier_ok_yes()
+			</field>
+		</record>
+		<record model="ir.actions.server" id="ir_actions_server_order_carrier_cancel">
+			<field name="name">Carrier: cancel orders</field>
+			<field name="model_id" ref="model_wordpress_sale_order"/>
+			<field name="sequence">2</field>
+			<field name="type">ir.actions.server</field>
+            <!--<field name="multi">true</field>-->
+			<field name="state">code</field>
+			<field name="code">
+				for order in records:
+                   order.set_carrier_ok_no()
+			</field>
+		</record>
+		<record model="ir.actions.server" id="ir_actions_server_order_carrier_sent">
+			<field name="name">Carrier: sent orders</field>
+			<field name="model_id" ref="model_wordpress_sale_order"/>
+			<field name="sequence">3</field>
+			<field name="type">ir.actions.server</field>
+            <!--<field name="multi">true</field>-->
+			<field name="state">code</field>
+			<field name="code">
+				for order in records:
+                    order.set_carrier_ok_sent()
+			</field>
+		</record>
+
+        <!--SHIPMENT VIEWS:-->
+        <!--<record id="carrier_sale_order_error_detail_form" model="ir.ui.view">
+            <field name="name">wordpress.sale.order.shipment</field>
+            <field name="model">wordpress.sale.order</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <form string="Error detail">
+                    <header>
+                        <button string="Close" special="cancel" />
+                    </header>
+                    <sheet>
+                        <group>
+                            <separator string="Last error detail:" colspan="4"/>
+                            <field name="soap_last_error" colspan="4" nolabel="1" readonly="1"/>
+                        </group>
+                    </sheet>
+                    <footer></footer>
+                </form>
+            </field>
+        </record>-->
+        <record id="carrier_sale_order_tree" model="ir.ui.view">
+            <field name="name">wordpress.sale.order.shipment</field>
+            <field name="model">wordpress.sale.order</field>
+            <field name="priority" eval="40"/>
+
+            <field name="arch" type="xml">
+                <tree string="Sale order for carrier" editable="bottom" colors="green: carrier_soap_state == 'delivered';blue: carrier_soap_state == 'pending'; grey:carrier_state == 'draft' and (len(parcel_ids) == 0 or not carrier_supplier_id)" >
+                    <!--<field name="connector_id"/>
+                    <field name="wp_date_created"/>
+                    -->
+                    <field name="name" readonly="1"/>
+                    <field name="partner_name" readonly="1"/>
+                    <field name="shipping" readonly="1"/>
+
+                    <field name="carrier_parcel_template_id" domain="['|',('carrier_supplier_id','=',False),('carrier_supplier_id','=',carrier_supplier_id)]" />
+                    <field name="parcel_weight_tree" />
+                    <button name="load_template_parcel" string="Add parcel" icon="fa-plus fa-2x" type="object" attrs="{'invisible': [('carrier_parcel_template_id','=',False)]}" class="oe_highlight"/>
+
+                    <field name="parcel_detail" readonly="1"/>
+                    <field name="parcel_ids" invisible="1"/>
+                    <field name="ship_type" invisible="1"/>
+                    <field name="package_type" invisible="1"/>
+                    <field name="carrier_cost_lossy" invisible="1"/>
+
+                    <field name="carrier_supplier_id"/>
+                    <field name="carrier_mode_id" />
+                    <button name="carrier_get_better_option" type="object" string="Get better option" icon="fa-hand-o-right fa-2x" />
+                    <field name="courier_supplier_id" /> <!--readonly="1"-->
+                    <field name="courier_mode_id" /> <!--readonly="1"-->
+                    <field name="master_tracking_id" readonly="1"/>
+                    <field name="carrier_track_id" readonly="1"/>
+                    <field name="carrier_cost" readonly="1"/>
+                    <field name="carrier_state"/>
+                    <field name="carrier_ok" invisible="1"/>
+
+                    <!--<field name="soap_last_error" invisible="1"/>
+                    <button name="soap_comment_last_error" string="Last error present" type="object" attrs="{'invisible': [('soap_last_error', '=', False)]}" icon="fa-exclamation-triangle fa-2x" />-->
+
+                    <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="fa-dropbox fa-2x" />
+                    <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="fa-mail-reply fa-2x" />
+                    <button name="carrier_print_label" type="object" string="Print label" icon="fa-film fa-2x" attrs="{'invisible': [('carrier_track_id', '=', False)]}"/>
+                    <button name="order_form_detail" type="object" string="Get better option" icon="fa-arrows fa-2x"/>
+                    <field name="state" invisible="1"/>
+                    <field name="carrier_state" invisible="1"/>
+                    <!--<field name="carrier_delivery_state" invisible="1"/>-->
+                    <field name="state" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="carrier_sale_order_action" model="ir.actions.act_window">
+            <field name="name">Carrier sale order</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wordpress.sale.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('carrier_state', 'in', ('draft', 'pending')),('state', 'not in', ('on-hold', 'pending'))]</field>
+            <field name="view_id" ref="carrier_sale_order_tree"/>
+        </record>
+        <record id="carrier_sale_order_action_sent" model="ir.actions.act_window">
+            <field name="name">Carrier order sent</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wordpress.sale.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('carrier_state', '=', 'sent')]</field>
+            <field name="view_id" ref="carrier_sale_order_tree"/>
+        </record>
+        <record id="carrier_sale_order_action_delivered" model="ir.actions.act_window">
+            <field name="name">Carrier order delivered</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wordpress.sale.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('carrier_state', '=', 'delivered'),]</field>
+            <field name="view_id" ref="carrier_sale_order_tree"/>
+        </record>
+        <record id="carrier_sale_order_action_lossy" model="ir.actions.act_window">
+            <field name="name">Carrier order lossy</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wordpress.sale.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('carrier_cost_lossy', '=', True)]</field>
+            <field name="view_id" ref="carrier_sale_order_tree"/>
+        </record>
+
+
+
+        <record model="ir.ui.view" id="view_sale_order_carrier_search">
             <field name="name">wordpress.sale.order.carrier.search</field>
             <field name="model">wordpress.sale.order</field>
             <field name="inherit_id" ref="wordpress_sale_order_view_search"/>
@@ -27,13 +183,16 @@
                     <filter string="Carrier signed date" domain="[]" context="{'group_by': 'carrier_delivery_sign'}"/>
                 </xpath>
             </field>
-        </record>-->
+        </record>
 
         <record model="ir.ui.view" id="wordpress_sale_order_carrier_view_form">
             <field name="name">wordpress.sale.order.form</field>
             <field name="model">wordpress.sale.order</field>
             <field name="inherit_id" ref="wp_order.wordpress_sale_order_view_form"/>
             <field name="arch" type="xml">
+                <field name="key" position="after">
+                    <field name="carrier_connection_id" /> <!--attrs="{'invisible': [('soap_connection_id', '=', False)]}"-->
+                </field>
                 <xpath expr="//page[1]" position="after">
                     <page string="Carrier" name="carrier_page">
                         <group colspan="4" col="5">
@@ -76,7 +235,7 @@
 
                         <group colspan="4" col="5" >
                             <separator string="Request:" colspan="4"/>
-                            <button name="set_default_carrier_description" string="Force description" type="object" icon="fa-hand-o-down"/>
+                            <button name="set_default_carrier_description" string="Force description" type="object" icon="gtk-execute"/>
                             <field name="carrier_description" colspan="5" />
                             <newline/>
 
@@ -164,6 +323,8 @@
             <field name="arch" type="xml">
                 <tree string="Parcel template" editable="bottom" decoration-primary="carrier_supplier_id==False">
                     <field name="carrier_supplier_id" />
+                    <field name="carrier_connection_id" />
+                    <field name="package_type" />
 
                     <field name="name" />
                     <field name="length" />
@@ -182,6 +343,8 @@
                     <sheet>
                         <group colspan="4" col="6">
                             <field name="carrier_supplier_id" />
+                            <field name="carrier_connection_id" />
+                            <field name="package_type" />
 
                             <field name="name" />
                             <field name="weight" />
