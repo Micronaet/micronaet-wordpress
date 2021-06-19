@@ -371,13 +371,15 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """
         order = self.browse(cr, uid, ids, context=context)[0]
         # todo manage partner data:
-        partner = order.partner_shipping_id or order.partner_id
+        wp_record = eval(order.wp_record)
+        shipping = wp_record.get('shipping', {})
+
         data = {
             'DestinationInfo': {
-                'ZipCode': partner.zip or '',  # 12
-                'City': partner.city or '',  # * 50,
-                'State': partner.state_id.code or '',  # * 2
-                'Country': partner.country_id.code or '',  # 2
+                'ZipCode': shipping.get('postcode', ''),  # 12
+                'City': shipping.get('city', ''),  # * 50,
+                'State': shipping.get('state', ''),  # * 2
+                'Country': shipping.get('country', ''),  # 2
                 'idSubzone': '',  # * int
                 },
             'ShipType': order.ship_type or '',
@@ -440,7 +442,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     def shipment_options_request(self, cr, uid, ids, context=None):
         """ 17. API ShippingOptionsRequest: Get better quotation
         """
-        pdb.set_trace()
         assert len(ids) == 1, 'Un ordine alla volta'
         order = self.browse(cr, uid, ids, context=context)[0]
 
@@ -476,7 +477,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             customer=False, system=True, connection=carrier_connection,
             context=context,
         )
-
+        pdb.set_trace()
         data['ShippingParameters'] = order.get_shipment_parameters_container()
         # data['ShippingParameters']['Service'] = 1 o 2
         payload = self.get_envelope('ShippingOptionsRequest', data)
