@@ -329,7 +329,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 _('Controllo pre chiamata'),
                 _('Richiesto almeno un imballo'),
                 )
-        return self.shipment_options_request()
+        return self.shipment_options_request(cr, uid, ids, context=context)
 
     def set_default_carrier_description(self, cr, uid, ids, context=None):
         """ Update description from sale order line

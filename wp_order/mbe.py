@@ -452,9 +452,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                    order.name
         # if order.state not in 'draft':
         #    return 'Ordine %s è a bozza quindi non pubblicato!' % order.name
-        if order.carrier_soap_id:
-            return 'Order %s has SOAP ID %s cannot publish!' % (
-                    order.name, order.carrier_soap_id)
+        # if order.carrier_soap_id:
+        #    return 'Order %s has SOAP ID %s cannot publish!' % (
+        #            order.name, order.carrier_soap_id)
 
         # ---------------------------------------------------------------------
         # SOAP insert call:
@@ -515,7 +515,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 _('Errore Server MBE'),
                 _('Risposta errata: %s' % reply),
                 )
-
 
         # error += order.check_reply_status(reply)
         reply_list.append((carrier_connection, reply))
