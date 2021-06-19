@@ -224,6 +224,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # TODO no need to create 21 nov. 2020?!?:
         # Update order with better quotation:
         data = False
+        pdb.set_trace()
 
         if better:
             connection, data = better
@@ -258,7 +259,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 if services:
                     service_id = services[0]
                 else:
-                    supplier_id = service_pool.create(cr, uid, {
+                    service_id = service_pool.create(cr, uid, {
                         'account_ref': service_code,
                         'name': service_name,
                         'supplier_id': supplier_id,
