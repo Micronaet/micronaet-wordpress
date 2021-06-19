@@ -306,7 +306,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         if not data:  # Or previous update error
             # Reset data:
-            self.write({
+            self.write(cr, uid, ids, {
                 'carrier_connection_id': False,
                 'carrier_cost': 0.0,
                 'carrier_mode_id': False,
