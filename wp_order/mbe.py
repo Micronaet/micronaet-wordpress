@@ -173,7 +173,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             self, cr, uid, ids, reply, mode='label', context=None):
         """ Save order label
         """
-        pdb.set_trace()
         order = self.browse(cr, uid, ids, context=context)[0]
         parcels = len(order.parcel_ids)
         path = self.get_folder_root_path(cr, mode)
@@ -185,7 +184,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         counter = 0
         if mode in ('label', 'tracking'):
-            label_list = reply['Labels']['Label']
+            label_list = [reply['Labels']['Label']]
         else:
             label_list = [reply['Pdf']]
         for label in label_list:
@@ -201,6 +200,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 fullname = os.path.join(path, '%s.PDF' % (
                     order.id))
 
+            pdb.set_trace()
             with open(fullname, 'wb') as label_file:
                 label_file.write(label_stream)
 

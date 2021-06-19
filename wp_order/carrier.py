@@ -300,6 +300,13 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     """
     _inherit = 'wordpress.sale.order'
 
+    def log_error(self, cr, uid, ids, error, context=context):
+        """ Log error in chatter and in console
+        """
+        order = self.browse(cr, uid, ids, context=context)[0]
+        _logger.error('Order: %s [%s]' % (order.name, error))
+        # order.write_log_chatter_message(error)
+        return True order.write({'soap_last_error': error,})
     def set_carrier_ok_yes(self, cr, uid, ids, context=None):
         """ Override method for send carrier request
         """
@@ -314,28 +321,47 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         #        _('Order not delivery managed from ODOO'))
 
         if order.carrier_state in ('sent', 'delivered'):
-            return order.log_error(
-                _('Order sent or delivered cannot confirm!'))
+            return self.log_error(
+                cr, uid, ids,
+                _('Order sent or delivered cannot confirm!'),
+                context=context
+                )
 
         if not order.carrier_supplier_id or not order.parcel_ids:
-            return order.log_error(
-                _('Need carrier name and parcel data for get quotation'))
+            return self.log_error(
+                cr, uid, ids,
+                _('Need carrier name and parcel data for get quotation'),
+                context=context,
+                )
+
 
         if order.carrier_track_id:
-            return order.log_error(
+            return self.log_error(
+                cr, uid, ids,
                 _('Track ID yet present, cannot regenerate, '
-                  'cancel and reassign if needed'))
+                  'cancel and reassign if needed'),
+                context=context,
+            )
 
         # 1. Get options if not present courier:
         if not order.courier_supplier_id:
-            error = order.shipment_options_request()
+            error = self.shipment_options_request(
+                    cr, uid, ids, context=context)
             if error:
-                return order.log_error(error)
+                return self.log_error(
+                    cr, uid, ids,
+                    error,
+                    context=context,
+                )
 
         # 2. Create request:
         error = self.shipment_request(cr, uid, ids, context=context)
         if error:
-            return order.log_error(error)
+            return order.log_error(
+                cr, uid, ids,
+                error,
+                context=context,
+            )
 
         # 3. Print also labels:
         # if order.soap_connection_id.auto_print_label:
