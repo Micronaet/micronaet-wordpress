@@ -29,23 +29,23 @@
             </field>
         </record>-->
 
-        <record model="ir.ui.view" id="view_sale_order_form">
+        <record model="ir.ui.view" id="wordpress_sale_order_carrier_view_form">
             <field name="name">wordpress.sale.order.form</field>
             <field name="model">wordpress.sale.order</field>
-            <field name="inherit_id" ref="wordpress_sale_order_view_form"/>
+            <field name="inherit_id" ref="wp_order.wordpress_sale_order_view_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//page[1]" position="after">
                     <page string="Carrier" name="carrier_page">
                         <group colspan="4" col="5">
-                            <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="fa-dropbox" colspan="1"/>
-                            <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="fa-mail-reply" colspan="1"/>
+                            <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="gtk-yes" colspan="1"/>
+                            <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="gtk-no" colspan="1"/>
                             <newline/>
                             <field name="carrier_ok" invisible="1" />
                         </group>
 
                         <group colspan="4" col="5" >
-                            <!--<field name="carrier_supplier_id" />
-                            <field name="carrier_mode_id" />
+                            <field name="carrier_supplier_id" />
+                            <!--<field name="carrier_mode_id" />
                             <button name="carrier_get_better_option" type="object" string="Get better option" icon="fa-hand-o-left"/>
 
                             <field name="carrier_parcel_template_id" domain="['|',('carrier_supplier_id','=',False),('carrier_supplier_id','=',carrier_supplier_id)]"/>
