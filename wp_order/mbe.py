@@ -320,7 +320,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         result = ''
         level += 1
         spaces = ' ' * level
-        for key, value in data.items():
+        for key, value in data.iteritems():
             if type(value) == dict:
                 result += '%s<%s>%s%s%s</%s>%s' % (
                     spaces, key, cr, data(value, level, cr), spaces, key,
