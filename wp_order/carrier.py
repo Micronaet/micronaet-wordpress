@@ -269,7 +269,7 @@ class SaleOrderParcel(orm.Model):
     }
 
 
-class WordpressSaleOrder(orm.Model):
+class WordpressSaleOrderRelationCarrier(orm.Model):
     """ Model name: Wordpress Sale order
     """
     _inherit = 'wordpress.sale.order'

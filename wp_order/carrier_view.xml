@@ -37,7 +37,7 @@
                 <xpath expr="//page[1]" position="after">
                     <page string="Carrier" name="carrier_page">
                         <group colspan="4" col="5">
-                            <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="fa-dropbox" colspan="1"/><!--('logistic_state', 'not in', ('order', 'pending')), -->
+                            <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="fa-dropbox" colspan="1"/>
                             <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="fa-mail-reply" colspan="1"/>
                             <newline/>
                             <field name="carrier_ok" invisible="1" />
@@ -69,9 +69,9 @@
                         </group>
 
                         <group colspan="4" col="5">
-                            <separator string="Partner check:" colspan="4"/>
+                            <!--<separator string="Partner check:" colspan="4"/>
                             <field name="carrier_check" colspan="4" readonly="1" nolabel="1" widget="html"/>
-                            <newline/>
+                            <newline/>-->
                         </group>
 
                         <group colspan="4" col="5" >
