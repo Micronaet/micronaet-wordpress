@@ -554,7 +554,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         name = '%s %s' % (shipping['first_name'], shipping['last_name'])
         return {
             'Name': name[:35],
-            'CompanyName': shipping['company'][:35],
+            'CompanyName': (shipping['company'] or name)[:35],
             'Nickname': ''[:100],
             'Address': shipping['address_1'][:100],
             'Address2': shipping['address_1'][:35],
