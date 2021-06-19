@@ -299,6 +299,23 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     """
     _inherit = 'wordpress.sale.order'
 
+    def carrier_get_better_option(self):
+        """ Get better options
+        """
+        order = self.browse(cr, uid, ids, context=context)][0]
+        if not order.carrier_supplier_id:
+            raise osv.except_osv(
+                _('Controllo pre chiamata'),
+                _('Richiesto il nome corriere'),
+                )
+
+        if not order.parcel_ids:
+            raise osv.except_osv(
+                _('Controllo pre chiamata'),
+                _('Richiesto almeno un imballo'),
+                )
+        return self.shipment_options_request()
+
     def set_default_carrier_description(self, cr, uid, ids, context=None):
         """ Update description from sale order line
         """
