@@ -300,6 +300,37 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     """
     _inherit = 'wordpress.sale.order'
 
+    def generate_parcel_from_order(self, cr, uid, ids, context=None):
+        """ Generate parcels from sale order
+        """
+        order_id = ids[0]
+        parcel_pool = self.pool.get('sale.order.parcel')
+        order = self.browse(cr, uid, order_id, context=context)
+
+        # Delete previous:
+        parcel_ids = parcel_pool.search(cr, uid, [
+            ('order_id', '=', order_id),
+        ], context=context)
+        parcel_pool.unlink(cr, uid, parcel_ids, context=context)
+
+        # Generate parcel from product:
+        for line in order.line_ids:
+            product = line.product_id
+            if product:
+                # This database:
+                data = {
+                    'order_id': order_id,
+                    'weight': product.weight,
+                    'height': product.pack_h,  # height,
+                    'width': product.pack_w,  # width,
+                    'length': product.pack_l,  # length,
+                }
+            else:
+                # Linked database
+                pass
+
+        return True
+
     def log_error(self, cr, uid, ids, error, context=None):
         """ Log error in chatter and in console
         """
@@ -448,7 +479,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         return self.write(cr, uid, ids, {
             'carrier_description': self.sanitize_text(carrier_description)
             }, context=context)
-
 
     def _get_parcel_detail(
             self, cr, uid, ids, fields=None, args=None, context=None):

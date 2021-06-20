@@ -279,7 +279,8 @@
                             <button name="load_template_parcel" string="Add" type="object" attrs="{'invisible': [('carrier_parcel_template_id','=',False)]}" colspan="1" class="oe_highlight"/>
                             <newline/>
 
-                            <separator string="Parcel:" colspan="5"/>
+                            <separator string="Parcel:" colspan="4"/>
+                            <button name="generate_parcel_from_order" type="object" string="Genera colli da ordine" icon="gtk-execute" confirm="I colli verranno ricalcolati da quelli nei prodotti in ordine, confermi?"/>
                             <field name="parcel_ids" colspan="5" nolabel="1">
                                 <tree string="Parcel" editable="bottom">
                                     <field name="length" />
