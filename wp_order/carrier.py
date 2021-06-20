@@ -300,6 +300,30 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     """
     _inherit = 'wordpress.sale.order'
 
+    def order_form_detail(self):
+        """ Return order form
+        """
+        # model_pool = self.env['ir.model.data']
+        # tree_view_id = model_pool.get_object_reference(
+        #    'logistic_management', 'view_sale_order_line_logistic_tree')[1]
+        # form_view_id = model_pool.get_object_reference(
+        #    'carrier_mbe_soap', 'view_sale_order_line_logistic_form')[1]
+        tree_view_id = form_view_id = False
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Order details'),
+            'view_type': 'form',
+            'view_mode': 'form,tree',
+            'res_id': self.id,
+            'res_model': 'sale.order',
+            'view_id': tree_view_id,
+            'views': [(form_view_id, 'form'), (tree_view_id, 'tree')],
+            'domain': [],
+            'context': self.env.context,
+            'target': 'current',
+            'nodestroy': False,
+        }
+
     def generate_parcel_from_order(self, cr, uid, ids, context=None):
         """ Generate parcels from sale order
         """
