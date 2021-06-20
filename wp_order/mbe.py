@@ -148,55 +148,6 @@ class CarrierConnectionMBE(orm.Model):
     """
     _inherit = 'carrier.connection'
 
-    def html_post(
-            self, cr, uid, ids, carrier_connection, endpoint, data,
-            undo_error=False, context=None):
-        """ Call portal with payload parameter
-        """
-        assert len(ids) == 1, 'Un\'ordine alla volta'
-
-        header = {'Content-Type': 'text/xml'}
-        payload = self.get_envelope(endpoint, data)
-        _logger.info('Call: %s' % data)
-        pdb.set_trace()
-        reply = requests.post(
-            carrier_connection.location,
-            auth=HTTPBasicAuth(
-                carrier_connection.username,
-                carrier_connection.passphrase),
-            headers=header,
-            data=payload,
-        )
-        if not reply.ok:
-            raise osv.except_osv(
-                _('Errore Server MBE'),
-                _('Risposta non corretta: %s' % reply),
-            )
-        _logger.warning('\n%s\n\n%s\n' % (data, reply))
-
-        # ---------------------------------------------------------------------
-        # Clean reply:
-        # ---------------------------------------------------------------------
-        reply_text = reply.text
-        data_block = reply_text.split(
-            '<RequestContainer>')[-1].split('</RequestContainer>')[0]
-
-        data_block = (
-                '<RequestContainer>%s</RequestContainer>' % data_block
-        ).encode('ascii', 'ignore').decode('ascii')
-
-        root = ElementTree.XML(data_block)
-        result_data = XmlDictConfig(root)
-
-        # todo manage error = order.check_reply_status(
-        #     cr, uid, ids, reply, undo_error=undo_error)
-        # if error:
-        #    error = 'Error deleting: Track: %s\n%s' % (
-        #        master_tracking_id,
-        #        error,
-        #    )
-        return result_data
-
 
 class WordpressSaleOrderRelationCarrier(orm.Model):
     """ Model name: Wordpress Sale order
@@ -757,10 +708,58 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     # -------------------------------------------------------------------------
     # HTML List of function:
     # -------------------------------------------------------------------------
+    def html_post(
+            self, cr, uid, ids, carrier_connection, endpoint, data,
+            undo_error=False, context=None):
+        """ Call portal with payload parameter
+        """
+        assert len(ids) == 1, 'Un\'ordine alla volta'
+
+        header = {'Content-Type': 'text/xml'}
+        payload = self.get_envelope(endpoint, data)
+        _logger.info('Call: %s' % data)
+        pdb.set_trace()
+        reply = requests.post(
+            carrier_connection.location,
+            auth=HTTPBasicAuth(
+                carrier_connection.username,
+                carrier_connection.passphrase),
+            headers=header,
+            data=payload,
+        )
+        if not reply.ok:
+            raise osv.except_osv(
+                _('Errore Server MBE'),
+                _('Risposta non corretta: %s' % reply),
+            )
+        _logger.warning('\n%s\n\n%s\n' % (data, reply))
+
+        # ---------------------------------------------------------------------
+        # Clean reply:
+        # ---------------------------------------------------------------------
+        reply_text = reply.text
+        data_block = reply_text.split(
+            '<RequestContainer>')[-1].split('</RequestContainer>')[0]
+
+        data_block = (
+                '<RequestContainer>%s</RequestContainer>' % data_block
+        ).encode('ascii', 'ignore').decode('ascii')
+
+        root = ElementTree.XML(data_block)
+        result_data = XmlDictConfig(root)
+
+        # todo manage error = order.check_reply_status(
+        #     cr, uid, ids, reply, undo_error=undo_error)
+        # if error:
+        #    error = 'Error deleting: Track: %s\n%s' % (
+        #        master_tracking_id,
+        #        error,
+        #    )
+        return result_data
+
     def delete_shipments_request(self, cr, uid, ids, context=None):
         """ 4. API Delete Shipment Request: Delete shipment request
         """
-        connection_pool = self.pool.get('carrier.connection')
         order = self.browse(cr, uid, ids, context=context)[0]
         error = ''
         carrier_connection = order.carrier_connection_id
@@ -772,7 +771,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             data = self.get_request_container(
                 cr, uid, ids, system='SystemType', context=context)
             data['MasterTrackingsMBE'] = master_tracking_id  # Also with Loop
-            result_data = connection_pool.html_post(
+            result_data = self.html_post(
                 cr, uid, ids,
                 carrier_connection, 'DeleteShipmentsRequest', data)
 
@@ -798,7 +797,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """ 15. API Shipment Request: Insert new carrier request
         """
         assert len(ids) == 1, 'Un\'ordine alla volta'
-        connection_pool = self.pool.get('carrier.connection')
 
         order = self.browse(cr, uid, ids, context=context)[0]
 
@@ -829,7 +827,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 cr, uid, ids, context=context),
             })
 
-        result_data = connection_pool.html_post(
+        result_data = self.html_post(
             carrier_connection, 'ShipmentRequest', data, undo_error=False)
         return self.update_order_with_soap_reply(
             cr, uid, ids, result_data, context=context)
@@ -838,7 +836,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """ 17. API ShippingOptionsRequest: Get better quotation
         """
         assert len(ids) == 1, 'Un ordine alla volta'
-        connection_pool = self.pool.get('carrier.connection')
 
         order = self.browse(cr, uid, ids, context=context)[0]
 
@@ -873,7 +870,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             context=context,
         )
         data['ShippingParameters'] = order.get_shipment_parameters_container()
-        result_data = connection_pool.html_post(
+        result_data = self.html_post(
             carrier_connection, 'ShippingOptionsRequest', data,
             undo_error=False)  # todo True
         reply_list.append((carrier_connection, result_data))
