@@ -310,7 +310,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             'view_type': 'form',
             'view_mode': 'form,tree',
             'res_id': ids[0],
-            'res_model': 'sale.order',
+            'res_model': 'wordpress.sale.order',
             'view_id': tree_view_id,
             'views': [(form_view_id, 'form'), (tree_view_id, 'tree')],
             'domain': [],
