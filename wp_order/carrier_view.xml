@@ -151,7 +151,8 @@
 
                     <field name="carrier_parcel_template_id" domain="['|',('carrier_supplier_id','=',False),('carrier_supplier_id','=',carrier_supplier_id)]" />
                     <field name="parcel_weight_tree" />
-                    <button name="load_template_parcel" string="Add parcel" icon="fa-plus fa-2x" type="object" attrs="{'invisible': [('carrier_parcel_template_id','=',False)]}" class="oe_highlight"/>
+                    <button name="load_template_parcel" string="Add parcel" icon="gtk-add" type="object" attrs="{'invisible': [('carrier_parcel_template_id','=',False)]}" class="oe_highlight"/>
+                    <button name="generate_parcel_from_order" type="object" string="Genera colli da ordine" icon="gtk-execute" confirm="I colli verranno ricalcolati da quelli nei prodotti in ordine, confermi?"/>
 
                     <field name="parcel_detail" readonly="1"/>
                     <field name="parcel_ids" invisible="1"/>
@@ -161,7 +162,7 @@
 
                     <field name="carrier_supplier_id"/>
                     <field name="carrier_mode_id" />
-                    <button name="carrier_get_better_option" type="object" string="Get better option" icon="fa-hand-o-right fa-2x" />
+                    <button name="carrier_get_better_option" type="object" string="Get better option" icon="gtk-execute" />
                     <field name="courier_supplier_id" /> <!--readonly="1"-->
                     <field name="courier_mode_id" /> <!--readonly="1"-->
                     <field name="master_tracking_id" readonly="1"/>
@@ -169,18 +170,17 @@
                     <field name="carrier_cost" readonly="1"/>
                     <field name="carrier_state"/>
                     <field name="carrier_ok" invisible="1"/>
+                    <field name="state" invisible="1"/>
+                    <field name="carrier_state" invisible="1" />
 
                     <!--<field name="soap_last_error" invisible="1"/>
                     <button name="soap_comment_last_error" string="Last error present" type="object" attrs="{'invisible': [('soap_last_error', '=', False)]}" icon="fa-exclamation-triangle fa-2x" />-->
 
-                    <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="fa-dropbox fa-2x" />
-                    <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="fa-mail-reply fa-2x" />
+                    <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="gtk-yes" />
+                    <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="gtk-undo" />
                     <button name="carrier_print_label" type="object" string="Print label" icon="gtk-print" attrs="{'invisible': [('carrier_track_id', '=', False)]}"/>
-                    <button name="order_form_detail" type="object" string="Get better option" icon="gtk-execute"/>
-                    <field name="state" invisible="1"/>
-                    <field name="carrier_state" invisible="1"/>
                     <!--<field name="carrier_delivery_state" invisible="1"/>-->
-                    <field name="state" invisible="1"/>
+                    <button name="order_form_detail" type="object" string="Get better option" icon="gtk-execute"/>
                 </tree>
             </field>
         </record>
