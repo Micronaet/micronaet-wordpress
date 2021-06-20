@@ -29,6 +29,7 @@ import pdb
 import requests
 import subprocess
 import shutil
+import base64
 from requests.auth import HTTPBasicAuth  # or HTTPDigestAuth, or OAuth1, etc.
 import xml.etree.cElementTree as ElementTree
 import openerp
@@ -188,7 +189,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         else:
             label_list = [reply['Pdf']]
         pdb.set_trace()
-        import base64
         for label in label_list:
             if mode in ('label', 'tracking'):
                 counter += 1
