@@ -176,7 +176,7 @@
                     <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="fa-dropbox fa-2x" />
                     <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="fa-mail-reply fa-2x" />
                     <button name="carrier_print_label" type="object" string="Print label" icon="gtk-print" attrs="{'invisible': [('carrier_track_id', '=', False)]}"/>
-                    <button name="order_form_detail" type="object" string="Get better option" icon="fa-arrows fa-2x"/>
+                    <button name="order_form_detail" type="object" string="Get better option" icon="gtk-execute"/>
                     <field name="state" invisible="1"/>
                     <field name="carrier_state" invisible="1"/>
                     <!--<field name="carrier_delivery_state" invisible="1"/>-->
