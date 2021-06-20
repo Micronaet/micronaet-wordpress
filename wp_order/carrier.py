@@ -481,10 +481,12 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # todo self.write_log_chatter_message(_('Carrier data is OK'))
 
         # Clean error (if present)
+        today = datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
         return self.write(cr, uid, ids, {
             # 'soap_last_error': False,
             # Check if order needs to be passed in ready status:
             'carrier_ok': True,
+            'traking_date': today,
         })
 
     def set_carrier_ok_no(self, cr, uid, ids, context=None):

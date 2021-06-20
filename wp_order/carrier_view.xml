@@ -181,6 +181,7 @@
                     <button name="carrier_print_label" type="object" string="Print label" icon="gtk-print" attrs="{'invisible': [('carrier_track_id', '=', False)]}"/>
                     <!--<field name="carrier_delivery_state" invisible="1"/>-->
                     <button name="order_form_detail" type="object" string="Dettaglio ordine" icon="gtk-find"/>
+                    <button name="extract_wordpress_published_report" type="object" string="Ordini spediti oggi" icon="gtk-info"/>
                 </tree>
             </field>
         </record>

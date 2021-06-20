@@ -451,6 +451,9 @@ class WordpressSaleOrder(orm.Model):
             'Spedizione effettiva', digits=(10, 2)),
         'currency': fields.char('Currency'),
         'date_order': fields.date('Date order'),
+        'traking_date': fields.date(
+            'Data track',
+            help='Data usata per riepilogare gli ordini giornalieri'),
 
         'wp_date_created': fields.datetime('Date created'),
         'wp_date_modified': fields.datetime('Date modify'),
