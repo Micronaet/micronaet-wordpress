@@ -382,7 +382,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         parcel_pool.unlink(cr, uid, parcel_ids, context=context)
 
         # Generate parcel from product:
-        connector_id = order.connection_id.id
+        connector_id = order.connector_id.id
         pdb.set_trace()
         for line in order.line_ids:
             product = line.product_id
