@@ -159,12 +159,13 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     # Printing:
     # -------------------------------------------------------------------------
     def send_report_to_cups_printer(
-            self, cr, uid, ids, fullname, printer_code=False, context=context):
+            self, cr, uid, ids, fullname, printer_code=False, context=None):
         """ Send report to CUPS printer
             Report file
             Printer code (see printers list)
         """
-        printer_pool = self.env['cups.printer']
+        pdb.set_trace()
+        printer_pool = self.pool.get('cups.printer')
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
 
         printer = False
@@ -223,7 +224,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
         # TODO mode = 'label_01'
         path = self.get_folder_root_path(cr, 'tracking')
-        pdb.set_trace()
+
         # todo not managed for now:
         parcel_path = self.get_folder_root_path(cr, 'parcel', root_path=path)
         label_path = self.get_folder_root_path(cr, 'label', root_path=path)
