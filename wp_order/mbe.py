@@ -163,6 +163,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """
         # TODO mode = 'label_01'
         path = self.get_folder_root_path('tracking')
+        pdb.set_trace()
         # todo not managed for now:
         parcel_path = self.get_folder_root_path('parcel', root_path=path)
         label_path = self.get_folder_root_path('label', root_path=path)
