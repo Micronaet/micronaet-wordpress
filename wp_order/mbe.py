@@ -162,11 +162,11 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """ Print label via CUPS
         """
         # TODO mode = 'label_01'
-        path = self.get_folder_root_path('tracking')
+        path = self.get_folder_root_path(cr, 'tracking')
         pdb.set_trace()
         # todo not managed for now:
-        parcel_path = self.get_folder_root_path('parcel', root_path=path)
-        label_path = self.get_folder_root_path('label', root_path=path)
+        parcel_path = self.get_folder_root_path(cr, 'parcel', root_path=path)
+        label_path = self.get_folder_root_path(cr, 'label', root_path=path)
         filename = '%s.1.PDF' % self.id
         fullname = os.path.join(label_path, filename)
         printer_code = \
