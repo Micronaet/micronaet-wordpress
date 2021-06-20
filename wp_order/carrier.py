@@ -322,9 +322,10 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                     'order_id': order_id,
                     'weight': product.weight,
                     'height': product.pack_h,  # height,
-                    'width': product.pack_w,  # width,
+                    'width': product.pack_p,  # width,
                     'length': product.pack_l,  # length,
                 }
+                parcel_pool.create(cr, uid, data, context=context)
             else:
                 # Linked database
                 pass
