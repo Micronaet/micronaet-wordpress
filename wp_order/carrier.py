@@ -354,6 +354,13 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                     context=context,
                 )
 
+        if not order.courier_supplier_id:  # Same check after get quotation
+            return self.log_error(
+                cr, uid, ids,
+                _('Cannot generate quotation with this parameters'),
+                context=context,
+                )
+
         # 2. Create request:
         error = self.shipment_request(cr, uid, ids, context=context)
         if error:
@@ -363,12 +370,12 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 context=context,
             )
 
-        # 3. Print also labels:
+        # 3. todo Print also labels:
         # if order.soap_connection_id.auto_print_label:
         #    _logger.warning(_('Auto print label on request!'))
         #    order.carrier_print_label()
 
-        # self.write_log_chatter_message(_('Carrier data is OK'))
+        # todo self.write_log_chatter_message(_('Carrier data is OK'))
 
         # Clean error (if present)
         return self.write(cr, uid, ids, {
