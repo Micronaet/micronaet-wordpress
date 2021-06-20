@@ -158,6 +158,63 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     # -------------------------------------------------------------------------
     # Printing:
     # -------------------------------------------------------------------------
+    def send_report_to_cups_printer(
+            self, cr, uid, ids, fullname, printer_code=False, context=context):
+        """ Send report to CUPS printer
+            Report file
+            Printer code (see printers list)
+        """
+        printer_pool = self.env['cups.printer']
+        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
+
+        printer = False
+        if printer_code:
+            printer = printer_pool.search(cr, uid,[
+                ('code', '=', printer_code),
+            ], context=context)
+
+        if not printer:
+            printer = user.default_printer_id or \
+                      user.company_id.default_printer_id or False
+        if not printer:
+            raise osv.except_osv(
+                _('Errore Server MBE'),
+                _('No printer with code or default setup'),
+            )
+
+        if not os.path.isfile(fullname):
+            raise osv.except_osv(
+                _('Errore Server MBE'),
+                _('PDF not found: %s!') % fullname,
+            )
+
+        # -o landscape -o fit-to-page -o media=A4
+        # -o page-bottom=N -o page-left=N -o page-right=N -o page-top=N
+        printer_name = printer.name
+        options = printer.options or ''
+
+        # media=Custom.10x10cm
+        # -o landscape -o fit-to-page -o media=Custom.2x2
+
+        # -o fit-to-page -o media=A6
+        # -o media=Custom.4x4in
+        print_command = 'lp %s -d %s "%s"' % (
+            options,
+            printer_name,
+            fullname,
+        )
+        # todo self.write_log_chatter_message(
+        #    _('Printing %s on %s ...') % (fullname, printer_name))
+
+        try:
+            os.system(print_command)
+        except:
+            raise osv.except_osv(
+                _('Errore Server MBE'),
+                _('Error print PDF invoice on %s!') % printer_name,
+            )
+        return True
+
     def carrier_print_label(self, cr, uid, ids, context=None):
         """ Print label via CUPS
         """
@@ -188,7 +245,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             shutil.copy(fullname, saved_fullname)
             _logger.warning('Saved label in: %s' % saved_fullname)
         else:
-            return self.send_report_to_cups_printer(fullname, printer_code)
+            return self.send_report_to_cups_printer(
+                cr, uid, ids, fullname, printer_code, context=context)
 
     # -------------------------------------------------------------------------
     # Utility:
