@@ -170,7 +170,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         fullname = os.path.join(label_path, filename)
         printer_code = \
             self.carrier_mode_id.cups_printer_id.code or \
-            self.soap_connection_id.cups_printer_id.code
+            self.carrier_connection_id.cups_printer_id.code
 
         # Check if need to print or to save:
         company = self.env.user.company_id

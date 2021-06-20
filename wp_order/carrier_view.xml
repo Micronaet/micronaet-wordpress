@@ -386,7 +386,7 @@
                     <field name="supplier_id" />
                     <field name="name" />
                     <field name="account_ref" />
-                     <!--<field name="cups_printer_id" />-->
+                    <field name="cups_printer_id" />
                     <!--<field name="mode" />-->
                     <!--<field name="connection_id" attrs="{'required': [('mode', '=', 'carrier')]}"/>-->
                 </tree>

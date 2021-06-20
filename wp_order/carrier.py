@@ -125,9 +125,9 @@ class CarrierSupplierMode(orm.Model):
         'name': fields.char('Nome', required=True),
         'account_ref': fields.char('Account ref.'),
         'hidden': fields.boolean('Nascosto'),
-        # 'cups_printer_id': fields.many2one(
-        #    'cups.printer', 'CUPS printer',
-        #    help='Label order print with this')
+        'cups_printer_id': fields.many2one(
+            'cups.printer', 'CUPS printer',
+            help='Label order print with this')
     }
 
 
