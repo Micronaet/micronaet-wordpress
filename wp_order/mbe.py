@@ -188,10 +188,11 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         else:
             label_list = [reply['Pdf']]
         pdb.set_trace()
+        import base64
         for label in label_list:
             if mode in ('label', 'tracking'):
                 counter += 1
-                label_stream = label['Stream']
+                label_stream = base64.b64decode(label['Stream'])
                 label_type = label['Type']
                 filename = '%s.%s.%s' % (
                     order.id, counter, label_type)
@@ -201,7 +202,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 fullname = os.path.join(path, '%s.PDF' % (
                     order.id))
 
-            pdb.set_trace()
             with open(fullname, 'wb') as label_file:
                 label_file.write(label_stream)
 
@@ -718,7 +718,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         header = {'Content-Type': 'text/xml'}
         payload = self.get_envelope(endpoint, data)
         _logger.info('Call: %s' % data)
-        pdb.set_trace()
         reply = requests.post(
             carrier_connection.location,
             auth=HTTPBasicAuth(
