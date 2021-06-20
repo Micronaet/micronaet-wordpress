@@ -389,7 +389,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             if not product:
                 # Linked database:
                 product = connector_pool.get_product_linked_database(
-                    cr, uid, [connector_id], product.sku, context=context)
+                    cr, uid, [connector_id], line.sku, context=context)
             if product:
                 # This database:
                 data = {
