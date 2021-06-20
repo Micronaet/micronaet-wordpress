@@ -320,7 +320,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 # This database:
                 data = {
                     'order_id': order_id,
-                    'weight': product.weight,
+                    'real_weight': product.weight,
                     'height': product.pack_h,  # height,
                     'width': product.pack_p,  # width,
                     'length': product.pack_l,  # length,
