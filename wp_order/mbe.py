@@ -161,20 +161,23 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     def carrier_print_label(self, cr, uid, ids, context=None):
         """ Print label via CUPS
         """
+        order_id = ids[0]
+        order = self.browse(cr, uid, order_id, context=context)
+        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
         # TODO mode = 'label_01'
         path = self.get_folder_root_path(cr, 'tracking')
         pdb.set_trace()
         # todo not managed for now:
         parcel_path = self.get_folder_root_path(cr, 'parcel', root_path=path)
         label_path = self.get_folder_root_path(cr, 'label', root_path=path)
-        filename = '%s.1.PDF' % self.id
+        filename = '%s.1.PDF' % order_id
         fullname = os.path.join(label_path, filename)
         printer_code = \
-            self.carrier_mode_id.cups_printer_id.code or \
-            self.carrier_connection_id.cups_printer_id.code
+            order.carrier_mode_id.cups_printer_id.code or \
+            order.carrier_connection_id.cups_printer_id.code
 
         # Check if need to print or to save:
-        company = self.env.user.company_id
+        company = user.company_id
         if company.carrier_save_label:
             saved_path = os.path.join(
                 os.path.expanduser(company.carrier_save_label_path),
