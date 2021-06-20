@@ -168,7 +168,7 @@
                     <field name="master_tracking_id" readonly="1"/>
                     <field name="carrier_track_id" readonly="1"/>
                     <field name="carrier_cost" readonly="1"/>
-                    <field name="carrier_state"/>
+                    <field name="carrier_state" readonly="1"/>
                     <field name="carrier_ok" invisible="1"/>
                     <field name="state" invisible="1"/>
                     <field name="carrier_state" invisible="1" />
