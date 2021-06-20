@@ -213,9 +213,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 # Get number of pages:
                 output = subprocess.check_output([
                     'pdftk', fullname, 'dump_data'])
-                total_pages = int(
-                    ('%s' % output).split('NumberOfPages: ')[-1].split(
-                        '\\')[0])
+                total_pages = int(('%s' % output).split(
+                    'NumberOfPages: ')[-1].split('\n')[0])
 
                 # Split label:
                 if total_pages > parcels:
