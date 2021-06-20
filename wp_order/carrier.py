@@ -113,32 +113,32 @@ class CarrierConnection(orm.Model):
         'linked_port': fields.integer('DB porta'),
     }
 
-    def get_product_linked_database(self, cr, uid, ids, context=None):
+    def get_product_linked_database(
+            self, cr, uid, ids, default_code, context=None):
         """ Connect with linked database to get extra info
         """
         connector = self.browse(cr, uid, ids, context=context)[0]
 
-        dbname = connector.linked_dbname
-        user = connector.linked_user
-        pwd = connector.linked_pwd
-        server = connector.linked_server
-        port = connector.linked_port
-
-        # -----------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Connect to ODOO:
-        # -----------------------------------------------------------------------------
+        # ---------------------------------------------------------------------
+        if not connector.linked_server:
+            return False
         odoo = erppeek.Client(
-            'http://%s:%s' % (
-                server, port),
-            db=dbname,
-            user=user,
-            password=pwd,
+            'http://%s:%s' % (connector.linked_server, connector.linked_port),
+            db=connector.linked_dbname,
+            user=connector.linked_user,
+            password=connector.linked_pwd,
         )
 
-        # -----------------------------------------------------------------------------
-        # Pool used:
-        # -----------------------------------------------------------------------------
-        account_pool = odoo.model('account.invoice')
+        product_pool = odoo.model('product.product')
+        product_ids = product_pool.search([
+            ('default_code', '=', default_code),
+        ])
+        if not product_ids:
+            _logger.error('No product with %s code' % default_code)
+            return False
+        return product_pool.browse(product_ids)[0]
 
     _defaults = {
         'location': lambda *x:
@@ -362,6 +362,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """
         order_id = ids[0]
         parcel_pool = self.pool.get('sale.order.parcel')
+        connector_pool = self.pool.get('connector.server')
+
         order = self.browse(cr, uid, order_id, context=context)
 
         # Delete previous:
@@ -371,8 +373,14 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         parcel_pool.unlink(cr, uid, parcel_ids, context=context)
 
         # Generate parcel from product:
+        connector_id = order.carrier_connection_id.id
         for line in order.line_ids:
             product = line.product_id
+
+            if not product:
+                # Linked database:
+                product = connector_pool.get_product_linked_database(
+                    cr, uid, [connector_id], product.sku, context=context)
             if product:
                 # This database:
                 data = {
@@ -383,10 +391,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                     'length': product.pack_l,  # length,
                 }
                 parcel_pool.create(cr, uid, data, context=context)
-            else:
-                # Linked database
-                pass
-
 
         return True
 
