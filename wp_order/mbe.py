@@ -252,6 +252,14 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 return text[:size]
         return text
 
+    def sanitize_text(self, text):
+        """ Clean HTML tag from text
+        :param text: HTML text to clean
+        :return: clean text
+        """
+        tag_re = re.compile(r'<[^>]+>')
+        return tag_re.sub('', text.strip())
+
     def update_with_quotation(
             self, cr, uid, ids, reply_list=None, context=None):
         """ Update order courier fields with reply SOAP
@@ -660,13 +668,138 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             'carrier_track_id': courier_track_id,
         }, context=context)
 
+    def check_reply_status(
+            self, cr, uid, ids, reply, console_log=True, undo_error=False,
+            context=None):
+        """ Get Service connection to make calls:
+            :return Error text if present
+        """
+        error_text = ''
+        if reply['Status'] == 'ERROR':  # Status token (OK, ERROR)
+            # Error[{'id', 'Description'}]
+            # error_text = '%s' % (reply['Errors'], )  # TODO better!
+            for error_block in reply['Errors']['Error']:
+                error_text += error_block['Description'].replace('\n', ' ')
+                error_text += '\n'
+
+            # -----------------------------------------------------------------
+            # Undo procedure (delete request) if error:
+            # -----------------------------------------------------------------
+            if undo_error:  # Parameter for undo in case of error
+                try:
+                    master_tracking_mbe = reply['MasterTrackingMBE']
+                    self.write({
+                        'master_tracking_id': master_tracking_mbe,
+                    })
+                    error = self.delete_shipments_request(
+                        cr, uid, ids, context=context)
+                    if error:
+                        _logger.error('%s' % (error, ))
+                    else:
+                        _logger.warning(
+                            'Tracking MBE used for undo request!')
+                except:
+                    _logger.error('Tracking MBE not found, no undo request!')
+
+        if console_log and error_text:
+            _logger.error(error_text)
+        return error_text
+
     # -------------------------------------------------------------------------
     # HTML List of function:
     # -------------------------------------------------------------------------
+    def html_post(
+            self, cr, uid, ids, carrier_connection, endpoint, data,
+            undo_error=False, context=None):
+        """ Call portal with payload parameter
+        """
+        assert len(ids) == 1, 'Un\'ordine alla volta'
+
+        header = {'Content-Type': 'text/xml'}
+        payload = self.get_envelope(endpoint, data)
+        _logger.info('Call: %s' % data)
+        pdb.set_trace()
+        reply = requests.post(
+            carrier_connection.location,
+            auth=HTTPBasicAuth(
+                carrier_connection.username,
+                carrier_connection.passphrase),
+            headers=header,
+            data=payload,
+        )
+        if not reply.ok:
+            raise osv.except_osv(
+                _('Errore Server MBE'),
+                _('Risposta non corretta: %s' % reply),
+            )
+        _logger.warning('\n%s\n\n%s\n' % (data, reply))
+
+        # ---------------------------------------------------------------------
+        # Clean reply:
+        # ---------------------------------------------------------------------
+        reply_text = reply.text
+        data_block = reply_text.split(
+            '<RequestContainer>')[-1].split('</RequestContainer>')[0]
+
+        data_block = (
+                '<RequestContainer>%s</RequestContainer>' % data_block
+        ).encode('ascii', 'ignore').decode('ascii')
+
+        root = ElementTree.XML(data_block)
+        result_data = XmlDictConfig(root)
+
+        # todo manage error = order.check_reply_status(
+        #     cr, uid, ids, reply, undo_error=undo_error)
+        # if error:
+        #    error = 'Error deleting: Track: %s\n%s' % (
+        #        master_tracking_id,
+        #        error,
+        #    )
+        return result_data
+
+    def delete_shipments_request(self, cr, uid, ids, context=None):
+        """ 4. API Delete Shipment Request: Delete shipment request
+        """
+        connection_pool = self.pool.get('carrier.connection')
+        order = self.browse(cr, uid, ids, context=context)[0]
+        error = ''
+        carrier_connection = order.carrier_connection_id
+        if not carrier_connection:
+            return 'Order %s has carrier without SOAP ref.!' % order.name
+
+        master_tracking_id = order.master_tracking_id
+        if master_tracking_id:
+            data = self.get_request_container(
+                cr, uid, ids, system='SystemType', context=context)
+            data['MasterTrackingsMBE'] = master_tracking_id  # Also with Loop
+            result_data = connection_pool.html_post(
+                cr, uid, ids,
+                carrier_connection, 'DeleteShipmentsRequest', data)
+
+        else:
+            _logger.error('Order %s has no master tracking, cannot delete!' %
+                          order.name)
+
+        # Check carrier_track_id for permit delete:
+        if not error:
+            order.write({
+                'carrier_soap_state': 'draft',
+                'master_tracking_id': False,
+                'system_reference_id': False,
+                'carrier_track_id': False,
+                'carrier_mode_id': False,
+                'courier_supplier_id': False,
+                'courier_mode_id': False,
+                'carrier_cost': False,
+            })
+        return error
+
     def shipment_request(self, cr, uid, ids, context=None):
         """ 15. API Shipment Request: Insert new carrier request
         """
-        assert len(ids) == 1, 'Un ordine alla volta'
+        assert len(ids) == 1, 'Un\'ordine alla volta'
+        connection_pool = self.pool.get('carrier.connection')
+
         order = self.browse(cr, uid, ids, context=context)[0]
 
         carrier_connection = order.carrier_connection_id
@@ -687,8 +820,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # -----------------------------------------------------------------
         # HTML insert call:
         # -----------------------------------------------------------------
-        header = {'Content-Type': 'text/xml'}
-
         data = order.get_request_container(
             customer=False, system=True, connection=carrier_connection)
         data.update({
@@ -696,42 +827,10 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 cr, uid, ids, context=context),
             'Shipment': self.get_shipment_container(
                 cr, uid, ids, context=context),
-        })
+            })
 
-        payload = self.get_envelope('ShipmentRequest', data)
-        _logger.info('Call: %s' % data)
-        reply = requests.post(
-            carrier_connection.location,
-            auth=HTTPBasicAuth(
-                carrier_connection.username,
-                carrier_connection.passphrase),
-            headers=header,
-            data=payload,
-        )
-        if not reply.ok:
-            raise osv.except_osv(
-                _('Errore Server MBE'),
-                _('Risposta non corretta: %s' % reply),
-                )
-        _logger.warning('\n%s\n\n%s\n' % (data, reply))
-
-        # Parse reply:
-        reply_text = reply.text
-        data_block = reply_text.split(
-            '<RequestContainer>')[-1].split('</RequestContainer>')[0]
-
-        data_block = (
-                '<RequestContainer>%s</RequestContainer>' % data_block
-        ).encode('ascii', 'ignore').decode('ascii')
-
-        root = ElementTree.XML(data_block)
-        result_data = XmlDictConfig(root)
-        # error = order.check_reply_status(reply, undo_error=True)
-
-        _logger.warning('\n%s\n\n%s\n' % (data, reply))
-
-        # if error:
-        #    return error
+        result_data = connection_pool.html_post(
+            carrier_connection, 'ShipmentRequest', data, undo_error=False)
         return self.update_order_with_soap_reply(
             cr, uid, ids, result_data, context=context)
 
@@ -739,6 +838,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """ 17. API ShippingOptionsRequest: Get better quotation
         """
         assert len(ids) == 1, 'Un ordine alla volta'
+        connection_pool = self.pool.get('carrier.connection')
+
         order = self.browse(cr, uid, ids, context=context)[0]
 
         # Carrier connection (B)
@@ -766,63 +867,19 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         reply_list = []
 
         # Generate data for request:
-        header = {'Content-Type': 'text/xml'}
-
         data = self.get_request_container(
             cr, uid, ids,
             customer=False, system=True, connection=carrier_connection,
             context=context,
         )
         data['ShippingParameters'] = order.get_shipment_parameters_container()
-        payload = self.get_envelope('ShippingOptionsRequest', data)
-        _logger.info('Call: %s' % data)
-        reply = requests.post(
-            carrier_connection.location,
-            auth=HTTPBasicAuth(
-                carrier_connection.username,
-                carrier_connection.passphrase),
-            headers=header,
-            data=payload,
-        )
-        if not reply.ok:
-            raise osv.except_osv(
-                _('Errore Server MBE'),
-                _('Risposta non corretta: %s' % reply),
-                )
-        _logger.warning('\n%s\n\n%s\n' % (data, reply))
-
-        # Parse reply:
-        reply_text = reply.text
-        data_block = reply_text.split(
-            '<RequestContainer>')[-1].split('</RequestContainer>')[0]
-
-        data_block = (
-                '<RequestContainer>%s</RequestContainer>' % data_block
-        ).encode('ascii', 'ignore').decode('ascii')
-
-        root = ElementTree.XML(data_block)
-        result_data = XmlDictConfig(root)
-        #try:
-        #    record = result_data['ShippingOptions']['ShippingOption']
-        #    price = record[0]['NetShipmentTotalPrice']  # NetShipmentPrice
-        #except:
-        #    raise osv.except_osv(
-        #        _('Errore Server MBE'),
-        #        _('Risposta errata: %s' % reply),
-        #        )
-        # error += order.check_reply_status(reply)
+        result_data = connection_pool.html_post(
+            carrier_connection, 'ShippingOptionsRequest', data,
+            undo_error=False)  # todo True
         reply_list.append((carrier_connection, result_data))
 
         # if not error:
-        # Update SOAP data for real call
+        # Update data for real call
         self.update_with_quotation(cr, uid, ids, reply_list, context=context)
         return True   # error
-
-    def sanitize_text(self, text):
-        """ Clean HTML tag from text
-        :param text: HTML text to clean
-        :return: clean text
-        """
-        tag_re = re.compile(r'<[^>]+>')
-        return tag_re.sub('', text.strip())
 
