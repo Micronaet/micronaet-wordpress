@@ -773,7 +773,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             data['MasterTrackingsMBE'] = master_tracking_id  # Also with Loop
             result_data = self.html_post(
                 cr, uid, ids,
-                carrier_connection, 'DeleteShipmentsRequest', data)
+                carrier_connection, 'DeleteShipmentsRequest', data,
+                context=context,
+            )
 
         else:
             _logger.error('Order %s has no master tracking, cannot delete!' %
@@ -828,7 +830,10 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             })
 
         result_data = self.html_post(
-            carrier_connection, 'ShipmentRequest', data, undo_error=False)
+            cr, uid, ids,
+            carrier_connection, 'ShipmentRequest', data, undo_error=False,
+            context=context,
+            )
         return self.update_order_with_soap_reply(
             cr, uid, ids, result_data, context=context)
 
@@ -871,8 +876,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         )
         data['ShippingParameters'] = order.get_shipment_parameters_container()
         result_data = self.html_post(
-            carrier_connection, 'ShippingOptionsRequest', data,
-            undo_error=False)  # todo True
+            cr, uid, ids, carrier_connection, 'ShippingOptionsRequest', data,
+            undo_error=False, context=context)  # todo True
         reply_list.append((carrier_connection, result_data))
 
         # if not error:
