@@ -46,6 +46,52 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 
+class ConnectorServer(orm.Model):
+    """ Model name: Company parameters
+    """
+
+    _inherit = 'connector.server'
+
+    _columns = {
+        # Linked database:
+        'linked_dbname': fields.char(
+            'DB collegato',
+            size=30,
+            help='Database collegato per recuperare informazioni prodotti'),
+        'linked_user': fields.char('DB utente', size=30),
+        'linked_pwd': fields.char('DB password', size=30),
+        'linked_server': fields.char('DB server', size=30),
+        'linked_port': fields.integer('DB porta'),
+    }
+
+    def get_product_linked_database(
+            self, cr, uid, ids, default_code, context=None):
+        """ Connect with linked database to get extra info
+        """
+        connector = self.browse(cr, uid, ids, context=context)[0]
+
+        # ---------------------------------------------------------------------
+        # Connect to ODOO:
+        # ---------------------------------------------------------------------
+        if not connector.linked_server:
+            return False
+        odoo = erppeek.Client(
+            'http://%s:%s' % (connector.linked_server, connector.linked_port),
+            db=connector.linked_dbname,
+            user=connector.linked_user,
+            password=connector.linked_pwd,
+        )
+
+        product_pool = odoo.model('product.product')
+        product_ids = product_pool.search([
+            ('default_code', '=', default_code),
+        ])
+        if not product_ids:
+            _logger.error('No product with %s code' % default_code)
+            return False
+        return product_pool.browse(product_ids)[0]
+
+
 class ResCompany(orm.Model):
     """ Model name: Company parameters
     """
@@ -101,44 +147,7 @@ class CarrierConnection(orm.Model):
         # Not used for now:
         'sam_id': fields.char('SAM ID', size=4, help=''),
         'department_id': fields.char('Department ID', size=4, help=''),
-
-        # Linked database:
-        'linked_dbname': fields.char(
-            'DB collegato',
-            size=30,
-            help='Database collegato per recuperare informazioni prodotti'),
-        'linked_user': fields.char('DB utente', size=30),
-        'linked_pwd': fields.char('DB password', size=30),
-        'linked_server': fields.char('DB server', size=30),
-        'linked_port': fields.integer('DB porta'),
     }
-
-    def get_product_linked_database(
-            self, cr, uid, ids, default_code, context=None):
-        """ Connect with linked database to get extra info
-        """
-        connector = self.browse(cr, uid, ids, context=context)[0]
-
-        # ---------------------------------------------------------------------
-        # Connect to ODOO:
-        # ---------------------------------------------------------------------
-        if not connector.linked_server:
-            return False
-        odoo = erppeek.Client(
-            'http://%s:%s' % (connector.linked_server, connector.linked_port),
-            db=connector.linked_dbname,
-            user=connector.linked_user,
-            password=connector.linked_pwd,
-        )
-
-        product_pool = odoo.model('product.product')
-        product_ids = product_pool.search([
-            ('default_code', '=', default_code),
-        ])
-        if not product_ids:
-            _logger.error('No product with %s code' % default_code)
-            return False
-        return product_pool.browse(product_ids)[0]
 
     _defaults = {
         'location': lambda *x:
