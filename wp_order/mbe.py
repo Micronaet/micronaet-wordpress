@@ -164,7 +164,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             Report file
             Printer code (see printers list)
         """
-        pdb.set_trace()
         printer_pool = self.pool.get('cups.printer')
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
 
