@@ -13,6 +13,17 @@
                     <button name="status_wordpress_order_report" string="Order report Excel" type="object"
                         class="oe_highlight" icon="gtk-print" attrs="{'invisible': [('wordpress','=',False)]}" />
                 </xpath>
+                <xpath expr="//page[1]" position="after">
+                    <page name="db_linked" string="DB Collegato">
+                        <group>
+                            <field name="linked_dbname"/>
+                            <field name="linked_user"/>
+                            <field name="linked_pwd"/>
+                            <field name="linked_server"/>
+                            <field name="linked_port"/>
+                        </group>
+                    </page>
+                </xpath>
             </field>
         </record>
 

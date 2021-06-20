@@ -26,6 +26,7 @@ import pdb
 import sys
 import re
 import logging
+import erppeek
 import openerp
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
@@ -100,7 +101,44 @@ class CarrierConnection(orm.Model):
         # Not used for now:
         'sam_id': fields.char('SAM ID', size=4, help=''),
         'department_id': fields.char('Department ID', size=4, help=''),
+
+        # Linked database:
+        'linked_dbname': fields.char(
+            'DB collegato',
+            size=30,
+            help='Database collegato per recuperare informazioni prodotti'),
+        'linked_user': fields.char('DB utente', size=30),
+        'linked_pwd': fields.char('DB password', size=30),
+        'linked_server': fields.char('DB server', size=30),
+        'linked_port': fields.integer('DB porta'),
     }
+
+    def get_product_linked_database(self, cr, uid, ids, context=None):
+        """ Connect with linked database to get extra info
+        """
+        connector = self.browse(cr, uid, ids, context=context)[0]
+
+        dbname = connector.linked_dbname
+        user = connector.linked_user
+        pwd = connector.linked_pwd
+        server = connector.linked_server
+        port = connector.linked_port
+
+        # -----------------------------------------------------------------------------
+        # Connect to ODOO:
+        # -----------------------------------------------------------------------------
+        odoo = erppeek.Client(
+            'http://%s:%s' % (
+                server, port),
+            db=dbname,
+            user=user,
+            password=pwd,
+        )
+
+        # -----------------------------------------------------------------------------
+        # Pool used:
+        # -----------------------------------------------------------------------------
+        account_pool = odoo.model('account.invoice')
 
     _defaults = {
         'location': lambda *x:
@@ -348,6 +386,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             else:
                 # Linked database
                 pass
+
 
         return True
 
