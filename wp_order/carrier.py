@@ -371,9 +371,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             )
 
         # 3. todo Print also labels:
-        # if order.soap_connection_id.auto_print_label:
-        #    _logger.warning(_('Auto print label on request!'))
-        #    order.carrier_print_label()
+        if order.carrier_connection_id.auto_print_label:
+            _logger.warning(_('Auto print label on request!'))
+            self.carrier_print_label(cr, uid, ids, context=context)
 
         # todo self.write_log_chatter_message(_('Carrier data is OK'))
 
