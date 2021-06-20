@@ -383,7 +383,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         # Generate parcel from product:
         connector_id = order.connector_id.id
-        pdb.set_trace()
         for line in order.line_ids:
             product = line.product_id
 
