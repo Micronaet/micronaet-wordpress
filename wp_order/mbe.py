@@ -156,6 +156,37 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     _inherit = 'wordpress.sale.order'
 
     # -------------------------------------------------------------------------
+    # Printing:
+    # -------------------------------------------------------------------------
+    def carrier_print_label(self, cr, uid, ids, context=None):
+        """ Print label via CUPS
+        """
+        # TODO mode = 'label_01'
+        path = self.get_folder_root_path('tracking')
+        # todo not managed for now:
+        parcel_path = self.get_folder_root_path('parcel', root_path=path)
+        label_path = self.get_folder_root_path('label', root_path=path)
+        filename = '%s.1.PDF' % self.id
+        fullname = os.path.join(label_path, filename)
+        printer_code = \
+            self.carrier_mode_id.cups_printer_id.code or \
+            self.soap_connection_id.cups_printer_id.code
+
+        # Check if need to print or to save:
+        company = self.env.user.company_id
+        if company.carrier_save_label:
+            saved_path = os.path.join(
+                os.path.expanduser(company.carrier_save_label_path),
+                printer_code,
+            )
+            os.system('mkdir -p %s' % saved_path)  # Create path
+            saved_fullname = os.path.join(saved_path, filename)
+            shutil.copy(fullname, saved_fullname)
+            _logger.warning('Saved label in: %s' % saved_fullname)
+        else:
+            return self.send_report_to_cups_printer(fullname, printer_code)
+
+    # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
     def get_folder_root_path(
@@ -188,7 +219,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             label_list = [reply['Labels']['Label']]
         else:
             label_list = [reply['Pdf']]
-        pdb.set_trace()
         for label in label_list:
             if mode in ('label', 'tracking'):
                 counter += 1

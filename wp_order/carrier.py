@@ -91,11 +91,11 @@ class CarrierConnection(orm.Model):
             'Store ID', size=4, required=True,
             help='Code used for some calls'),
 
-        # 'auto_print_label': fields.boolean(
-        #    'Autoprint label', help='Print label when delivery was sent'),
-        # 'cups_printer_id': fields.many2one(
-        #    'cups.printer', 'CUPS printer',
-        #    help='Label order print with this'),
+        'auto_print_label': fields.boolean(
+            'Autoprint label', help='Print label when delivery was sent'),
+        'cups_printer_id': fields.many2one(
+            'cups.printer', 'CUPS printer',
+            help='Label order print with this'),
 
         # Not used for now:
         'sam_id': fields.char('SAM ID', size=4, help=''),

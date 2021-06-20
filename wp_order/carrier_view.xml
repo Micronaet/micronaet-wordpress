@@ -47,8 +47,8 @@
                             <field name="sam_id"/>
                             <field name="department_id"/>
 
-                            <!--<field name="auto_print_label" />
-                            <field name="cups_printer_id" />-->
+                            <field name="auto_print_label" />
+                            <field name="cups_printer_id" />
 
                         </group>
                     </sheet>
