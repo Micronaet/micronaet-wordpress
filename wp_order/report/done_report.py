@@ -87,17 +87,18 @@ class WordpressSaleOrder(orm.Model):
         # ---------------------------------------------------------------------
         # Width
         excel_pool.column_width(ws_name, [
-            5, 15, 10, 20, 15,
+            15, 15, 35, 35, 25, 25, 25, 25, 20, 40, 15
             ])
 
         # Print header
         row = 0
         excel_pool.write_xls_line(
             ws_name, row, [
-                'Ordine', 'Cliente', 'Destinazione',
+                'Ordine', 'Tracking',
+                'Cliente', 'Destinazione',
                 'Corriere', 'Tipo',
                 'Spedizioniere', 'Servizio',
-                'Imballo', 'Dettaglio', 'Tracking',
+                'Imballo', 'Dettaglio',
                 'Stato',
                 ], default_format=excel_format['header'])
 
@@ -110,6 +111,7 @@ class WordpressSaleOrder(orm.Model):
             excel_pool.write_xls_line(
                 ws_name, row, [
                     order.name,
+                    order.master_tracking_id or '',
                     order.partner_name,
                     order.shipping,
                     order.carrier_connection_id.name or '',
@@ -118,7 +120,6 @@ class WordpressSaleOrder(orm.Model):
                     order.courier_mode_id.name or '',
                     order.parcel_detail or '',
                     order.carrier_description or '',
-                    order.master_tracking_id or '',
                     order.carrier_state or '',
                 ], default_format=color_format['text'])
 
