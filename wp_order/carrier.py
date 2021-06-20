@@ -390,7 +390,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # self.write_log_chatter_message(
         #     _('Carrier data is not OK (undo operation)'))
         # todo nothing else?
-        pdb.set_trace()
         error = self.delete_shipments_request(
             cr, uid, ids, context=context)
         return self.write(cr, uid, ids, {
