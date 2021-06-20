@@ -148,6 +148,55 @@ class CarrierConnectionMBE(orm.Model):
     """
     _inherit = 'carrier.connection'
 
+    def html_post(
+            self, cr, uid, ids, carrier_connection, endpoint, data,
+            undo_error=False, context=None):
+        """ Call portal with payload parameter
+        """
+        assert len(ids) == 1, 'Un\'ordine alla volta'
+
+        header = {'Content-Type': 'text/xml'}
+        payload = self.get_envelope(endpoint, data)
+        _logger.info('Call: %s' % data)
+        pdb.set_trace()
+        reply = requests.post(
+            carrier_connection.location,
+            auth=HTTPBasicAuth(
+                carrier_connection.username,
+                carrier_connection.passphrase),
+            headers=header,
+            data=payload,
+        )
+        if not reply.ok:
+            raise osv.except_osv(
+                _('Errore Server MBE'),
+                _('Risposta non corretta: %s' % reply),
+            )
+        _logger.warning('\n%s\n\n%s\n' % (data, reply))
+
+        # ---------------------------------------------------------------------
+        # Clean reply:
+        # ---------------------------------------------------------------------
+        reply_text = reply.text
+        data_block = reply_text.split(
+            '<RequestContainer>')[-1].split('</RequestContainer>')[0]
+
+        data_block = (
+                '<RequestContainer>%s</RequestContainer>' % data_block
+        ).encode('ascii', 'ignore').decode('ascii')
+
+        root = ElementTree.XML(data_block)
+        result_data = XmlDictConfig(root)
+
+        # todo manage error = order.check_reply_status(
+        #     cr, uid, ids, reply, undo_error=undo_error)
+        # if error:
+        #    error = 'Error deleting: Track: %s\n%s' % (
+        #        master_tracking_id,
+        #        error,
+        #    )
+        return result_data
+
 
 class WordpressSaleOrderRelationCarrier(orm.Model):
     """ Model name: Wordpress Sale order
@@ -708,55 +757,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     # -------------------------------------------------------------------------
     # HTML List of function:
     # -------------------------------------------------------------------------
-    def html_post(
-            self, cr, uid, ids, carrier_connection, endpoint, data,
-            undo_error=False, context=None):
-        """ Call portal with payload parameter
-        """
-        assert len(ids) == 1, 'Un\'ordine alla volta'
-
-        header = {'Content-Type': 'text/xml'}
-        payload = self.get_envelope(endpoint, data)
-        _logger.info('Call: %s' % data)
-        pdb.set_trace()
-        reply = requests.post(
-            carrier_connection.location,
-            auth=HTTPBasicAuth(
-                carrier_connection.username,
-                carrier_connection.passphrase),
-            headers=header,
-            data=payload,
-        )
-        if not reply.ok:
-            raise osv.except_osv(
-                _('Errore Server MBE'),
-                _('Risposta non corretta: %s' % reply),
-            )
-        _logger.warning('\n%s\n\n%s\n' % (data, reply))
-
-        # ---------------------------------------------------------------------
-        # Clean reply:
-        # ---------------------------------------------------------------------
-        reply_text = reply.text
-        data_block = reply_text.split(
-            '<RequestContainer>')[-1].split('</RequestContainer>')[0]
-
-        data_block = (
-                '<RequestContainer>%s</RequestContainer>' % data_block
-        ).encode('ascii', 'ignore').decode('ascii')
-
-        root = ElementTree.XML(data_block)
-        result_data = XmlDictConfig(root)
-
-        # todo manage error = order.check_reply_status(
-        #     cr, uid, ids, reply, undo_error=undo_error)
-        # if error:
-        #    error = 'Error deleting: Track: %s\n%s' % (
-        #        master_tracking_id,
-        #        error,
-        #    )
-        return result_data
-
     def delete_shipments_request(self, cr, uid, ids, context=None):
         """ 4. API Delete Shipment Request: Delete shipment request
         """
