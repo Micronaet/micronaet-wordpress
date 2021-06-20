@@ -768,7 +768,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         master_tracking_id = order.master_tracking_id
         if master_tracking_id:
             data = self.get_request_container(
-                cr, uid, ids, system='SystemType', context=context)
+                cr, uid, ids, system='SystemType',
+                connection=carrier_connection, context=context)
             data['MasterTrackingsMBE'] = master_tracking_id  # Also with Loop
             result_data = self.html_post(
                 cr, uid, ids,
