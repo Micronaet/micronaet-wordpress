@@ -162,7 +162,7 @@
                     <field name="package_type" invisible="1"/>
                     <field name="carrier_cost_lossy" invisible="1"/>
 
-                    <button name="carrier_get_better_option" type="object" string="Get better option" icon="gtk-execute" />
+                    <button name="carrier_get_better_option" type="object" string="Get better option" icon="STOCK_SORT_DESCENDING" />
                     <field name="courier_supplier_id" /> <!--readonly="1"-->
                     <field name="courier_mode_id" /> <!--readonly="1"-->
                     <field name="master_tracking_id" readonly="1"/>
@@ -274,7 +274,7 @@
                         <group colspan="4" col="5" >
                             <field name="carrier_supplier_id" />
                             <field name="carrier_mode_id" />
-                            <button name="carrier_get_better_option" type="object" string="Get better option" icon="fa-hand-o-left"/>
+                            <button name="carrier_get_better_option" type="object" string="Get better option" icon="STOCK_SORT_DESCENDING"/>
 
                             <field name="carrier_parcel_template_id" domain="['|',('carrier_supplier_id','=',False),('carrier_supplier_id','=',carrier_supplier_id)]"/>
                             <button name="load_template_parcel" string="Add" type="object" attrs="{'invisible': [('carrier_parcel_template_id','=',False)]}" colspan="1" class="oe_highlight"/>
