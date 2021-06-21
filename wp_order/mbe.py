@@ -550,7 +550,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
           </ws:%s>
          </soapenv:Body>
         </soapenv:Envelope>''' % (request, reply, request)
-        _logger.info(result)
         return result.replace('\n', '').replace('\t', '    ')
 
     def get_items_parcel_block(self, cr, uid, ids, context=None):
@@ -778,6 +777,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             :return Error text if present
         """
         error_text = ''
+        if reply.ok:
+            return ''
+
         if reply['Status'] == 'ERROR':  # Status token (OK, ERROR)
             # Error[{'id', 'Description'}]
             # error_text = '%s' % (reply['Errors'], )  # TODO better!
@@ -813,7 +815,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     # -------------------------------------------------------------------------
     def html_post(
             self, cr, uid, ids, carrier_connection, endpoint, data,
-            undo_error=False, context=None):
+            undo_error=True, context=None):
         """ Call portal with payload parameter
         """
         assert len(ids) == 1, 'Un\'ordine alla volta'
@@ -829,12 +831,13 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             headers=header,
             data=payload,
         )
-        if not reply.ok:
-            raise osv.except_osv(
-                _('Errore Server MBE'),
-                _('Risposta non corretta: %s' % reply),
-            )
+
+        # Manage error
+        error = self.check_reply_status(
+            cr, uid, ids, reply, undo_error=undo_error)
         _logger.warning('\n%s\n\n%s\n' % (data, reply))
+        if error:
+            return False
 
         # ---------------------------------------------------------------------
         # Clean reply:
