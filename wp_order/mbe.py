@@ -550,6 +550,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
           </ws:%s>
          </soapenv:Body>
         </soapenv:Envelope>''' % (request, reply, request)
+        _logger.info(result)
         return result.replace('\n', '').replace('\t', '    ')
 
     def get_items_parcel_block(self, cr, uid, ids, context=None):
@@ -685,7 +686,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         data = {
             'ShipperType': order.shipper_type,
             'Description': order.check_size(
-                order.name, 100, dotted=True),  # or order.carrier_description
+                order.carrier_description or order.name, 100, dotted=True),
             'MethodPayment': order.carrier_pay_mode,
             'Service': order.carrier_mode_id.account_ref or '',
             'Courier': order.courier_supplier_id.account_ref or '',
