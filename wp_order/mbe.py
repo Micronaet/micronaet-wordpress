@@ -736,6 +736,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         try:
             master_tracking_id = data['MasterTrackingMBE']
         except:
+            pdb.set_trace()
             raise osv.except_osv(
                 _('Errore Server MBE'),
                 _('Risposta senza il tracking ID, non valida!'),
