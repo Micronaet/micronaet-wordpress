@@ -464,31 +464,55 @@
             sequence="30"
             />
             <menuitem
+                    id="carrier_root_menu"
                     parent="menu_connector_wordpress_carrier"
-                    id="menu_parcel_template"
-                    action="action_carrier_parcel_template_tree"
-                    sequence="10"
-                    />
+                    name="Spedizioni"
+                    sequence="10"/>
                 <menuitem
-                    parent="menu_connector_wordpress_carrier"
-                    id="menu_carrier_supplier"
-                    action="action_carrier_supplier_form"
-                    sequence="20"
-                    />
+                    id="carrier_sale_order_action_menu"
+                    parent="carrier_root_menu"
+                    action="carrier_sale_order_action"
+                    sequence="10"/>
                 <menuitem
+                    id="carrier_sale_order_action_sent_menu"
+                    parent="carrier_root_menu"
+                    action="carrier_sale_order_action_sent"
+                    sequence="20"/>
+                <menuitem
+                    id="carrier_sale_order_action_delivered_menu"
+                    parent="carrier_root_menu"
+                    action="carrier_sale_order_action_delivered"
+                    sequence="30"/>
+
+            <menuitem
                     parent="menu_connector_wordpress_carrier"
-                    id="menu_carrier_supplier_mode"
-                    action="action_carrier_supplier_mode"
-                    sequence="30"
+                    id="menu_carrier_configuration"
+                    name="Configurazione"
+                    sequence="90"
                     />
-
-            <menuitem name="Carrier connection" id="carrier_connection_root_menu" parent="menu_connector_wordpress_carrier" sequence="20"/>
-                <menuitem id="carrier_connection_soap_menu" parent="carrier_connection_root_menu" action="carrier_connection_action" sequence="10"/>
-
-            <menuitem id="carrier_root_menu" parent="menu_connector_wordpress_carrier" name="Carrier" sequence="3"/>
-                <menuitem id="carrier_sale_order_action_menu" parent="carrier_root_menu" action="carrier_sale_order_action" sequence="10"/>
-                <menuitem id="carrier_sale_order_action_sent_menu" parent="carrier_root_menu" action="carrier_sale_order_action_sent" sequence="20"/>
-                <menuitem id="carrier_sale_order_action_delivered_menu" parent="carrier_root_menu" action="carrier_sale_order_action_delivered" sequence="30"/>
+                    <menuitem
+                        id="carrier_connection_soap_menu"
+                        parent="menu_carrier_configuration"
+                        action="carrier_connection_action"
+                        sequence="10"/>
+                    <menuitem
+                        parent="menu_carrier_configuration"
+                        id="menu_parcel_template"
+                        action="action_carrier_parcel_template_tree"
+                        sequence="20"
+                        />
+                    <menuitem
+                        parent="menu_carrier_configuration"
+                        id="menu_carrier_supplier"
+                        action="action_carrier_supplier_form"
+                        sequence="30"
+                        />
+                    <menuitem
+                        parent="menu_carrier_configuration"
+                        id="menu_carrier_supplier_mode"
+                        action="action_carrier_supplier_mode"
+                        sequence="40"
+                        />
 
     </data>
 </openerp>

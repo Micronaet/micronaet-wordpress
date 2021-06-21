@@ -40,7 +40,7 @@ class CupsPrinter(orm.Model):
 
     _columns = {
         'name': fields.char('CUPS Printer', size=64),
-        'code': fields.char('Code', size=10, help='For fast reference'),
+        'code': fields.char('Code', size=40, help='For fast reference'),
         'note': fields.text('Note'),
         'options': fields.char('CUPS Options', size=100),
     }
