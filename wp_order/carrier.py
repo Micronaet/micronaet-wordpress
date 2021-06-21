@@ -392,13 +392,14 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                     cr, uid, [connector_id], line.sku, context=context)
             if product:
                 # This database:
-                data = {
-                    'order_id': order_id,
-                    'real_weight': product.weight,
-                    'height': product.pack_h,  # height,
-                    'width': product.pack_p,  # width,
-                    'length': product.pack_l,  # length,
-                }
+                for counter in range(line.quantity):
+                    data = {
+                        'order_id': order_id,
+                        'real_weight': product.weight,
+                        'height': product.pack_h,  # height,
+                        'width': product.pack_p,  # width,
+                        'length': product.pack_l,  # length,
+                    }
                 parcel_pool.create(cr, uid, data, context=context)
 
         return True
