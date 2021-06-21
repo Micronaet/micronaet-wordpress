@@ -59,6 +59,7 @@ class WordpressSaleOrder(orm.Model):
         today = datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
         order_ids = self.search(cr, uid, [
             ('traking_date', '=', today),
+            ('master_tracking_id', '!=', False),
             ], context=context)
 
         ws_name = 'Chiusure giornaliere'
