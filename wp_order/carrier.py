@@ -392,7 +392,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                     cr, uid, [connector_id], line.sku, context=context)
             if product:
                 # This database:
-                for counter in range(line.quantity):
+                for counter in range(int(line.quantity)):
                     data = {
                         'order_id': order_id,
                         'real_weight': product.weight,
