@@ -400,7 +400,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                         'width': product.pack_p,  # width,
                         'length': product.pack_l,  # length,
                     }
-                parcel_pool.create(cr, uid, data, context=context)
+                    parcel_pool.create(cr, uid, data, context=context)
 
         return True
 
