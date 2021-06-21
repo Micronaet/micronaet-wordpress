@@ -733,7 +733,14 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """ Update order data with SOAP reply (error checked in different call)
         """
         # order = self.browse(cr, uid, ids, context=context)[0]
-        master_tracking_id = data['MasterTrackingMBE']
+        try:
+            master_tracking_id = data['MasterTrackingMBE']
+        except:
+            raise osv.except_osv(
+                _('Errore Server MBE'),
+                _('Risposta senza il tracking ID, non valida!'),
+            )
+
         system_reference_id = data['SystemReferenceID']
 
         try:
