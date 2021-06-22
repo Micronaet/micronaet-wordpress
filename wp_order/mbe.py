@@ -350,7 +350,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """ Clean text for call
         """
         replace_pattern = {
-            '°': 'o',
+            #'°': 'o',
             '^': 'a',
         }
         text = text or ''
@@ -361,7 +361,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             elif ord(c) < 127:
                 res += c
             else:
-                res += '-'
+                res += c  #'-'
 
         return res
 
