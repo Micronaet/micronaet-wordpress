@@ -350,6 +350,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     def clean_charset(self, text):
         """ Clean text for call
         """
+        text = text.strip()
+        if not text:
+            return ''
         try:
             clean = self.sanitize_text(etree.tostring(etree.HTML(text)))
         except:
