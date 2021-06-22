@@ -867,7 +867,10 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             cr, uid, ids, result_data, undo_error=undo_error)
         _logger.warning('\n%s\n\n%s\n' % (data, reply))
         if error:
-            return False
+            raise osv.except_osv(
+                _('Errore Server MBE'),
+                error,
+            )
 
         # if error:
         #    error = 'Error deleting: Track: %s\n%s' % (
