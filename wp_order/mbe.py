@@ -930,6 +930,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 'courier_supplier_id': False,
                 'courier_mode_id': False,
                 'carrier_cost': False,
+                'label_printed': True,
             })
         return error
 
