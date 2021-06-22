@@ -502,6 +502,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             # 'soap_last_error': False,
             # Check if order needs to be passed in ready status:
             'carrier_ok': False,
+            'carrier_state': 'draft',
         })
 
     def load_template_parcel(self, cr, uid, ids, context=None):
