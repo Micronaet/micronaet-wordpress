@@ -194,6 +194,14 @@
             <field name="domain">[('carrier_state', 'in', ('draft', 'pending')),('state', 'not in', ('on-hold', 'pending'))]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
+        <record id="carrier_sale_order_action_pending" model="ir.actions.act_window">
+            <field name="name">Carrier order pending</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wordpress.sale.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('carrier_state', '=', 'pending')]</field>
+            <field name="view_id" ref="carrier_sale_order_tree"/>
+        </record>
         <record id="carrier_sale_order_action_sent" model="ir.actions.act_window">
             <field name="name">Carrier order sent</field>
             <field name="type">ir.actions.act_window</field>
@@ -483,20 +491,25 @@
                     action="carrier_sale_order_action"
                     sequence="10"/>
                 <menuitem
+                    id="carrier_sale_order_action_print_label_menu"
+                    parent="carrier_root_menu"
+                    action="carrier_sale_order_label_to_print_action"
+                    sequence="20"/>
+                <menuitem
+                    id="carrier_sale_order_action_sent_menu"
+                    parent="carrier_root_menu"
+                    action="carrier_sale_order_action_pending"
+                    sequence="30"/>
+                <menuitem
                     id="carrier_sale_order_action_sent_menu"
                     parent="carrier_root_menu"
                     action="carrier_sale_order_action_sent"
-                    sequence="20"/>
+                    sequence="40"/>
                 <menuitem
                     id="carrier_sale_order_action_delivered_menu"
                     parent="carrier_root_menu"
                     action="carrier_sale_order_action_delivered"
-                    sequence="30"/>
-                <menuitem
-                    id="carrier_sale_order_action_print_label_menu"
-                    parent="carrier_root_menu"
-                    action="carrier_sale_order_label_to_print_action"
-                    sequence="40"/>
+                    sequence="50"/>
 
             <menuitem
                     parent="menu_connector_wordpress_carrier"
