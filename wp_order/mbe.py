@@ -800,9 +800,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         if status == 'ERROR':
             # Error[{'id', 'Description'}]
             # error_text = '%s' % (reply['Errors'], )  # TODO better!
-            for error_block in reply['Errors']['Error']:
-                error_text += error_block['Description'].replace('\n', ' ')
-                error_text += '\n'
+            error_text = reply['Errors']['Error']['Description']\
+                .replace('\n', ' ')
 
             # -----------------------------------------------------------------
             # Undo procedure (delete request) if error:
