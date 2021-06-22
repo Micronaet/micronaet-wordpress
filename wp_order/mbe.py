@@ -590,12 +590,18 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         data = {
             'DestinationInfo': {
-                'ZipCode': shipping.get('postcode', ''),  # 12
-                'City': shipping.get('city', ''),  # * 50,
-                'State': shipping.get('state', ''),  # * 2
-                'Country': shipping.get('country', ''),  # 2
+                'ZipCode':  # 12
+                    order.force_shipping_zip or shipping.get('postcode', ''),
+                'City':  # * 50
+                    order.force_shipping_city or shipping.get('city', ''),
+                'State':  # * 2
+                    order.force_shipping_state or shipping.get('state', ''),
+                'Country':  # 2
+                    order.force_shipping_country or
+                    shipping.get('country', ''),
                 'idSubzone': '',  # * int
                 },
+
             'ShipType': order.ship_type or '',
             'PackageType': order.package_type or '',
             # order.carrier_mode_id.account_ref
@@ -672,14 +678,24 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             'CompanyName': self.clean_charset(
                 (shipping['company'] or name)[:35]),
             'Nickname': ''[:100],
-            'Address': self.clean_charset(shipping['address_1'][:100]),
-            'Address2': self.clean_charset(shipping['address_1'][:35]),
+            'Address':
+                self.clean_charset(
+                    order.force_shipping_address1 or
+                    shipping['address_1'][:100]),
+            'Address2':
+                self.clean_charset(
+                    order.force_shipping_address2 or
+                    shipping['address_2'][:35]),
             'Address3': ''[:35],  # self.clean_charset(
             'Phone': billing['phone'][:50],
-            'ZipCode': shipping['postcode'][:12],
-            'City': shipping['city'][:50],
-            'State': shipping['state'][:2],
-            'Country': shipping['country'][:2],
+            'ZipCode':
+                (order.force_shipping_zip or shipping['postcode'])[:12],
+            'City':
+                (order.force_shipping_city or shipping['city'])[:50],
+            'State':
+                (order.force_shipping_state or shipping['state'])[:2],
+            'Country':
+                (order.force_shipping_country or shipping['country'])[:2],
             'Email': billing['email'][:75],
             'SubzoneId': '',  # integer
             'SubzoneDesc': '',
@@ -691,8 +707,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         order = self.browse(cr, uid, ids, context=context)[0]
 
         wp_record = eval(order.wp_record)
-        shipping = wp_record.get('shipping', {})
-        billing = wp_record.get('billing', {})
+        # shipping = wp_record.get('shipping', {})
+        # billing = wp_record.get('billing', {})
         note = self.clean_charset(wp_record['customer_note'][:35])
 
         data = {

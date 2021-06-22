@@ -850,11 +850,15 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         'force_invoice_city': fields.char('Forza Paese', size=40),
         'force_invoice_state': fields.char('Forza Provincia', size=5),
         'force_invoice_country': fields.char('Forza Nazione', size=5),
+        'force_invoice_address1': fields.char('Forza Indirizzo 1', size=100),
+        'force_invoice_address2': fields.char('Forza Indirizzo 2', size=35),
 
         'force_shipping_zip': fields.char('Forza CAP (cons.)', size=5),
         'force_shipping_city': fields.char('Forza Paese (cons.)', size=40),
         'force_shipping_state': fields.char('Forza Provincia (cons.)', size=5),
         'force_shipping_country': fields.char('Forza Nazione (cons.)', size=5),
+        'force_shipping_address1': fields.char('Forza Indirizzo 1', size=100),
+        'force_shipping_address2': fields.char('Forza Indirizzo 2', size=35),
     }
 
     _defaults = {
