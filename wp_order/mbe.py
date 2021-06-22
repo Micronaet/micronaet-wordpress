@@ -750,6 +750,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """ Update order data with SOAP reply (error checked in different call)
         """
         # order = self.browse(cr, uid, ids, context=context)[0]
+        error = ''
         try:
             master_tracking_id = data['MasterTrackingMBE']
         except:
@@ -785,6 +786,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             'system_reference_id': system_reference_id,
             'carrier_track_id': courier_track_id,
         }, context=context)
+        return error
 
     def check_reply_status(
             self, cr, uid, ids, reply, console_log=True, undo_error=False,
