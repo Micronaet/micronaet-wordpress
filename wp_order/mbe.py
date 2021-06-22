@@ -791,9 +791,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             @return Error text if present
         """
         error_text = ''
+        pdb.set_trace()
         if reply.ok:
             return ''
-        pdb.set_trace()
         try:
             status = result_data['Status']  # Status token (OK, ERROR)
         except:
