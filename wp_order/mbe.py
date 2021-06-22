@@ -350,8 +350,10 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     def clean_charset(self, text):
         """ Clean text for call
         """
-        text = etree.HTML(text)
-        clean = self.sanitize_text(etree.tostring(text))
+        try:
+            clean = self.sanitize_text(etree.tostring(etree.HTML(text)))
+        except:
+            pdb.set_trace()
         return clean
 
     def sanitize_text(self, text):

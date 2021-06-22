@@ -466,7 +466,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 )
 
         # 2. Create request:
-        pdb.set_trace()
         error = self.shipment_request(cr, uid, ids, context=context)
         if error:
             return order.log_error(
