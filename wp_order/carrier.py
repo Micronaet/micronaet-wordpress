@@ -444,7 +444,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # if not order.manage_delivery:
         #    return order.log_error(
         #        _('Order not delivery managed from ODOO'))
-        pdb.set_trace()
         if not order.parcel_detail:
             self.generate_parcel_from_order(cr, uid, ids, context=context)
 

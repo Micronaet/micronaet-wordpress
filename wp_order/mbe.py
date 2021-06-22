@@ -869,11 +869,13 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         result_data = XmlDictConfig(root)
 
         # Manage error
+        pdb.set_trace()
         error = self.check_reply_status(
             cr, uid, ids, result_data, undo_error=undo_error)
         _logger.warning('\n%s\n\n%s\n' % (data, reply))
         if error:
-            return ''
+            return False
+
         # if error:
         #    error = 'Error deleting: Track: %s\n%s' % (
         #        master_tracking_id,
@@ -1002,7 +1004,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         data['ShippingParameters'] = order.get_shipment_parameters_container()
         result_data = self.html_post(
             cr, uid, ids, carrier_connection, 'ShippingOptionsRequest', data,
-            undo_error=True, context=context)
+            undo_error=False, context=context)  # todo True
         reply_list.append((carrier_connection, result_data))
 
         # if not error:
