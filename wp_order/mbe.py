@@ -792,13 +792,13 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             self, cr, uid, ids, reply, console_log=True, undo_error=False,
             context=None):
         """ Get Service connection to make calls:
-            :return Error text if present
+            @return Error text if present
         """
         error_text = ''
         if reply.ok:
             return ''
         try:
-            status = reply['Status'] # Status token (OK, ERROR)
+            status = reply['Status']  # Status token (OK, ERROR)
         except:
             return 'Errore generico, nessuna risposta dal portale'
 
@@ -854,13 +854,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             data=payload,
         )
 
-        # Manage error
-        error = self.check_reply_status(
-            cr, uid, ids, reply, undo_error=undo_error)
-        _logger.warning('\n%s\n\n%s\n' % (data, reply))
-        if error:
-            return False
-
         # ---------------------------------------------------------------------
         # Clean reply:
         # ---------------------------------------------------------------------
@@ -875,8 +868,12 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         root = ElementTree.XML(data_block)
         result_data = XmlDictConfig(root)
 
-        # todo manage error = order.check_reply_status(
-        #     cr, uid, ids, reply, undo_error=undo_error)
+        # Manage error
+        error = self.check_reply_status(
+            cr, uid, ids, result_data, undo_error=undo_error)
+        _logger.warning('\n%s\n\n%s\n' % (data, reply))
+        if error:
+            return ''
         # if error:
         #    error = 'Error deleting: Track: %s\n%s' % (
         #        master_tracking_id,
@@ -959,7 +956,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         result_data = self.html_post(
             cr, uid, ids,
-            carrier_connection, 'ShipmentRequest', data, undo_error=False,
+            carrier_connection, 'ShipmentRequest', data, undo_error=True,
             context=context,
             )
         return self.update_order_with_soap_reply(
@@ -1005,7 +1002,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         data['ShippingParameters'] = order.get_shipment_parameters_container()
         result_data = self.html_post(
             cr, uid, ids, carrier_connection, 'ShippingOptionsRequest', data,
-            undo_error=False, context=context)  # todo True
+            undo_error=True, context=context)
         reply_list.append((carrier_connection, result_data))
 
         # if not error:
