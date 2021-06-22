@@ -116,10 +116,22 @@
                                 </page>
                                 <page name="order_extra" string="Extra">
                                     <group col="4">
-                                        <separator string="Billing:" colspan="4"/>
+                                        <separator string="Fatturazione:" colspan="4"/>
                                         <field name="billing" colspan="4" nolabel="1"/>
-                                        <separator string="Shipping:" colspan="4"/>
+
+                                        <field name="force_invoice_zip" />
+                                        <field name="force_invoice_city" />
+                                        <field name="force_invoice_state" />
+                                        <field name="force_invoice_country" />
+
+                                        <separator string="Consegna:" colspan="4"/>
                                         <field name="shipping" colspan="4" nolabel="1"/>
+
+                                        <field name="force_shipping_zip" />
+                                        <field name="force_shipping_city" />
+                                        <field name="force_shipping_state" />
+                                        <field name="force_shipping_country" />
+
                                         <separator string="Note:" colspan="4"/>
                                         <field name="note" colspan="4" nolabel="1"/>
                                     </group>
