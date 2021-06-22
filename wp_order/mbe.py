@@ -1009,5 +1009,5 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # if not error:
         # Update data for real call
         self.update_with_quotation(cr, uid, ids, reply_list, context=context)
-        return True   # error
+        return error
 
