@@ -212,6 +212,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         try:
             os.system(print_command)
+            self.write(cr, uid, ids, {
+                'label_printed': True,
+            }, context=context)
         except:
             raise osv.except_osv(
                 _('Errore Server MBE'),

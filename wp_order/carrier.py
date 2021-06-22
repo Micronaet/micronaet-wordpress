@@ -813,6 +813,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 ('ENVELOPE', 'Envelope'),
                 ('DOCUMENTS', 'Documents'),
             ], 'Package type', required=True),
+        'label_printed': fields.boolean('Etichetta stampata'),
     }
 
     _defaults = {
