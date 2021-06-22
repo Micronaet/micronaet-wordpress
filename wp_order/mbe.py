@@ -789,8 +789,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         return error
 
     def check_reply_status(
-            self, cr, uid, ids, reply, console_log=True, undo_error=False,
-            context=None):
+            self, cr, uid, ids, reply, result_data, console_log=True,
+            undo_error=False, context=None):
         """ Get Service connection to make calls:
             @return Error text if present
         """
@@ -798,7 +798,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         if reply.ok:
             return ''
         try:
-            status = reply['Status']  # Status token (OK, ERROR)
+            status = result_data['Status']  # Status token (OK, ERROR)
         except:
             return 'Errore generico, nessuna risposta dal portale'
 
@@ -871,7 +871,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # Manage error
         pdb.set_trace()
         error = self.check_reply_status(
-            cr, uid, ids, result_data, undo_error=undo_error)
+            cr, uid, ids, reply, result_data, undo_error=undo_error)
         _logger.warning('\n%s\n\n%s\n' % (data, reply))
         if error:
             return False
