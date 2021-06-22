@@ -351,22 +351,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """ Clean text for call
         """
         text = etree.HTML(text)
-        clean = etree.tostring(text)
+        clean = self.sanitize_text(etree.tostring(text))
         return clean
-        #replace_pattern = {
-        #    #'°': 'o',
-        #    '^': 'a',
-        #}
-        #text = text or ''
-        #res = ''
-        #for c in text:
-        #    if c in replace_pattern:
-        #        res += replace_pattern[c]
-        #    elif ord(c) < 127:
-        #        res += c
-        #    else:
-        #        res += c  #'-'
-        #return res
 
     def sanitize_text(self, text):
         """ Clean HTML tag from text
