@@ -356,11 +356,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         text = text.strip()
         if not text:
             return ''
-        try:
-            clean = self.sanitize_text(etree.tostring(etree.HTML(text)))
-        except:
-            pdb.set_trace()
-        return clean
+        return self.sanitize_text(etree.tostring(etree.HTML(text)))
 
     def sanitize_text(self, text):
         """ Clean HTML tag from text
@@ -797,6 +793,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         error_text = ''
         if reply.ok:
             return ''
+        pdb.set_trace()
         try:
             status = result_data['Status']  # Status token (OK, ERROR)
         except:
@@ -869,7 +866,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         result_data = XmlDictConfig(root)
 
         # Manage error
-        pdb.set_trace()
         error = self.check_reply_status(
             cr, uid, ids, reply, result_data, undo_error=undo_error)
         _logger.warning('\n%s\n\n%s\n' % (data, reply))
