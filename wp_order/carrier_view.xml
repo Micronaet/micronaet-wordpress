@@ -172,6 +172,7 @@
                     <field name="carrier_ok" invisible="1"/>
                     <field name="state" invisible="1"/>
                     <field name="carrier_state" invisible="1" />
+                    <field name="label_printed" invisible="1" />
 
                     <!--<field name="soap_last_error" invisible="1"/>
                     <button name="soap_comment_last_error" string="Last error present" type="object" attrs="{'invisible': [('soap_last_error', '=', False)]}" icon="fa-exclamation-triangle fa-2x" />-->
@@ -207,6 +208,14 @@
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('carrier_state', '=', 'delivered'),]</field>
+            <field name="view_id" ref="carrier_sale_order_tree"/>
+        </record>
+        <record id="carrier_sale_order_label_to_print_action" model="ir.actions.act_window">
+            <field name="name">Etichette da stampare</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wordpress.sale.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('master_tracking_id', '!=', False),('label_printed', '=', False)]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action_lossy" model="ir.actions.act_window">
@@ -483,6 +492,11 @@
                     parent="carrier_root_menu"
                     action="carrier_sale_order_action_delivered"
                     sequence="30"/>
+                <menuitem
+                    id="carrier_sale_order_action_print_label_menu"
+                    parent="carrier_root_menu"
+                    action="carrier_sale_order_label_to_print_action"
+                    sequence="40"/>
 
             <menuitem
                     parent="menu_connector_wordpress_carrier"
