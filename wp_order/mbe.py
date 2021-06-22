@@ -33,6 +33,7 @@ import base64
 from requests.auth import HTTPBasicAuth  # or HTTPDigestAuth, or OAuth1, etc.
 import xml.etree.cElementTree as ElementTree
 import openerp
+from lxml import etree
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
 from openerp.osv import fields, osv, expression, orm
@@ -349,21 +350,23 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     def clean_charset(self, text):
         """ Clean text for call
         """
-        replace_pattern = {
-            #'°': 'o',
-            '^': 'a',
-        }
-        text = text or ''
-        res = ''
-        for c in text:
-            if c in replace_pattern:
-                res += replace_pattern[c]
-            elif ord(c) < 127:
-                res += c
-            else:
-                res += c  #'-'
-
-        return res
+        text = etree.HTML(text)
+        clean = etree.tostring(text)
+        return clean
+        #replace_pattern = {
+        #    #'°': 'o',
+        #    '^': 'a',
+        #}
+        #text = text or ''
+        #res = ''
+        #for c in text:
+        #    if c in replace_pattern:
+        #        res += replace_pattern[c]
+        #    elif ord(c) < 127:
+        #        res += c
+        #    else:
+        #        res += c  #'-'
+        #return res
 
     def sanitize_text(self, text):
         """ Clean HTML tag from text
