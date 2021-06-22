@@ -346,6 +346,25 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 return text[:size]
         return text
 
+    def clean_charset(self, text):
+        """ Clean text for call
+        """
+        replace_pattern = {
+            '°': 'o',
+            '^': 'a',
+        }
+        text = text or ''
+        res = ''
+        for c in text:
+            if c in replace_pattern:
+                res += replace_pattern[c]
+            elif ord(c) < 127:
+                res += c
+            else:
+                res += '-'
+
+        return text
+
     def sanitize_text(self, text):
         """ Clean HTML tag from text
         :param text: HTML text to clean
@@ -656,12 +675,13 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         name = '%s %s' % (shipping['first_name'], shipping['last_name'])
         return {
-            'Name': name[:35],
-            'CompanyName': (shipping['company'] or name)[:35],
+            'Name': self.clean_charset(name[:35]),
+            'CompanyName': self.clean_charset(
+                (shipping['company'] or name)[:35]),
             'Nickname': ''[:100],
-            'Address': shipping['address_1'][:100],
-            'Address2': shipping['address_1'][:35],
-            'Address3': ''[:35],
+            'Address': self.clean_charset(shipping['address_1'][:100]),
+            'Address2': self.clean_charset(shipping['address_1'][:35]),
+            'Address3': ''[:35],  # self.clean_charset(
             'Phone': billing['phone'][:50],
             'ZipCode': shipping['postcode'][:12],
             'City': shipping['city'][:50],
@@ -680,12 +700,12 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         wp_record = eval(order.wp_record)
         shipping = wp_record.get('shipping', {})
         billing = wp_record.get('billing', {})
-        note = wp_record['customer_note'][:35]
+        note = self.clean_charset(wp_record['customer_note'][:35])
 
         data = {
             'ShipperType': order.shipper_type,
-            'Description': order.check_size(
-                order.carrier_description or order.name, 100, dotted=True),
+            'Description': self.clean_charset(order.check_size(
+                order.carrier_description or order.name, 100, dotted=True)),
             'MethodPayment': order.carrier_pay_mode,
             'Service': order.carrier_mode_id.account_ref or '',
             'Courier': order.courier_supplier_id.account_ref or '',
@@ -736,7 +756,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         try:
             master_tracking_id = data['MasterTrackingMBE']
         except:
-            pdb.set_trace()
             raise osv.except_osv(
                 _('Errore Server MBE'),
                 _('Risposta senza il tracking ID, non valida!'),
@@ -779,8 +798,12 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         error_text = ''
         if reply.ok:
             return ''
+        try:
+            status = reply['Status'] # Status token (OK, ERROR)
+        except:
+            return 'Errore generico, nessuna risposta dal portale'
 
-        if reply['Status'] == 'ERROR':  # Status token (OK, ERROR)
+        if status == 'ERROR':
             # Error[{'id', 'Description'}]
             # error_text = '%s' % (reply['Errors'], )  # TODO better!
             for error_block in reply['Errors']['Error']:
