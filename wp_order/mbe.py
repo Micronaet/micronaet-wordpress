@@ -363,7 +363,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             else:
                 res += '-'
 
-        return text
+        return res
 
     def sanitize_text(self, text):
         """ Clean HTML tag from text
