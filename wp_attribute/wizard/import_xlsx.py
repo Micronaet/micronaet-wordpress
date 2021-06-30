@@ -222,7 +222,10 @@ class ProductProductImportWorpdress(orm.Model):
 
             # Extract Excel columns:
             is_master = get_check_value(ws.cell(row, 0).value)
-            published = not(ws.cell(row, 1).value.strip())
+            try:
+                published = not(ws.cell(row, 1).value.strip())
+            except:
+                published = False
             default_code = number_to_text(ws.cell(row, 2).value).upper()
             ean = ''  # TODO number_to_text(ws.cell(row, 3).value)
             lang_text[IT]['name'] = ws.cell(row, 4).value
