@@ -124,7 +124,11 @@ class ProductProductImportWorpdress(orm.Model):
                 cache[table] = {}
 
             res = []
-            for code in fullcode.split(','):
+            try:
+                code_splitted = fullcode.split(',')
+            except:
+                return res
+            for code in code_splitted:
                 code = code.strip()
                 if not code:
                     _logger.warning(_('Code %s not in %s') % (
