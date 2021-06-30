@@ -166,7 +166,7 @@ class ProductProductImportWorpdress(orm.Model):
                 s, S, Y, y, X, x means True
             """
             try:
-                value = (value or '').upper()
+                value = (value or '').strip().upper()
             except:
                 return False
             return (value and value in 'SXY')
