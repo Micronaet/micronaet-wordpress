@@ -265,7 +265,7 @@ class ProductProductImportWorpdress(orm.Model):
 
             weight = get_float(ws.cell(row, 19).value)
             weight_net = get_float(ws.cell(row, 20).value)
-            q_x_pack = ws.cell(row, 21).value or 1
+            q_x_pack = get_float(ws.cell(row, 21).value) or 1
 
             # Force:
             lang_text[IT]['force_name'] = ws.cell(row, 22).value
@@ -274,7 +274,7 @@ class ProductProductImportWorpdress(orm.Model):
             lang_text[IT]['force_description'] = ws.cell(row, 24).value
             lang_text[EN]['force_description'] = ws.cell(row, 25).value \
                 or lang_text[IT]['force_description']
-            force_q_x_pack = ws.cell(row, 26).value or False
+            force_q_x_pack = get_float(ws.cell(row, 26).value) or False
             force_ean = number_to_text(ws.cell(row, 27).value) or ''
             force_price = ws.cell(row, 28).value or 0.0
             force_discounted = ws.cell(row, 29).value or 0.0
