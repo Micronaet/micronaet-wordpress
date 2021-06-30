@@ -165,7 +165,10 @@ class ProductProductImportWorpdress(orm.Model):
             """ Extract check box value
                 s, S, Y, y, X, x means True
             """
-            value = (value or '').upper()
+            try:
+                value = (value or '').upper()
+            except:
+                return False
             return (value and value in 'SXY')
 
         # Parameters:
@@ -222,10 +225,7 @@ class ProductProductImportWorpdress(orm.Model):
 
             # Extract Excel columns:
             is_master = get_check_value(ws.cell(row, 0).value)
-            try:
-                published = not(ws.cell(row, 1).value.strip())
-            except:
-                published = False
+            published = get_check_value(ws.cell(row, 1).value)
             default_code = number_to_text(ws.cell(row, 2).value).upper()
             ean = ''  # TODO number_to_text(ws.cell(row, 3).value)
             lang_text[IT]['name'] = ws.cell(row, 4).value
