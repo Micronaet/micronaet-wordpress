@@ -165,6 +165,19 @@ class ProductProductImportWorpdress(orm.Model):
             else:
                 return value or ''
 
+        def get_float(value):
+            """ Force text number in Excel
+            """
+            if type(value) in (float, int):
+                return value
+            elif type(value) == str:
+                try:
+                    return float(value.replace(',', '.'))
+                except:
+                    return 0.0
+            else:
+                return 0.0
+
         def get_check_value(value):
             """ Extract check box value
                 s, S, Y, y, X, x means True
@@ -250,8 +263,8 @@ class ProductProductImportWorpdress(orm.Model):
             lang_text[EN]['box_dimension'] = ws.cell(row, 18).value \
                 or lang_text[IT]['box_dimension']
 
-            weight = ws.cell(row, 19).value or 0.0
-            weight_net = ws.cell(row, 20).value or 0.0
+            weight = get_float(ws.cell(row, 19).value)
+            weight_net = get_float(ws.cell(row, 20).value)
             q_x_pack = ws.cell(row, 21).value or 1
 
             # Force:
