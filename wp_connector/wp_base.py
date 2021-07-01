@@ -886,6 +886,7 @@ class ProductProductWebServer(orm.Model):
             media_id = self.get_pickle_album_file(image) or False
             if not media_id:
                 _logger.error('Image not published yet: %s' % image.filename)
+                continue
 
             src = {'id': media_id, }
             if variant:
