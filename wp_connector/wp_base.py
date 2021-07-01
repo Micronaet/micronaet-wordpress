@@ -883,7 +883,7 @@ class ProductProductWebServer(orm.Model):
         """
         images = []
         for image in item.wp_dropbox_images_ids:
-            media_id = self.get_pickle_album_file(image)
+            media_id = self.get_pickle_album_file(image) or False
             if not media_id:
                 _logger.error('Image not published yet: %s' % image.filename)
 
