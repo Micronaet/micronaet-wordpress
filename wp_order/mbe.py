@@ -403,6 +403,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 quotation_list.append((connection, quotation))
 
         # Choose better quotation:
+        _logger.warning(str(quotation_list))
         for record in quotation_list:
             connection, quotation = record
             try:
