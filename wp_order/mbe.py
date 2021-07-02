@@ -370,7 +370,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             self, cr, uid, ids, reply_list=None, context=None):
         """ Update order courier fields with reply SOAP
         """
-        init_setup = True
         order = self.browse(cr, uid, ids, context=context)[0]
 
         # Filter parameters:
@@ -409,10 +408,10 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             connection, quotation = record
 
             # -----------------------------------------------------------------
-            # START Init setup
+            # START Init setup  # todo remove
             # -----------------------------------------------------------------
+            init_setup = False
             if init_setup:
-                pdb.set_trace()
                 # -------------------------------------------------------------
                 # A. Courier:
                 # -------------------------------------------------------------
