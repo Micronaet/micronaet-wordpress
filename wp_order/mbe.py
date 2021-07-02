@@ -562,7 +562,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
           </ws:%s>
          </soapenv:Body>
         </soapenv:Envelope>''' % (request, reply, request)
-        return result.replace('\n', '').replace('\t', '    ')
+        result = result.replace('\n', '').replace('\t', '    ')
+        return str(result)
 
     def get_items_parcel_block(self, cr, uid, ids, context=None):
         """ Return parcels block
@@ -852,7 +853,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         assert len(ids) == 1, 'Un\'ordine alla volta'
 
         header = {'Content-Type': 'text/xml'}
-        payload = str(self.get_envelope(endpoint, data))
+        payload = self.get_envelope(endpoint, data)
         _logger.info('Call: %s' % data)
         reply = requests.post(
             carrier_connection.location,
