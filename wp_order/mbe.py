@@ -370,6 +370,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             self, cr, uid, ids, reply_list=None, context=None):
         """ Update order courier fields with reply SOAP
         """
+        init_setup = True
         order = self.browse(cr, uid, ids, context=context)[0]
 
         # Filter parameters:
@@ -406,6 +407,48 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         _logger.warning(str(quotation_list))
         for record in quotation_list:
             connection, quotation = record
+
+            # -----------------------------------------------------------------
+            # START Init setup
+            # -----------------------------------------------------------------
+            if init_setup:
+                # -------------------------------------------------------------
+                # A. Courier:
+                # -------------------------------------------------------------
+                courier_code = str(quotation['Courier'])
+                courier_name = str(quotation['CourierDesc'])
+                suppliers = supplier_pool.search(cr, uid, [
+                    ('account_ref', '=', courier_code),
+                    ('mode', '=', 'courier'),
+                ], context=context)
+                if suppliers:
+                    supplier_id = suppliers[0]
+                else:
+                    supplier_id = supplier_pool.create(cr, uid, {
+                        'account_ref': courier_code,
+                        'name': courier_name,
+                        'mode': 'courier',
+                    }, context=context)
+
+                # -------------------------------------------------------------
+                # B. Courier service:
+                # -------------------------------------------------------------
+                service_code = str(quotation['CourierService'])
+                service_name = quotation['CourierServiceDesc']
+                services = service_pool.search(cr, uid, [
+                    ('account_ref', '=', service_code),
+                    ('supplier_id', '=', supplier_id),
+                ], context=context)
+                if not services:
+                    service_pool.create(cr, uid, {
+                        'account_ref': service_code,
+                        'name': service_name,
+                        'supplier_id': supplier_id,
+                    }, context=context)
+            # -----------------------------------------------------------------
+            # END Init setup
+            # -----------------------------------------------------------------
+
             try:
                 # -------------------------------------------------------------
                 # Filter:
