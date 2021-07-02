@@ -987,6 +987,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         # Carrier connection (B)
         # todo write correct test:
+        pdb.set_trace()
         carrier_connection = order.carrier_supplier_id.carrier_connection_id
         if not carrier_connection:
             return 'Ordine %s non ha il riferimento alla connessione!' % \
