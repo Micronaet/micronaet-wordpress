@@ -852,7 +852,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         assert len(ids) == 1, 'Un\'ordine alla volta'
 
         header = {'Content-Type': 'text/xml'}
-        payload = self.get_envelope(endpoint, data)
+        payload = str(self.get_envelope(endpoint, data))
         _logger.info('Call: %s' % data)
         reply = requests.post(
             carrier_connection.location,
