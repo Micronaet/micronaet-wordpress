@@ -861,7 +861,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 ('ENVELOPE', 'Envelope'),
                 ('DOCUMENTS', 'Documents'),
             ], 'Package type', required=True),
-        'label_printed': fields.boolean('Etichetta stampata'),
 
         # Force data:
         'force_invoice_zip': fields.char('Forza CAP', size=5),
@@ -877,6 +876,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         'force_shipping_country': fields.char('Forza Nazione (cons.)', size=5),
         'force_shipping_address1': fields.char('Forza Indirizzo 1', size=100),
         'force_shipping_address2': fields.char('Forza Indirizzo 2', size=35),
+
+        'label_printed': fields.boolean('Etichetta stampata'),
+
     }
 
     _defaults = {

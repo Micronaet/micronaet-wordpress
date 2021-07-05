@@ -261,20 +261,22 @@
                     <field name="delivery_state" />
 
                     <filter name="carrier_track_id_assigned" string="LDV generated" domain="[('carrier_track_id','!=',False)]"/>
-                    <filter string="Carrier state" domain="[]" context="{'group_by': 'carrier_state'}"/>
-                    <filter string="Carrier delivery state" domain="[]" context="{'group_by': 'delivery_state'}"/>
+                    <filter string="Stato speduzione" domain="[]" context="{'group_by': 'carrier_state'}"/>
+                    <filter string="Stato consegna" domain="[]" context="{'group_by': 'delivery_state'}"/>
                     <filter name="carrier_parcel_assigned" string="Parcel assigned" domain="[('parcel_ids','!=',False)]"/>
+                    <filter name="label_printed_no" string="Etichette non stampate" domain="[('label_printed','=',False)]"/>
 
                 </field>
                 <xpath expr="/search/group/filter[2]" position="after">
-                    <filter string="Carrier supplier" domain="[]" context="{'group_by': 'carrier_supplier_id'}"/>
-                    <filter string="Carrier mode" domain="[]" context="{'group_by': 'carrier_mode_id'}"/>
+                    <filter string="Spedizioniere" domain="[]" context="{'group_by': 'carrier_supplier_id'}"/>
+                    <filter string="Modo spedizioniere" domain="[]" context="{'group_by': 'carrier_mode_id'}"/>
 
-                    <filter string="Courier supplier" domain="[]" context="{'group_by': 'courier_supplier_id'}"/>
-                    <filter string="Courier mode" domain="[]" context="{'group_by': 'courier_mode_id'}"/>
+                    <filter string="Corriere" domain="[]" context="{'group_by': 'courier_supplier_id'}"/>
+                    <filter string="Modalità corriere" domain="[]" context="{'group_by': 'courier_mode_id'}"/>
 
-                    <filter string="Carrier delivered date" domain="[]" context="{'group_by': 'carrier_delivery_date'}"/>
-                    <filter string="Carrier signed date" domain="[]" context="{'group_by': 'carrier_delivery_sign'}"/>
+                    <filter string="Data consegna" domain="[]" context="{'group_by': 'carrier_delivery_date'}"/>
+                    <filter string="Data firma consegna" domain="[]" context="{'group_by': 'carrier_delivery_sign'}"/>
+                    <filter string="Etichette stampate" domain="[]" context="{'group_by': 'label_printed'}"/>
                 </xpath>
             </field>
         </record>
