@@ -600,6 +600,22 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             res[order.id] = detail
         return res
 
+    def _get_delivery_detail(
+            self, cr, uid, ids, fields=None, args=None, context=None):
+        """ Parcel detail
+        """
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            detail = ''
+            for line in order.line_ids:
+                detail += '%sx [%s] %s...\n' % (
+                    int(line.quantity),
+                    line.sku,
+                    line.name[:20],
+                )
+            res[order.id] = detail
+        return res
+
     def _get_carrier_check_address(
             self, cr, uid, ids, fields=None, args=None, context=None):
         """ Check address for delivery
@@ -760,6 +776,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         'parcel_detail': fields.function(
             _get_parcel_detail,
             string='Parcel detail', type='text'),
+        'delivery_detail': fields.function(
+            _get_delivery_detail,
+            string='Dettaglio', type='text'),
         'real_parcel_total': fields.function(
             _get_carrier_parcel_total,
             string='Colli', type='integer',
