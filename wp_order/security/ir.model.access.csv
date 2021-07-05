@@ -1,6 +1,7 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 access_wordpress_sale_order_user,wordpress.sale.order,model_wordpress_sale_order,base.group_user,1,1,1,1
 access_wordpress_sale_order_line_user,wordpress.sale.order.line,model_wordpress_sale_order_line,base.group_user,1,1,1,1
+access_sale_order_parcel_user,sale.order.parcel,model_sale_order_parcel,base.group_user,1,1,1,1
 
 access_carrier_connection_user,carrier.connection,model_carrier_connection,base.group_user,1,1,1,1
 access_carrier_supplier_user,carrier.supplier,model_carrier_supplier,base.group_user,1,1,1,1
