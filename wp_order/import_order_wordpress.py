@@ -60,10 +60,11 @@ class WordpressSaleOrder(orm.Model):
                 continue
 
             # Delete order (before cancel):
-            order_pool.write(cr, uid, {
+            order_ids = [order.id]
+            order_pool.write(cr, uid, order_ids, {
                 'state': 'cancel',
             }, context=context)
-            order_pool.unlink(cr, uid, [order.id], context=context)
+            order_pool.unlink(cr, uid, order_ids, context=context)
             _logger.warning('%s. Order deleted!' % name)
         return True
 
