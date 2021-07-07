@@ -45,7 +45,6 @@ class WordpressSaleOrder(orm.Model):
     def delete_order_not_unloaded(self, cr, uid, ids, context=None):
         """ Delete order that is not closed with stock management
         """
-        pdb.set_trace()
         order_pool = self.pool.get('sale.order')
         for order in self.browse(cr, uid, ids, context=context):
             name = order.name
@@ -61,11 +60,11 @@ class WordpressSaleOrder(orm.Model):
                 continue
 
             # Delete order (before cancel):
-            order_ids = [order.id]
-            order_pool.write(cr, uid, order_ids, {
+            sale_order_ids = [sale_order.id]
+            order_pool.write(cr, uid, sale_order_ids, {
                 'state': 'cancel',
             }, context=context)
-            order_pool.unlink(cr, uid, order_ids, context=context)
+            order_pool.unlink(cr, uid, sale_order_ids, context=context)
             _logger.warning('%s. Order deleted!' % name)
         return True
 
