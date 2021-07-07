@@ -45,6 +45,7 @@ class WordpressSaleOrder(orm.Model):
     def delete_order_not_unloaded(self, cr, uid, ids, context=None):
         """ Delete order that is not closed with stock management
         """
+        pdb.set_trace()
         order_pool = self.pool.get('sale.order')
         for order in self.browse(cr, uid, ids, context=context):
             name = order.name
