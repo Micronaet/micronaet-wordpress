@@ -42,6 +42,31 @@ class WordpressSaleOrder(orm.Model):
     _description = 'Wordpress order'
     _order = 'name desc'
 
+    def delete_order_not_unloaded(self, cr, uid, ids, context=None):
+        """ Delete order that is not closed with stock management
+        """
+        order_pool = self.pool.get('sale.order')
+        for order in self.browse(cr, uid, ids, context=context):
+            name = order.name
+            if order.picking_id:
+                _logger.warning('%s. Order unloaded, cannot delete!' % (
+                    name, ))
+                continue
+
+            sale_order = order.sale_order_id
+            if not sale_order:
+                _logger.warning('%s. Order not generated, so not deleted!' % (
+                    name, ))
+                continue
+
+            # Delete order (before cancel):
+            order_pool.write(cr, uid, {
+                'state': 'cancel',
+            }, context=context)
+            order_pool.unlink(cr, uid, [order.id], context=context)
+            _logger.warning('%s. Order deleted!' % name)
+        return True
+
     def confirm_wp_order_pending(self, cr, uid, ids, context=None):
         """ Confirm order after check status
         """
