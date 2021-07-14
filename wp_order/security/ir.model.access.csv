@@ -7,3 +7,5 @@ access_carrier_connection_user,carrier.connection,model_carrier_connection,base.
 access_carrier_supplier_user,carrier.supplier,model_carrier_supplier,base.group_user,1,1,1,1
 access_carrier_supplier_mode_user,carrier.supplier.mode,model_carrier_supplier_mode,base.group_user,1,1,1,1
 access_carrier_parcel_template_user,carrier.parcel.template,model_carrier_parcel_template,base.group_user,1,1,1,1
+access_product_product_shipping_history_user,product.product.shipping.history,model_product_product_shipping_history,base.group_user,1,1,1,1
+

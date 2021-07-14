@@ -240,6 +240,9 @@
                     <field name="name" readonly="1"/>
                     <field name="uom_id" readonly="1"/>
                     <field name="wp_included_shipping"/>
+                    <field name="wp_shipping_from_date" attrs="{'required': [('wp_included_shipping', '>', 0)]}"/>
+                    <button name="save_as_history_price" type="object" string="Storicizza" confirm="Storicizzare costo e data valitidà? (da fare prima di cambiarla con la nuova)" icon="gtk-save"/>
+                    <button name="show_history_price" type="object" string="Mostra storico" icon="gtk-goto-last"/>
                     <field name="state" readonly="1"/>
                 </tree>
             </field>

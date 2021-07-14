@@ -1495,7 +1495,7 @@ class ConnectorServer(orm.Model):
                 # Delete:
                 order_pool.write(
                     cr, uid, [order_id], {
-                        'line_ids': [(6, 6, [])],
+                        'line_ids': [(6, 0, [])],
                     }, context=context)
 
                 # Update
@@ -1623,15 +1623,72 @@ class SaleOrder(orm.Model):
     }
 
 
+class ProductProductShippingHistory(orm.Model):
+    """ History shipping cost
+    """
+    _name = 'product.product.shipping.history'
+    _description = 'Shipping cost history'
+    _rec_name = 'wp_included_shipping'
+    _order = 'date desc'
+
+    _columns = {
+        'product_id': fields.many2one('product.product', 'Prodotto'),
+        'wp_included_shipping': fields.float(
+            'Trasporto incluso',
+            help='Per i Marketplace dove è inserito il trasporto incluso nel '
+                 'costo prodotto'),
+        'wp_shipping_from_date': fields.date(
+            'Data inizio', help='Data dalla quale parte il trasporto indicato')
+    }
+
+
 class ProductProduct(orm.Model):
     """ Model name: Product
     """
 
     _inherit = 'product.product'
 
+    def show_history_price(self, cr, uid, ids, context=None):
+        """ Show pricelist in history
+        """
+        product_id = ids[0]
+        model_pool = self.pool.get('ir.model.data')
+        # model_pool.get_object_reference('module_name', 'view_name')[1]
+        form_view_id = tree_view_id = False
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Prezzi storici'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            # 'res_id': 1,
+            'res_model': 'product.product.shipping.history',
+            'view_id': tree_view_id,
+            'views': [(tree_view_id, 'tree'), (form_view_id, 'form')],
+            'domain': [('product_id', '=', product_id)],
+            'context': context,
+            'target': 'current',  # 'new'
+            'nodestroy': False,
+            }
+
+    def save_as_history_price(self, cr, uid, ids, context=None):
+        """ Save this price as history (before change)
+        """
+        product_id = ids[0]
+        history_pool = self.pool.get('product.product.shipping.history')
+        product = self.browse(cr, uid, product_id, context=context)
+        return history_pool.create(cr, uid, {
+            'product_id': product_id,
+            'wp_included_shipping': product.wp_included_shipping,
+            'wp_shipping_from_date': product.wp_shipping_from_date,
+        }, context=context)
+
     _columns = {
         'wp_included_shipping': fields.float(
             'Trasporto incluso',
             help='Per i Marketplace dove è inserito il trasporto incluso nel '
                  'costo prodotto'),
+        'wp_shipping_from_date': fields.date(
+            'Data inizio',
+            help='Data dalla quale parte il trasporto indicato'),
     }
