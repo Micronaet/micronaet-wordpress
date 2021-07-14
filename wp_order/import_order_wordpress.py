@@ -127,7 +127,7 @@ class WordpressSaleOrder(orm.Model):
                 # Create picking in needed:
                 if order.sale_order_id and not order.picking_id:
                     self.action_delivery_fees(
-                        cr, uid, ids, [order_id], context=context)
+                        cr, uid, [order_id], context=context)
             else:
                 # Update order status in other cases:
                 if status != order.state:
