@@ -242,6 +242,20 @@
             </field>
         </record>
 
+        <record model="ir.ui.view" id="wordpress_product_product_cost_search">
+            <field name="name">product.product.search</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <search string="Costi trasporto" version="7.0">
+                    <field name="name" />
+                    <field name="default_code" filter_domain="[('default_code','ilike',self)]"/>
+                    <filter name="has_wp_included_shipping" string="Presenti" domain="[('wp_included_shipping','>',0)]"/>
+                    <group expand="0" string="Group By...">
+                        <filter name="group_wp_shipping_from_date" string="Data" context="{'group_by': 'wp_shipping_from_date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
         <record id="wordpress_product_product_cost" model="ir.ui.view">
             <field name="name">product.product.wp.transport.tree</field>
             <field name="model">product.product</field>
@@ -263,6 +277,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">product.product</field>
             <field name="view_id" ref="wordpress_product_product_cost"/>
+            <field name="search_view_id" ref="wordpress_product_product_cost_search"/>
             <field name="view_mode">tree,form</field>
         </record>
 
