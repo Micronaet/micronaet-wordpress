@@ -1662,11 +1662,11 @@ class ProductProduct(orm.Model):
             'type': 'ir.actions.act_window',
             'name': _('Prezzi storici'),
             'view_type': 'form',
-            'view_mode': 'tree,form',
+            'view_mode': 'tree',
             # 'res_id': 1,
             'res_model': 'product.product.shipping.history',
             'view_id': tree_view_id,
-            'views': [(tree_view_id, 'tree'), (form_view_id, 'form')],
+            'views': [(tree_view_id, 'tree')],
             'domain': [('product_id', '=', product_id)],
             'context': context,
             'target': 'current',  # 'new'
