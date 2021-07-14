@@ -1629,7 +1629,7 @@ class ProductProductShippingHistory(orm.Model):
     _name = 'product.product.shipping.history'
     _description = 'Shipping cost history'
     _rec_name = 'wp_included_shipping'
-    _order = 'date desc'
+    _order = 'wp_shipping_from_date desc'
 
     _columns = {
         'product_id': fields.many2one('product.product', 'Prodotto'),
