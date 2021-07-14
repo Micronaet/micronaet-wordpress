@@ -7,8 +7,8 @@
             <field name="arch" type="xml">
                 <tree string="Storici pressi trasporto" editable="bottom">
                     <field name="product_id" readonly="1"/>
-                    <field name="wp_included_shipping" />
-                    <field name="wp_shipping_from_date" />
+                    <field name="wp_included_shipping" required="1" />
+                    <field name="wp_shipping_from_date" required="1"/>
                 </tree>
             </field>
         </record>
