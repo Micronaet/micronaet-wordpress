@@ -1653,7 +1653,9 @@ class ProductProduct(orm.Model):
         """
         product_id = ids[0]
         model_pool = self.pool.get('ir.model.data')
-        # model_pool.get_object_reference('module_name', 'view_name')[1]
+        # model_pool.get_object_reference(
+        # cr, uid,
+        # 'wp_order', 'view_product_product_shipping_history_tree')[1]
         form_view_id = tree_view_id = False
 
         return {

@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <record model="ir.ui.view" id="view_product_product_shipping_history_tree">
+            <field name="name">product.product.shipping.history.tree</field>
+            <field name="model">product.product.shipping.history</field>
+            <field name="arch" type="xml">
+                <tree string="Storici pressi trasporto" editable="bottom">
+                    <field name="product_id" readonly="1"/>
+                    <field name="wp_included_shipping" />
+                    <field name="wp_shipping_from_date" />
+                </tree>
+            </field>
+        </record>
         <record model="ir.ui.view" id="view_wordpress_connector_order_button_form">
             <field name="name">connector.server.load.order.form</field>
             <field name="model">connector.server</field>
