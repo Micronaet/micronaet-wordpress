@@ -1288,6 +1288,17 @@ class ConnectorServer(orm.Model):
                 res[sku] = line.quantity
         return res
 
+    def get_shipping_cost_date(self, product, date):
+        """ Extract correct price from range of date
+        """
+        if date >= product.wp_shipping_from_date:
+            return product.wp_included_shipping
+        for line in product.wp_history_shipping_ids:
+            # Are sorted desc:
+            if date >= line.wp_shipping_from_date:
+                return line.wp_included_shipping
+        _logger.error('No shipping price for this product')
+
     # -------------------------------------------------------------------------
     # Button event:
     # -------------------------------------------------------------------------
@@ -1543,7 +1554,10 @@ class ConnectorServer(orm.Model):
                     if marketplace != 'WP' and product_id:
                         product = product_pool.browse(
                             cr, uid, product_id, context=context)
-                        shipping_included = product.wp_included_shipping
+
+                        shipping_included = self.get_shipping_cost_date(
+                            product, date_order)
+                        # product.wp_included_shipping
                         shipping_line_total += \
                             shipping_included * line_quantity
                     else:
@@ -1693,4 +1707,6 @@ class ProductProduct(orm.Model):
         'wp_shipping_from_date': fields.date(
             'Data inizio',
             help='Data dalla quale parte il trasporto indicato'),
+        'wp_history_shipping_ids': fields.one2many(
+            'product.product.shipping.history', 'product_id', 'Storico'),
     }
