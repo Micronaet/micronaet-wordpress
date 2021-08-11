@@ -1356,6 +1356,7 @@ class ConnectorServer(orm.Model):
             'page': 0,
             # TODO 'after': '2019-05-01T00:00:00' Add clause from search
             }
+        import pdb; pdb.set_trace()
         if from_period == 'yesterday':
             parameter['after'] = (
                 datetime.now() - timedelta(days=1)).strftime(
