@@ -63,7 +63,7 @@ for root, folders, files in os.walk('..'):
         elif argument == 'month':
             ctx = {'from_period': 'month'}
             if send_message:
-                ctx = ctx['report_log'] = True
+                ctx['report_log'] = True
             
         else:
             ctx = {'from_period': 'all'}
