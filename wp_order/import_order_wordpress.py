@@ -1365,6 +1365,7 @@ class ConnectorServer(orm.Model):
                 datetime.now() - timedelta(days=31)).strftime(
                     '%Y-%m-%dT00:00:00')
         # all nothing!
+        _logger.warning('Parameters: %s' % (parameter, ))
 
         wp_order = []
         while theres_data:
