@@ -1356,17 +1356,18 @@ class ConnectorServer(orm.Model):
             'page': 0,
             # TODO 'after': '2019-05-01T00:00:00' Add clause from search
             }
-        import pdb; pdb.set_trace()
         if from_period == 'yesterday':
             parameter['after'] = (
                 datetime.now() - timedelta(days=1)).strftime(
                     '%Y-%m-%dT00:00:00')
+            _logger.warning('Yesterday order')
         elif from_period == 'month':
             parameter['after'] = (
                 datetime.now() - timedelta(days=31)).strftime(
                     '%Y-%m-%dT00:00:00')
-        # all nothing!
-        _logger.warning('Parameters: %s' % (parameter, ))
+            _logger.warning('Month order')
+        else:  # all nothing!
+            _logger.warning('All order')
 
         wp_order = []
         while theres_data:

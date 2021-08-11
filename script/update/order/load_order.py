@@ -58,6 +58,7 @@ for root, folders, files in os.walk('..'):
 
         # Check call parameters:
         argument = argv[1].lower()
+        import pdb; pdb.set_trace()
         if argument == 'yesterday':
             odoo.context = {'from_period': 'yesterday'}
         elif argument == 'month':
