@@ -64,14 +64,14 @@ for root, folders, files in os.walk('..'):
             ctx = {'from_period': 'month'}
             if send_message:
                 ctx['report_log'] = True
-            
+
         else:
             ctx = {'from_period': 'all'}
             # Send message with all order from wordpress to the manager group
             if send_message:
-                cat['report_log'] = True
+                ctx['report_log'] = True
         odoo.context = ctx
-                
+
         log_message(f_log, '[INFO] Call mode %s' % argv[1])
 
         connector_pool = odoo.model('connector.server')
