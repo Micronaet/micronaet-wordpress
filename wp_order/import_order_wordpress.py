@@ -1372,8 +1372,7 @@ class ConnectorServer(orm.Model):
         wp_order = []
         while theres_data:
             parameter['page'] += 1
-            reply = wcapi.get(
-                'orders', params=parameter)
+            reply = wcapi.get('orders', params=parameter)
             if not reply.ok:
                 _logger.error('Error reading order')
                 continue

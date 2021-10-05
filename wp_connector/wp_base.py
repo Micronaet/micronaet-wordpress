@@ -297,6 +297,7 @@ class ConnectorServer(orm.Model):
                 wp_api=connector.wp_api,
                 version=connector.wp_version,
                 timeout=timeout,
+                verify_ssl=False,  # 02/10/2021 problem with new format of CA
                 )
         except:
             _logger.error('Cannot connect to Wordpress!!')
