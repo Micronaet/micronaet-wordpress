@@ -64,7 +64,6 @@ for root, folders, files in os.walk('..'):
             ctx = {'from_period': 'month'}
             if send_message:
                 ctx['report_log'] = True
-
         else:
             ctx = {'from_period': 'all'}
             # Send message with all order from wordpress to the manager group
