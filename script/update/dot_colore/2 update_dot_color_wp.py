@@ -2,7 +2,7 @@
 # '*'coding: utf'8 '*'
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001'2015 Micronaet S.r.l. (<https://micronaet.com>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -13,7 +13,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -59,15 +59,15 @@ for lang in lang_db:
 
     # -------------------------------------------------------------------------
     # Connect to ODOO:
-    # -------------------------------------------------------------------------    
+    # -------------------------------------------------------------------------
     odoo = erppeek.Client(
-        'http://%s:%s' % (server, port), 
+        'http://%s:%s' % (server, port),
         db=dbname, user=user, password=pwd,
         )
     odoo.context = {'lang': lang}
-    
+
     # Pool used:
-    pool = odoo.model('connector.product.color.dot') 
+    pool = odoo.model('connector.product.color.dot')
     color_ids = pool.search([])
     for color in pool.browse(color_ids):
         table[company][wp_lang][color.name] = color
@@ -79,13 +79,13 @@ def wp_check_reply(reply):
     """ reply correct over 300
     """
     try:
-        if reply.status_code >= 300:        
+        if reply.status_code >= 300:
             print 'Error from server!'
             sys.exit()
     except:
         print 'Error unmanaged in reply!'
         sys.exit()
-    
+
 
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
@@ -109,6 +109,7 @@ wcapi = woocommerce.API(
     version='wc/v3',
     query_string_auth=True,
     timeout=600,
+    verify_ssl=False,  # 03/10/2021 problem with new format of CA
     )
 
 wp_attribute = {}
@@ -130,8 +131,8 @@ while True:
     for record in records:
         if record['name'] == attribute_name:
             attribute_id = record['id']
-            break    
-            
+            break
+
     if attribute_id:
         break
 
@@ -144,10 +145,10 @@ odoo_selection = {
     'it': table[company]['it'].keys(),
     'en': table[company]['en'].keys(),
     }
-    
+
 while True:
-    parameter['page'] += 1    
-    call = 'products/attributes/%s/terms' % attribute_id    
+    parameter['page'] += 1
+    call = 'products/attributes/%s/terms' % attribute_id
     reply = wcapi.get(call, params=parameter)
 
     # Retrieve all Fabric attribute:
@@ -160,7 +161,7 @@ while True:
         wp_lang = record['lang']
         slug = record['name']
         name = record['name'][:-3]
-        
+
 
         color = table[company][wp_lang].get(name)
         if not color:
@@ -172,12 +173,12 @@ while True:
                 odoo_selection[wp_lang].remove(name)
 
 print 'To create:'
-print odoo_selection                            
+print odoo_selection
 
 translation_id = {}
 #link = 'http://my.fiam.it/upload/images/dot_colors/%s.png'
 for lang in ['it', 'en']:
-    for color in odoo_selection[lang]:            
+    for color in odoo_selection[lang]:
         name = '%s-%s' % (color, lang)
         call = 'products/attributes/%s/terms' % attribute_id
 
@@ -187,16 +188,16 @@ for lang in ['it', 'en']:
             'color_name': table[company]['it'][color].hint,
             #'color_image': link,
             }
-        if lang != 'it':    
+        if lang != 'it':
             data.update({
                 'translations': {'it': translation_id[color]}
                 })
-        
+
         reply = wcapi.post(call, data=data)
-        wp_check_reply(reply)    
-        if lang == 'it':    
+        wp_check_reply(reply)
+        if lang == 'it':
             translation_id[color] = reply.json()['id']
-        
+
 """        
         item_id = record['id']
         lang = record['lang']

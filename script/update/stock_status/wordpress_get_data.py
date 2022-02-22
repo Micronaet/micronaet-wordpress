@@ -50,6 +50,7 @@ wcapi = woocommerce.API(
     version='wc/v3',
     query_string_auth=True,
     timeout=600,
+    verify_ssl=False,  # 03/10/2021 problem with new format of CA
     )
 
 # -----------------------------------------------------------------------------

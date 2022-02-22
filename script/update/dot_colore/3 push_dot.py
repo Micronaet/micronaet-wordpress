@@ -2,7 +2,7 @@
 # '*'coding: utf'8 '*'
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001'2015 Micronaet S.r.l. (<https://micronaet.com>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -13,7 +13,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -44,13 +44,13 @@ def wp_check_reply(reply):
     """ reply correct over 300
     """
     try:
-        if reply.status_code >= 300:        
+        if reply.status_code >= 300:
             print 'Error from server!'
             sys.exit()
     except:
         print 'Error unmanaged in reply!'
         sys.exit()
-    
+
 
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
@@ -78,12 +78,12 @@ port = config.get('dbaccess', 'port')   # verify if it's necessary: getint
 # -----------------------------------------------------------------------------
 odoo = erppeek.Client(
     'http://%s:%s' % (
-        server, port), 
+        server, port),
     db=dbname,
     user=user,
     password=pwd,
     )
-    
+
 # Pool used (in lang mode):
 '''
 odoo_lang = {}
@@ -105,6 +105,7 @@ wcapi = woocommerce.API(
     version='wc/v3',
     query_string_auth=True,
     timeout=600,
+    verify_ssl=False,  # 03/10/2021 problem with new format of CA
     )
 
 wp_attribute = {}
@@ -126,8 +127,8 @@ while True:
     for record in records:
         if record['name'] == attribute_name:
             attribute_id = record['id']
-            break    
-            
+            break
+
     if attribute_id:
         break
 
@@ -137,8 +138,8 @@ parameter = {
     }
 
 while True:
-    parameter['page'] += 1    
-    call = 'products/attributes/%s/terms' % attribute_id    
+    parameter['page'] += 1
+    call = 'products/attributes/%s/terms' % attribute_id
     reply = wcapi.get(call, params=parameter)
 
     # Retrieve all Fabric attribute:
@@ -154,13 +155,13 @@ while True:
         comment = ''
         hint = ''
 
-        # ---------------------------------------------------------------------        
-        # Image data:    
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
+        # Image data:
+        # ---------------------------------------------------------------------
         term_id = record['id']
         name = record['name']
         name = name[:-3]  # no -it
-        odoo_name = name  # Name is this 
+        odoo_name = name  # Name is this
         # Transfor for image name:
         name = name.strip()
         name = name.replace(' ', '%20')
@@ -172,22 +173,22 @@ while True:
             # Update image only if not present and it Lang!
             data.update({
                 'lang': 'it',
-                'color_image': 
+                'color_image':
                     'http://my.fiam.it/upload/images/dot_point/%s.png' % name,
                 })
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         # ODOO Data:
-        # ---------------------------------------------------------------------   
+        # ---------------------------------------------------------------------
         odoo_ids = odoo_lang.search([('name', '=', odoo_name)])
         if odoo_ids:
             if lang == 'it':
                 odoo.context = {'lang': 'it_IT'}
                 odoo_lang = odoo.model('connector.product.color.dot')
-            else:    
+            else:
                 odoo.context = {'lang': 'en_US'}
                 odoo_lang = odoo.model('connector.product.color.dot')
-        
+
             dot = odoo_lang.browse(odoo_ids)[0]
             hint = dot.hint
             if hint and hint != record['color_name']:
@@ -200,25 +201,25 @@ while True:
                     'color_name': hint,
                     })
 
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         # Update command:
-        # ---------------------------------------------------------------------        
+        # ---------------------------------------------------------------------
         if not data:
             #print 'NOT updated %s' % odoo_name
             continue
-        
+
         call = 'products/attributes/%s/terms/%s' % (
-            attribute_id, term_id,                
+            attribute_id, term_id,
             )
 
         reply = wcapi.put(call, data)
         print 'UPDATE |%s| WP |%s| ODOO |%s| >> HINT |%s| COMMENT: |%s|' % (
             lang,
             record['name'],
-            odoo_name, 
+            odoo_name,
             hint,
             comment,
             )
-        if verbose:    
+        if verbose:
             print 'wcapi.put(%s, %s) >> %s\n\n' % (call, data, reply.json())
 
