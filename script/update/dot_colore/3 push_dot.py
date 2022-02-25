@@ -117,7 +117,7 @@ parameter = {
 while True:
     parameter['page'] += 1
     call = 'products/attributes'
-    reply = wcapi.get(call, params=parameter)  #.json()
+    reply = wcapi.get(call, params=parameter)  # .json()
 
     wp_check_reply(reply)
     records = reply.json()
