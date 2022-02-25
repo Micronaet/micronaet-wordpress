@@ -45,10 +45,10 @@ def wp_check_reply(reply):
     """
     try:
         if reply.status_code >= 300:
-            print 'Error from server!'
+            print('Error from server!')
             sys.exit()
     except:
-        print 'Error unmanaged in reply!'
+        print('Error unmanaged in reply!')
         sys.exit()
 
 
@@ -117,13 +117,13 @@ parameter = {
 while True:
     parameter['page'] += 1
     call = 'products/attributes'
-    reply = wcapi.get(call, params=parameter)#.json()
+    reply = wcapi.get(call, params=parameter)  #.json()
 
     wp_check_reply(reply)
     records = reply.json()
     if not records:
         break
-
+    attribute_id = False
     for record in records:
         if record['name'] == attribute_name:
             attribute_id = record['id']
@@ -162,7 +162,7 @@ while True:
         name = record['name']
         name = name[:-3]  # no -it
         odoo_name = name  # Name is this
-        # Transfor for image name:
+        # Transform for image name:
         name = name.strip()
         name = name.replace(' ', '%20')
         name = name.replace('.png', '')
@@ -205,7 +205,7 @@ while True:
         # Update command:
         # ---------------------------------------------------------------------
         if not data:
-            #print 'NOT updated %s' % odoo_name
+            # print 'NOT updated %s' % odoo_name
             continue
 
         call = 'products/attributes/%s/terms/%s' % (
@@ -213,13 +213,13 @@ while True:
             )
 
         reply = wcapi.put(call, data)
-        print 'UPDATE |%s| WP |%s| ODOO |%s| >> HINT |%s| COMMENT: |%s|' % (
+        print('UPDATE |%s| WP |%s| ODOO |%s| >> HINT |%s| COMMENT: |%s|' % (
             lang,
             record['name'],
             odoo_name,
             hint,
             comment,
-            )
+            ))
         if verbose:
-            print 'wcapi.put(%s, %s) >> %s\n\n' % (call, data, reply.json())
+            print('wcapi.put(%s, %s) >> %s\n\n' % (call, data, reply.json()))
 
