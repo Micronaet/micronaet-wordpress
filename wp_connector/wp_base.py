@@ -94,7 +94,7 @@ class ConnectorServer(orm.Model):
         """
         if context is None:
             context = {}
-        force_remove = False  # TODO put it after upload image in product
+        force_remove = False  # todo put it after upload image in product
 
         # Media access:
         connector = self.browse(cr, uid, ids, context=context)[0]
@@ -116,7 +116,7 @@ class ConnectorServer(orm.Model):
                 try:
                     pickle_album = pickle.load(open(pickle_file, 'rb'))
                 except:
-                    _logger.error('Pickle file damnaged, restore from Dropbox')
+                    _logger.error('Pickle file damaged, restore from Dropbox')
                     raise osv.except_osv(
                             _('Errore'),
                             _('Pickle file danneggiato, ripristinare da '
@@ -142,9 +142,8 @@ class ConnectorServer(orm.Model):
                             'remove': [],  # media_id to remove when updated
                         }
                     # Check modify date:
-                    (
-                        mode, ino, dev, nlink, uid, gid, size,
-                        atime, mtime, ctime) = os.stat(fullname)
+                    (mode, ino, dev, nlink, uid, gid, size,
+                     atime, mtime, ctime) = os.stat(fullname)
 
                     modify_time = time.ctime(mtime)
                     if modify_time != pickle_album[fullname]['modify'] or \
@@ -163,7 +162,7 @@ class ConnectorServer(orm.Model):
                             'status': 'publish',
                             'author': author_id,
                             'alt_text': filename,
-                            'caption': filename,  # TODO change some data?
+                            'caption': filename,  # todo change some data?
                             'description': filename,
                         }
 

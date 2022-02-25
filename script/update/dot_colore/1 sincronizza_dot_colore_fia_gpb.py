@@ -1,8 +1,4 @@
 import os
-import woocommerce
-import pickle
-import urllib
-import sys
 import erppeek
 import ConfigParser
 
@@ -10,7 +6,7 @@ import ConfigParser
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
 mode = 'openerp'  # 'local'
-company_list = ['fia', 'gpb']
+company_list = ['fia', 'gpb']  # Use for keep in this order!
 lang_list = ['it_IT', 'en_US']
 
 connector_id = {
@@ -51,7 +47,7 @@ for company in company_list:  # ['fia', 'gpb']:
         pools[company][lang]['colors'] = \
             odoo.model('connector.product.color.dot')
 
-space_problem = []
+blank_problem = []
 for company in company_list:
     print('Working DB', company)
 
@@ -80,9 +76,9 @@ for company in company_list:
         for source_color in source['pool'].browse(source_color_ids):
             name = source_color.name  # Code
             if name != name.strip():
-                print('   Space problem: %s %s %s' % (company, lang, name))
-                if name not in space_problem:
-                    space_problem.append(name)
+                print('   Blank problem: %s %s %s' % (company, lang, name))
+                if name not in blank_problem:
+                    blank_problem.append(name)
                 source['pool'].write([source_color.id], {
                     'name': name.strip(),
                     })
@@ -111,5 +107,5 @@ for company in company_list:
                 print('Create: %s %s %s' % (company, lang, data))
                 destination['pool'].create(data)
 
-print('Space problem:')
-print(space_problem)
+print('Blank problem:')
+print(blank_problem)
