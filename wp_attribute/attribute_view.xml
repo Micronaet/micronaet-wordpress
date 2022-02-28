@@ -477,8 +477,8 @@
                     <header>
                         <!--<button name="publish_now" string="Publish now" type="object" />-->
                         <button name="link_variant_now" string="Collega tutti figli" type="object" />
-                        <button name="open_permalink" string="Apri permalink" type="object"/><!-- attrs="{'invisible': [('permalink', '=', False)]}" icon="terp-go-home"/>-->
-                        <field name="permalink" />
+                        <button name="open_permalink" string="Apri permalink" type="object" attrs="{'invisible': [('permalink', '=', False)]}" icon="terp-go-home"/>
+                        <field name="permalink" invisible="1"/>
 
                     </header>
                     <sheet>
