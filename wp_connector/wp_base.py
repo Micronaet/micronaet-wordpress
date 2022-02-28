@@ -497,16 +497,6 @@ class ProductProduct(orm.Model):
                     'Auto assign package: Code not found %s !' % default_code)
         return True
 
-    def open_permalink(self, cr, uid, ids, context=None):
-        """ Return URL
-        """
-        product = self.browse(cr, uid, ids, context=context)
-        return {
-            'type': 'ir.actions.act_url',
-            'url': product.permalink,
-            'target': 'new',
-            }
-
     _columns = {
         # 'wp_id': fields.integer('Worpress ID'),
         # 'wp_lang_id': fields.integer('Worpress translate ID'),

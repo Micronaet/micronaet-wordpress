@@ -70,6 +70,16 @@ class ProductProductWebServerIntegration(orm.Model):
     # -------------------------------------------------------------------------
     # Button event:
     # -------------------------------------------------------------------------
+    def open_permalink(self, cr, uid, ids, context=None):
+        """ Return URL
+        """
+        product = self.browse(cr, uid, ids, context=context)
+        return {
+            'type': 'ir.actions.act_url',
+            'url': product.permalink,
+            'target': 'new',
+            }
+
     def open_variant_detail_form(self, cr, uid, ids, context=None):
         """ Open variant form
         """
