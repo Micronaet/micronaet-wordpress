@@ -189,6 +189,7 @@
                     <field name="force_ean13"/>
                     <field name="force_price"/>
                     <field name="force_min_stock"/>-->
+                    <field name="permalink" invisible="1"/>
                     <button name="publish_master_now" string="Pubblica ora" type="object" icon="gtk-refresh"/>
 
                     <field name="need_update" invisible="1"/>
@@ -196,7 +197,7 @@
                     <button name="unmark_need_update" string="Annulla aggiorna schedulato" type="object" icon="gtk-cancel" attrs="{'invisible': [('need_update', '=', False)]}"/>
 
                     <button name="publish_master_now" string="Non pubblicato" type="object" icon="gtk-new" attrs="{'invisible': ['|', ('wp_it_id', '!=', 0), ('wp_en_id', '!=', 0)]}"/>
-
+                    <button name="open_permalink" string="Apri permalink" type="object" attrs="{'invisible': [('permalink', '=', False)]}" icon="terp-go-home"/>
                 </tree>
             </field>
         </record>
@@ -479,7 +480,6 @@
                         <button name="link_variant_now" string="Collega tutti figli" type="object" />
                         <button name="open_permalink" string="Apri permalink" type="object" attrs="{'invisible': [('permalink', '=', False)]}" icon="terp-go-home"/>
                         <field name="permalink" invisible="1"/>
-
                     </header>
                     <sheet>
                         <group colspan="4" col="4">
