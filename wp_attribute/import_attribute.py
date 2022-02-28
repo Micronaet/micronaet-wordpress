@@ -1041,7 +1041,6 @@ class ProductPublicCategory(orm.Model):
                 else:
                     permalink = reply['permalink']
                     if lang == 'it':
-                        pdb.set_trace()
                         _logger.info('Update permalink for parent')
                         web_product_pool.write(cr, uid, [parent.id], {
                             'permalink': permalink,
