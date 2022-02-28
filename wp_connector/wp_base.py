@@ -497,6 +497,16 @@ class ProductProduct(orm.Model):
                     'Auto assign package: Code not found %s !' % default_code)
         return True
 
+    def open_permalink(self, cr, uid, ids, context=None):
+        """ Return URL
+        """
+        product = self.browse(cr, uid, ids, context=context)
+        return {
+            'type': 'ir.actions.act_url',
+            'url': product.permalink,
+            'target': 'new',
+            }
+
     _columns = {
         # 'wp_id': fields.integer('Worpress ID'),
         # 'wp_lang_id': fields.integer('Worpress translate ID'),
@@ -506,6 +516,7 @@ class ProductProduct(orm.Model):
             'Emozionale dettagliata', translate=True),
         'model_package_id': fields.many2one(
             'product.product.web.package', 'Package'),
+        'permalink': fields.char('Permalink', size=180),
         }
 
 
@@ -1224,6 +1235,7 @@ class ProductProductWebServer(orm.Model):
 
                         else:
                             wp_id = reply['id']
+                            permalink = reply['permalink']
                             _logger.warning('Product %s lang %s created!' % (
                                 wp_id, lang))
 
@@ -1251,6 +1263,7 @@ class ProductProductWebServer(orm.Model):
                     if wp_id:
                         self.write(cr, uid, [item.id], {
                             'wp_%s_id' % lang: wp_id,
+                            'permalink': permalink,
                             }, context=context)
 
                 # Save translation of ID (for language product)
