@@ -1235,6 +1235,7 @@ class ProductProductWebServer(orm.Model):
                         else:
                             wp_id = reply['id']
                             permalink = reply['permalink']
+                            pdb.set_trace()
                             if lang == 'it':
                                 _logger.info('Update permalink')
                                 self.write(cr, uid, [item.id], {
