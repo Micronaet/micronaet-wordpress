@@ -1235,6 +1235,12 @@ class ProductProductWebServer(orm.Model):
                         else:
                             wp_id = reply['id']
                             permalink = reply['permalink']
+                            if lang == 'it':
+                                _logger.info('Update permalink')
+                                self.write(cr, uid, [item.id], {
+                                    'permalink': permalink,
+                                }, context=context)
+
                             _logger.warning('Product %s lang %s created!' % (
                                 wp_id, lang))
 
@@ -1262,7 +1268,7 @@ class ProductProductWebServer(orm.Model):
                     if wp_id:
                         self.write(cr, uid, [item.id], {
                             'wp_%s_id' % lang: wp_id,
-                            'permalink': permalink,
+                            # 'permalink': permalink,
                             }, context=context)
 
                 # Save translation of ID (for language product)
