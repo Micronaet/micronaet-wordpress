@@ -516,7 +516,6 @@ class ProductProduct(orm.Model):
             'Emozionale dettagliata', translate=True),
         'model_package_id': fields.many2one(
             'product.product.web.package', 'Package'),
-        'permalink': fields.char('Permalink', size=180),
         }
 
 
@@ -1391,6 +1390,8 @@ class ProductProductWebServer(orm.Model):
                     volume, item.product_id.default_code))
 
     _columns = {
+        'permalink': fields.char('Permalink', size=180),
+
         'stock_log_ids': fields.one2many(
             'product.product.stock.log', 'web_product_id', 'Log magazzino',
             help='Log cambi quantità magazzino forzato manualmente', ),
