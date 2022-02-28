@@ -952,6 +952,7 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         #                       PRODUCT AND VARIATIONS:
         # ---------------------------------------------------------------------
+        permalinks = {}
         translation_lang = {}
         parent_unset = []
 
@@ -1040,11 +1041,8 @@ class ProductPublicCategory(orm.Model):
                     continue
                 else:
                     permalink = reply['permalink']
-                    if lang == 'it':
-                        _logger.info('Update permalink for parent')
-                        web_product_pool.write(cr, uid, [parent.id], {
-                            'permalink': permalink,
-                        }, context=context)
+                    if lang == 'it' and permalink:
+                        permalinks[parent.id] = permalink
 
                 # -------------------------------------------------------------
                 #          VARIANTS: Setup color terms for product
@@ -1382,6 +1380,13 @@ class ProductPublicCategory(orm.Model):
         if parent_unset:
             _logger.error('Set parent for code start with: %s' % (
                 parent_unset))
+
+        # Update permalinks:
+        pdb.set_trace()
+        for master_id in permalinks:
+            web_product_pool.write(cr, uid, [parent.id], {
+                'permalink': permalinks[master_id],
+            }, context=context)
 
         # ---------------------------------------------------------------------
         # Attribute update ODOO VS WP:
