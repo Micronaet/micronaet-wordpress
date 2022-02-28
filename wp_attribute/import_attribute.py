@@ -1382,7 +1382,6 @@ class ProductPublicCategory(orm.Model):
                 parent_unset))
 
         # Update permalinks:
-        pdb.set_trace()
         for master_id in permalinks:
             web_product_pool.write(cr, uid, [parent.id], {
                 'permalink': permalinks[master_id],
