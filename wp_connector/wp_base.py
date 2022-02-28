@@ -1233,14 +1233,7 @@ class ProductProductWebServer(orm.Model):
                                     wp_id, lang, reply))
 
                         else:
-                            wp_id = reply['id']
-                            permalink = reply['permalink']
-                            pdb.set_trace()
-                            if lang == 'it':
-                                _logger.info('Update permalink')
-                                self.write(cr, uid, [item.id], {
-                                    'permalink': permalink,
-                                }, context=context)
+                            wp_id = reply['id']  # update here permelink?
 
                             _logger.warning('Product %s lang %s created!' % (
                                 wp_id, lang))

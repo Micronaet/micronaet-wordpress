@@ -896,7 +896,7 @@ class ProductPublicCategory(orm.Model):
                     ], default_format=excel_format['title'])
                 # =============================================================
 
-                if any(data.values()): # only if one is present
+                if any(data.values()):  # only if one is present
                     call = 'products/attributes/%s/terms/batch' % \
                         attribute_id['Tessuto']
                     res = self.wp_loopcall(
@@ -1028,6 +1028,14 @@ class ProductPublicCategory(orm.Model):
                         'Cannot found wp_id, code %s' % default_code)
                     # XXX Cannot update!
                     continue
+                else:
+                    permalink = reply['permalink']
+                    pdb.set_trace()
+                    if lang == 'it':
+                        _logger.info('Update permalink for parent')
+                        self.write(cr, uid, [parent.id], {
+                            'permalink': permalink,
+                        }, context=context)
 
                 # -------------------------------------------------------------
                 #          VARIANTS: Setup color terms for product
@@ -1293,7 +1301,7 @@ class ProductPublicCategory(orm.Model):
                             )
                         res = self.wp_loopcall(
                             wcapi, 'put', call, data=data).json()
-                        # TODO permalink update
+                        # todo permalink update
                         # del(current_variant[fabric_code]) #for clean operat.
 
                         # =====================================================
@@ -1321,7 +1329,7 @@ class ProductPublicCategory(orm.Model):
                         call = 'products/%s/variations' % wp_id
                         res = self.wp_loopcall(
                             wcapi, 'post', call, data=data).json()
-                        # TODO permalink update
+                        # todo permalink update
 
                         # =====================================================
                         # Excel log:
