@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!--product.product.logistic.package-->
+        <record model="ir.ui.view" id="view_product_product_logistic_package_tree">
+            <field name="name">product.product.logistic.package.tree</field>
+            <field name="model">product.product.logistic.package</field>
+            <field name="arch" type="xml">
+                <tree string="Dettagli logistici" editable="bottom">
+                    <field name="name" />
+                    <field name="mask" />
+                    <field name="price" />
+
+                    <field name="width" />
+                    <field name="length" />
+                    <field name="height" />
+
+                    <field name="seat" />
+                    <field name="arm" />
+                    <field name="pipe" />
+
+                    <button name="auto_logistic_package_assign" string="Aggiorna" type="object" icon="gtk-refresh"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_product_product_logistic_package_form">
+            <field name="name">product.product.logistic.package.form</field>
+            <field name="model">product.product.logistic.package</field>
+            <field name="arch" type="xml">
+                <form string="Dettagli logistici" version="7.0">
+                    <header>
+                        <button name="auto_logistic_package_assign" string="Aggiorna" type="object" icon="gtk-refresh"/>
+                    </header>
+                    <sheet>
+                        <group col="4">
+                            <field name="name" />
+                            <field name="mask" />
+                            <field name="price" />
+
+                            <notebook>
+                                <page name="page_dimension" string="Dimensioni e peso">
+                                    <group col="4">
+                                        <field name="width" />
+                                        <field name="length" />
+                                        <field name="height" />
+
+                                        <field name="net_weight" />
+                                        <field name="gross_weight" />
+                                    </group>
+                                </page>
+                                <page name="page_package" string="Imballo">
+                                    <group col="6">
+                                        <separator string="Scatola:" colspan="6"/>
+                                        <field name="pack_width" />
+                                        <field name="pack_length" />
+                                        <field name="pack_height" />
+
+                                        <separator string="Scatola:" colspan="6"/>
+                                        <field name="box_width" />
+                                        <field name="box_depth" />
+                                        <field name="box_height" />
+
+                                        <separator string="Pallet:" colspan="6"/>
+                                        <field name="pallet_width" />
+                                        <field name="pallet_length" />
+                                        <field name="pallet_height" />
+
+                                        <separator string="Dettaglio:" colspan="6"/>
+                                        <field name="pallet_dimension" />
+                                        <field name="pcs_pallet" />
+                                        <field name="pcs_truck" />
+                                    </group>
+                                </page>
+                                <page name="page_partic" string="Particolarità">
+                                    <group col="4">
+                                        <field name="seat" />
+                                        <field name="arm" />
+                                        <field name="pipe" />
+                                    </group>
+                                </page>
+                            </notebook>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_product_product_web_package">
+            <field name="name">Package</field>
+            <field name="res_model">product.product.web.package</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_product_product_web_package_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+    </data>
+</openerp>
+
