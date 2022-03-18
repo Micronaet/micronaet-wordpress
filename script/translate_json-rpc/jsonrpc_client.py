@@ -14,6 +14,7 @@ import json
 # -----------------------------------------------------------------------------
 # Authenticate to get Session ID:
 # -----------------------------------------------------------------------------
+text = 'Prova microfono'
 url = 'http://127.0.0.1:5000/API/v1.0/micronaet/translate'
 headers = {
     'content-type': 'application/json',
@@ -23,7 +24,7 @@ payload = {
     'params': {
         'command': 'translate',
         'parameters': {
-            'text': 'prova',
+            'text': text,
             'from': 'it',
             'to': 'en',
         },
