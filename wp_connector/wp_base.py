@@ -399,6 +399,10 @@ class ConnectorServer(orm.Model):
             cr, uid, ids, 'Test message', context=context)
 
     _columns = {
+        'wp_lang_ids': fields.many2many(
+            'res.lang', 'connector_lang_rel',
+            'connector_id', 'lang_id',
+            'Lingue abilitate'),
         'wp_publish_image': fields.boolean('Pubblica immagini'),
         'wp_ean_gtin': fields.boolean('EAN GTIN', help='Use EAN code in GTIN'),
         'wordpress': fields.boolean('Wordpress', help='Wordpress web server'),

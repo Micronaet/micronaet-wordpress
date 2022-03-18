@@ -158,7 +158,7 @@ class ProductPublicCategory(orm.Model):
             excel_pool.write_xls_line(ws_name, row, [
                 'get',
                 call,
-                u'%s' % (parameter),
+                u'%s' % (parameter, ),
                 u'%s' % (res, ),
                 ], default_format=excel_format['text'], col=1)
             # =================================================================
@@ -170,7 +170,7 @@ class ProductPublicCategory(orm.Model):
                     _('Error getting category list: %s' % (res, )),
                     )
             except:
-                pass # no error
+                pass  # no error
 
             if res:
                 current_wp_category.extend(res)
@@ -180,10 +180,10 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Loading used dict DB
         # ---------------------------------------------------------------------
-        odoo_name2id = {} # (name, lang) > ID
+        odoo_name2id = {}  # (name, lang) > ID
 
-        wp_id2name = {} # name > WP ID
-        wp_name2id = {} # parent, name, lang > WP ID TODO manage!
+        wp_id2name = {}  # name > WP ID
+        wp_name2id = {}  # parent, name, lang > WP ID TODO manage!
 
         for record in current_wp_category:
             wp_id2name[record['id']] = record['name']
