@@ -467,7 +467,7 @@
                                 </page>
                             </notebook>
                         </group>
-                        <group colspan="10">
+                        <group colspan="4" col="10">
                             <separator string="Wordpress link:" colspan="10"/>
                             <field name="wp_it_on" />
                             <field name="wp_en_on" />
@@ -560,7 +560,7 @@
                                 </page>
                             </notebook>
                         </group>
-                        <group colspan="10">
+                        <group col="10" colspan="4">
                             <separator string="Wordpress link:" colspan="9"/>
                             <button name="clean_wp_reference" string="Clean" type="object" confirm="Clean WP reference only if this product is deleted from WP, confirm?" colspan="1" attrs="{'invisible': [('wp_it_id','=',0), ('wp_en_id','=',0), ('wp_es_id','=',0), ('wp_fr_id','=',0), ('wp_de_id','=',0)]}"/>
                             <field name="wp_it_on" groups="wp_connector.group_wp_product_manager"/>

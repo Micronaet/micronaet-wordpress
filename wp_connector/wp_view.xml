@@ -399,7 +399,7 @@
                             <field name="force_min_stock"/>
                             <field name="force_price"/>
                         </group>
-                        <group colspan="10">
+                        <group col="10" colspan="4">
                             <separator string="Wordpress line:" colspan="10"/>
                             <!--<button name="clean_reference" string="Clean reference" colspan="1" type="object" confirm="Do you want delete reference with Wordpress linked product?"/>-->
 
