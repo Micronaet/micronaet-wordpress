@@ -108,7 +108,7 @@ def MicronaetCall():
         try:
             translate = translator.translate(text, src=from_lang, dest=to_lang)
             payload['reply'].update({
-                    'translate': translate,
+                    'translate': translate.text,
                 })
             payload['success'] = True  # Invoice generated (not sure print)
         except:
