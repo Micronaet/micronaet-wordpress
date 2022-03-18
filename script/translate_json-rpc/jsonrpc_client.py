@@ -35,5 +35,5 @@ response = requests.post(url, headers=headers, data=json.dumps(payload))
 response_json = response.json()
 if response_json['success']:
     print(text)
-    print(response_json['translate'])
+    print(response_json.get('reply', {}).get('translate'))
 
