@@ -52,9 +52,12 @@ class ProductPublicCategory(orm.Model):
     _inherit = 'product.public.category'
 
     _columns = {
-        #'wp_id': fields.integer('Worpress ID'), # replaced!
+        # 'wp_id': fields.integer('Worpress ID'), # replaced!
         'wp_en_id': fields.integer('Worpress ID en'),
         'wp_it_id': fields.integer('Worpress ID it'),
+        'wp_es_id': fields.integer('Worpress ID es'),
+        'wp_fr_id': fields.integer('Worpress ID fr'),
+        'wp_de_id': fields.integer('Worpress ID de'),
         }
 
 
@@ -74,6 +77,9 @@ class ProductPublicCategory(orm.Model):
         category_pool.write(cr, uid, category_ids, {
             'wp_it_id': False,
             'wp_en_id': False,
+            'wp_es_id': False,
+            'wp_fr_id': False,
+            'wp_de_id': False,
             }, context=context)
         return self.publish_category_now(cr, uid, ids, context=context)
 
@@ -283,10 +289,10 @@ class ProductPublicCategory(orm.Model):
                     odoo_id = category.id
                     name = category.name
                     sequence = category.sequence
-                    wp_id = eval('category.wp_%s_id' % lang) # current lang
-                    wp_it_id = category.wp_it_id # reference lang
-                    field_id = 'wp_%s_id' % lang # current field name
-                    if sign == '=': # parent mode
+                    wp_id = eval('category.wp_%s_id' % lang)  # current lang
+                    wp_it_id = category.wp_it_id  # reference lang
+                    field_id = 'wp_%s_id' % lang  # current field name
+                    if sign == '=':  # parent mode
                         parent_wp_id = False
                     else:
                         parent_wp_id = eval('category.parent_id.wp_%s_id' % (
@@ -300,14 +306,14 @@ class ProductPublicCategory(orm.Model):
                         'lang': lang,
                         'slug': server_pool.get_lang_slug(name, lang),
                         }
-                    if default_lang != lang: # Add language default ref.
+                    if default_lang != lang:  # Add language default ref.
                         record_data['translations'] = {
-                            'it': wp_it_id, # Created before
+                            'it': wp_it_id,  # Created before
                             }
 
                     # Check if present (same name or ID):
                     key = (parent_wp_id, name, lang)
-                    if key in wp_name2id: # check name if present (for use it)
+                    if key in wp_name2id:  # check name if present (for use it)
                         wp_id = wp_name2id[key]
 
                         # Update this wp_id (same name)

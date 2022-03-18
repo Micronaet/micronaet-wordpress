@@ -24,6 +24,9 @@
                  <field name="connector_id" position="after">
                      <field name="wp_it_id"/>
                      <field name="wp_en_id"/>
+                     <field name="wp_es_id"/>
+                     <field name="wp_fr_id"/>
+                     <field name="wp_de_id"/>
                  </field>
             </field>
         </record>
@@ -35,6 +38,9 @@
                  <field name="connector_id" position="after">
                      <field name="wp_it_id"/>
                      <field name="wp_en_id"/>
+                     <field name="wp_es_id"/>
+                     <field name="wp_fr_id"/>
+                     <field name="wp_de_id"/>
                  </field>
             </field>
         </record>

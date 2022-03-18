@@ -257,4 +257,3 @@ for lang in ['it', 'en']:
                             ))
                         # TODO manage?
 """
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
