@@ -198,8 +198,8 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # TODO Language management!!!
         if server_proxy.wp_category == 'in':
-            wp_id2odoo_id = {} # WP ID 2 ODOO ID (for fast information)
-            for odoo_lang in ('it_IT', ):# XXX create only italian? 'en_US'):
+            wp_id2odoo_id = {}  # WP ID 2 ODOO ID (for fast information)
+            for odoo_lang in ('it_IT', ):  # XXX create only italian? 'en_US'):
                 lang = odoo_lang[:2]
                 context_lang = context.copy()
                 context_lang['lang'] = odoo_lang
@@ -261,7 +261,7 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         odoo_child = {}
 
-        for sign in ('=', '!='): # parent, child
+        for sign in ('=', '!='):  # parent, child
             # -----------------------------------------------------------------
             # Search category touched:
             # -----------------------------------------------------------------
@@ -375,7 +375,7 @@ class ProductPublicCategory(orm.Model):
                         _logger.error('Not Updated wp_id for %s' % name)
                         continue
 
-                    field_id = 'wp_%s_id' % lang # current field name
+                    field_id = 'wp_%s_id' % lang  # current field name
 
                     # Save WP ID in lang correct:
                     category_pool.write(cr, uid, odoo_id, {
@@ -445,4 +445,3 @@ class ProductPublicCategory(orm.Model):
         # Check updated
         # Check deleted
         # Update product first category?
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

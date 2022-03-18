@@ -848,7 +848,7 @@ class ProductProductWebServer(orm.Model):
             'view_mode': 'form,form',
             'res_id': ids[0],
             'res_model': 'product.product.web.server',
-            'view_id': view_id, # False
+            'view_id': view_id,
             'views': [(view_id, 'form'), (False, 'tree')],
             'domain': [],
             'context': context,
@@ -1048,12 +1048,13 @@ class ProductProductWebServer(orm.Model):
         translation_lang = {}
 
         # First lang = original, second translate
-        for odoo_lang in ('it_IT', 'en_US'):
+        connector_lang = [l.code for l in connector.wp_lang_ids]
+        # todo sort problem?
+        for odoo_lang in ('it_IT', 'en_US'):  # connector_lang:
             lang = odoo_lang[:2]  # WP lang
             context_lang['lang'] = odoo_lang  # self._lang_db
 
             for item in self.browse(cr, uid, ids, context=context_lang):
-
                 # Readability:
                 product = item.product_id
                 default_code = product.default_code or u''
@@ -1164,7 +1165,7 @@ class ProductProductWebServer(orm.Model):
                         'bullet_point_5': item.bullet_point_5,
                         })
 
-                else:  # Other lang (only translation
+                else:  # Other lang (only translation)
                     if not wp_it_id:
                         _logger.error(
                             'Product %s without default IT [%s]' % (
@@ -1219,8 +1220,9 @@ class ProductProductWebServer(orm.Model):
                         reply = server_pool.wp_loopcall(
                             wcapi, 'post', call, data=data).json()
                         if log_excel != False:
-                            log_excel.append(('post', call, u'%s' % (data, ),
-                                u'%s' % (reply, )))
+                            log_excel.append(
+                                ('post', call, u'%s' % (data, ),
+                                 u'%s' % (reply, )))
                     except:  # Timeout on server:
                         _logger.error('Server timeout: %s' % (data, ))
                         continue
@@ -1233,7 +1235,7 @@ class ProductProductWebServer(orm.Model):
                                     wp_id, lang, reply))
 
                         else:
-                            wp_id = reply['id']  # update here permelink?
+                            wp_id = reply['id']  # update here permalink?
 
                             _logger.warning('Product %s lang %s created!' % (
                                 wp_id, lang))
@@ -1458,7 +1460,7 @@ class ProductProductWebServer(orm.Model):
             _get_product_detail_items, method=True, readonly=1,
             type='float', string='Peso lordo', multi=True, store=False,
             ),
-        # TODO remove?
+        # todo remove?
         'weight_net': fields.function(
             _get_product_detail_items, method=True, readonly=1,
             type='float', string='Peso netto', multi=True, store=False,
