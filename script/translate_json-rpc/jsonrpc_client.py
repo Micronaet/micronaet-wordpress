@@ -14,15 +14,19 @@ import json
 # -----------------------------------------------------------------------------
 # Authenticate to get Session ID:
 # -----------------------------------------------------------------------------
-url = 'http://localhost:5000/API/v1.0/micronaet/laucher'
+url = 'http://127.0.0.1:5000/API/v1.0/micronaet/translate'
 headers = {
     'content-type': 'application/json',
 }
 payload = {
     'jsonrpc': '2.0',
     'params': {
-        'command': 'invoice',
-        'parameters': ['filename.csv'],
+        'command': 'translate',
+        'parameters': {
+            'text': 'prova',
+            'from': 'it',
+            'to': 'en',
+        },
         }
     }
 

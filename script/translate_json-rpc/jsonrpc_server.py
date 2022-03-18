@@ -106,7 +106,7 @@ def MicronaetCall():
         to_lang = parameter.get('to', 'en')
 
         try:
-            translate = translator.translate(text, src=to_lang, dest=to_lang)
+            translate = translator.translate(text, src=from_lang, dest=to_lang)
             payload['reply'].update({
                     'translate': translate,
                 })
