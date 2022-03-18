@@ -14,7 +14,9 @@ import json
 # -----------------------------------------------------------------------------
 # Authenticate to get Session ID:
 # -----------------------------------------------------------------------------
-text = 'Prova microfono'
+text = 'Set 2 sedie pieghevoli Atena  struttura acciaio  verniciato tessuto ' \
+       'plastificato microforato'
+lang = 'en'
 url = 'http://127.0.0.1:5000/API/v1.0/micronaet/translate'
 headers = {
     'content-type': 'application/json',
@@ -26,7 +28,7 @@ payload = {
         'parameters': {
             'text': text,
             'from': 'it',
-            'to': 'en',
+            'to': lang,
         },
         }
     }
