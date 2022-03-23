@@ -351,7 +351,6 @@ class ProductProductImportWorpdress(orm.Model):
             # -----------------------------------------------------------------
             for row in range(row + 1, ws.nrows):
                 lang_code = ws.cell(row, 0).value
-                pdb.set_trace()
                 if lang_code not in lang_list:
                     error_list.append(
                         'Codice lingua non trovato %s' % lang_code)
@@ -404,7 +403,7 @@ class ProductProductImportWorpdress(orm.Model):
                     lang_text[default_lang]['bullet_point_5']
 
             lang_context = context.copy()
-            for lang in lang_list:
+            for lang in lang_text:  # Loop only in passed languages
                 lang_context['lang'] = lang
 
                 # -------------------------------------------------------------
