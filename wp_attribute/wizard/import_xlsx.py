@@ -20,6 +20,8 @@
 import logging
 import xlrd
 import base64
+import requests
+import json
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime
 from openerp.tools.translate import _
@@ -188,6 +190,34 @@ class ProductProductImportWorpdress(orm.Model):
                 return False
             return (value and value in 'SXY')
 
+        def translate_text(text, from_code, to_code, uri):
+            """ Translate text from lang code to code
+            """
+            headers = {
+                'content-type': 'application/json',
+            }
+
+            payload = {
+                'jsonrpc': '2.0',
+                'params': {
+                    'command': 'translate',
+                    'parameters': {
+                        'text': text,
+                        'from': from_code[:2],
+                        'to': to_code[:2],
+                    },
+                }
+            }
+
+            response = requests.post(
+                uri, headers=headers, data=json.dumps(payload))
+            response_json = response.json()
+            if response_json['success']:
+                return response_json.get('reply', {}).get('translate')
+            else:
+                _logger.error('Cannot translate: %s' % text)
+                return False
+
         # Parameters:
         xlsx_id = ids[0]
         lang_list = ('it_IT', 'en_US', 'fr_FR')  # todo from table
@@ -203,6 +233,18 @@ class ProductProductImportWorpdress(orm.Model):
         connector_id = current_proxy.connector_id.id
         first_supplier_id = current_proxy.first_supplier_id.id
         row_start = (current_proxy.from_line or 1) - 1
+        auto_translate = current_proxy.auto_translate
+        if auto_translate:
+            translate_uri = current_proxy.translate_uri
+            auto_lang_list = [l.code for l in current_proxy.lang_ids]
+
+        translated_fields = (
+            'name', 'box_dimension', 'force_name',
+            'force_description', 'large_description',
+            'emotional_short_description', 'emotional_description',
+            'bullet_point_1', 'bullet_point_2',
+            'bullet_point_3', 'bullet_point_4', 'bullet_point_5'
+        )
 
         # ---------------------------------------------------------------------
         # Save file passed:
@@ -349,58 +391,74 @@ class ProductProductImportWorpdress(orm.Model):
             # -----------------------------------------------------------------
             # Read other language:
             # -----------------------------------------------------------------
-            for row in range(row + 1, ws.nrows):
-                lang_code = ws.cell(row, 0).value
-                if lang_code not in lang_list:
-                    error_list.append(
-                        'Codice lingua non trovato %s' % lang_code)
-                    # todo not raise! (for now yes)
-                    raise osv.except_osv(
-                        _('Error XLSX'),
-                        _('Codice lingua non trovato %s' % lang_code),
-                    )
-                default_code_lang = \
-                    number_to_text(ws.cell(row, 3).value).upper()
-                if default_code_lang and default_code_lang != default_code:
-                    row -= 1  # Resume previous line for return master loop
-                    break
-                lang_text[lang_code] = {}
+            if auto_translate:
+                for lang_code in auto_lang_list:
+                    lang_text[lang_code] = {}
+                    for field in translated_fields:
+                        field_text = lang_text[default_lang][field]
+                        if field_text:
+                            translate = translate_text(
+                                field_text, default_code, lang_code)
+                            if translate:
+                                lang_text[lang_code][field] = translate
+                            else:
+                                # Keep Italian when error:
+                                lang_text[lang_code][field] = field_text
 
-                lang_text[lang_code]['name'] = \
-                    ws.cell(row, 5).value or lang_text[default_lang]['name']
-                lang_text[lang_code]['box_dimension'] = \
-                    ws.cell(row, 17).value or \
-                    lang_text[default_lang]['box_dimension']
-                lang_text[lang_code]['force_name'] = \
-                    ws.cell(row, 21).value or \
-                    lang_text[default_lang]['force_name']
-                lang_text[lang_code]['force_description'] = \
-                    ws.cell(row, 22).value or \
-                    lang_text[default_lang]['force_description']
-                lang_text[lang_code]['large_description'] = \
-                    ws.cell(row, 28).value or \
-                    lang_text[default_lang]['large_description']
-                lang_text[lang_code]['emotional_short_description'] = \
-                    ws.cell(row, 29).value or \
-                    lang_text[default_lang]['emotional_short_description']
-                lang_text[lang_code]['emotional_description'] = \
-                    ws.cell(row, 30).value or \
-                    lang_text[default_lang]['emotional_description']
-                lang_text[lang_code]['bullet_point_1'] = \
-                    ws.cell(row, 31).value or \
-                    lang_text[default_lang]['bullet_point_1']
-                lang_text[lang_code]['bullet_point_2'] = \
-                    ws.cell(row, 32).value or \
-                    lang_text[default_lang]['bullet_point_2']
-                lang_text[lang_code]['bullet_point_3'] = \
-                    ws.cell(row, 33).value or \
-                    lang_text[default_lang]['bullet_point_3']
-                lang_text[lang_code]['bullet_point_4'] = \
-                    ws.cell(row, 34).value or \
-                    lang_text[default_lang]['bullet_point_4']
-                lang_text[lang_code]['bullet_point_5'] = \
-                    ws.cell(row, 35).value or \
-                    lang_text[default_lang]['bullet_point_5']
+            else:
+                for row in range(row + 1, ws.nrows):
+                    lang_code = ws.cell(row, 0).value
+                    if lang_code not in lang_list:
+                        error_list.append(
+                            'Codice lingua non trovato %s' % lang_code)
+                        # todo not raise! (for now yes)
+                        raise osv.except_osv(
+                            _('Error XLSX'),
+                            _('Codice lingua non trovato %s' % lang_code),
+                        )
+                    default_code_lang = \
+                        number_to_text(ws.cell(row, 3).value).upper()
+                    if default_code_lang and default_code_lang != default_code:
+                        row -= 1  # Resume previous line for return master loop
+                        break
+                    lang_text[lang_code] = {}
+
+                    lang_text[lang_code]['name'] = \
+                        ws.cell(row, 5).value or \
+                        lang_text[default_lang]['name']
+                    lang_text[lang_code]['box_dimension'] = \
+                        ws.cell(row, 17).value or \
+                        lang_text[default_lang]['box_dimension']
+                    lang_text[lang_code]['force_name'] = \
+                        ws.cell(row, 21).value or \
+                        lang_text[default_lang]['force_name']
+                    lang_text[lang_code]['force_description'] = \
+                        ws.cell(row, 22).value or \
+                        lang_text[default_lang]['force_description']
+                    lang_text[lang_code]['large_description'] = \
+                        ws.cell(row, 28).value or \
+                        lang_text[default_lang]['large_description']
+                    lang_text[lang_code]['emotional_short_description'] = \
+                        ws.cell(row, 29).value or \
+                        lang_text[default_lang]['emotional_short_description']
+                    lang_text[lang_code]['emotional_description'] = \
+                        ws.cell(row, 30).value or \
+                        lang_text[default_lang]['emotional_description']
+                    lang_text[lang_code]['bullet_point_1'] = \
+                        ws.cell(row, 31).value or \
+                        lang_text[default_lang]['bullet_point_1']
+                    lang_text[lang_code]['bullet_point_2'] = \
+                        ws.cell(row, 32).value or \
+                        lang_text[default_lang]['bullet_point_2']
+                    lang_text[lang_code]['bullet_point_3'] = \
+                        ws.cell(row, 33).value or \
+                        lang_text[default_lang]['bullet_point_3']
+                    lang_text[lang_code]['bullet_point_4'] = \
+                        ws.cell(row, 34).value or \
+                        lang_text[default_lang]['bullet_point_4']
+                    lang_text[lang_code]['bullet_point_5'] = \
+                        ws.cell(row, 35).value or \
+                        lang_text[default_lang]['bullet_point_5']
 
             lang_context = context.copy()
             for lang in lang_text:  # Loop only in passed languages
