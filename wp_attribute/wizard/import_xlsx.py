@@ -391,15 +391,16 @@ class ProductProductImportWorpdress(orm.Model):
                     lang_text[lang_code] = {}
                     for field in translated_fields:
                         field_text = lang_text[default_lang][field]
+                        translate = ''
                         if field_text:
                             translate = translate_text(
                                 field_text, default_lang, lang_code,
                                 translate_uri)
-                            if translate:
-                                lang_text[lang_code][field] = translate
-                            else:
-                                # Keep Italian when error:
-                                lang_text[lang_code][field] = field_text
+
+                        if translate:
+                            lang_text[lang_code][field] = translate
+                        else:
+                            lang_text[lang_code][field] = field_text
 
             else:
                 for row in range(row + 1, ws.nrows):
