@@ -193,7 +193,7 @@ class ProductProductImportWorpdress(orm.Model):
 
         IT = 'it_IT'
         EN = 'en_US'
-        lang_list = (IT, EN)
+        lang_list = (IT, EN)  # available
 
         # Cache DB:
         cache = {}
@@ -234,20 +234,30 @@ class ProductProductImportWorpdress(orm.Model):
         ws = wb.sheet_by_index(0)
 
         error = ''
+        pdb.set_trace()
         last_master_id = False  # ID of last master
         for row in range(row_start, ws.nrows):
             _logger.info('Reading row: %s' % row)
-            lang_text = {IT: {}, EN: {}}
+            lang_text = {}  # {IT: {}, EN: {}}
             error_list = []
 
             # Extract Excel columns:
-            is_master = get_check_value(ws.cell(row, 0).value)
-            published = get_check_value(ws.cell(row, 1).value)
-            default_code = number_to_text(ws.cell(row, 2).value).upper()
-            ean = ''  # TODO number_to_text(ws.cell(row, 3).value)
-            lang_text[IT]['name'] = ws.cell(row, 4).value
-            lang_text[EN]['name'] = ws.cell(row, 5).value \
-                or lang_text[IT]['name']
+            default_lang = get_check_value(ws.cell(row, 0).value)
+            if default_lang not in lang_list:
+                error_list.append(
+                    'Codice lingua non trovato %s' % default_lang)
+                # todo not raise! (for now yes)
+                raise osv.except_osv(
+                    _('Error XLSX'),
+                    _('Codice lingua non trovato %s' % default_lang),
+                )
+            lang_text[default_lang] = {}
+
+            is_master = get_check_value(ws.cell(row, 1).value)
+            published = get_check_value(ws.cell(row, 2).value)
+            default_code = number_to_text(ws.cell(row, 3).value).upper()
+            ean = ''  # todo number_to_text(ws.cell(row, 4).value)
+            lang_text[default_lang]['name'] = ws.cell(row, 5).value
             brand_code = ws.cell(row, 6).value
             color_code = ws.cell(row, 7).value
             category_code = ws.cell(row, 8).value
@@ -259,55 +269,31 @@ class ProductProductImportWorpdress(orm.Model):
             pack_l = ws.cell(row, 14).value or 0.0
             pack_h = ws.cell(row, 15).value or 0.0
             pack_p = ws.cell(row, 16).value or 0.0
-            lang_text[IT]['box_dimension'] = ws.cell(row, 17).value
-            lang_text[EN]['box_dimension'] = ws.cell(row, 18).value \
-                or lang_text[IT]['box_dimension']
-
-            weight = get_float(ws.cell(row, 19).value)
-            weight_net = get_float(ws.cell(row, 20).value)
-            q_x_pack = get_float(ws.cell(row, 21).value) or 1
+            lang_text[default_lang]['box_dimension'] = ws.cell(row, 17).value
+            weight = get_float(ws.cell(row, 18).value)
+            weight_net = get_float(ws.cell(row, 19).value)
+            q_x_pack = get_float(ws.cell(row, 20).value) or 1
 
             # Force:
-            lang_text[IT]['force_name'] = ws.cell(row, 22).value
-            lang_text[EN]['force_name'] = ws.cell(row, 23).value \
-                or lang_text[IT]['force_name']
-            lang_text[IT]['force_description'] = ws.cell(row, 24).value
-            lang_text[EN]['force_description'] = ws.cell(row, 25).value \
-                or lang_text[IT]['force_description']
-            force_q_x_pack = get_float(ws.cell(row, 26).value) or False
-            force_ean = number_to_text(ws.cell(row, 27).value) or ''
-            force_price = ws.cell(row, 28).value or 0.0
-            force_discounted = ws.cell(row, 29).value or 0.0
-            force_min_stock = ws.cell(row, 30).value or 0.0
-
-            lang_text[IT]['large_description'] = ws.cell(row, 31).value
-            lang_text[EN]['large_description'] = ws.cell(row, 32).value \
-                or lang_text[IT]['large_description']
-            lang_text[IT]['emotional_short_description'] = \
-                ws.cell(row, 33).value
-            lang_text[EN]['emotional_short_description'] = \
-                ws.cell(row, 34).value or \
-                lang_text[IT]['emotional_short_description']
-            lang_text[IT]['emotional_description'] = ws.cell(row, 35).value
-            lang_text[EN]['emotional_description'] = ws.cell(row, 36).value \
-                or lang_text[IT]['emotional_description']
+            lang_text[default_lang]['force_name'] = ws.cell(row, 21).value
+            lang_text[default_lang]['force_description'] = ws.cell(row, 22).value
+            force_q_x_pack = get_float(ws.cell(row, 23).value) or False
+            force_ean = number_to_text(ws.cell(row, 24).value) or ''
+            force_price = ws.cell(row, 25).value or 0.0
+            force_discounted = ws.cell(row, 26).value or 0.0
+            force_min_stock = ws.cell(row, 27).value or 0.0
+            lang_text[default_lang]['large_description'] = ws.cell(row, 28).value
+            lang_text[default_lang]['emotional_short_description'] = \
+                ws.cell(row, 29).value
+            lang_text[default_lang]['emotional_description'] = \
+                ws.cell(row, 30).value
 
             # Bullet point:
-            lang_text[IT]['bullet_point_1'] = ws.cell(row, 37).value
-            lang_text[EN]['bullet_point_1'] = ws.cell(row, 38).value \
-                or lang_text[IT]['bullet_point_1']
-            lang_text[IT]['bullet_point_2'] = ws.cell(row, 39).value
-            lang_text[EN]['bullet_point_2'] = ws.cell(row, 40).value \
-                or lang_text[IT]['bullet_point_2']
-            lang_text[IT]['bullet_point_3'] = ws.cell(row, 41).value
-            lang_text[EN]['bullet_point_3'] = ws.cell(row, 42).value \
-                or lang_text[IT]['bullet_point_3']
-            lang_text[IT]['bullet_point_4'] = ws.cell(row, 43).value
-            lang_text[EN]['bullet_point_4'] = ws.cell(row, 44).value \
-                or lang_text[IT]['bullet_point_4']
-            lang_text[IT]['bullet_point_5'] = ws.cell(row, 45).value
-            lang_text[EN]['bullet_point_5'] = ws.cell(row, 46).value \
-                or lang_text[IT]['bullet_point_5']
+            lang_text[default_lang]['bullet_point_1'] = ws.cell(row, 31).value
+            lang_text[default_lang]['bullet_point_2'] = ws.cell(row, 32).value
+            lang_text[default_lang]['bullet_point_3'] = ws.cell(row, 33).value
+            lang_text[default_lang]['bullet_point_4'] = ws.cell(row, 34).value
+            lang_text[default_lang]['bullet_point_5'] = ws.cell(row, 35).value
 
             if not default_code:
                 _logger.warning('Default code not found')
@@ -334,7 +320,7 @@ class ProductProductImportWorpdress(orm.Model):
                 False, brand_code, cache, error_list,
                 context=context)
 
-            # TODO check not file system char in default code
+            # todo check not file system char in default code
 
             # -----------------------------------------------------------------
             #                      Product operation:
@@ -362,9 +348,68 @@ class ProductProductImportWorpdress(orm.Model):
             if first_supplier_id:
                 product_data['first_supplier_id'] = first_supplier_id
 
+            # -----------------------------------------------------------------
+            # Read other language:
+            # -----------------------------------------------------------------
+            for row in range(row + 1, ws.nrows):
+                lang_code = get_check_value(ws.cell(row, 0).value)
+                default_code = number_to_text(ws.cell(row, 3).value).upper()
+                if lang_code and not default_code:  # Language line
+                    row -= 1  # Resume previous line for return master loop
+                    break
+                if lang_code not in lang_list:
+                    error_list.append(
+                        'Codice lingua non trovato %s' % lang_code)
+                    # todo not raise! (for now yes)
+                    raise osv.except_osv(
+                        _('Error XLSX'),
+                        _('Codice lingua non trovato %s' % lang_code),
+                    )
+                lang_text[lang_code] = {}
+
+                lang_text[lang_code]['name'] = \
+                    ws.cell(row, 5).value or lang_text[default_lang]['name']
+                lang_text[lang_code]['box_dimension'] = \
+                    ws.cell(row, 17).value or \
+                    lang_text[default_lang]['box_dimension']
+                lang_text[lang_code]['force_name'] = \
+                    ws.cell(row, 21).value or \
+                    lang_text[default_lang]['force_name']
+                lang_text[lang_code]['force_description'] = \
+                    ws.cell(row, 22).value or \
+                    lang_text[default_lang]['force_description']
+                lang_text[lang_code]['large_description'] = \
+                    ws.cell(row, 28).value or \
+                    lang_text[default_lang]['large_description']
+                lang_text[lang_code]['emotional_short_description'] = \
+                    ws.cell(row, 29).value or \
+                    lang_text[default_lang]['emotional_short_description']
+                lang_text[lang_code]['emotional_description'] = \
+                    ws.cell(row, 30).value or \
+                    lang_text[default_lang]['emotional_description']
+                lang_text[lang_code]['bullet_point_1'] = \
+                    ws.cell(row, 31).value or \
+                    lang_text[default_lang]['bullet_point_1']
+                lang_text[lang_code]['bullet_point_2'] = \
+                    ws.cell(row, 32).value or \
+                    lang_text[default_lang]['bullet_point_2']
+                lang_text[lang_code]['bullet_point_3'] = \
+                    ws.cell(row, 33).value or \
+                    lang_text[default_lang]['bullet_point_3']
+                lang_text[lang_code]['bullet_point_4'] = \
+                    ws.cell(row, 34).value or \
+                    lang_text[default_lang]['bullet_point_4']
+                lang_text[lang_code]['bullet_point_5'] = \
+                    ws.cell(row, 35).value or \
+                    lang_text[default_lang]['bullet_point_5']
+
             lang_context = context.copy()
             for lang in lang_list:
                 lang_context['lang'] = lang
+
+                # -------------------------------------------------------------
+                # Product translate terms:
+                # -------------------------------------------------------------
                 product_data.update({
                     'name': lang_text[lang]['name'],
                     'large_description': lang_text[lang]['large_description'],
@@ -431,6 +476,9 @@ class ProductProductImportWorpdress(orm.Model):
             for lang in lang_list:
                 lang_context['lang'] = lang
 
+                # -------------------------------------------------------------
+                # Web product translate terms:
+                # -------------------------------------------------------------
                 web_data.update({
                     'force_name': lang_text[lang]['force_name'],
                     'force_description': lang_text[lang]['force_description'],
