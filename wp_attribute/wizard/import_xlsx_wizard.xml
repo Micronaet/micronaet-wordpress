@@ -34,6 +34,7 @@
 
                            <field name="file" colspan="4" attrs="{'invisible': [('mode','!=','draft')]}"/>
 
+                           <field name="no_translate_product"/>
                            <field name="auto_translate"/>
                            <field name="translate_uri" attrs="{'invisible': [('auto_translate','=',False)]}" />
                            <field name="lang_ids" colspan="4" widget="many2many_tags" attrs="{'invisible': [('auto_translate','=',False)]}"/>

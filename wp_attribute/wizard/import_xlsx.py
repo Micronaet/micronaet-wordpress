@@ -229,6 +229,8 @@ class ProductProductImportWorpdress(orm.Model):
         first_supplier_id = current_proxy.first_supplier_id.id
         row_start = (current_proxy.from_line or 1) - 1
         auto_translate = current_proxy.auto_translate
+        no_translate_product = current_proxy.no_translate_product
+
         if auto_translate:
             translate_uri = current_proxy.translate_uri
             auto_lang_list = [l.code for l in current_proxy.lang_ids]
@@ -459,6 +461,9 @@ class ProductProductImportWorpdress(orm.Model):
 
             lang_context = context.copy()
             for lang in lang_text:  # Loop only in passed languages
+                if no_translate_product and lang != 'it_IT':
+                    _logger.warning('Language jumped, not updated product')
+                    continue
                 lang_context['lang'] = lang
 
                 # -------------------------------------------------------------
@@ -591,6 +596,11 @@ class ProductProductImportWorpdress(orm.Model):
         return True  # TODO return xlsx result file
 
     _columns = {
+        'no_translate_product': fields.boolean(
+            'Prodotto non tradurre',
+            help='Indica alla impoortazione di non toccare le traduzioni'
+                 'della parte salvata in anagrafica prodotto '
+                 '(nome, descrizione ecc.)'),
         'auto_translate': fields.boolean('Auto traduzione'),
         'translate_uri': fields.char('URI di traduzione', size=200),
         'lang_ids': fields.many2many(
