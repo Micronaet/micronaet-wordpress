@@ -183,11 +183,13 @@ class ProductProductWebServerIntegration(orm.Model):
         """
         if context is None:
             context = {}
-        master_ids = context.get('active_ids', False) or ids
+        if context.get('active_model') == 'product.product.web.server':
+            master_ids = context.get('active_ids', False) or ids
+        else:
+            master_ids = ids
 
         connector_pool = self.pool.get('connector.server')
         current = self.browse(cr, uid, master_ids, context=context)[0]
-        pdb.set_trace()
         connector_id = current.connector_id.id
 
         _logger.warning('Publish master product: %s' % len(master_ids))
