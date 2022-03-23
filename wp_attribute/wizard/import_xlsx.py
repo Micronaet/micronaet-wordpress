@@ -202,13 +202,8 @@ class ProductProductImportWorpdress(orm.Model):
                 'params': {
                     'command': 'translate',
                     'parameters': {
-                        'text': text,
-                        'from': from_code[:2],
-                        'to': to_code[:2],
-                    },
-                }
-            }
-
+                        'text': text, 'from': from_code[:2], 'to': to_code[:2],
+            }}}
             response = requests.post(
                 uri, headers=headers, data=json.dumps(payload))
             response_json = response.json()
