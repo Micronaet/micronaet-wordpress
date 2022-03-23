@@ -393,7 +393,8 @@ class ProductProductImportWorpdress(orm.Model):
                         field_text = lang_text[default_lang][field]
                         if field_text:
                             translate = translate_text(
-                                field_text, default_code, lang_code)
+                                field_text, default_lang, lang_code,
+                                translate_uri)
                             if translate:
                                 lang_text[lang_code][field] = translate
                             else:
