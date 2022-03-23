@@ -189,11 +189,9 @@ class ProductProductImportWorpdress(orm.Model):
             return (value and value in 'SXY')
 
         # Parameters:
+        pdb.set_trace()
         xlsx_id = ids[0]
-
-        IT = 'it_IT'
-        EN = 'en_US'
-        lang_list = (IT, EN)  # available
+        lang_list = ('it_IT', 'en_US')  # todo from table
 
         # Cache DB:
         cache = {}
@@ -234,7 +232,6 @@ class ProductProductImportWorpdress(orm.Model):
         ws = wb.sheet_by_index(0)
 
         error = ''
-        pdb.set_trace()
         last_master_id = False  # ID of last master
         for row in range(row_start, ws.nrows):
             _logger.info('Reading row: %s' % row)
@@ -242,7 +239,7 @@ class ProductProductImportWorpdress(orm.Model):
             error_list = []
 
             # Extract Excel columns:
-            default_lang = get_check_value(ws.cell(row, 0).value)
+            default_lang = ws.cell(row, 0).value or 'it_IT'
             if default_lang not in lang_list:
                 error_list.append(
                     'Codice lingua non trovato %s' % default_lang)
