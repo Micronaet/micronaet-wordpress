@@ -189,9 +189,8 @@ class ProductProductImportWorpdress(orm.Model):
             return (value and value in 'SXY')
 
         # Parameters:
-        pdb.set_trace()
         xlsx_id = ids[0]
-        lang_list = ('it_IT', 'en_US')  # todo from table
+        lang_list = ('it_IT', 'en_US', 'fr_FR')  # todo from table
 
         # Cache DB:
         cache = {}
@@ -273,13 +272,15 @@ class ProductProductImportWorpdress(orm.Model):
 
             # Force:
             lang_text[default_lang]['force_name'] = ws.cell(row, 21).value
-            lang_text[default_lang]['force_description'] = ws.cell(row, 22).value
+            lang_text[default_lang]['force_description'] = \
+                ws.cell(row, 22).value
             force_q_x_pack = get_float(ws.cell(row, 23).value) or False
             force_ean = number_to_text(ws.cell(row, 24).value) or ''
             force_price = ws.cell(row, 25).value or 0.0
             force_discounted = ws.cell(row, 26).value or 0.0
             force_min_stock = ws.cell(row, 27).value or 0.0
-            lang_text[default_lang]['large_description'] = ws.cell(row, 28).value
+            lang_text[default_lang]['large_description'] = \
+                ws.cell(row, 28).value
             lang_text[default_lang]['emotional_short_description'] = \
                 ws.cell(row, 29).value
             lang_text[default_lang]['emotional_description'] = \
@@ -349,8 +350,8 @@ class ProductProductImportWorpdress(orm.Model):
             # Read other language:
             # -----------------------------------------------------------------
             for row in range(row + 1, ws.nrows):
-                pdb.set_trace()
                 lang_code = ws.cell(row, 0).value
+                pdb.set_trace()
                 if lang_code not in lang_list:
                     error_list.append(
                         'Codice lingua non trovato %s' % lang_code)
@@ -428,6 +429,7 @@ class ProductProductImportWorpdress(orm.Model):
                         if not product_data[field]:
                             del product_data[field]
 
+                    print(product_data)
                     product_pool.write(
                         cr, uid, product_ids, product_data,
                         context=lang_context)
