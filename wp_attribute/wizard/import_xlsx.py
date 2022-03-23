@@ -474,7 +474,7 @@ class ProductProductImportWorpdress(orm.Model):
                 'force_discounted': force_discounted,
                 'force_min_stock': force_min_stock,
             }
-            for lang in lang_list:
+            for lang in lang_text:
                 lang_context['lang'] = lang
 
                 # -------------------------------------------------------------
