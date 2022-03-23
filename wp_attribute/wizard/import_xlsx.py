@@ -351,8 +351,8 @@ class ProductProductImportWorpdress(orm.Model):
             for row in range(row + 1, ws.nrows):
                 pdb.set_trace()
                 lang_code = ws.cell(row, 0).value
-                default_code = number_to_text(ws.cell(row, 3).value).upper()
-                if lang_code and not default_code:  # Language line
+                default_code_lang = ws.cell(row, 3).value
+                if lang_code and not default_code_lang:  # Language line
                     row -= 1  # Resume previous line for return master loop
                     break
                 if lang_code not in lang_list:
