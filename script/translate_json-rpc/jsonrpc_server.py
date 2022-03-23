@@ -5,6 +5,8 @@
 #            https://it.linkedin.com/in/thebrush
 #            https://linktr.ee/nicolariolini
 ###############################################################################
+# pip install googletrans==3.1.0a0
+# pip install flask
 
 import os
 import sys
