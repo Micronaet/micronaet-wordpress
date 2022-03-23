@@ -234,7 +234,7 @@ class ProductProductImportWorpdress(orm.Model):
         error = ''
         last_master_id = False  # ID of last master
         for row in range(row_start, ws.nrows):
-            _logger.info('Reading row: %s' % row)
+            _logger.info('\n\nReading row: %s' % row)
             lang_text = {}  # {IT: {}, EN: {}}
             error_list = []
 
@@ -423,6 +423,7 @@ class ProductProductImportWorpdress(orm.Model):
                         field for field in product_data if field not in (
                             'xlsx_id', 'default_code')]
 
+                    # Clean empty field before write:
                     for field in not_used_fields:
                         if not product_data[field]:
                             del product_data[field]
