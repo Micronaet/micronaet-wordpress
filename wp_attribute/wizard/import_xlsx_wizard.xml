@@ -26,14 +26,19 @@
                    </header>
                    <sheet>
                        <group colspan="4" col="4">
-                            <field name="connector_id" domain="[('wordpress', '=', True)]" />
-                            <field name="first_supplier_id" domain="[('supplier', '=', True), ('is_company', '=', True)]" />
+                           <field name="connector_id" domain="[('wordpress', '=', True)]" />
+                           <field name="first_supplier_id" domain="[('supplier', '=', True), ('is_company', '=', True)]" />
 
-                            <field name="from_line" />
-                            <field name="mode" invisible="1" />
+                           <field name="from_line" />
+                           <field name="mode" invisible="1" />
 
-                            <field name="file" colspan="4" attrs="{'invisible': [('mode','!=','draft')]}"/>
-                            <notebook colspan="4">
+                           <field name="file" colspan="4" attrs="{'invisible': [('mode','!=','draft')]}"/>
+
+                           <field name="auto_translate"/>
+                           <field name="translate_uri" attrs="{'invisible': [('auto_translate','=',False)]}" />
+                           <field name="lang_ids" colspan="4" widget="many2many_tags" attrs="{'invisible': [('auto_translate','=',False)]}"/>
+
+                           <notebook colspan="4">
                                 <page string="Prodotti">
                                     <group colspan="4" col="4">
                                         <separator string="Dettaglio:" colspan="4"/>

@@ -536,6 +536,14 @@ class ProductProductImportWorpdress(orm.Model):
         return True  # TODO return xlsx result file
 
     _columns = {
+        'auto_translate': fields.boolean('Auto traduzione'),
+        'translate_uri': fields.char('URI di traduzione', size=200),
+        'lang_ids': fields.many2many(
+            'res.lang', 'translate_product_lang_rel',
+            'wizard_id', 'lang_id', 'Lingue',
+            help='Indicare le lingue extra rispetto a quella default presente'
+                 ' nel file'),
+
         'name': fields.char('Name', size=64, required=True),
         'file': fields.binary('XLSX file', filters=None),
         'connector_id': fields.many2one(
@@ -555,6 +563,9 @@ class ProductProductImportWorpdress(orm.Model):
         'name':
             lambda *a: _('Imported: %s') % datetime.now().strftime(
                 DEFAULT_SERVER_DATETIME_FORMAT),
+        'translate_uri':
+            lambda *x:
+            'http://192.168.1.176:5000/API/v1.0/micronaet/translate',
         'mode': lambda *x: 'draft',
         'from_line': lambda *x: 1,
         }
