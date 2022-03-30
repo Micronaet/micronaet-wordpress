@@ -201,41 +201,44 @@ class ProductProductImportWorpdress(orm.Model):
                 data = [
                     lang,
                     ('X' if web_product.wp_parent_template else 'O')
-                     if is_default else '',
+                    if is_default else '',
                     ('X' if web_product.published else 'O')
-                     if is_default else '',
+                    if is_default else '',
                     product.default_code if is_default else '',
                     product.ean13 if is_default else '',
                     product.name,
-                    '',  # brand code
-                    '',  # color code
-                    '',  # category code
+                    web_product.brand_id.code if is_default else '',
+                    web_product.wp_color_id.code if is_default else '',
+                    ', '.join(
+                        [c.code for c in web_product.wordpress_categ_ids])
+                    if is_default else '',
                     product.lst_price if is_default else '',
-                    '',  # Garanzia
-                    '',  # Moltiplicatore
-                    '',  # Prezzo Extra
-                    '',  # Materiale
+                    '[*] Garanzia',  # Garanzia
+                    '[*] Moltipl.',  # Moltiplicatore
+                    '[*] Prezzo',  # Prezzo Extra
+                    '[*] Materiales',  # Materiale
                     product.pack_l if is_default else '',
                     product.pack_h if is_default else '',
                     product.pack_p if is_default else '',
-                    '', # Box dimensioni
+                    '[*] Box dim.', # Box dimensioni
                     product.weight if is_default else '',
                     product.weight_net if is_default else '',
                     product.q_x_pack if is_default else '',
-                    '',  # Forza nome
-                    '',  # Forza descrizione
-                    '',  # Forza q x pack
-                    '',  # Forza Prezzo
-                    '',  # Forza Sconto
-                    '',  # Forza Stock min.
-                    '',  # Large
-                    '',  # Emo short
-                    '',  # Emo long
-                    '',  # Bullet 1
-                    '',  # Bullet 2
-                    '',  # Bullet 3
-                    '',  # Bullet 4
-                    '',  # Bullet 5
+                    '[*] Forza nome',  # Forza nome
+                    '[*] Forza descrizione',  # Forza descrizione
+                    '[*] q x pack ',  # Forza q x pack
+                    '[*] q x EAN ',  # Forza EAN
+                    '[*] Forza prezzo',  # Forza Prezzo
+                    '[*] Forza sconto',  # Forza Sconto
+                    '[*] Forza stock min',  # Forza Stock min.
+                    '[*] Large',  # Large
+                    '[*] Emo short',  # Emo short
+                    '[*] Emo long',  # Emo long
+                    '[*] B1',  # Bullet 1
+                    '[*] B2',  # Bullet 2
+                    '[*] B3',  # Bullet 3
+                    '[*] B4',  # Bullet 4
+                    '[*] B5',  # Bullet 5
                 ]
                 excel_pool.write_xls_line(
                     ws_name, row, data,
