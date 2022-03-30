@@ -198,12 +198,20 @@ class ProductProductImportWorpdress(orm.Model):
             for web_product in web_pool.browse(
                     cr, uid, product_ids, context=ctx):
                 product = web_product.product_id
+
+                # Blocks:
                 if web_product.wordpress_categ_ids:
                     category_block = ', '.join(
                         [c.code for c in web_product.wordpress_categ_ids
                          if c.code])
                 else:
                     category_block = ''
+                if web_product.material_ids:
+                    material_block = ', '.join(
+                        [m.code for m in web_product.material_ids
+                         if m.code])
+                else:
+                    material_block = ''
                 data = [
                     lang,
                     ('X' if web_product.wp_parent_template else 'O')
@@ -217,32 +225,32 @@ class ProductProductImportWorpdress(orm.Model):
                     web_product.wp_color_id.code if is_default else '',
                     category_block if is_default else '',
                     product.lst_price if is_default else '',
-                    '[*] Garanzia',  # Garanzia
-                    '[*] Moltipl.',  # Moltiplicatore
-                    '[*] Prezzo',  # Prezzo Extra
-                    '[*] Materiales',  # Materiale
+                    web_product.lifetime_warranty if is_default else '',
+                    web_product.price_multi if is_default else '',
+                    web_product.price_extra if is_default else '',
+                    material_block if is_default else '',
                     product.pack_l if is_default else '',
                     product.pack_h if is_default else '',
                     product.pack_p if is_default else '',
-                    '[*] Box dim.',  # Box dimensioni
+                    web_product.weight_additional_info,
                     product.weight if is_default else '',
                     product.weight_net if is_default else '',
                     product.q_x_pack if is_default else '',
-                    '[*] Forza nome',  # Forza nome
-                    '[*] Forza descrizione',  # Forza descrizione
-                    '[*] q x pack ',  # Forza q x pack
-                    '[*] q x EAN ',  # Forza EAN
-                    '[*] Forza prezzo',  # Forza Prezzo
-                    '[*] Forza sconto',  # Forza Sconto
-                    '[*] Forza stock min',  # Forza Stock min.
-                    '[*] Large',  # Large
-                    '[*] Emo short',  # Emo short
-                    '[*] Emo long',  # Emo long
-                    '[*] B1',  # Bullet 1
-                    '[*] B2',  # Bullet 2
-                    '[*] B3',  # Bullet 3
-                    '[*] B4',  # Bullet 4
-                    '[*] B5',  # Bullet 5
+                    web_product.force_name,
+                    web_product.force_description,
+                    web_product.force_q_x_pack if is_default else '',
+                    web_product.force_ean13 if is_default else '',
+                    web_product.force_price if is_default else '',
+                    web_product.force_discounted if is_default else '',
+                    web_product.force_min_stock if is_default else '',
+                    web_product.large_description,
+                    web_product.emotional_short_description,
+                    web_product.emotional_description,
+                    web_product.bullet_point_1,
+                    web_product.bullet_point_2,
+                    web_product.bullet_point_3,
+                    web_product.bullet_point_4,
+                    web_product.bullet_point_5,
                 ]
                 excel_pool.write_xls_line(
                     ws_name, row, data,
