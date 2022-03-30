@@ -200,7 +200,8 @@ class ProductProductImportWorpdress(orm.Model):
                 product = web_product.product_id
                 if web_product.wordpress_categ_ids:
                     category_block = ', '.join(
-                        [c.code for c in web_product.wordpress_categ_ids])
+                        [c.code for c in web_product.wordpress_categ_ids
+                         if c.code])
                 else:
                     category_block = ''
                 data = [
