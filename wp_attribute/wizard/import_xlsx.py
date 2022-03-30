@@ -247,7 +247,7 @@ class ProductProductImportWorpdress(orm.Model):
                     web_product.force_price if is_default else '',
                     web_product.force_discounted if is_default else '',
                     web_product.force_min_stock if is_default else '',
-                    web_product.large_description,
+                    product.large_description,
                     web_product.emotional_short_description,
                     web_product.emotional_description,
                     web_product.bullet_point_1,
