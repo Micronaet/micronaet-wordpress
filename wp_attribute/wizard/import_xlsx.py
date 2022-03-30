@@ -96,6 +96,10 @@ class ProductProductImportWorpdress(orm.Model):
                 'text': excel_pool.get_format('bg_blue'),
                 'number': excel_pool.get_format('bg_blue_number'),
                 },
+            'orange': {
+                'text': excel_pool.get_format('bg_orange'),
+                'number': excel_pool.get_format('bg_orange_number'),
+                },
             }
 
         # Width
@@ -216,15 +220,23 @@ class ProductProductImportWorpdress(orm.Model):
                          if m.code])
                 else:
                     material_block = ''
+                parent = 'X' if web_product.wp_parent_template else 'O'
+                published = 'X' if web_product.wp_parent_template else 'O'
                 data = [
                     (lang, excel_format['blue']['text']),
-                    ('X' if web_product.wp_parent_template else 'O')
-                    if is_default else '',
-                    ('X' if web_product.published else 'O')
-                    if is_default else '',
-                    product.default_code if is_default else '',
+
+                    ((parent if is_default else ''),
+                     excel_format['blue']['text']),
+
+                    ('X' if published else 'O') if is_default else '',
+
+                    (product.default_code if is_default else '',
+                     excel_format['blue']['text']),
+
                     product.ean13 if is_default else '',
-                    product.name,
+
+                    (product.name, excel_format['orange']['text']),
+
                     web_product.brand_id.code if is_default else '',
                     web_product.wp_color_id.code if is_default else '',
                     category_block if is_default else '',
