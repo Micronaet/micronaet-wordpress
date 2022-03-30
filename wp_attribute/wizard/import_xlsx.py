@@ -93,6 +93,7 @@ class ProductProductImportWorpdress(orm.Model):
                 'number': excel_pool.get_format('bg_yellow_number'),
                 },
             'blue': {
+                'header': excel_pool.get_format('header_blue'),
                 'text': excel_pool.get_format('bg_blue'),
                 'number': excel_pool.get_format('bg_blue_number'),
                 },
@@ -149,7 +150,8 @@ class ProductProductImportWorpdress(orm.Model):
             default_format=excel_format['black']['header'])
         row += 1
         excel_pool.write_xls_line(
-            ws_name, row, header, default_format=excel_format['header'])
+            ws_name, row, header,
+            default_format=excel_format['blue']['header'])
 
         # Write comment for help import:
         comment_list = {
