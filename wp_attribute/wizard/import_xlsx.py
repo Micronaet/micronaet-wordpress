@@ -198,6 +198,11 @@ class ProductProductImportWorpdress(orm.Model):
             for web_product in web_pool.browse(
                     cr, uid, product_ids, context=ctx):
                 product = web_product.product_id
+                if web_product.wordpress_categ_ids:
+                    category_block = ', '.join(
+                        [c.code for c in web_product.wordpress_categ_ids])
+                else:
+                    category_block = ''
                 data = [
                     lang,
                     ('X' if web_product.wp_parent_template else 'O')
@@ -209,9 +214,7 @@ class ProductProductImportWorpdress(orm.Model):
                     product.name,
                     web_product.brand_id.code if is_default else '',
                     web_product.wp_color_id.code if is_default else '',
-                    ', '.join(
-                        [c.code for c in web_product.wordpress_categ_ids])
-                    if is_default else '',
+                    category_block if is_default else '',
                     product.lst_price if is_default else '',
                     '[*] Garanzia',  # Garanzia
                     '[*] Moltipl.',  # Moltiplicatore
@@ -220,7 +223,7 @@ class ProductProductImportWorpdress(orm.Model):
                     product.pack_l if is_default else '',
                     product.pack_h if is_default else '',
                     product.pack_p if is_default else '',
-                    '[*] Box dim.', # Box dimensioni
+                    '[*] Box dim.',  # Box dimensioni
                     product.weight if is_default else '',
                     product.weight_net if is_default else '',
                     product.q_x_pack if is_default else '',
