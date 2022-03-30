@@ -80,6 +80,7 @@ class ProductProductImportWorpdress(orm.Model):
             'title': excel_pool.get_format('title'),
             'header': excel_pool.get_format('header'),
             'black': {
+                'header': excel_pool.get_format('header_black'),
                 'text': excel_pool.get_format('text'),
                 'number': excel_pool.get_format('number'),
                 },
@@ -133,7 +134,7 @@ class ProductProductImportWorpdress(orm.Model):
         row = 0
         excel_pool.write_xls_line(
             ws_name, row, range(len(header)),
-            default_format=excel_format['header'])
+            default_format=excel_format['black']['header'])
         row += 1
         excel_pool.write_xls_line(
             ws_name, row, header, default_format=excel_format['header'])
@@ -193,15 +194,23 @@ class ProductProductImportWorpdress(orm.Model):
             ctx['lang'] = lang
             row = counter[lang]
             # todo sorted?
+            is_default = lang == default_lang
             for web_product in web_pool.browse(
                     cr, uid, product_ids, context=ctx):
+                product = web_product.product_id
                 data = [
                     lang,
+                    ('X' if web_product.wp_parent_template else 'O')
+                    if is_default else '',
+                    ('X' if web_product.published else 'O')
+                    if is_default else '',
+                    product.default_code if is_default else '',
+
                 ]
                 excel_pool.write_xls_line(
                     ws_name, row, data,
-                    default_format=excel_format['text'])
-            row += row_step
+                    default_format=excel_format['black']['text'])
+                row += row_step
 
         return excel_pool.return_attachment(cr, uid, 'web_product_published')
 
