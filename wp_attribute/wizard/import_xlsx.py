@@ -92,6 +92,10 @@ class ProductProductImportWorpdress(orm.Model):
                 'text': excel_pool.get_format('bg_yellow'),
                 'number': excel_pool.get_format('bg_yellow_number'),
                 },
+            'blue': {
+                'text': excel_pool.get_format('bg_blue'),
+                'number': excel_pool.get_format('bg_blue_number'),
+                },
             }
 
         # Width
@@ -213,7 +217,7 @@ class ProductProductImportWorpdress(orm.Model):
                 else:
                     material_block = ''
                 data = [
-                    lang,
+                    (lang, excel_format['blue']['text']),
                     ('X' if web_product.wp_parent_template else 'O')
                     if is_default else '',
                     ('X' if web_product.published else 'O')
