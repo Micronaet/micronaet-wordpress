@@ -42,6 +42,131 @@ class ProductProductImportWorpdress(orm.Model):
     _description = 'Importazione prodotti per Wordpress'
     _order = 'name'
 
+    def button_export_current_status(self, cr, uid, ids, context=None):
+        """ Export file in language selected
+        """
+        excel_pool = self.pool.get('excel.writer')
+        web_pool = self.pool.get('product.product.web.server')
+
+        wizard = self.browse(cr, uid, ids, context=context)[0]
+
+        # Wizard parameters:
+        connector_id = wizard.connector_id.id
+        wizard_langs = wizard.lang_ids
+
+        default_lang = 'it_IT'
+        langs = [default_lang]  # Used as default language
+
+        # Generate Lang list for print product:
+        counter = {}
+        row = 2  # 2 line for header
+        counter[default_lang] = row
+        for lang in wizard_langs:
+            lang_code = lang.code
+            if lang_code not in langs:
+                langs.append(lang_code)
+                row += 1
+                counter[lang_code] = row
+        row_step = len(langs)
+
+        # ---------------------------------------------------------------------
+        #                            Excel file:
+        # ---------------------------------------------------------------------
+        ws_name = 'Prodotti pubblicati'
+        excel_pool.create_worksheet(ws_name)
+
+        # Load formats:
+        excel_format = {
+            'title': excel_pool.get_format('title'),
+            'header': excel_pool.get_format('header'),
+            'black': {
+                'text': excel_pool.get_format('text'),
+                'number': excel_pool.get_format('number'),
+                },
+            'red': {
+                'text': excel_pool.get_format('bg_red'),
+                'number': excel_pool.get_format('bg_red_number'),
+                },
+            'yellow': {
+                'text': excel_pool.get_format('bg_yellow'),
+                'number': excel_pool.get_format('bg_yellow_number'),
+                },
+            }
+
+        # Width
+        excel_pool.column_width(ws_name, [
+            10, 7, 8, 15,
+            15, 40,
+            25, 25, 25,
+            10, 7, 7, 10,
+            25,
+            12, 12, 12,
+            25, 12, 12,
+            10,
+            30, 30, 20,
+            12, 10, 10, 10,
+            30, 30, 40,
+            35, 35, 35, 35, 35,
+        ])
+
+        # Print header
+        header = [
+                '[Lingua]', '[Padre]', 'Pubblicato', '[Codice prodotto]',
+                'EAN', '* [Nome prodotto] *',
+
+                '< [Brand] >', '< [Codice Colore] >', '< [Categorie] >',
+                'Listino', 'Garanzia vita', 'Moltiplicatore', 'Prezzo extra',
+                '< Materiale >',
+
+                'Imballo L', 'Imballo H', 'Imballo P',
+                '* Box dimensioni *', 'Peso lordo', 'Peso netto',
+                'Q x pack',
+
+                '* Forza Nome *', '* Forza Descrizione *', 'Forza Q x pack',
+                'EAN', 'Prezzo', 'Sconto', 'Stock minimo',
+
+                '* Large *', '* Emo short *', '* Emo long *',
+
+                '* Bullet 1 *', '* Bullet 2 *', '* Bullet 3 *', '* Bullet 4 *',
+                '* Bullet 5 *',
+                ]
+        row = 0
+        excel_pool.write_xls_line(
+            ws_name, row, range(len(header)),
+            default_format=excel_format['header'])
+        row += 1
+        excel_pool.write_xls_line(
+            ws_name, row, header, default_format=excel_format['header'])
+
+        # Write comment for help import:
+        comment_list = {
+            u'In questo campo vanno messi i codici presenti in anagrafica':
+                [6, 7, 8],
+        }
+        for comment in comment_list:
+            for col in comment_list[comment]:
+                excel_pool.write_comment(
+                    ws_name, row, col, comment)
+
+        web_product_ids = web_pool.search(cr, uid, [
+            ('connector_id', '=', connector_id),
+        ], context=context)
+        ctx = context or {}
+        web_product_ids = []  # todo remove
+        for lang in langs:
+            ctx['lang'] = lang
+            row = counter[lang]
+            # todo sorted?
+            for web_product in web_pool.browse(
+                    cr, uid, web_product_ids, context=ctx):
+                data = [
+
+                ]
+
+            row += row_step
+
+        return excel_pool.return_attachment(cr, uid, 'web_product_published')
+
     # Button event:
     def extract_product_in_tree(self, cr, uid, ids, context=None):
         """ Extract element in list

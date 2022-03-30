@@ -36,8 +36,9 @@
 
                            <field name="no_translate_product"/>
                            <field name="auto_translate"/>
-                           <field name="translate_uri" attrs="{'invisible': [('auto_translate','=',False)]}" />
-                           <field name="lang_ids" colspan="4" widget="many2many_tags" attrs="{'invisible': [('auto_translate','=',False)]}"/>
+                           <field name="translate_uri" attrs="{'invisible': [('auto_translate','=',False)]}" colspan="4"/>
+                           <field name="lang_ids" colspan="3" widget="many2many_tags" attrs="{'invisible': [('auto_translate','=',False)]}"/>
+                           <button name="button_export_current_status" type="object" string="Esporta pubblicati"/>
 
                            <notebook colspan="4">
                                 <page string="Prodotti">
