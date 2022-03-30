@@ -201,11 +201,41 @@ class ProductProductImportWorpdress(orm.Model):
                 data = [
                     lang,
                     ('X' if web_product.wp_parent_template else 'O')
-                    if is_default else '',
+                     if is_default else '',
                     ('X' if web_product.published else 'O')
-                    if is_default else '',
+                     if is_default else '',
                     product.default_code if is_default else '',
-
+                    product.ean13 if is_default else '',
+                    product.name,
+                    '',  # brand code
+                    '',  # color code
+                    '',  # category code
+                    product.lst_price if is_default else '',
+                    '',  # Garanzia
+                    '',  # Moltiplicatore
+                    '',  # Prezzo Extra
+                    '',  # Materiale
+                    product.pack_l if is_default else '',
+                    product.pack_h if is_default else '',
+                    product.pack_p if is_default else '',
+                    '', # Box dimensioni
+                    product.weight if is_default else '',
+                    product.weight_net if is_default else '',
+                    product.q_x_pack if is_default else '',
+                    '',  # Forza nome
+                    '',  # Forza descrizione
+                    '',  # Forza q x pack
+                    '',  # Forza Prezzo
+                    '',  # Forza Sconto
+                    '',  # Forza Stock min.
+                    '',  # Large
+                    '',  # Emo short
+                    '',  # Emo long
+                    '',  # Bullet 1
+                    '',  # Bullet 2
+                    '',  # Bullet 3
+                    '',  # Bullet 4
+                    '',  # Bullet 5
                 ]
                 excel_pool.write_xls_line(
                     ws_name, row, data,
