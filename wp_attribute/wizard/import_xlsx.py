@@ -100,6 +100,10 @@ class ProductProductImportWorpdress(orm.Model):
                 'text': excel_pool.get_format('bg_orange'),
                 'number': excel_pool.get_format('bg_orange_number'),
                 },
+            'grey': {
+                'text': excel_pool.get_format('bg_grey'),
+                'number': excel_pool.get_format('bg_grey_number'),
+                },
             }
 
         # Width
@@ -237,18 +241,29 @@ class ProductProductImportWorpdress(orm.Model):
 
                     (product.name, excel_format['orange']['text']),
 
-                    web_product.brand_id.code if is_default else '',
-                    web_product.wp_color_id.code if is_default else '',
-                    category_block if is_default else '',
+                    (web_product.brand_id.code if is_default else '',
+                     excel_format['grey']['text']),
+
+                    (web_product.wp_color_id.code if is_default else '',
+                     excel_format['grey']['text']),
+
+                    (category_block if is_default else '',
+                     excel_format['grey']['text']),
+
                     product.lst_price if is_default else '',
                     web_product.lifetime_warranty if is_default else '',
                     web_product.price_multi if is_default else '',
                     web_product.price_extra if is_default else '',
-                    material_block if is_default else '',
+
+                    (material_block if is_default else '',
+                     excel_format['grey']['text']),
+
                     product.pack_l if is_default else '',
                     product.pack_h if is_default else '',
                     product.pack_p if is_default else '',
-                    web_product.weight_aditional_info,
+
+                    (web_product.weight_aditional_info,
+                     excel_format['grey']['text']),
                     product.weight if is_default else '',
                     product.weight_net if is_default else '',
                     product.q_x_pack if is_default else '',
