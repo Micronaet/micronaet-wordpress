@@ -263,25 +263,47 @@ class ProductProductImportWorpdress(orm.Model):
                     product.pack_p if is_default else '',
 
                     (web_product.weight_aditional_info,
-                     excel_format['grey']['text']),
+                     excel_format['yellow']['text']),
+
                     product.weight if is_default else '',
                     product.weight_net if is_default else '',
                     product.q_x_pack if is_default else '',
-                    web_product.force_name,
-                    web_product.force_description,
+
+                    (web_product.force_name,
+                     excel_format['yellow']['text']),
+
+                    (web_product.force_description,
+                     excel_format['yellow']['text']),
+
                     web_product.force_q_x_pack if is_default else '',
                     web_product.force_ean13 if is_default else '',
                     web_product.force_price if is_default else '',
                     web_product.force_discounted if is_default else '',
                     web_product.force_min_stock if is_default else '',
-                    product.large_description,
-                    web_product.emotional_short_description,
-                    web_product.emotional_description,
-                    web_product.bullet_point_1,
-                    web_product.bullet_point_2,
-                    web_product.bullet_point_3,
-                    web_product.bullet_point_4,
-                    web_product.bullet_point_5,
+
+                    (product.large_description,
+                     excel_format['yellow']['text']),
+
+                    (web_product.emotional_short_description,
+                     excel_format['yellow']['text']),
+
+                    (web_product.emotional_description,
+                     excel_format['yellow']['text']),
+
+                    (web_product.bullet_point_1,
+                     excel_format['yellow']['text']),
+
+                    (web_product.bullet_point_2,
+                     excel_format['yellow']['text']),
+
+                    (web_product.bullet_point_3,
+                     excel_format['yellow']['text']),
+
+                    (web_product.bullet_point_4,
+                     excel_format['yellow']['text']),
+
+                    (web_product.bullet_point_5,
+                     excel_format['yellow']['text']),
                 ]
                 excel_pool.write_xls_line(
                     ws_name, row, data,
