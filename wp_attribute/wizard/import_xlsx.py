@@ -98,7 +98,7 @@ class ProductProductImportWorpdress(orm.Model):
             10, 7, 8, 15,
             15, 40,
             25, 25, 25,
-            10, 7, 7, 10,
+            10, 9, 9, 10,
             25,
             12, 12, 12,
             25, 12, 12,
@@ -140,29 +140,67 @@ class ProductProductImportWorpdress(orm.Model):
 
         # Write comment for help import:
         comment_list = {
-            u'In questo campo vanno messi i codici presenti in anagrafica':
+            0: {
+                u'Indicare la lingua come codice lingua_codice nazione, es.'
+                u'it_IT, en_US, fr_FR, de_DE, es_ES':
+                    [0],
+                u'Indicare con X il prodotto padre e con O il prodotto figlio'
+                u'(maiuscolo o minuscolo non importa), i figli sono sempre '
+                u'sotto al proprio padre!':
+                    [1],
+                u'Indicare con X se il prodotto va messo come visibile sul '
+                u'sito altrimenti viene pubblicato ma reso privato':
+                    [2],
+            },
+            1: {
+            u'In questa colonna vanno messi i codici (vedere in anagrafica)':
+                [13],
+            u'In questa colonna i testi vanno tradotti in base alla riga':
+                [17, 21, 22, 28, 29, 30, 31, 32, 33, 34, 35],
+            u'In questa colonna i campi sono obbligatori':
+                [0, 1, 3],
+            u'In questa colonna i campi sono obbligatori e tradotti in base '
+            u'alla riga':
+                [5],
+            u'In questa colonna i campi sono obbligatori e vanno inseriti '
+            u'come codici (vedere in anagrafica)':
                 [6, 7, 8],
+            },
         }
-        for comment in comment_list:
-            for col in comment_list[comment]:
-                excel_pool.write_comment(
-                    ws_name, row, col, comment)
+        for row in comment_list:
+            for comment in comment_list[row]:
+                for col in comment_list[row][comment]:
+                    excel_pool.write_comment(
+                        ws_name, row, col, comment)
 
+        # Collect data master - child for report:
         web_product_ids = web_pool.search(cr, uid, [
             ('connector_id', '=', connector_id),
+            ('wp_parent_template', '=', True),
         ], context=context)
+
+        # Sort master with after his child:
+        product_ids = []
+        for web_product in web_pool.browse(
+                cr, uid, web_product_ids, context=context):
+            product_ids.append(web_product.id)
+            for child in web_product.variant_ids:
+                if child != web_product:
+                    product_ids.append(child.id)
+
         ctx = context or {}
-        web_product_ids = []  # todo remove
         for lang in langs:
             ctx['lang'] = lang
             row = counter[lang]
             # todo sorted?
             for web_product in web_pool.browse(
-                    cr, uid, web_product_ids, context=ctx):
+                    cr, uid, product_ids, context=ctx):
                 data = [
-
+                    lang,
                 ]
-
+                excel_pool.write_xls_line(
+                    ws_name, row, data,
+                    default_format=excel_format['text'])
             row += row_step
 
         return excel_pool.return_attachment(cr, uid, 'web_product_published')
