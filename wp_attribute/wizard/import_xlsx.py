@@ -232,7 +232,7 @@ class ProductProductImportWorpdress(orm.Model):
                     product.pack_l if is_default else '',
                     product.pack_h if is_default else '',
                     product.pack_p if is_default else '',
-                    web_product.weight_additional_info,
+                    web_product.weight_aditional_info,
                     product.weight if is_default else '',
                     product.weight_net if is_default else '',
                     product.q_x_pack if is_default else '',
