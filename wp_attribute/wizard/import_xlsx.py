@@ -157,7 +157,7 @@ class ProductProductImportWorpdress(orm.Model):
         comment_list = {
             0: {
                 u'Indicare la lingua come codice lingua_codice nazione, es.'
-                u'it_IT, en_US, fr_FR, de_DE, es_ES':
+                u'it_IT, en_US, fr_FR, de_DE, es_ES, pt_PT':
                     [0],
                 u'Indicare con X il prodotto padre e con O il prodotto figlio'
                 u'(maiuscolo o minuscolo non importa), i figli sono sempre '
