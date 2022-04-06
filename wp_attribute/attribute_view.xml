@@ -182,12 +182,12 @@
                     <field name="variant_ids" invisible="1"/>
                     <!--<field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]" readonly="1"/>-->
 
-                    <field name="wp_it_on" />
-                    <field name="wp_en_on" />
-                    <field name="wp_es_on" />
-                    <field name="wp_fr_on" />
-                    <field name="wp_de_on" />
-                    <field name="wp_pt_on" />
+                    <field name="wp_it_on" string="it"/>
+                    <field name="wp_en_on" string="en"/>
+                    <field name="wp_es_on" string="es"/>
+                    <field name="wp_fr_on" string="fr"/>
+                    <field name="wp_de_on" string="de"/>
+                    <field name="wp_pt_on" string="pt"/>
 
                     <field name="wp_it_id" readonly="1"/>
                     <field name="wp_en_id" readonly="1"/>
