@@ -77,7 +77,7 @@ for company in company_list:
         for wp_lang, wp_id in (
                 ('it', master.wp_it_id), ('en', master.wp_en_id),
                 ('es', master.wp_es_id), ('fr', master.wp_fr_id),
-                ('de', master.wp_de_id)):
+                ('pt', master.wp_pt_id), ('de', master.wp_de_id)):
 
             odoo_product[wp_id] = [
                 wp_lang,
@@ -146,6 +146,6 @@ for odoo_id in set(odoo_product) - set(wp_all):
     print('Not yet published', odoo_product[odoo_id][2],
           odoo_product[odoo_id][1])
 
-    # TODO reset wp_it_id wp_en_id
-    # TODO Publish single
+    # todo reset wp_it_id wp_en_id
+    # todo Publish single
 

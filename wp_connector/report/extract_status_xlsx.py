@@ -137,7 +137,8 @@ class ConnectorServer(orm.Model):
             10, 10, 35,  # Trasport
             5, 20, 30, 7,
             7,
-            10, 5, 15, 6, 6,
+            10, 5, 15,
+            6, 6, 6, 6, 6, 6,
             25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
             40, 40,
             ])
@@ -158,7 +159,7 @@ class ConnectorServer(orm.Model):
             'Mod. imb.', 'Imballo', 'Dimensioni prodotto', 'Vol.',
             'Garanzia',
             'Tipo WP', 'Master', 'Padre',
-            'WPID it.', 'WPID en.', 'WPID es.', 'WPID fr.', 'WPID de.',
+            'WPID it.', 'WPID en.', 'WPID es.', 'WPID fr.', 'WPID de.', 'WPID pt.',
             'Bullet 1', '(Bullet 1)', 'Bullet 2', '(Bullet 2)',
             'Bullet 3', '(Bullet 3)', 'Bullet 4', '(Bullet 4)',
             'Bullet 5', '(Bullet 5)',
@@ -293,6 +294,7 @@ class ConnectorServer(orm.Model):
                     line.wp_es_id,
                     line.wp_fr_id,
                     line.wp_de_id,
+                    line.wp_pt_id,
 
                     line.bullet_point_1 or '',
                     '',

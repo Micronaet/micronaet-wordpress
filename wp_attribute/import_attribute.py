@@ -117,6 +117,7 @@ class ProductProductWebServerIntegration(orm.Model):
             'wp_es_id': False,
             'wp_fr_id': False,
             'wp_de_id': False,
+            'wp_pt_id': False,
             }, context=context)
 
     def unmark_need_update(self, cr, uid, ids, context=None):
@@ -161,11 +162,13 @@ class ProductProductWebServerIntegration(orm.Model):
             '|',
             '|',
             '|',
+            '|',
             ('wp_it_id', '=', 0),
             ('wp_en_id', '=', 0),
             ('wp_es_id', '=', 0),
             ('wp_fr_id', '=', 0),
             ('wp_de_id', '=', 0),
+            ('wp_pt_id', '=', 0),
         ], context=context))
 
         # Union of new and forced:
@@ -253,6 +256,7 @@ class ProductProductWebServerIntegration(orm.Model):
             'wp_es_id': False,
             'wp_fr_id': False,
             'wp_de_id': False,
+            'wp_pt_id': False,
             # todo There's problem if product has no previous parent
             }, context=context)
 
@@ -269,13 +273,14 @@ class ProductProductWebServerIntegration(orm.Model):
         wp_parent_id = current_product.wp_parent_id  # Current master
 
         # XXX Bad reference (when add new lang):
-        wp_it_id = wp_en_id = wp_es_id = wp_fr_id = wp_de_id = False
+        wp_it_id = wp_en_id = wp_es_id = wp_fr_id = wp_de_id = wp_pt_id = False
         if wp_parent_id:
             wp_it_id = wp_parent_id.wp_it_id
             wp_en_id = wp_parent_id.wp_en_id
             wp_es_id = wp_parent_id.wp_es_id
             wp_fr_id = wp_parent_id.wp_fr_id
             wp_de_id = wp_parent_id.wp_de_id
+            wp_pt_id = wp_parent_id.wp_pt_id
         elif wp_parent_code:
             find_parent_ids = self.search(cr, uid, [
                 ('wp_parent_code', '=', wp_parent_code),
@@ -290,6 +295,7 @@ class ProductProductWebServerIntegration(orm.Model):
                 wp_es_id = wp_parent_id.wp_es_id
                 wp_fr_id = wp_parent_id.wp_fr_id
                 wp_de_id = wp_parent_id.wp_de_id
+                wp_pt_id = wp_parent_id.wp_pt_id
 
         if wp_parent_code:
             # -----------------------------------------------------------------
@@ -330,6 +336,7 @@ class ProductProductWebServerIntegration(orm.Model):
             'wp_es_id': wp_es_id,
             'wp_fr_id': wp_fr_id,
             'wp_de_id': wp_de_id,
+            'wp_de_id': wp_pt_id,
             }, context=context)
 
     def _get_wp_pricelist_for_web(

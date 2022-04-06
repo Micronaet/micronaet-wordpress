@@ -58,6 +58,7 @@ class ProductPublicCategory(orm.Model):
         'wp_es_id': fields.integer('Worpress ID es'),
         'wp_fr_id': fields.integer('Worpress ID fr'),
         'wp_de_id': fields.integer('Worpress ID de'),
+        'wp_pt_id': fields.integer('Worpress ID pt'),
         }
 
 
@@ -80,6 +81,7 @@ class ProductPublicCategory(orm.Model):
             'wp_es_id': False,
             'wp_fr_id': False,
             'wp_de_id': False,
+            'wp_pt_id': False,
             }, context=context)
         return self.publish_category_now(cr, uid, ids, context=context)
 

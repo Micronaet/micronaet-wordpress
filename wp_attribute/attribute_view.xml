@@ -186,6 +186,7 @@
                     <field name="wp_es_id" invisible="1" />
                     <field name="wp_fr_id" invisible="1" />
                     <field name="wp_de_id" invisible="1" />
+                    <field name="wp_pt_id" invisible="1" />
                     <!--<field name="force_name"/>
                     <field name="force_description"/>
                     <field name="force_q_x_pack"/>
@@ -199,7 +200,7 @@
                     <button name="mark_need_update" string="Aggiornare schedulato" type="object" icon="terp-calendar" attrs="{'invisible': [('need_update', '=', True)]}"/>
                     <button name="unmark_need_update" string="Annulla aggiorna schedulato" type="object" icon="gtk-cancel" attrs="{'invisible': [('need_update', '=', False)]}"/>
 
-                    <button name="publish_master_now" string="Non pubblicato" type="object" icon="gtk-new" attrs="{'invisible': ['|', '|', '|', '|', ('wp_it_id', '!=', 0), ('wp_en_id', '!=', 0), ('wp_es_id', '!=', 0), ('wp_fr_id', '!=', 0), ('wp_de_id', '!=', 0)]}"/>
+                    <button name="publish_master_now" string="Non pubblicato" type="object" icon="gtk-new" attrs="{'invisible': ['|', '|', '|', '|', '|', ('wp_pt_id', '!=', 0), ('wp_it_id', '!=', 0), ('wp_en_id', '!=', 0), ('wp_es_id', '!=', 0), ('wp_fr_id', '!=', 0), ('wp_de_id', '!=', 0)]}"/>
                     <button name="open_permalink" string="Apri permalink" type="object" attrs="{'invisible': [('permalink', '=', False)]}" icon="terp-go-home"/>
                 </tree>
             </field>
@@ -225,13 +226,14 @@
                     <field name="wp_es_id" invisible="1" />
                     <field name="wp_fr_id" invisible="1" />
                     <field name="wp_de_id" invisible="1" />
+                    <field name="wp_pt_id" invisible="1" />
                     <button name="publish_master_now" string="Publish this now" type="object" icon="gtk-refresh"/>
 
                     <field name="need_update" invisible="1"/>
                     <button name="mark_need_update" string="Aggiornare schedulato" type="object" icon="terp-calendar" attrs="{'invisible': [('need_update', '=', True)]}"/>
                     <button name="unmark_need_update" string="Annulla aggiorna schedulato" type="object" icon="gtk-cancel" attrs="{'invisible': [('need_update', '=', False)]}"/>
 
-                    <button name="publish_master_now" string="Non pubblicato" type="object" icon="gtk-new" attrs="{'invisible': ['|', '|', '|', '|', ('wp_it_id', '!=', 0), ('wp_en_id', '!=', 0), ('wp_es_id', '!=', 0), ('wp_fr_id', '!=', 0), ('wp_de_id', '!=', 0)]}"/>
+                    <button name="publish_master_now" string="Non pubblicato" type="object" icon="gtk-new" attrs="{'invisible': ['|', '|', '|', '|', '|', ('wp_it_id', '!=', 0), ('wp_pt_id', '!=', 0), ('wp_en_id', '!=', 0), ('wp_es_id', '!=', 0), ('wp_fr_id', '!=', 0), ('wp_de_id', '!=', 0)]}"/>
 
                 </tree>
             </field>
@@ -467,19 +469,21 @@
                                 </page>
                             </notebook>
                         </group>
-                        <group colspan="4" col="10">
-                            <separator string="Wordpress link:" colspan="10"/>
+                        <group colspan="4" col="12">
+                            <separator string="Wordpress link:" colspan="12"/>
                             <field name="wp_it_on" />
                             <field name="wp_en_on" />
                             <field name="wp_es_on" />
                             <field name="wp_fr_on" />
                             <field name="wp_de_on" />
+                            <field name="wp_pt_on" />
 
                             <field name="wp_it_id" readonly="1"/>
                             <field name="wp_en_id" readonly="1"/>
                             <field name="wp_es_id" readonly="1"/>
                             <field name="wp_fr_id" readonly="1"/>
                             <field name="wp_de_id" readonly="1"/>
+                            <field name="wp_pt_id" readonly="1"/>
 
                         </group>
                     </sheet>
@@ -560,20 +564,22 @@
                                 </page>
                             </notebook>
                         </group>
-                        <group col="10" colspan="4">
-                            <separator string="Wordpress link:" colspan="9"/>
-                            <button name="clean_wp_reference" string="Clean" type="object" confirm="Clean WP reference only if this product is deleted from WP, confirm?" colspan="1" attrs="{'invisible': [('wp_it_id','=',0), ('wp_en_id','=',0), ('wp_es_id','=',0), ('wp_fr_id','=',0), ('wp_de_id','=',0)]}"/>
+                        <group col="12" colspan="4">
+                            <separator string="Wordpress link:" colspan="11"/>
+                            <button name="clean_wp_reference" string="Clean" type="object" confirm="Clean WP reference only if this product is deleted from WP, confirm?" colspan="1" attrs="{'invisible': [('wp_it_id','=',0), ('wp_en_id','=',0), ('wp_es_id','=',0), ('wp_fr_id','=',0), ('wp_pt_id','=',0), ('wp_de_id','=',0)]}"/>
                             <field name="wp_it_on" groups="wp_connector.group_wp_product_manager"/>
                             <field name="wp_en_on" groups="wp_connector.group_wp_product_manager"/>
                             <field name="wp_es_on" groups="wp_connector.group_wp_product_manager"/>
                             <field name="wp_fr_on" groups="wp_connector.group_wp_product_manager"/>
                             <field name="wp_de_on" groups="wp_connector.group_wp_product_manager"/>
+                            <field name="wp_pt_on" groups="wp_connector.group_wp_product_manager"/>
 
                             <field name="wp_it_id" groups="wp_connector.group_wp_product_manager"/>
                             <field name="wp_en_id" groups="wp_connector.group_wp_product_manager"/>
                             <field name="wp_es_id" groups="wp_connector.group_wp_product_manager"/>
                             <field name="wp_fr_id" groups="wp_connector.group_wp_product_manager"/>
                             <field name="wp_de_id" groups="wp_connector.group_wp_product_manager"/>
+                            <field name="wp_pt_id" groups="wp_connector.group_wp_product_manager"/>
                         </group>
                     </sheet>
                 </form>

@@ -62,6 +62,7 @@ class ProductProductWebBrand(orm.Model):
         'wp_es_id': fields.integer('WP es ID'),
         'wp_fr_id': fields.integer('WP fr ID'),
         'wp_de_id': fields.integer('WP de ID'),
+        'wp_pt_id': fields.integer('WP pt ID'),
         }
 
 
@@ -87,6 +88,7 @@ class ProductProductWebMaterial(orm.Model):
         'wp_es_id': fields.integer('WP es ID'),
         'wp_fr_id': fields.integer('WP fr ID'),
         'wp_de_id': fields.integer('WP de ID'),
+        'wp_pt_id': fields.integer('WP pt ID'),
         }
 
 
@@ -1397,16 +1399,20 @@ class ProductProductWebServer(orm.Model):
         'stock_log_ids': fields.one2many(
             'product.product.stock.log', 'web_product_id', 'Log magazzino',
             help='Log cambi quantità magazzino forzato manualmente', ),
+
         'wp_it_id': fields.integer('WP it ID'),
         'wp_en_id': fields.integer('WP en ID'),
         'wp_es_id': fields.integer('WP es ID'),
         'wp_fr_id': fields.integer('WP fr ID'),
         'wp_de_id': fields.integer('WP de ID'),
+        'wp_pt_id': fields.integer('WP de ID'),
+
         'wp_it_on': fields.boolean('WP it abilitato'),
         'wp_en_on': fields.boolean('WP en abilitato'),
         'wp_es_on': fields.boolean('WP es abilitato'),
         'wp_fr_on': fields.boolean('WP fr abilitato'),
         'wp_de_on': fields.boolean('WP de abilitato'),
+        'wp_pt_on': fields.boolean('WP de abilitato'),
         'wp_sequence': fields.integer('Sequenza'),
 
         'brand_id': fields.many2one('product.product.web.brand', 'Brand'),
@@ -1571,4 +1577,5 @@ class ProductProductWebServer(orm.Model):
         # 'wp_es_on': lambda *x: True,
         # 'wp_fr_on': lambda *x: True,
         # 'wp_de_on': lambda *x: True,
+        # 'wp_pt_on': lambda *x: True,
     }
