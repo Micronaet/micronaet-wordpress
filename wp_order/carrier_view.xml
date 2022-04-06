@@ -149,11 +149,11 @@
                     <field name="partner_name" readonly="1"/>
                     <field name="shipping" readonly="1"/>
 
-                    <field name="carrier_supplier_id"/>
+                    <field name="carrier_supplier_id" />
                     <field name="carrier_mode_id" />
                     <field name="carrier_parcel_template_id" domain="['|',('carrier_supplier_id','=',False),('carrier_supplier_id','=',carrier_supplier_id)]" />
                     <field name="parcel_weight_tree" />
-                    <button name="load_template_parcel" string="Add parcel" icon="gtk-add" type="object" attrs="{'invisible': [('carrier_parcel_template_id','=',False)]}" class="oe_highlight"/>
+                    <button name="load_template_parcel" string="Add parcel" icon="gtk-add" type="object" attrs="{'invisible': [('carrier_parcel_template_id','=',False)]}" class="oe_highlight" />
                     <button name="generate_parcel_from_order" type="object" string="Genera colli da ordine" icon="gtk-execute" confirm="I colli verranno ricalcolati da quelli nei prodotti in ordine, confermi?"/>
 
                     <field name="parcel_detail" readonly="1"/>
@@ -168,8 +168,8 @@
                     <field name="courier_mode_id" /> <!--readonly="1"-->
                     <field name="master_tracking_id" readonly="1"/>
                     <field name="carrier_track_id" readonly="1"/>
-                    <field name="carrier_cost" readonly="1" sum="Spedizione calcolata"/>
-                    <field name="real_shipping_total" sum="Spedizione reale"/>
+                    <field name="carrier_cost" readonly="1" sum="Spedizione calcolata" />
+                    <field name="real_shipping_total" sum="Spedizione reale" />
                     <field name="carrier_state" invisible="1"/>
                     <field name="carrier_ok" invisible="1"/>
                     <field name="state" invisible="1"/>
