@@ -736,7 +736,7 @@ class ProductPublicCategory(orm.Model):
         _logger.warning('Parent found: %s' % parent_total)
 
         # ---------------------------------------------------------------------
-        #                     ATTRIBUTES: (need Tessuto, Brand)
+        #               ATTRIBUTES: (mandatory: Tessuto, Brand)
         # ---------------------------------------------------------------------
         call = 'products/attributes'
         current_wp_attribute = self.wp_loopcall(
@@ -778,20 +778,20 @@ class ProductPublicCategory(orm.Model):
             'Materiale': False,
             # TODO Material, Certificate
             }
-        _logger.warning('Searching attribute %s...' % (attribute_id.keys() ))
+        _logger.warning('Searching attribute %s...' % (attribute_id.keys(), ))
         for record in current_wp_attribute:
             name = record['name']
-            # lang = record['lang'] # TODO not present!
-            if record['name'] in attribute_id:
-                attribute_id[record['name']] = record['id']
+            # lang = record['lang'] # todo not present!
+            if name in attribute_id:
+                attribute_id[name] = record['id']
         if not all(attribute_id.values()):
             raise osv.except_osv(
                 _('Attribute error'),
-                _('Cannot find some attribute terms %s!') % (attribute_id, ),
+                _('Cannot find some attribute terms %s!') % attribute_id,
                 )
 
         # ---------------------------------------------------------------------
-        #                        TERMS: (for Tessuto Attribute)
+        #                   TERMS: (for Tessuto, Attribute)
         # ---------------------------------------------------------------------
         current_wp_terms = []
         theres_data = True
@@ -836,13 +836,13 @@ class ProductPublicCategory(orm.Model):
                         _('Error getting category list: %s' % (res, )),
                         )
             except:
-                pass # Records present
+                pass  # Records present
             if res:
                 current_wp_terms.extend(res)
             else:
                 theres_data = False
 
-        # TODO need lang?
+        # todo need lang?
         lang_color_terms = {
             'it': {},
             'en': {},
@@ -872,7 +872,7 @@ class ProductPublicCategory(orm.Model):
             lang_brand_terms[lang][name] = record['id']
 
         # ---------------------------------------------------------------------
-        # Update / Create: (XXX only fabric?)
+        # Update / Create: todo only fabric?
         # ---------------------------------------------------------------------
         # Start from IT (default) lang:
         for lang in sorted(lang_color_db, key=lambda l: lang_sort(l)):
@@ -918,8 +918,8 @@ class ProductPublicCategory(orm.Model):
             # -----------------------------------------------------------------
             # Delete:
             # -----------------------------------------------------------------
-            # XXX Not for now:
-            # TODO correct
+            # todo Not for now:
+            # todo correct
             # for name in lang_color_terms:
             #    if name not in lang_color_db:
             #        data['delete'].append(lang_color_terms[name])
@@ -1180,7 +1180,7 @@ class ProductPublicCategory(orm.Model):
                     }
 
                 # -------------------------------------------------------------
-                #                       VARIANTS: Creation
+                #                     VARIANTS: Creation
                 # -------------------------------------------------------------
                 for item in res:
                     # No option
@@ -1188,7 +1188,7 @@ class ProductPublicCategory(orm.Model):
                             'option']:
                         data['delete'].append(item['id'])
                     else:
-                        # TODO TEST BETTER:
+                        # todo TEST BETTER:
                         wp_variant_lang_ref[(
                             web_product_pool.wp_clean_code(
                                 item['sku'], destination='odoo'),
@@ -1220,7 +1220,7 @@ class ProductPublicCategory(orm.Model):
                     call = 'products/%s/variations/batch' % wp_id
                     self.wp_loopcall(
                         wcapi, 'post', call, data=data).json()
-                    # TODO log
+                    # todo log
 
                 for line, fabric_code in variants:
                     variant = line.product_id
@@ -1230,12 +1230,11 @@ class ProductPublicCategory(orm.Model):
                     variant_it_id = wp_variant_lang_ref.get(
                         (variant_code, default_lang), False)
 
-                    # XXX Price for S (ingle)
+                    # todo Price for S (ingle)
                     price = web_product_pool.get_wp_price(line)
-                    # pdb.set_trace()
                     sale_price = u'%s' % (
                         (line.force_discounted / vat_rate) or '')
-                    # TODO error: is always 0
+                    # todo error: is always 0
                     # sale_price = u'%s' % (line.wp_web_discounted_net or '')
 
                     # Description:
@@ -1285,7 +1284,7 @@ class ProductPublicCategory(orm.Model):
                         data['gtin'] = gtin
 
                     # 'slug': self.get_lang_slug(variant_code, lang),
-                    # TODO
+                    # todo
                     # stock_status
                     # 'weight': '%s' % line.weight,
 
@@ -1356,7 +1355,7 @@ class ProductPublicCategory(orm.Model):
                         # =====================================================
 
                     else:  # Create
-                        # TODO always pass image when new:
+                        # todo always pass image when new:
                         if 'image' not in data:
                             image = web_product_pool.get_wp_image(
                                 line, variant=True)
@@ -1421,7 +1420,7 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Attribute update ODOO VS WP:
         # ---------------------------------------------------------------------
-        # TODO
+        # todo
         # Update dot color images and records! (here?)
 
         # Return log calls:
