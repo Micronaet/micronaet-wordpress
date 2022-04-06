@@ -168,7 +168,8 @@
                     <field name="courier_mode_id" /> <!--readonly="1"-->
                     <field name="master_tracking_id" readonly="1"/>
                     <field name="carrier_track_id" readonly="1"/>
-                    <field name="carrier_cost" readonly="1"/>
+                    <field name="carrier_cost" readonly="1" sum="Spedizione calcolata"/>
+                    <field name="real_shipping_total" sum="Spedizione reale"/>
                     <field name="carrier_state" invisible="1"/>
                     <field name="carrier_ok" invisible="1"/>
                     <field name="state" invisible="1"/>
