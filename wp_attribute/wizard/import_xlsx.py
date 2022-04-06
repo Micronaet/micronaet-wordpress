@@ -645,18 +645,24 @@ class ProductProductImportWorpdress(orm.Model):
             # Non text items:
             product_data = {
                 'xlsx_id': xlsx_id,
-                'q_x_pack': q_x_pack,
-                'ean13': ean,
-                'lst_price': pricelist,
-                'pack_l': pack_l,
-                'pack_h': pack_h,
-                'pack_p': pack_p,
-                'weight': weight,
-                'weight_net': weight_net,
             }
 
-            if first_supplier_id:
-                product_data['first_supplier_id'] = first_supplier_id
+            # Old producut.product not updated:
+            if not product_ids:
+                product_data.update({
+                    'default_code': default_code,
+                    'q_x_pack': q_x_pack,
+                    'ean13': ean,
+                    'lst_price': pricelist,
+                    'pack_l': pack_l,
+                    'pack_h': pack_h,
+                    'pack_p': pack_p,
+                    'weight': weight,
+                    'weight_net': weight_net,
+                    })
+
+                if first_supplier_id:
+                    product_data['first_supplier_id'] = first_supplier_id
 
             # -----------------------------------------------------------------
             # Read other language:
@@ -742,16 +748,21 @@ class ProductProductImportWorpdress(orm.Model):
                 # -------------------------------------------------------------
                 # Product translate terms:
                 # -------------------------------------------------------------
-                product_data.update({
-                    'name': lang_text[lang]['name'],
-                    'large_description': lang_text[lang]['large_description'],
-                    'emotional_short_description':
-                        lang_text[lang]['emotional_short_description'],
-                    'emotional_description':
-                        lang_text[lang]['emotional_description'],
-                })
+                # Translate only new product or check no translate flag:
+                if not no_translate_product or not product_ids:
+                    product_data.update({
+                        'name':
+                            lang_text[lang]['name'],
+                        'large_description':
+                            lang_text[lang]['large_description'],
+                        'emotional_short_description':
+                            lang_text[lang]['emotional_short_description'],
+                        'emotional_description':
+                            lang_text[lang]['emotional_description'],
+                    })
+
                 if product_ids:  # Update record (if exist or for language)
-                    # Update only field present:
+                    # Clean field not present:
                     not_used_fields = [
                         field for field in product_data if field not in (
                             'xlsx_id', 'default_code')]
@@ -761,12 +772,10 @@ class ProductProductImportWorpdress(orm.Model):
                         if not product_data[field]:
                             del product_data[field]
 
-                    print(product_data)
                     product_pool.write(
                         cr, uid, product_ids, product_data,
                         context=lang_context)
                 else:
-                    product_data['default_code'] = default_code
                     # For next update save ID:
                     product_ids = [product_pool.create(
                         cr, uid, product_data, context=lang_context)]
