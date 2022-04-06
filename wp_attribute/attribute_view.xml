@@ -180,7 +180,7 @@
                     <field name="wp_type" readonly="1"/>
                     <field name="wp_parent_code" invisible="1"/>
                     <field name="variant_ids" invisible="1"/>
-                    <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]" readonly="1"/>
+                    <!--<field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]" readonly="1"/>-->
 
                     <field name="wp_it_on" />
                     <field name="wp_en_on" />
