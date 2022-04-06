@@ -167,6 +167,47 @@
             </field>
         </record>
 
+        <record model="ir.ui.view" id="view_product_product_web_server_lang_tree">
+            <field name="name">product.product.web.server.parent.lang.tree</field>
+            <field name="model">product.product.web.server</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <tree string="Product" color="blue:wp_parent_code!=False" editable="bottom">
+                    <field name="published" readonly="1"/>
+                    <field name="product_id" readonly="1"/>
+                    <field name="connector_id" readonly="1" />
+                    <field name="wp_color_id" readonly="1"/>
+                    <field name="wp_type" readonly="1"/>
+                    <field name="wp_parent_code" invisible="1"/>
+                    <field name="variant_ids" invisible="1"/>
+                    <field name="wordpress_categ_ids" domain="[('connector_id', '=', connector_id), ('enabled', '=', True)]" readonly="1"/>
+
+                    <field name="wp_it_on" />
+                    <field name="wp_en_on" />
+                    <field name="wp_es_on" />
+                    <field name="wp_fr_on" />
+                    <field name="wp_de_on" />
+                    <field name="wp_pt_on" />
+
+                    <field name="wp_it_id" readonly="1"/>
+                    <field name="wp_en_id" readonly="1"/>
+                    <field name="wp_es_id" readonly="1"/>
+                    <field name="wp_fr_id" readonly="1"/>
+                    <field name="wp_de_id" readonly="1"/>
+                    <field name="wp_pt_id" readonly="1"/>
+                    <field name="permalink" invisible="1"/>
+                    <!--<button name="publish_master_now" string="Pubblica ora" type="object" icon="gtk-refresh"/>
+
+                    <field name="need_update" invisible="1"/>
+                    <button name="mark_need_update" string="Aggiornare schedulato" type="object" icon="terp-calendar" attrs="{'invisible': [('need_update', '=', True)]}"/>
+                    <button name="unmark_need_update" string="Annulla aggiorna schedulato" type="object" icon="gtk-cancel" attrs="{'invisible': [('need_update', '=', False)]}"/>
+
+                    <button name="publish_master_now" string="Non pubblicato" type="object" icon="gtk-new" attrs="{'invisible': ['|', '|', '|', '|', '|', ('wp_pt_id', '!=', 0), ('wp_it_id', '!=', 0), ('wp_en_id', '!=', 0), ('wp_es_id', '!=', 0), ('wp_fr_id', '!=', 0), ('wp_de_id', '!=', 0)]}"/>
+                    <button name="open_permalink" string="Apri permalink" type="object" attrs="{'invisible': [('permalink', '=', False)]}" icon="terp-go-home"/>-->
+                </tree>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="view_product_product_web_server_wp_parent_tree">
             <field name="name">product.product.web.server.parent.tree</field>
             <field name="model">product.product.web.server</field>
@@ -584,6 +625,15 @@
                 </form>
             </field>
         </record>
+        <record model="ir.actions.act_window" id="action_product_product_lang">
+            <field name="name">Prodotti lingua</field>
+            <field name="res_model">product.product.web.server</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_product_product_web_server_lang_tree"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
         <record model="ir.actions.act_window" id="action_product_product_parent_tree">
             <field name="name">Prodotto master</field>
             <field name="res_model">product.product.web.server</field>
@@ -700,6 +750,18 @@
                 parent="menu_action_connector_product_color_dot"
                 id="menu_action_connector_product_color_dot_bottom"
                 action="action_connector_product_color_dot_bottom"
+                sequence="10"
+                />
+        <menuitem
+            parent="wp_connector.menu_connector_worppress_configuration"
+            id="menu_action_connector_language_management"
+            name="Gestione Lingue"
+            sequence="40"
+            />
+            <menuitem
+                parent="menu_action_connector_language_management"
+                id="menu_action_connector_languege_product"
+                action="action_product_product_lang"
                 sequence="10"
                 />
     </data>
