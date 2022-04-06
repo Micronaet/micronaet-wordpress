@@ -212,6 +212,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         try:
             os.system(print_command)
+            _logger.info('Printing call: %s' % print_command)
             self.write(cr, uid, ids, {
                 'label_printed': True,
             }, context=context)
@@ -476,7 +477,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 _logger.error('Error on quotation: %s' % (
                     sys.exc_info(), ))
 
-        # TODO no need to create 21 nov. 2020?!?:
+        # todo no need to create 21 nov. 2020?!?:
         # Update order with better quotation:
         data = False
 

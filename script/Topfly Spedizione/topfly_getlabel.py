@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001-2015 Micronaet S.r.l. (<https://micronaet.com>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -13,7 +13,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -52,7 +52,7 @@ url = '%s?apitoken=%s' % (
     endpoint_call['label'] % shipping_id,
     token,
     )
-print 'URL', url    
+print 'URL', url
 res = requests.get(url=url)
 
 if not res.ok:
@@ -61,4 +61,3 @@ if not res.ok:
 f_pdf = open('label.pdf', 'wb')
 f_pdf.write(res.content)
 f_pdf.close()
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
