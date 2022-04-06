@@ -2,7 +2,7 @@
 # '*'coding: utf'8 '*'
 ###############################################################################
 #
-# ODOO (ex OpenERP) 
+# ODOO (ex OpenERP)
 # Open Source Management Solution
 # Copyright (C) 2001'2015 Micronaet S.r.l. (<https://micronaet.com>)
 # Developer: Nicola Riolini @thebrush (<https://it.linkedin.com/in/thebrush>)
@@ -13,7 +13,7 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
@@ -37,10 +37,10 @@ column = {
     'selection': 1,
     'mrp': 2,
     'short': 3,
-    'long': 4, 
+    'long': 4,
     'color': 5,
     }
-    
+
 file_in = './SELEZIONE FIAM E INDOOR-3.xlsx'
 row_start = 1
 
@@ -64,7 +64,7 @@ port = config.get('dbaccess', 'port')   # verify if it's necessary: getint
 # -----------------------------------------------------------------------------
 odoo = erppeek.Client(
     'http://%s:%s' % (
-        server, port), 
+        server, port),
     db=dbname,
     user=user,
     password=pwd,
@@ -121,7 +121,7 @@ for row in range(row_start, WS.nrows):
         print '%s. Selezione non corretta: %s [%s]' % (
             i, default_code, selection)
         continue
-        
+
     # -------------------------------------------------------------------------
     # Color:
     # -------------------------------------------------------------------------
@@ -154,7 +154,7 @@ for row in range(row_start, WS.nrows):
     else:
         print '%s. Non trovato: %s [%s]' % (
             i, default_code, selection)
-        continue    
+        continue
 
     # -------------------------------------------------------------------------
     #                         Product:
@@ -167,8 +167,8 @@ for row in range(row_start, WS.nrows):
 
     # Update package:
     product_pool.auto_package_assign(product_ids)
-    '''    
-    
+    '''
+
     # -------------------------------------------------------------------------
     #                         Web selection:
     # -------------------------------------------------------------------------
@@ -176,12 +176,12 @@ for row in range(row_start, WS.nrows):
         'connector_id': connector_id,
         # Removed temporary
         #'wp_color_id': wp_color_id,
-        
+
         'published': True,
-        'product_id': product_id,             
+        'product_id': product_id,
         'wp_type': 'variable',
         }
-    
+
     if selection == 'X':  # Parent
         data.update({
             'wp_parent_template': True,
@@ -192,8 +192,8 @@ for row in range(row_start, WS.nrows):
             data.update({
             'wp_parent_code': default_code[:6],
             })
-        '''    
-        # XXX wp_it_id problem!
+        '''
+        # todo NOTE: wp_it_id problem!
     else:  # Variation:
         data.update({
             'wp_parent_template': False,
@@ -207,20 +207,20 @@ for row in range(row_start, WS.nrows):
         ])
 
     if web_ids:
-        print '%s. Aggiornamento: %s' % (i, default_code)
+        print('%s. Aggiornamento: %s' % (i, default_code))
         web_pool.write(web_ids, data)
         web_id = web_ids[0]
-    else:    
-        print '%s. Creazione: %s' % (i, default_code)
+    else:
+        print('%s. Creazione: %s' % (i, default_code))
         wb_id = web_pool.create(data).id
 
-    if selection == 'X': 
+    if selection == 'X':
         # Parent are also child:
         web_pool.write([web_id], {
             'wp_parent_id': web_id,
-            }) 
+            })
 
         # Save for child:
-        wp_parent_last = web_id        
+        wp_parent_last = web_id
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

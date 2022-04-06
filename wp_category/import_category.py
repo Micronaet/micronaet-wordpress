@@ -52,9 +52,12 @@ class ProductPublicCategory(orm.Model):
     _inherit = 'product.public.category'
 
     _columns = {
-        #'wp_id': fields.integer('Worpress ID'), # replaced!
+        # 'wp_id': fields.integer('Worpress ID'), # replaced!
         'wp_en_id': fields.integer('Worpress ID en'),
         'wp_it_id': fields.integer('Worpress ID it'),
+        'wp_es_id': fields.integer('Worpress ID es'),
+        'wp_fr_id': fields.integer('Worpress ID fr'),
+        'wp_de_id': fields.integer('Worpress ID de'),
         }
 
 
@@ -74,6 +77,9 @@ class ProductPublicCategory(orm.Model):
         category_pool.write(cr, uid, category_ids, {
             'wp_it_id': False,
             'wp_en_id': False,
+            'wp_es_id': False,
+            'wp_fr_id': False,
+            'wp_de_id': False,
             }, context=context)
         return self.publish_category_now(cr, uid, ids, context=context)
 
@@ -152,7 +158,7 @@ class ProductPublicCategory(orm.Model):
             excel_pool.write_xls_line(ws_name, row, [
                 'get',
                 call,
-                u'%s' % (parameter),
+                u'%s' % (parameter, ),
                 u'%s' % (res, ),
                 ], default_format=excel_format['text'], col=1)
             # =================================================================
@@ -164,7 +170,7 @@ class ProductPublicCategory(orm.Model):
                     _('Error getting category list: %s' % (res, )),
                     )
             except:
-                pass # no error
+                pass  # no error
 
             if res:
                 current_wp_category.extend(res)
@@ -174,10 +180,10 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # Loading used dict DB
         # ---------------------------------------------------------------------
-        odoo_name2id = {} # (name, lang) > ID
+        odoo_name2id = {}  # (name, lang) > ID
 
-        wp_id2name = {} # name > WP ID
-        wp_name2id = {} # parent, name, lang > WP ID TODO manage!
+        wp_id2name = {}  # name > WP ID
+        wp_name2id = {}  # parent, name, lang > WP ID TODO manage!
 
         for record in current_wp_category:
             wp_id2name[record['id']] = record['name']
@@ -192,8 +198,8 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         # TODO Language management!!!
         if server_proxy.wp_category == 'in':
-            wp_id2odoo_id = {} # WP ID 2 ODOO ID (for fast information)
-            for odoo_lang in ('it_IT', ):# XXX create only italian? 'en_US'):
+            wp_id2odoo_id = {}  # WP ID 2 ODOO ID (for fast information)
+            for odoo_lang in ('it_IT', ):  # XXX create only italian? 'en_US'):
                 lang = odoo_lang[:2]
                 context_lang = context.copy()
                 context_lang['lang'] = odoo_lang
@@ -255,7 +261,7 @@ class ProductPublicCategory(orm.Model):
         # ---------------------------------------------------------------------
         odoo_child = {}
 
-        for sign in ('=', '!='): # parent, child
+        for sign in ('=', '!='):  # parent, child
             # -----------------------------------------------------------------
             # Search category touched:
             # -----------------------------------------------------------------
@@ -283,10 +289,10 @@ class ProductPublicCategory(orm.Model):
                     odoo_id = category.id
                     name = category.name
                     sequence = category.sequence
-                    wp_id = eval('category.wp_%s_id' % lang) # current lang
-                    wp_it_id = category.wp_it_id # reference lang
-                    field_id = 'wp_%s_id' % lang # current field name
-                    if sign == '=': # parent mode
+                    wp_id = eval('category.wp_%s_id' % lang)  # current lang
+                    wp_it_id = category.wp_it_id  # reference lang
+                    field_id = 'wp_%s_id' % lang  # current field name
+                    if sign == '=':  # parent mode
                         parent_wp_id = False
                     else:
                         parent_wp_id = eval('category.parent_id.wp_%s_id' % (
@@ -300,14 +306,14 @@ class ProductPublicCategory(orm.Model):
                         'lang': lang,
                         'slug': server_pool.get_lang_slug(name, lang),
                         }
-                    if default_lang != lang: # Add language default ref.
+                    if default_lang != lang:  # Add language default ref.
                         record_data['translations'] = {
-                            'it': wp_it_id, # Created before
+                            'it': wp_it_id,  # Created before
                             }
 
                     # Check if present (same name or ID):
                     key = (parent_wp_id, name, lang)
-                    if key in wp_name2id: # check name if present (for use it)
+                    if key in wp_name2id:  # check name if present (for use it)
                         wp_id = wp_name2id[key]
 
                         # Update this wp_id (same name)
@@ -369,7 +375,7 @@ class ProductPublicCategory(orm.Model):
                         _logger.error('Not Updated wp_id for %s' % name)
                         continue
 
-                    field_id = 'wp_%s_id' % lang # current field name
+                    field_id = 'wp_%s_id' % lang  # current field name
 
                     # Save WP ID in lang correct:
                     category_pool.write(cr, uid, odoo_id, {
@@ -439,4 +445,3 @@ class ProductPublicCategory(orm.Model):
         # Check updated
         # Check deleted
         # Update product first category?
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

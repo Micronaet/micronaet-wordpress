@@ -59,6 +59,9 @@ class ProductProductWebBrand(orm.Model):
         # Translate fields:
         'wp_it_id': fields.integer('WP it ID'),
         'wp_en_id': fields.integer('WP en ID'),
+        'wp_es_id': fields.integer('WP es ID'),
+        'wp_fr_id': fields.integer('WP fr ID'),
+        'wp_de_id': fields.integer('WP de ID'),
         }
 
 
@@ -81,6 +84,9 @@ class ProductProductWebMaterial(orm.Model):
         # Translate fields:
         'wp_it_id': fields.integer('WP it ID'),
         'wp_en_id': fields.integer('WP en ID'),
+        'wp_es_id': fields.integer('WP es ID'),
+        'wp_fr_id': fields.integer('WP fr ID'),
+        'wp_de_id': fields.integer('WP de ID'),
         }
 
 
@@ -393,6 +399,10 @@ class ConnectorServer(orm.Model):
             cr, uid, ids, 'Test message', context=context)
 
     _columns = {
+        'wp_lang_ids': fields.many2many(
+            'res.lang', 'connector_lang_rel',
+            'connector_id', 'lang_id',
+            'Lingue abilitate'),
         'wp_publish_image': fields.boolean('Pubblica immagini'),
         'wp_ean_gtin': fields.boolean('EAN GTIN', help='Use EAN code in GTIN'),
         'wordpress': fields.boolean('Wordpress', help='Wordpress web server'),
@@ -838,7 +848,7 @@ class ProductProductWebServer(orm.Model):
             'view_mode': 'form,form',
             'res_id': ids[0],
             'res_model': 'product.product.web.server',
-            'view_id': view_id, # False
+            'view_id': view_id,
             'views': [(view_id, 'form'), (False, 'tree')],
             'domain': [],
             'context': context,
@@ -1038,12 +1048,13 @@ class ProductProductWebServer(orm.Model):
         translation_lang = {}
 
         # First lang = original, second translate
-        for odoo_lang in ('it_IT', 'en_US'):
+        connector_lang = [l.code for l in connector.wp_lang_ids]
+        # todo sort problem?
+        for odoo_lang in ('it_IT', 'en_US'):  # connector_lang:
             lang = odoo_lang[:2]  # WP lang
             context_lang['lang'] = odoo_lang  # self._lang_db
 
             for item in self.browse(cr, uid, ids, context=context_lang):
-
                 # Readability:
                 product = item.product_id
                 default_code = product.default_code or u''
@@ -1154,7 +1165,7 @@ class ProductProductWebServer(orm.Model):
                         'bullet_point_5': item.bullet_point_5,
                         })
 
-                else:  # Other lang (only translation
+                else:  # Other lang (only translation)
                     if not wp_it_id:
                         _logger.error(
                             'Product %s without default IT [%s]' % (
@@ -1209,8 +1220,9 @@ class ProductProductWebServer(orm.Model):
                         reply = server_pool.wp_loopcall(
                             wcapi, 'post', call, data=data).json()
                         if log_excel != False:
-                            log_excel.append(('post', call, u'%s' % (data, ),
-                                u'%s' % (reply, )))
+                            log_excel.append(
+                                ('post', call, u'%s' % (data, ),
+                                 u'%s' % (reply, )))
                     except:  # Timeout on server:
                         _logger.error('Server timeout: %s' % (data, ))
                         continue
@@ -1223,7 +1235,7 @@ class ProductProductWebServer(orm.Model):
                                     wp_id, lang, reply))
 
                         else:
-                            wp_id = reply['id']  # update here permelink?
+                            wp_id = reply['id']  # update here permalink?
 
                             _logger.warning('Product %s lang %s created!' % (
                                 wp_id, lang))
@@ -1387,6 +1399,14 @@ class ProductProductWebServer(orm.Model):
             help='Log cambi quantità magazzino forzato manualmente', ),
         'wp_it_id': fields.integer('WP it ID'),
         'wp_en_id': fields.integer('WP en ID'),
+        'wp_es_id': fields.integer('WP es ID'),
+        'wp_fr_id': fields.integer('WP fr ID'),
+        'wp_de_id': fields.integer('WP de ID'),
+        'wp_it_on': fields.boolean('WP it abilitato'),
+        'wp_en_on': fields.boolean('WP en abilitato'),
+        'wp_es_on': fields.boolean('WP es abilitato'),
+        'wp_fr_on': fields.boolean('WP fr abilitato'),
+        'wp_de_on': fields.boolean('WP de abilitato'),
         'wp_sequence': fields.integer('Sequenza'),
 
         'brand_id': fields.many2one('product.product.web.brand', 'Brand'),
@@ -1440,7 +1460,7 @@ class ProductProductWebServer(orm.Model):
             _get_product_detail_items, method=True, readonly=1,
             type='float', string='Peso lordo', multi=True, store=False,
             ),
-        # TODO remove?
+        # todo remove?
         'weight_net': fields.function(
             _get_product_detail_items, method=True, readonly=1,
             type='float', string='Peso netto', multi=True, store=False,
@@ -1544,3 +1564,11 @@ class ProductProductWebServer(orm.Model):
             ('variable', 'Variable product'),
             ], 'Wordpress type'),
         }
+
+    _defaults = {
+        'wp_it_on': lambda *x: True,
+        'wp_en_on': lambda *x: True,
+        # 'wp_es_on': lambda *x: True,
+        # 'wp_fr_on': lambda *x: True,
+        # 'wp_de_on': lambda *x: True,
+    }

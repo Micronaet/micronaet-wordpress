@@ -73,9 +73,11 @@ for company in company_list:
     for master in select_pool.browse(web_product_ids):
         i += 1
         if i % 10 == 0:
-            print 'Read %s product %s of %s' % (company, i, total)
+            print('Read %s product %s of %s' % (company, i, total))
         for wp_lang, wp_id in (
-                ('it', master.wp_it_id), ('en', master.wp_en_id)):
+                ('it', master.wp_it_id), ('en', master.wp_en_id),
+                ('es', master.wp_es_id), ('fr', master.wp_fr_id),
+                ('de', master.wp_de_id)):
 
             odoo_product[wp_id] = [
                 wp_lang,
@@ -130,19 +132,19 @@ while True:
             wp_all.append(wp_id)
         else:
             wp_unlink.append(wp_id)
-            print 'To be unlinked: %s' % sku
+            print('To be unlinked: %s' % sku)
 
         # TODO check variations:
 
 # Unlink WP product master:
-print 'Unlinking...', wp_unlink
+print('Unlinking...', wp_unlink)
 for wp_id in wp_unlink:
-    print wcapi.delete('products/%s' % wp_id, params={'force': True}).json()
+    print(wcapi.delete('products/%s' % wp_id, params={'force': True}).json())
 
 # Not found:
 for odoo_id in set(odoo_product) - set(wp_all):
-    print 'Not yet published', odoo_product[odoo_id][2], \
-        odoo_product[odoo_id][1]
+    print('Not yet published', odoo_product[odoo_id][2],
+          odoo_product[odoo_id][1])
 
     # TODO reset wp_it_id wp_en_id
     # TODO Publish single

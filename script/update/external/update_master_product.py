@@ -12,7 +12,7 @@ import ConfigParser
 mode = 'openerp' # 'local'
 company_list = ['fia', 'gpb']
 lang_list = ['it_IT', 'en_US']
-connector_id = 0 # TODO?
+connector_id = 0  # TODO?
 
 update = {
     'images': False,

@@ -114,6 +114,9 @@ class ProductProductWebServerIntegration(orm.Model):
         return self.write(cr, uid, ids, {
             'wp_it_id': False,
             'wp_en_id': False,
+            'wp_es_id': False,
+            'wp_fr_id': False,
+            'wp_de_id': False,
             }, context=context)
 
     def unmark_need_update(self, cr, uid, ids, context=None):
@@ -155,8 +158,14 @@ class ProductProductWebServerIntegration(orm.Model):
 
         new_ids = set(self.search(cr, uid, [
             '|',
+            '|',
+            '|',
+            '|',
             ('wp_it_id', '=', 0),
             ('wp_en_id', '=', 0),
+            ('wp_es_id', '=', 0),
+            ('wp_fr_id', '=', 0),
+            ('wp_de_id', '=', 0),
         ], context=context))
 
         # Union of new and forced:
@@ -241,7 +250,10 @@ class ProductProductWebServerIntegration(orm.Model):
             # XXX Lang reset:
             'wp_it_id': False,
             'wp_en_id': False,
-            # TODO There's problem if product has no previous parent
+            'wp_es_id': False,
+            'wp_fr_id': False,
+            'wp_de_id': False,
+            # todo There's problem if product has no previous parent
             }, context=context)
 
     def set_as_master_product(self, cr, uid, ids, context=None):
@@ -257,10 +269,13 @@ class ProductProductWebServerIntegration(orm.Model):
         wp_parent_id = current_product.wp_parent_id  # Current master
 
         # XXX Bad reference (when add new lang):
-        wp_it_id = wp_en_id = False
+        wp_it_id = wp_en_id = wp_es_id = wp_fr_id = wp_de_id = False
         if wp_parent_id:
             wp_it_id = wp_parent_id.wp_it_id
             wp_en_id = wp_parent_id.wp_en_id
+            wp_es_id = wp_parent_id.wp_es_id
+            wp_fr_id = wp_parent_id.wp_fr_id
+            wp_de_id = wp_parent_id.wp_de_id
         elif wp_parent_code:
             find_parent_ids = self.search(cr, uid, [
                 ('wp_parent_code', '=', wp_parent_code),
@@ -272,6 +287,9 @@ class ProductProductWebServerIntegration(orm.Model):
                     cr, uid, find_parent_ids, context=context)[0]
                 wp_it_id = wp_parent_id.wp_it_id
                 wp_en_id = wp_parent_id.wp_en_id
+                wp_es_id = wp_parent_id.wp_es_id
+                wp_fr_id = wp_parent_id.wp_fr_id
+                wp_de_id = wp_parent_id.wp_de_id
 
         if wp_parent_code:
             # -----------------------------------------------------------------
@@ -309,6 +327,9 @@ class ProductProductWebServerIntegration(orm.Model):
             'wp_parent_template': True,
             'wp_it_id': wp_it_id,
             'wp_en_id': wp_en_id,
+            'wp_es_id': wp_es_id,
+            'wp_fr_id': wp_fr_id,
+            'wp_de_id': wp_de_id,
             }, context=context)
 
     def _get_wp_pricelist_for_web(
@@ -868,7 +889,7 @@ class ProductPublicCategory(orm.Model):
                     item['color_image'] = odoo_color.dropbox_image
 
                 if lang != default_lang:  # Different language:
-                    # TODO correct
+                    # todo correct
                     wp_it_id = lang_color_terms[default_lang].get(key)
                     if wp_it_id:
                         item.update({

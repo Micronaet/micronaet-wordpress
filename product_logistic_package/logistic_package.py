@@ -76,8 +76,10 @@ class ProductProductLogisticPackage(orm.Model):
         'price': fields.float('Prezzo', digits=(10, 2)),
 
         'width': fields.float('Largh. cm.', digits=(10, 2)),
-        'length': fields.float('Lung. cm.', digits=(10, 2)),
-        'height': fields.float('Alt. cm.', digits=(10, 2)),
+        'length': fields.float('Lung. da cm.', digits=(10, 2)),
+        'length_to': fields.float('Lung. a cm.', digits=(10, 2)),
+        'height': fields.float('Alt. da cm.', digits=(10, 2)),
+        'height_to': fields.float('Alt. a cm.', digits=(10, 2)),
 
         'seat': fields.float('Seduta', digits=(10, 2)),
         'arm': fields.float('Bracciolo', digits=(10, 2)),

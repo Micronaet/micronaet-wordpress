@@ -44,6 +44,9 @@
                     <field name="description" />
                     <field name="wp_it_id" groups="wp_connector.group_wp_id_manager" />
                     <field name="wp_en_id" groups="wp_connector.group_wp_id_manager" />
+                    <field name="wp_es_id" groups="wp_connector.group_wp_id_manager" />
+                    <field name="wp_fr_id" groups="wp_connector.group_wp_id_manager" />
+                    <field name="wp_de_id" groups="wp_connector.group_wp_id_manager" />
                 </tree>
             </field>
         </record>
@@ -68,6 +71,9 @@
                     <field name="description" />
                     <field name="wp_it_id" groups="wp_connector.group_wp_id_manager" />
                     <field name="wp_en_id" groups="wp_connector.group_wp_id_manager" />
+                    <field name="wp_es_id" groups="wp_connector.group_wp_id_manager" />
+                    <field name="wp_fr_id" groups="wp_connector.group_wp_id_manager" />
+                    <field name="wp_de_id" groups="wp_connector.group_wp_id_manager" />
                 </tree>
             </field>
         </record>
@@ -253,6 +259,8 @@
                                 <field name="wp_version" attrs="{'required': [('wordpress', '=', True)]}"/>
                                 <field name="album_ids" widget="many2many_tags"/>
 
+                                <field name="wp_lang_ids" widget="many2many_tags" colspan="4"/>
+
                             </group>
                         </page>
                         <page name="telegram_block" string="Telegram">
@@ -392,12 +400,22 @@
 
                             <field name="force_min_stock"/>
                             <field name="force_price"/>
-
-                            <separator string="Wordpress line:" colspan="4"/>
+                        </group>
+                        <group col="10" colspan="4">
+                            <separator string="Wordpress line:" colspan="10"/>
                             <!--<button name="clean_reference" string="Clean reference" colspan="1" type="object" confirm="Do you want delete reference with Wordpress linked product?"/>-->
+
+                            <field name="wp_it_on" readonly="1"/>
+                            <field name="wp_en_on" readonly="1"/>
+                            <field name="wp_es_on" readonly="1"/>
+                            <field name="wp_fr_on" readonly="1"/>
+                            <field name="wp_de_on" readonly="1"/>
 
                             <field name="wp_it_id" readonly="1"/>
                             <field name="wp_en_id" readonly="1"/>
+                            <field name="wp_es_id" readonly="1"/>
+                            <field name="wp_fr_id" readonly="1"/>
+                            <field name="wp_de_id" readonly="1"/>
                         </group>
                     </sheet>
                 </form>

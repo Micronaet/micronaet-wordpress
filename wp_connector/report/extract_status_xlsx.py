@@ -157,7 +157,8 @@ class ConnectorServer(orm.Model):
             'Peso spediz.', 'Peso volum. sped.', 'Tipi sped.',
             'Mod. imb.', 'Imballo', 'Dimensioni prodotto', 'Vol.',
             'Garanzia',
-            'Tipo WP', 'Master', 'Padre', 'WPID it.', 'WPID en.',
+            'Tipo WP', 'Master', 'Padre',
+            'WPID it.', 'WPID en.', 'WPID es.', 'WPID fr.', 'WPID de.',
             'Bullet 1', '(Bullet 1)', 'Bullet 2', '(Bullet 2)',
             'Bullet 3', '(Bullet 3)', 'Bullet 4', '(Bullet 4)',
             'Bullet 5', '(Bullet 5)',
@@ -286,8 +287,12 @@ class ConnectorServer(orm.Model):
                     line.wp_type or '',
                     'X' if line.wp_parent_template else '',
                     line.wp_parent_id.product_id.default_code or '',
+
                     line.wp_it_id,
                     line.wp_en_id,
+                    line.wp_es_id,
+                    line.wp_fr_id,
+                    line.wp_de_id,
 
                     line.bullet_point_1 or '',
                     '',
