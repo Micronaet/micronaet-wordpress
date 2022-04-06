@@ -234,7 +234,6 @@
                     <button name="unmark_need_update" string="Annulla aggiorna schedulato" type="object" icon="gtk-cancel" attrs="{'invisible': [('need_update', '=', False)]}"/>
 
                     <button name="publish_master_now" string="Non pubblicato" type="object" icon="gtk-new" attrs="{'invisible': ['|', '|', '|', '|', '|', ('wp_it_id', '!=', 0), ('wp_pt_id', '!=', 0), ('wp_en_id', '!=', 0), ('wp_es_id', '!=', 0), ('wp_fr_id', '!=', 0), ('wp_de_id', '!=', 0)]}"/>
-
                 </tree>
             </field>
         </record>

@@ -168,18 +168,19 @@ class ProductProductImportWorpdress(orm.Model):
                     [2],
             },
             1: {
-            u'In questa colonna vanno messi i codici (vedere in anagrafica)':
-                [13],
-            u'In questa colonna i testi vanno tradotti in base alla riga':
-                [17, 21, 22, 28, 29, 30, 31, 32, 33, 34, 35],
-            u'In questa colonna i campi sono obbligatori':
-                [0, 1, 3],
-            u'In questa colonna i campi sono obbligatori e tradotti in base '
-            u'alla riga':
-                [5],
-            u'In questa colonna i campi sono obbligatori e vanno inseriti '
-            u'come codici (vedere in anagrafica)':
-                [6, 7, 8],
+                u'In questa colonna vanno messi i codici '
+                u'vedere in anagrafica)':
+                    [13],
+                u'In questa colonna i testi vanno tradotti in base alla riga':
+                    [17, 21, 22, 28, 29, 30, 31, 32, 33, 34, 35],
+                u'In questa colonna i campi sono obbligatori':
+                    [0, 1, 3],
+                u'In questa colonna i campi sono obbligatori e tradotti in '
+                u'base alla riga':
+                    [5],
+                u'In questa colonna i campi sono obbligatori e vanno inseriti '
+                u'come codici (vedere in anagrafica)':
+                    [6, 7, 8],
             },
         }
         for row in comment_list:
@@ -644,7 +645,6 @@ class ProductProductImportWorpdress(orm.Model):
             # Non text items:
             product_data = {
                 'xlsx_id': xlsx_id,
-                'default_code': default_code,
                 'q_x_pack': q_x_pack,
                 'ean13': ean,
                 'lst_price': pricelist,
@@ -654,6 +654,7 @@ class ProductProductImportWorpdress(orm.Model):
                 'weight': weight,
                 'weight_net': weight_net,
             }
+
             if first_supplier_id:
                 product_data['first_supplier_id'] = first_supplier_id
 
@@ -765,6 +766,7 @@ class ProductProductImportWorpdress(orm.Model):
                         cr, uid, product_ids, product_data,
                         context=lang_context)
                 else:
+                    product_data['default_code'] = default_code
                     # For next update save ID:
                     product_ids = [product_pool.create(
                         cr, uid, product_data, context=lang_context)]
