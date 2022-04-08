@@ -95,7 +95,7 @@ def clean_char(value, limit):
 # Parameters:
 company_1 = 'gpb'
 company_2 = 'fia'
-from_date = '2021-03-01'
+from_date = '2022-01-01'
 
 odoo_db = {}
 product_cache = {}
@@ -166,13 +166,14 @@ else:
         total = order.total
 
         if abs(ship_previous - ship_current) > gap:
-            rate = (total - ship_current) / (total - ship_previous)
-            for line in order.order_line:
-                shipping_file.write(mask % (
-                    order.name,
-                    line.sku,
-                    total,
-                ))
+            if total - ship_current:
+                rate = (total - ship_current) / (total - ship_previous)
+                for line in order.order_line:
+                    shipping_file.write(mask % (
+                        order.name,
+                        line.sku,
+                        total,
+                    ))
         shipping_file.flush()  # Update file
 
         # Price are similar, no need to update
