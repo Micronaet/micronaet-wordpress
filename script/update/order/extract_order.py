@@ -163,10 +163,9 @@ else:
         ship_previous = order.shipping_total
         ship_current = order.real_shipping_total  # Present because of filter!
         total = order.total
-
-        if abs(ship_previous - ship_current) > gap:
-            if total - ship_current:
-                rate = (total - ship_current) / (total - ship_previous)
+        if total - ship_previous:  # No division by zero!
+            rate = (total - ship_current) / (total - ship_previous)
+            if abs(ship_previous - ship_current) > gap:
                 for line in order.line_ids:
                     try:
                         shipping_file.write(mask % (
@@ -176,7 +175,7 @@ else:
                         ))
                     except:
                         pdb.set_trace()
-        shipping_file.flush()  # Update file
+            shipping_file.flush()  # Update file
 
         # Price are similar, no need to update
         odoo_db[company_1]['order'].write([order.id], {
