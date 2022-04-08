@@ -141,6 +141,11 @@ for root, folders, files in os.walk('..'):
 # -----------------------------------------------------------------------------
 #                       Extract order list for Accounting:
 # -----------------------------------------------------------------------------
+def clean(value):
+    """ Clean sku
+    """
+    return value.replace('\xa0', ' ')
+
 gap = 0.0001
 shipping_filename = os.path.join(extract_path, 'wordpress.shipping.csv')
 if os.path.exists(shipping_filename):
@@ -163,6 +168,7 @@ else:
         ship_previous = order.shipping_total
         ship_current = order.real_shipping_total  # Present because of filter!
         total = order.total
+        done = True
         if total - ship_previous:  # No division by zero!
             rate = (total - ship_current) / (total - ship_previous)
             if abs(ship_previous - ship_current) > gap:
@@ -170,18 +176,23 @@ else:
                     try:
                         shipping_file.write(mask % (
                             order.name,
-                            line.sku,
+                            clean(line.sku),
                             total * rate,
                         ))
                     except:
-                        pdb.set_trace()
-                        print('error')
+                        done = False
+                        print('Error converting order: %s' % order.name)
+                        log_message(
+                            f_log,
+                            'Error converting order: %s' % order.name)
+
             shipping_file.flush()  # Update file
 
         # Price are similar, no need to update
-        odoo_db[company_1]['order'].write([order.id], {
-            'shipping_exported': True,
-        })
+        if done:
+            odoo_db[company_1]['order'].write([order.id], {
+                'shipping_exported': True,
+            })
 
     log_message(f_log, 'Shipping order exported: # %s' % len(order_ids))
 
