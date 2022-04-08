@@ -233,7 +233,6 @@ for order in orders:
 # -----------------------------------------------------------------------------
 #                       Extract order list for Accounting:
 # -----------------------------------------------------------------------------
-pdb.set_trace()
 gap = 0.0001
 shipping_filename = os.path.join(extract_path, 'wordpress.shipping.csv')
 if os.path.exists(shipping_filename):
