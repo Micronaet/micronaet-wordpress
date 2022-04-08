@@ -168,7 +168,7 @@ else:
         if abs(ship_previous - ship_current) > gap:
             if total - ship_current:
                 rate = (total - ship_current) / (total - ship_previous)
-                for line in order.order_line:
+                for line in order.line_ids:
                     shipping_file.write(mask % (
                         order.name,
                         line.sku,
