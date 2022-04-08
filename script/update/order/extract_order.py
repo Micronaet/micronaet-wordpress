@@ -143,7 +143,6 @@ for root, folders, files in os.walk('..'):
 # -----------------------------------------------------------------------------
 gap = 0.0001
 shipping_filename = os.path.join(extract_path, 'wordpress.shipping.csv')
-pdb.set_trace()
 if os.path.exists(shipping_filename):
     log_message(f_log, 'File for export shipping not imported: %s\n' %
                 shipping_filename)
