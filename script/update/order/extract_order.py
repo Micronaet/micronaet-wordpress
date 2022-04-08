@@ -193,7 +193,7 @@ else:
         shipping_file.write(mask % (
             order.name,
             'SPT',
-            ship_current,
+            ship_current / 1.22,
         ))
 
         # Price are similar, no need to update
