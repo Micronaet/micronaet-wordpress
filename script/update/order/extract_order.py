@@ -190,6 +190,11 @@ else:
                             'Error converting order: %s' % order.name)
 
             shipping_file.flush()  # Update file
+        shipping_file.write(mask % (
+            order.name,
+            'SPT',
+            ship_current,
+        ))
 
         # Price are similar, no need to update
         if done:
