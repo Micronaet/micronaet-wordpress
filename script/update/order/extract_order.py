@@ -181,7 +181,8 @@ else:
                         ))
                     except:
                         done = False
-                        print('Error converting order: %s' % order.name)
+                        print('Error converting order: %s [%s]' % (
+                            order.name, line.sku))
                         log_message(
                             f_log,
                             'Error converting order: %s' % order.name)
