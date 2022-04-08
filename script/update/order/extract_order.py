@@ -154,7 +154,7 @@ if os.path.exists(shipping_filename):
 else:
     # Use first company order only:
     order_ids = odoo_db[company_1]['order'].search([
-        ('real_shipping_total', '>=', 0),
+        ('real_shipping_total', '>', 0),
         ('shipping_exported', '=', False),
     ])
     orders = odoo_db[company_1]['order'].browse(order_ids)
