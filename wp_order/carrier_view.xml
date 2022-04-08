@@ -189,7 +189,7 @@
             </field>
         </record>
         <record id="carrier_sale_order_action_all" model="ir.actions.act_window">
-            <field name="name">Carrier sale order all</field>
+            <field name="name">Ordini con spedizione tutti</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
@@ -197,7 +197,7 @@
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action" model="ir.actions.act_window">
-            <field name="name">Carrier sale order</field>
+            <field name="name">Ordini con spedizione</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
@@ -205,7 +205,7 @@
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action_pending" model="ir.actions.act_window">
-            <field name="name">Carrier order pending</field>
+            <field name="name">Ordini con spedizione pendenti</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
@@ -213,7 +213,7 @@
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action_sent" model="ir.actions.act_window">
-            <field name="name">Carrier order sent</field>
+            <field name="name">Ordini con spedizione spediti</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
@@ -221,7 +221,7 @@
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action_delivered" model="ir.actions.act_window">
-            <field name="name">Carrier order delivered</field>
+            <field name="name">Ordini con spedizione consegnati</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>

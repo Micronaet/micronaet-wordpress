@@ -36,7 +36,7 @@ _logger = logging.getLogger(__name__)
 
 class WordpressSaleOrder(orm.Model):
     """ Model name: Wordpress Sale Order
-    """
+    """\
 
     _name = 'wordpress.sale.order'
     _description = 'Wordpress order'
