@@ -177,7 +177,7 @@ else:
                         shipping_file.write(mask % (
                             order.name,
                             clean(line.sku),
-                            total * rate,
+                            line.total * rate,
                         ))
                     except:
                         done = False
