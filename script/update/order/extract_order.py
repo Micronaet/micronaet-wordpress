@@ -168,10 +168,12 @@ else:
         ship_previous = order.shipping_total
         ship_current = order.real_shipping_total  # Present because of filter!
         total = order.total
+        total_tax = order.total_tax
+        previous_net = total - total_tax - ship_previous
         done = True
-        if total - ship_previous:  # No division by zero!
-            rate = (total - ship_current) / (total - ship_previous)
-            if abs(ship_previous - ship_current) > gap:
+        if previous_net:  # No division by zero!
+            rate = (total - total_tax - ship_current) / previous_net
+            if abs(ship_previous - ship_current) > gap:  # Change if different
                 for line in order.line_ids:
                     try:
                         shipping_file.write(mask % (
