@@ -158,7 +158,7 @@ else:
     log_message(f_log, 'Reading %s order from shipping: Company %s\n' % (
         len(order_ids), company))
 
-    mask = '%-10s%-15s-10.2f\n'  # todo \r
+    mask = '%-10s%-15s%-10.2f\n'  # todo \r
     for order in orders:
         ship_previous = order.shipping_total
         ship_current = order.real_shipping_total  # Present because of filter!
@@ -171,7 +171,7 @@ else:
                     shipping_file.write(mask % (
                         order.name,
                         line.sku,
-                        total,
+                        total * rate,
                     ))
         shipping_file.flush()  # Update file
 
