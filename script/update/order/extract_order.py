@@ -168,11 +168,14 @@ else:
             if total - ship_current:
                 rate = (total - ship_current) / (total - ship_previous)
                 for line in order.line_ids:
-                    shipping_file.write(mask % (
-                        order.name,
-                        line.sku,
-                        total * rate,
-                    ))
+                    try:
+                        shipping_file.write(mask % (
+                            order.name,
+                            line.sku,
+                            total * rate,
+                        ))
+                    except:
+                        pdb.set_trace()
         shipping_file.flush()  # Update file
 
         # Price are similar, no need to update
