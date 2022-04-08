@@ -175,6 +175,7 @@ else:
                         ))
                     except:
                         pdb.set_trace()
+                        print('error')
             shipping_file.flush()  # Update file
 
         # Price are similar, no need to update
