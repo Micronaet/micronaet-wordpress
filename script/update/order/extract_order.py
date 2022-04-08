@@ -141,6 +141,50 @@ for root, folders, files in os.walk('..'):
 # -----------------------------------------------------------------------------
 #                       Extract order list for Accounting:
 # -----------------------------------------------------------------------------
+gap = 0.0001
+shipping_filename = os.path.join(extract_path, 'wordpress.shipping.csv')
+if os.path.exists(shipping_filename):
+    log_message(f_log, 'File for export shipping not imported: %s\n' %
+                shipping_filename)
+else:
+    # Use first company order only:
+    order_ids = odoo_db[company_1]['order'].search([
+        ('real_shipping_total', '>=', 0),
+        ('shipping_exported', '=', False),
+    ])
+    orders = odoo_db[company_1]['order'].browse(order_ids)
+
+    shipping_file = open(shipping_filename, 'w')
+    log_message(f_log, 'Reading %s order from shipping: Company %s\n' % (
+        len(order_ids), company))
+
+    mask = '%-10s%-15s-10.2f\n'  # todo \r
+
+    for order in orders:
+        ship_previous = order.shipping_total
+        ship_current = order.real_shipping_total  # Present because of filter!
+        total = order.total
+
+        if abs(ship_previous - ship_current) > gap:
+            rate = (total - ship_current) / (total - ship_previous)
+            for line in order.order_line:
+                shipping_file.write(mask % (
+                    order.name,
+                    line.sku,
+                    total,
+                ))
+        shipping_file.flush()  # Update file
+
+        # Price are similar, no need to update
+        odoo_db[company_1]['order'].write([order.id], {
+            'shipping_exported': True,
+        })
+
+    log_message(f_log, 'Shipping order exported: # %s' % len(order_ids))
+
+# -----------------------------------------------------------------------------
+#                       Extract order list for Accounting:
+# -----------------------------------------------------------------------------
 # Use first company order only:
 order_ids = odoo_db[company_1]['order'].search([
     ('date_order', '>=', from_date),
@@ -229,47 +273,3 @@ for order in orders:
         )
         order_file.write(mask % data)
         order_file.flush()
-
-# -----------------------------------------------------------------------------
-#                       Extract order list for Accounting:
-# -----------------------------------------------------------------------------
-gap = 0.0001
-shipping_filename = os.path.join(extract_path, 'wordpress.shipping.csv')
-if os.path.exists(shipping_filename):
-    log_message(f_log, 'File for export shipping not imported: %s\n' %
-                shipping_filename)
-else:
-    # Use first company order only:
-    order_ids = odoo_db[company_1]['order'].search([
-        ('real_shipping_total', '>=', 0),
-        ('shipping_exported', '=', False),
-    ])
-    orders = odoo_db[company_1]['order'].browse(order_ids)
-
-    shipping_file = open(shipping_filename, 'w')
-    log_message(f_log, 'Reading %s order from shipping: Company %s\n' % (
-        len(order_ids), company))
-
-    mask = '%-10s%-15s-10.2f\n'  # todo \r
-
-    for order in orders:
-        ship_previous = order.shipping_total
-        ship_current = order.real_shipping_total  # Present because of filter!
-        total = order.total
-
-        if abs(ship_previous - ship_current) > gap:
-            rate = (total - ship_current) / (total - ship_previous)
-            for line in order.order_line:
-                shipping_file.write(mask % (
-                    order.name,
-                    line.sku,
-                    total,
-                ))
-        shipping_file.flush()  # Update file
-
-        # Price are similar, no need to update
-        odoo_db[company_1]['order'].write([order.id], {
-            'shipping_exported': True,
-        })
-
-    log_message(f_log, 'Shipping order exported: # %s' % len(order_ids))
