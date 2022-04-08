@@ -143,6 +143,7 @@ for root, folders, files in os.walk('..'):
 # -----------------------------------------------------------------------------
 gap = 0.0001
 shipping_filename = os.path.join(extract_path, 'wordpress.shipping.csv')
+pdb.set_trace()
 if os.path.exists(shipping_filename):
     log_message(f_log, 'File for export shipping not imported: %s\n' %
                 shipping_filename)
@@ -159,7 +160,6 @@ else:
         len(order_ids), company))
 
     mask = '%-10s%-15s-10.2f\n'  # todo \r
-
     for order in orders:
         ship_previous = order.shipping_total
         ship_current = order.real_shipping_total  # Present because of filter!
