@@ -39,6 +39,58 @@
             </field>
         </record>
 
+        <!--wordpress.sale.order.line-->
+        <record id="wordpress_sale_order_line_view_search" model="ir.ui.view">
+            <field name="name">wordpress.sale.order.line.search</field>
+            <field name="model">wordpress.sale.order.line</field>
+            <field name="arch" type="xml">
+                <search string="Search order" version="7.0">
+                    <field name="wp_id"/>
+                    <field name="sku"/>
+                    <field name="name"/>
+                    <field name="product_id"/>
+
+                    <filter name="product_id_no" string="DB esterno" domain="[('product_id','=',False)]"/>
+                    <filter name="product_id_yes" string="DB attuale" domain="[('product_id','!=',False)]"/>
+
+                    <!--<filter name="state_opened" string="Opened states" domain="[('state','in',('pending', 'processing', 'on-hold'))]"/>
+                    <filter name="state_closed" string="Closed states" domain="[('state','=','completed')]"/>
+                    <filter name="state_refunded" string="Refunded states" domain="[('state','=','refunded')]"/>
+                    <filter name="state_error" string="Error states" domain="[('state','in',('trash', 'cancelled', 'failed'))]"/>
+                    <filter name="is_from_web" string="Confermato web" domain="[('from_web','=',True)]"/>
+                    <filter name="need_picking" string="Da scaricare" domain="[('sale_order_id','!=',False), ('picking_id','=',False)]"/>-->
+                    <group expand="0" string="Group By...">
+                        <filter name="group_order" string="Ordine" context="{'group_by': order_id'}"/>
+                        <filter name="group_sku" string="SKU" context="{'group_by': 'sku'}"/>
+                        <filter name="group_product" string="Prodotto" context="{'group_by': 'product_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="wordpress_sale_order_line_view_tree" model="ir.ui.view">
+            <field name="name">wordpress.sale.order.line.tree</field>
+            <field name="model">wordpress.sale.order.line</field>
+            <field name="arch" type="xml">
+                <tree string="Righe ordini" editable="bottom" colors="red:product_id == False">
+                    <field name="wp_id"/>
+                    <field name="sku"/>
+                    <field name="name"/>
+                    <field name="product_id"/>
+                    <field name="quantity"/>
+                    <field name="price"/>
+                    <field name="total" sum="total"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_wordpress_sale_order_line_view_tree" model="ir.actions.act_window">
+            <field name="name">Statistiche ordini</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wordpress.sale.order.line</field>
+            <field name="view_id" ref="wordpress_sale_order_line_view_tree"/>
+            <field name="search_view_id" ref="wordpress_sale_order_line_view_search"/>
+            <field name="view_mode">tree</field>
+        </record>
+
         <!--wordpress.sale.order-->
         <record id="wordpress_sale_order_view_search" model="ir.ui.view">
             <field name="name">wordpress.sale.order.search</field>
@@ -321,6 +373,12 @@
                 action="action_wordpress_product_product_cost"
                 groups="wp_order.group_order_transport_manager"
                 sequence="30"
+                />
+            <menuitem
+                parent="menu_connector_wordpress_order"
+                id="menu_wordpress_sale_order_line_view_tree"
+                action="action_wordpress_sale_order_line_view_tree"
+                sequence="40"
                 />
     </data>
 </openerp>
