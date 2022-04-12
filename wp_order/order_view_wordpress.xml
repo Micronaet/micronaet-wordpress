@@ -51,8 +51,8 @@
                     <field name="product_id"/>
                     <field name="order_id"/>
 
-                    <field name="date_order" domain="[('date_order', '&gt;=', self)]" string="Dalla data"/>
-                    <field name="date_order" domain="[('date_order', '&lt;=', self)]" string="Alla data"/>
+                    <field name="date_order" filter_domain="[('date_order', '&gt;=', self)]" string="Dalla data"/>
+                    <field name="date_order" filter_domain="[('date_order', '&lt;=', self)]" string="Alla data"/>
 
                     <filter name="product_id_no" string="DB esterno" domain="[('product_id','=',False)]"/>
                     <filter name="product_id_yes" string="DB attuale" domain="[('product_id','!=',False)]"/>
@@ -123,8 +123,8 @@
                     <field name="payment" />
                     <field name="currency" />
 
-                    <field name="date_order" domain="[('date_order', '&gt;=', self)]" string="Dalla data"/>
-                    <field name="date_order" domain="[('date_order', '&lt;=', self)]" string="Alla data"/>
+                    <field name="date_order" filter_domain="[('date_order', '&gt;=', self)]" string="Dalla data"/>
+                    <field name="date_order" filter_domain="[('date_order', '&lt;=', self)]" string="Alla data"/>
 
                     <!--<field name="partner_name" filter_domain="[('partner_id','=',self)]"/>-->
 
