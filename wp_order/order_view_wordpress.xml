@@ -82,6 +82,17 @@
                 </tree>
             </field>
         </record>
+        <record model="ir.ui.view" id="wordpress_sale_order_line_view_graph">
+            <field name="name">wordpress.sale.order.line.graph</field>
+            <field name="model">wordpress.sale.order.line</field>
+            <field name="type">graph</field>
+            <field name="arch" type="xml">
+                <graph string="Vendite" type="bar">
+                    <field name="sku"/>
+                    <field name="total" operator="+"/>
+                </graph>
+            </field>
+        </record>
         <record id="action_wordpress_sale_order_line_view_tree" model="ir.actions.act_window">
             <field name="name">Statistiche ordini</field>
             <field name="type">ir.actions.act_window</field>
