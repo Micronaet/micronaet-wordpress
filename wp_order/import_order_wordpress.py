@@ -563,7 +563,8 @@ class WordpressSaleOrderLine(orm.Model):
         return res
 
     _columns = {
-        'date': fields.related('order_id', 'date_order', 'Data', store=True),
+        'date_order': fields.related(
+            'order_id', 'date_order', 'Data', type='date', store=True),
         'order_id': fields.many2one(
             'wordpress.sale.order', 'Order', ondelete='cascade'),
         'name': fields.char('Name'),

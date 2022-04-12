@@ -51,8 +51,8 @@
                     <field name="product_id"/>
                     <field name="order_id"/>
 
-                    <field name="date" domain="[('date', '>=', self)]" string="Dalla data"/>
-                    <field name="date" domain="[('date', '<=', self)]" string="Alla data"/>
+                    <field name="date_order" domain="[('date', '&gt;=', self)]" string="Dalla data"/>
+                    <field name="date_order" domain="[('date', '&lt;=', self)]" string="Alla data"/>
 
                     <filter name="product_id_no" string="DB esterno" domain="[('product_id','=',False)]"/>
                     <filter name="product_id_yes" string="DB attuale" domain="[('product_id','!=',False)]"/>
@@ -66,7 +66,7 @@
                     <group expand="0" string="Group By...">
                         <filter name="group_order" string="Ordine" context="{'group_by': 'order_id'}"/>
                         <filter name="group_sku" string="SKU" context="{'group_by': 'sku'}"/>
-                        <filter name="group_date" string="Data" context="{'group_by': 'date'}"/>
+                        <filter name="group_date" string="Data" context="{'group_by': 'date_order'}"/>
                         <filter name="group_product" string="Prodotto" context="{'group_by': 'product_id'}"/>
                     </group>
                 </search>
@@ -79,7 +79,7 @@
                 <tree string="Righe ordini" editable="bottom" colors="red:product_id == False">
                     <field name="wp_id"/>
                     <field name="sku"/>
-                    <field name="date"/>
+                    <field name="date_order"/>
                     <field name="name"/>
                     <field name="product_id"/>
                     <field name="quantity"/>
