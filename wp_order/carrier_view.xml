@@ -186,6 +186,7 @@
                     <!--<field name="carrier_delivery_state" invisible="1"/>-->
                     <button name="order_form_detail" type="object" string="Dettaglio ordine" icon="gtk-find"/>
                     <button name="extract_wordpress_published_report" type="object" string="Ordini spediti oggi" icon="gtk-info"/>
+                    <field name="state" />
                 </tree>
             </field>
         </record>
@@ -261,14 +262,13 @@
                     <field name="system_reference_id" />
                     <field name="carrier_state" />
                     <field name="delivery_state" />
-                    <field name="line_ids" domain="[('line_ids', 'ilike', self)]" />
+                    <!--<field name="line_ids" domain="[('line_ids', 'ilike', self)]" />-->
 
                     <filter name="carrier_track_id_assigned" string="LDV generated" domain="[('carrier_track_id','!=',False)]"/>
                     <filter string="Stato speduzione" domain="[]" context="{'group_by': 'carrier_state'}"/>
                     <filter string="Stato consegna" domain="[]" context="{'group_by': 'delivery_state'}"/>
                     <filter name="carrier_parcel_assigned" string="Parcel assigned" domain="[('parcel_ids','!=',False)]"/>
                     <filter name="label_printed_no" string="Etichette non stampate" domain="[('label_printed','=',False)]"/>
-
                 </field>
                 <xpath expr="/search/group/filter[2]" position="after">
                     <filter string="Spedizioniere" domain="[]" context="{'group_by': 'carrier_supplier_id'}"/>
