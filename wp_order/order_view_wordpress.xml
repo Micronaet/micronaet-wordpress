@@ -122,6 +122,10 @@
                     <field name="partner_email" />
                     <field name="payment" />
                     <field name="currency" />
+
+                    <field name="date_order" domain="[('date_order', '&gt;=', self)]" string="Dalla data"/>
+                    <field name="date_order" domain="[('date_order', '&lt;=', self)]" string="Alla data"/>
+
                     <!--<field name="partner_name" filter_domain="[('partner_id','=',self)]"/>-->
 
                     <filter name="state_opened" string="Opened states" domain="[('state','in',('pending', 'processing', 'on-hold'))]"/>
