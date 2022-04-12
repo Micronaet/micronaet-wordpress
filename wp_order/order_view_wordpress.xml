@@ -88,7 +88,7 @@
             <field name="res_model">wordpress.sale.order.line</field>
             <field name="view_id" ref="wordpress_sale_order_line_view_tree"/>
             <field name="search_view_id" ref="wordpress_sale_order_line_view_search"/>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">tree,graph</field>
         </record>
 
         <!--wordpress.sale.order-->
