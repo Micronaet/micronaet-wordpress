@@ -150,8 +150,6 @@
                     <field name="partner_name" readonly="1"/>
                     <field name="shipping" readonly="1"/>
 
-                    <field name="carrier_supplier_id" />
-                    <field name="carrier_mode_id" />
                     <field name="carrier_parcel_template_id" domain="['|',('carrier_supplier_id','=',False),('carrier_supplier_id','=',carrier_supplier_id)]" />
                     <field name="parcel_weight_tree" />
                     <button name="load_template_parcel" string="Add parcel" icon="gtk-add" type="object" attrs="{'invisible': [('carrier_parcel_template_id','=',False)]}" class="oe_highlight" />
@@ -164,6 +162,8 @@
                     <field name="package_type" invisible="1"/>
                     <field name="carrier_cost_lossy" invisible="1"/>
 
+                    <field name="carrier_supplier_id" />
+                    <field name="carrier_mode_id" />
                     <button name="carrier_get_better_option" type="object" string="Get better option" icon="STOCK_SORT_DESCENDING" />
                     <field name="courier_supplier_id" /> <!--readonly="1"-->
                     <field name="courier_mode_id" /> <!--readonly="1"-->
