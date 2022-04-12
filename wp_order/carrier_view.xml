@@ -261,7 +261,7 @@
                     <field name="system_reference_id" />
                     <field name="carrier_state" />
                     <field name="delivery_state" />
-                    <field name="delivery_defail" />
+                    <field name="delivery_detail" />
 
                     <filter name="carrier_track_id_assigned" string="LDV generated" domain="[('carrier_track_id','!=',False)]"/>
                     <filter string="Stato speduzione" domain="[]" context="{'group_by': 'carrier_state'}"/>
