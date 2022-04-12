@@ -264,8 +264,11 @@
                     <field name="delivery_state" />
                     <!--<field name="line_ids" domain="[('line_ids', 'ilike', self)]" />-->
 
+                    <filter name="real_shipping_total_on" string="Spediz. inserita" domain="[('real_shipping_total','&gt;',0)]"/>
+                    <filter name="real_shipping_total_off" string="Spediz. non inserita" domain="[('real_shipping_total','=',0)]"/>
+
                     <filter name="carrier_track_id_assigned" string="LDV generated" domain="[('carrier_track_id','!=',False)]"/>
-                    <filter string="Stato speduzione" domain="[]" context="{'group_by': 'carrier_state'}"/>
+                    <filter string="Stato spedizione" domain="[]" context="{'group_by': 'carrier_state'}"/>
                     <filter string="Stato consegna" domain="[]" context="{'group_by': 'delivery_state'}"/>
                     <filter name="carrier_parcel_assigned" string="Parcel assigned" domain="[('parcel_ids','!=',False)]"/>
                     <filter name="label_printed_no" string="Etichette non stampate" domain="[('label_printed','=',False)]"/>
