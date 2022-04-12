@@ -145,6 +145,7 @@
                     <!--<field name="connector_id"/>
                     <field name="wp_date_created"/>
                     -->
+                    <field name="date_order" readonly="1"/>
                     <field name="name" readonly="1"/>
                     <field name="partner_name" readonly="1"/>
                     <field name="shipping" readonly="1"/>
@@ -193,7 +194,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('state', 'not in', ('on-hold', 'pending'))]</field>
+            <field name="domain">[('state', 'not in', ('cancelled', 'trash', 'on-hold', 'pending'))]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action" model="ir.actions.act_window">
@@ -201,7 +202,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('carrier_state', '=', 'draft'),('state', 'not in', ('on-hold', 'pending'))]</field>
+            <field name="domain">[('carrier_state', '=', 'draft'),('state', 'not in', ('cancelled', 'trash', 'on-hold', 'pending'))]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action_pending" model="ir.actions.act_window">
@@ -209,7 +210,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('carrier_state', '=', 'pending')]</field>
+            <field name="domain">[('carrier_state', '=', 'pending'),('state', 'not in', ('cancelled', 'trash'))]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action_sent" model="ir.actions.act_window">
@@ -217,7 +218,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('carrier_state', '=', 'sent')]</field>
+            <field name="domain">[('carrier_state', '=', 'sent'),('state', 'not in', ('cancelled', 'trash'))]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action_delivered" model="ir.actions.act_window">
@@ -233,7 +234,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('master_tracking_id', '!=', False),('label_printed', '=', False)]</field>
+            <field name="domain">[('master_tracking_id', '!=', False),('label_printed', '=', False),('state', 'not in', ('cancelled', 'trash'))]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action_lossy" model="ir.actions.act_window">
@@ -241,7 +242,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('carrier_cost_lossy', '=', True)]</field>
+            <field name="domain">[('carrier_cost_lossy', '=', True),('state', 'not in', ('cancelled', 'trash'))]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
 

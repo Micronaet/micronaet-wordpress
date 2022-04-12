@@ -30,31 +30,31 @@ from openerp import SUPERUSER_ID, api
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
 _logger = logging.getLogger(__name__)
 
+
 class ProductProductImportationWPTraceColumn(orm.Model):
-    ''' Importation log element trace of fields
-    ''' 
+    """ Importation log element trace of fields
+    """
     _inherit = 'product.product.importation.trace.column'
 
     # Override function:
     def _get_field_list(self, cr, uid, context=None):
         res = super(
             ProductProductImportationWPTraceColumn, self)._get_field_list(
-                cr, uid, context=context)
+            cr, uid, context=context)
         res.extend([
             ('emotional_short_description', 'Descrizione emozionale breve'),
             ('emotional_description', 'Descrizione emozionale lunga'),
             ])
         return res
-        
+
     _columns = {
         'field': fields.selection(_get_field_list, 'Campi collegati'),
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
