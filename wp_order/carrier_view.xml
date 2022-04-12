@@ -162,11 +162,11 @@
                     <field name="package_type" invisible="1"/>
                     <field name="carrier_cost_lossy" invisible="1"/>
 
-                    <field name="carrier_supplier_id" />
-                    <field name="carrier_mode_id" />
+                    <field name="carrier_supplier_id" string="Broker"/>
+                    <field name="carrier_mode_id" string="Servizio"/>
                     <button name="carrier_get_better_option" type="object" string="Get better option" icon="STOCK_SORT_DESCENDING" />
-                    <field name="courier_supplier_id" /> <!--readonly="1"-->
-                    <field name="courier_mode_id" /> <!--readonly="1"-->
+                    <field name="courier_supplier_id" string="Corriere"/> <!--readonly="1"-->
+                    <field name="courier_mode_id" string="Modalità"/> <!--readonly="1"-->
                     <field name="master_tracking_id" readonly="1"/>
                     <field name="carrier_track_id" readonly="1"/>
                     <field name="carrier_cost" readonly="1" sum="Spedizione calcolata" />
@@ -261,7 +261,7 @@
                     <field name="system_reference_id" />
                     <field name="carrier_state" />
                     <field name="delivery_state" />
-                    <field name="delivery_detail" />
+                    <field name="delivery_detail_filter" domain="[('line_ids.sku', 'ilike', self)]" />
 
                     <filter name="carrier_track_id_assigned" string="LDV generated" domain="[('carrier_track_id','!=',False)]"/>
                     <filter string="Stato speduzione" domain="[]" context="{'group_by': 'carrier_state'}"/>
