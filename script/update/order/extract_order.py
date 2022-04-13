@@ -149,7 +149,7 @@ def clean(value):
 
 gap = 0.0001
 shipping_filename = os.path.join(extract_path, 'wordpress.shipping.csv')
-if os.path.exists(shipping_filename):
+if False or os.path.exists(shipping_filename):
     log_message(f_log, 'File for export shipping not imported: %s\n' %
                 shipping_filename)
 else:
