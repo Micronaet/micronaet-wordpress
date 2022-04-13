@@ -89,6 +89,7 @@ def clean_char(value, limit):
             res += ' '
     return res[:limit]
 
+
 # -----------------------------------------------------------------------------
 # Read configuration parameter:
 # -----------------------------------------------------------------------------
@@ -139,7 +140,7 @@ for root, folders, files in os.walk('..'):
     break
 
 # -----------------------------------------------------------------------------
-#                       Extract order list for Accounting:
+#                 Extract order list update for Accounting:
 # -----------------------------------------------------------------------------
 def clean(value):
     """ Clean sku
