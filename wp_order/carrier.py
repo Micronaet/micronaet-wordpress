@@ -192,6 +192,11 @@ class CarrierSupplier(orm.Model):
     _columns = {
         'hidden': fields.boolean('Nascosto'),
         'name': fields.char('Nome'),
+        'accounting_ref': fields.char(
+            'Codice contabile', size=10,
+            help='Codice contabile, nella quotazione dello sconto il codice'
+                 'articolo passato al gestonale sarà il codice broker unito'
+                 'al codice corriere'),
         'account_ref': fields.char('Codice'),
         'mode': fields.selection(
             [

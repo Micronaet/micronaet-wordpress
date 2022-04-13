@@ -399,6 +399,7 @@
                     <field name="mode" />
                     <field name="carrier_connection_id" attrs="{'required': [('mode', '=', 'carrier')]}"/>
                     <field name="account_ref" />
+                    <field name="accounting_ref" />
                 </tree>
             </field>
         </record>
@@ -421,6 +422,7 @@
                     <field name="hidden" />
                     <field name="supplier_id" />
                     <field name="name" />
+                    <field name="accounting_ref" />
                     <field name="account_ref" />
                     <field name="cups_printer_id" />
                     <!--<field name="mode" />-->
