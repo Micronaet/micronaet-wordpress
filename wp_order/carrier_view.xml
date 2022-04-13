@@ -422,7 +422,6 @@
                     <field name="hidden" />
                     <field name="supplier_id" />
                     <field name="name" />
-                    <field name="accounting_ref" />
                     <field name="account_ref" />
                     <field name="cups_printer_id" />
                     <!--<field name="mode" />-->
