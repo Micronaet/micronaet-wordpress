@@ -55,8 +55,7 @@ class ConnectorServer(orm.Model):
     _columns = {
         # Linked database:
         'linked_dbname': fields.char(
-            'DB collegato',
-            size=30,
+            'DB collegato', size=30,
             help='Database collegato per recuperare informazioni prodotti'),
         'linked_user': fields.char('DB utente', size=30),
         'linked_pwd': fields.char('DB password', size=30),

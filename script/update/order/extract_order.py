@@ -165,15 +165,18 @@ else:
 
     mask = '%-10s%-15s%-10.2f\n'  # todo \r
     for order in orders:
-        ship_previous = order.shipping_total
-        ship_current = order.real_shipping_total  # Present because of filter!
-        total = order.total
-        total_tax = order.total_tax
-        previous_net = total - total_tax - ship_previous
+        previous_ship = order.shipping_total
+        current_ship = order.real_shipping_total  # Present because of filter!
+
+        net_total = order.total - order.total_tax
+
+        previous_net_total = net_total - previous_ship
+        current_net_total = net_total - current_ship
+
         done = True
-        if previous_net:  # No division by zero!
-            rate = (total - total_tax - ship_current) / previous_net
-            if abs(ship_previous - ship_current) > gap:  # Change if different
+        if previous_net_total:  # No division by zero!
+            rate = current_net_total / previous_net_total
+            if abs(previous_ship - current_ship) > gap:  # Change if different
                 for line in order.line_ids:
                     try:
                         shipping_file.write(mask % (
@@ -190,10 +193,18 @@ else:
                             'Error converting order: %s' % order.name)
 
             shipping_file.flush()  # Update file
+
+        # Shipment append:
+        carrier_code = order.carrier_supplier_id.accounting_code
+        courier_code = order.courier_supplier_id.accounting_code
+        if carrier_code and courier_code:
+            shipping_code = '%s%s' % (carrier_code, courier_code)
+        else:
+            shipping_code = 'SPT'
         shipping_file.write(mask % (
             order.name,
-            'SPT',
-            ship_current / 1.22,
+            shipping_code,
+            current_ship,
         ))
 
         # Price are similar, no need to update
