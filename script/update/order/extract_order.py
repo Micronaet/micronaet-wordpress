@@ -196,9 +196,9 @@ else:
             shipping_file.flush()  # Update file
 
         # Shipment append:
-        carrier_code = order.carrier_supplier_id.accounting_ref \
+        carrier_code = (order.carrier_supplier_id.accounting_ref or '') \
             if order.carrier_supplier_id else ''
-        courier_code = order.courier_supplier_id.accounting_ref \
+        courier_code = (order.courier_supplier_id.accounting_ref or '') \
             if order.courier_supplier_id else ''
 
         if carrier_code and courier_code:
