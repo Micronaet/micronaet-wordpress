@@ -205,7 +205,6 @@ else:
             courier_code = order.courier_supplier_id.accounting_ref or ''
 
         if carrier_code and courier_code:
-            pdb.set_trace()
             shipping_code = '%s%s' % (carrier_code, courier_code)
         else:
             shipping_code = 'SPT'
