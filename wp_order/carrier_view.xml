@@ -195,7 +195,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('state', 'not in', ('cancelled', 'trash', 'on-hold', 'pending'))]</field>
+            <field name="domain">[('state', 'not in', ('failed', 'cancelled', 'trash', 'on-hold', 'pending'))]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action" model="ir.actions.act_window">
@@ -203,7 +203,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('carrier_state', '=', 'draft'),('state', 'not in', ('cancelled', 'trash', 'on-hold', 'pending'))]</field>
+            <field name="domain">[('carrier_state', '=', 'draft'),('state', 'not in', ('failed', 'cancelled', 'trash', 'on-hold', 'pending'))]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action_pending" model="ir.actions.act_window">
@@ -211,7 +211,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('carrier_state', '=', 'pending'),('state', 'not in', ('cancelled', 'trash'))]</field>
+            <field name="domain">[('carrier_state', '=', 'pending'),('state', 'not in', ('failed', 'cancelled', 'trash'))]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action_sent" model="ir.actions.act_window">
@@ -219,7 +219,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('carrier_state', '=', 'sent'),('state', 'not in', ('cancelled', 'trash'))]</field>
+            <field name="domain">[('carrier_state', '=', 'sent'),('state', 'not in', ('failed', 'cancelled', 'trash'))]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action_delivered" model="ir.actions.act_window">
@@ -235,7 +235,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('master_tracking_id', '!=', False),('label_printed', '=', False),('state', 'not in', ('cancelled', 'trash'))]</field>
+            <field name="domain">[('master_tracking_id', '!=', False),('label_printed', '=', False),('state', 'not in', ('failed', 'cancelled', 'trash'))]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
         <record id="carrier_sale_order_action_lossy" model="ir.actions.act_window">
@@ -243,7 +243,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wordpress.sale.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('carrier_cost_lossy', '=', True),('state', 'not in', ('cancelled', 'trash'))]</field>
+            <field name="domain">[('carrier_cost_lossy', '=', True),('state', 'not in', ('failed', 'cancelled', 'trash'))]</field>
             <field name="view_id" ref="carrier_sale_order_tree"/>
         </record>
 
@@ -264,8 +264,8 @@
                     <field name="delivery_state" />
                     <!--<field name="line_ids" domain="[('line_ids', 'ilike', self)]" />-->
 
-                    <filter name="real_shipping_total_on" string="Spediz. inserita" domain="[('real_shipping_total','&gt;',0)]"/>
-                    <filter name="real_shipping_total_off" string="Spediz. non inserita" domain="[('real_shipping_total','=',0)]"/>
+                    <filter name="real_shipping_total_on" string="Spediz. inserita" domain="[('real_shipping_total','&gt;', 0)]"/>
+                    <filter name="real_shipping_total_off" string="Spediz. mancante" domain="[('real_shipping_total', '=', False)]"/>
 
                     <filter name="carrier_track_id_assigned" string="LDV generated" domain="[('carrier_track_id','!=',False)]"/>
                     <filter string="Stato spedizione" domain="[]" context="{'group_by': 'carrier_state'}"/>
