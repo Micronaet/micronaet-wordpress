@@ -145,7 +145,7 @@ for root, folders, files in os.walk('..'):
 def clean(value):
     """ Clean sku
     """
-    return value.replace('\xa0', ' ')
+    return value.replace(u'\xa0', ' ')
 
 gap = 0.0001
 shipping_filename = os.path.join(extract_path, 'wordpress.shipping.csv')
