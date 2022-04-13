@@ -165,7 +165,6 @@ else:
         len(order_ids), company))
 
     mask = '%-10s%-20s%-10.2f\n'  # todo \r
-    pdb.set_trace()
     for order in orders:
         previous_ship = order.shipping_total
         current_ship = order.real_shipping_total  # Present because of filter!
