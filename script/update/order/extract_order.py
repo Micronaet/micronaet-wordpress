@@ -149,6 +149,8 @@ def clean(value):
 
 gap = 0.0001
 shipping_filename = os.path.join(extract_path, 'wordpress.shipping.csv')
+
+# todo remove
 if False or os.path.exists(shipping_filename):
     log_message(f_log, 'File for export shipping not imported: %s\n' %
                 shipping_filename)
@@ -156,7 +158,7 @@ else:
     # Use first company order only:
     order_ids = odoo_db[company_1]['order'].search([
         ('real_shipping_total', '>', 0),
-        # ('shipping_exported', '=', False),
+        # ('shipping_exported', '=', False),  # todo remove
     ])
     orders = odoo_db[company_1]['order'].browse(order_ids)
 
@@ -203,6 +205,7 @@ else:
             courier_code = order.courier_supplier_id.accounting_ref or ''
 
         if carrier_code and courier_code:
+            pdb.set_trace()
             shipping_code = '%s%s' % (carrier_code, courier_code)
         else:
             shipping_code = 'SPT'
