@@ -150,8 +150,7 @@ def clean(value):
 gap = 0.0001
 shipping_filename = os.path.join(extract_path, 'wordpress.shipping.csv')
 
-# todo remove
-if False or os.path.exists(shipping_filename):
+if os.path.exists(shipping_filename):
     log_message(f_log, 'File for export shipping not imported: %s\n' %
                 shipping_filename)
 else:
@@ -188,6 +187,7 @@ else:
                             line.total * rate,
                         ))
                     except:
+                        pdb.set_trace()
                         done = False
                         print('Error converting order: %s [%s]' % (
                             order.name, line.sku))
