@@ -157,7 +157,7 @@ else:
     # Use first company order only:
     order_ids = odoo_db[company_1]['order'].search([
         ('real_shipping_total', '>', 0),
-        # ('shipping_exported', '=', False),  # todo remove
+        ('shipping_exported', '=', False),  # only new
     ])
     orders = odoo_db[company_1]['order'].browse(order_ids)
 
@@ -294,7 +294,7 @@ for order in orders:
             clean_char(order.partner_phone, 30),  # Phone
 
             # Line:
-            clean_char(line.sku, 18),  # SKU
+            clean_char(clean(line.sku), 18),  # SKU
             clean_char(line.name, 45),  # Product description
             clean_char(brand, 20),  # Brand
             clean_char(category, 30),  # Category (more than one!)
