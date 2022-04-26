@@ -467,6 +467,7 @@ class WordpressSaleOrder(orm.Model):
             'Scaricato dal web',
             help='Ordine chiuso da web e scaricato durante la sincro ordini'),
         'alert': fields.boolean('Alert inviato'),
+        # todo no more used:
         'shipping_exported': fields.boolean(
             'Inviato a gestionale',
             help='Indica che l\'ordine è stato inviato al gestionale per '

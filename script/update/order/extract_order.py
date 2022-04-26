@@ -157,7 +157,7 @@ else:
     # Use first company order only:
     order_ids = odoo_db[company_1]['order'].search([
         ('real_shipping_total', '>', 0),
-        ('shipping_exported', '=', False),  # only new
+        # ('shipping_exported', '=', False),  # todo exported always
     ])
     orders = odoo_db[company_1]['order'].browse(order_ids)
 
@@ -165,8 +165,10 @@ else:
     log_message(f_log, 'Reading %s order from shipping: Company %s\n' % (
         len(order_ids), company))
 
-    mask = '%-10s%-20s%-10.2f\n'  # todo \r
+    mask = '%3s%-10s%-20s%-10.2f\n'  # todo \r
     for order in orders:
+        marketplace = odoo_db[company_1]['order'].get_marketplace(
+            order.partner_email or '')
         previous_ship = order.shipping_total
         current_ship = order.real_shipping_total  # Present because of filter!
 
@@ -182,12 +184,12 @@ else:
                 for line in order.line_ids:
                     try:
                         shipping_file.write(mask % (
+                            marketplace,
                             order.name,
                             clean(line.sku),
                             line.total * rate,
                         ))
                     except:
-                        pdb.set_trace()
                         done = False
                         print('Error converting order: %s [%s]' % (
                             order.name, line.sku))
@@ -215,10 +217,11 @@ else:
         ))
 
         # Price are similar, no need to update
-        if done:
-            odoo_db[company_1]['order'].write([order.id], {
-                'shipping_exported': True,
-            })
+        # todo exported always (for updating)
+        # if done:
+        #    odoo_db[company_1]['order'].write([order.id], {
+        #        'shipping_exported': True,
+        #    })
 
     log_message(f_log, 'Shipping order exported: # %s' % len(order_ids))
 
