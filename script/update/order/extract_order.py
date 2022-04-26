@@ -212,7 +212,7 @@ else:
             pdb.set_trace()
             for record in order_records:
                 record.append(record[-1] * rate)
-                shipping_file.write(mask % list(record))
+                shipping_file.write(mask % tuple(record))
             shipping_file.flush()  # Update file every order
 
         # Shipment append (last line):
