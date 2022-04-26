@@ -170,7 +170,7 @@ else:
             len(order_ids), from_date, company, shipping_filename,
             override_file))
 
-    mask = '%3s%-10s%-20s%-10.2f\n'  # todo \r
+    mask = '%-3s%-10s%-20s%-10.2f\n'  # todo \r
     for order in orders:
         marketplace = order.marketplace
         previous_ship = order.shipping_total
