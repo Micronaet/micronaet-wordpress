@@ -167,10 +167,10 @@ else:
     log_message(
         f_log, 'Reading %s order from shipping [Data > %s]: '
                'Company %s(Override file %s: %s)\n' % (
-            len(order_ids), from_date, company, shipping_filename,
-            override_file))
+                    len(order_ids), from_date, company, shipping_filename,
+                    override_file))
 
-    mask = '%-3s%-10s%-20s%-10.2f\n'  # todo \r
+    mask = '%-3s%-10s%-20s%-10.2f%-10.2f\n'  # todo \r
     for order in orders:
         marketplace = order.marketplace
         previous_ship = order.shipping_total
@@ -182,17 +182,21 @@ else:
         current_net_total = net_total - current_ship
 
         done = True
+        new_total = 0.0
+        order_records = []
         if previous_net_total:  # No division by zero!
             rate = current_net_total / previous_net_total
             if abs(previous_ship - current_ship) > gap:  # Change if different
                 for line in order.line_ids:
                     try:
-                        shipping_file.write(mask % (
+                        new_amount = line.total * rate
+                        order_records.append([
                             marketplace,
                             order.name,
                             clean(line.sku),
-                            line.total * rate,
-                        ))
+                            new_amount,
+                            ])
+                        new_total += new_amount
                     except:
                         done = False
                         print('Error converting order: %s [%s]' % (
@@ -201,9 +205,16 @@ else:
                             f_log,
                             'Error converting order: %s' % order.name)
 
-            shipping_file.flush()  # Update file
+        if new_total:
+            # New shipment splitted for new total line:
+            rate = current_net_total / new_total
 
-        # Shipment append:
+            for record in order_records:
+                record.append(record[-1] * rate)
+                shipping_file.write(mask % record)
+            shipping_file.flush()  # Update file every order
+
+        # Shipment append (last line):
         carrier_code = courier_code = ''
         if order.carrier_supplier_id:
             carrier_code = order.carrier_supplier_id.accounting_ref or ''
@@ -219,6 +230,7 @@ else:
             order.name,
             shipping_code,
             current_ship,
+            0.0,
         ))
 
         # Price are similar, no need to update
