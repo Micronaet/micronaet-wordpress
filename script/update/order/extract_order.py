@@ -165,8 +165,9 @@ else:
 
     shipping_file = open(shipping_filename, 'w')
     log_message(
-        f_log, 'Reading %s order from shipping [Data > %s]: Company %s\n' % (
-            len(order_ids), from_date, company))
+        f_log, 'Reading %s order from shipping [Data > %s]: '
+               'Company %s(Override file: %s)\n' % (
+            len(order_ids), from_date, company, override_file))
 
     mask = '%3s%-10s%-20s%-10.2f\n'  # todo \r
     for order in orders:
