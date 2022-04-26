@@ -207,10 +207,10 @@ else:
 
         if new_total:
             # New shipment splitted for new total line:
-            rate = current_net_total / new_total
+            ship_rate = current_ship / new_total
 
             for record in order_records:
-                record.append(record[-1] * rate)
+                record.append(record[-1] * ship_rate)
                 shipping_file.write(mask % tuple(record))
             shipping_file.flush()  # Update file every order
 
