@@ -209,7 +209,6 @@ else:
             # New shipment splitted for new total line:
             rate = current_net_total / new_total
 
-            pdb.set_trace()
             for record in order_records:
                 record.append(record[-1] * rate)
                 shipping_file.write(mask % list(record))
