@@ -213,6 +213,7 @@ else:
         else:
             shipping_code = 'SPT'
         shipping_file.write(mask % (
+            marketplace,
             order.name,
             shipping_code,
             current_ship,
