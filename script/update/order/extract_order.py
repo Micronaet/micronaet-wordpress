@@ -3,7 +3,7 @@ import sys
 import erppeek
 import ConfigParser
 import pdb
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def log_message(log_file, message, mode='info', verbose=True):
@@ -96,7 +96,8 @@ def clean_char(value, limit):
 # Parameters:
 company_1 = 'gpb'
 company_2 = 'fia'
-from_date = '2022-01-01'
+now = datetime.now() - timedelta(days=100)
+from_date = str(now)[:10]  # '2022-01-01'
 
 odoo_db = {}
 product_cache = {}
@@ -162,8 +163,9 @@ else:
     orders = odoo_db[company_1]['order'].browse(order_ids)
 
     shipping_file = open(shipping_filename, 'w')
-    log_message(f_log, 'Reading %s order from shipping: Company %s\n' % (
-        len(order_ids), company))
+    log_message(
+        f_log, 'Reading %s order from shipping [Data > %s]: Company %s\n' % (
+            len(order_ids), from_date, company))
 
     mask = '%3s%-10s%-20s%-10.2f\n'  # todo \r
     for order in orders:
