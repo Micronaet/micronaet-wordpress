@@ -206,7 +206,7 @@ else:
                             'Error converting order: %s' % order.name)
 
         if new_total:
-            # New shipment splitted for new total line:
+            # New shipment split for new total line:
             ship_rate = current_ship / new_total
 
             for record in order_records:
@@ -325,7 +325,8 @@ for order in orders:
 
             # Footer
             clean_char(order.payment, 20),  # Payment
-            (order.real_shipping_total or order.shipping_total),  # Trans. 10.2
+            # (order.real_shipping_total or order.shipping_total),
+            order.shipping_total,  # Trans. 10.2
             '',  # S = esente IVA (1 char)
             clean_char('', 10),  # Sconto ordine
             clean_char('', 10),  # Coupon sconto
