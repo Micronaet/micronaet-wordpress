@@ -593,7 +593,7 @@
                                 </page>
                                 <!--
                                 todo add extra broker block:
-                                <page string="Extra (broker)" name="page_extra_cost" attrs="{'invisible': [('zone_mode_extra', '=', 'courier')]}">
+                                <page string="Zone (broker)" name="page_extra_cost" attrs="{'invisible': [('zone_mode_extra', '=', 'courier')]}">
                                     <group col="4">
                                         <field name="broker_courier_extra_ids" colspan="4" nolabel="1">
                                             <tree string="Costi corriere / broker extra:" editable="bottom">
@@ -605,7 +605,17 @@
                                         </field>
                                     </group>
                                 </page>-->
-                                <page string="Extra (corriere)" name="page_extra_cost" attrs="{'invisible': [('zone_mode_extra', '=', 'broker')]}">
+                                <page string="Zone (corriere)" name="page_zone" attrs="{'invisible': [('zone_mode_extra', '=', 'broker')]}">
+                                    <group col="4">
+                                        <field name="courier_zone_ids" colspan="4" nolabel="1">
+                                            <tree string="Zone">
+                                                <field name="name"/>
+                                                <field name="description"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </page>
+                                <page string="Costi extra" name="page_extra_cost">
                                     <group col="4">
                                         <field name="courier_extra_ids" colspan="4" nolabel="1">
                                             <tree string="Costi corriere extra:" editable="bottom">
@@ -614,16 +624,6 @@
                                                 <field name="price"/>
                                                 <field name="date"/>
                                                 <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
-                                            </tree>
-                                        </field>
-                                    </group>
-                                </page>
-                                <page string="Zone corriere" name="page_zone">
-                                    <group col="4">
-                                        <field name="courier_zone_ids" colspan="4" nolabel="1">
-                                            <tree string="Zone">
-                                                <field name="name"/>
-                                                <field name="description"/>
                                             </tree>
                                         </field>
                                     </group>
