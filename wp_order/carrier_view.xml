@@ -476,10 +476,11 @@
             <field name="name">carrier.supplier.form</field>
             <field name="model">carrier.supplier</field>
             <field name="arch" type="xml">
-                <form string="Carrier supplier">
+                <form string="Broker">
                     <sheet>
                         <group col="4">
                             <field name="name" />
+                            <field name="carrier_mode" invisible="1"/>
                             <field name="mode_id" invisible="1"/>
                             <notebook colspan="4">
                                 <page string="Dettaglio" name="page_detail">
