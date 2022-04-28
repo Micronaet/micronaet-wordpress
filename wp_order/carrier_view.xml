@@ -408,7 +408,6 @@
                     <sheet>
                         <group col="4">
                             <field name="name" />
-                            <field name="description" />
                             <field name="carrier_id" readonly="1"/>
                             <field name="courier_id" readonly="1"/>
                             <notebook colspan="4">
@@ -432,6 +431,8 @@
                                     </group>
                                 </page>
                             </notebook>
+                            <field name="description" colspan="4" nolabel="1"/>
+
 
                         </group>
                     </sheet>
