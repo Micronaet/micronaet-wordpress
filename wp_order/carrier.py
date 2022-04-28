@@ -207,7 +207,7 @@ class CarrierSupplier(orm.Model):
             ], 'Modalità corriere', required=True),
         'zone_mode_extra': fields.selection([
             ('broker', 'Broker'),
-            ('auto', 'Corriere'),
+            ('courier', 'Corriere'),
             ], 'Modalità costi extra', required=True,
             help='Indica se le zone di divisione CAP si prendono quelle '
                  'del broker o se il corriere ha le sue',
