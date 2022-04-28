@@ -387,6 +387,46 @@
             </field>
         </record>
 
+        <!-- sale.order.carrier.zone -->
+        <record model="ir.ui.view" id="view_sale_order_carrier_zone_tree">
+            <field name="name">sale.order.carrier.zone.tree</field>
+            <field name="model">sale.order.carrier.zone</field>
+            <field name="arch" type="xml">
+                <tree string="Zone">
+                    <field name="carrier_id" />
+                    <field name="courier_id" />
+                    <field name="name" />
+                    <field name="description" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_sale_order_carrier_zone_form">
+            <field name="name">sale.order.carrier.zone.form</field>
+            <field name="model">sale.order.carrier.zone</field>
+            <field name="arch" type="xml">
+                <form string="Zone">
+                    <sheet>
+                        <group col="4">
+                            <field name="name" />
+                            <field name="description" />
+                            <field name="carrier_id" readonly="1"/>
+                            <field name="courier_id" readonly="1"/>
+                            <field name="zone_extra_ids" colspan="4" nolabel="1">
+                                <tree string="Costi extra:">
+                                    <field name="is_active" invisible="1"/>
+                                    <field name="mode"/>
+                                    <field name="price"/>
+                                    <field name="date"/>
+                                    <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
+                                </tree>
+                            </field>
+
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
         <!--carrier.supplier-->
         <record model="ir.ui.view" id="view_carrier_supplier_tree">
             <field name="name">carrier.supplier.tree</field>
@@ -425,12 +465,13 @@
                 <form string="Carrier supplier">
                     <sheet>
                         <group col="4">
-                            <field name="mode_id" />
                             <field name="name" />
+                            <field name="mode_id" invisible="1"/>
                             <notebook colspan="4">
                                 <page string="Dettaglio" name="page_detail">
                                     <group col="4">
                                         <field name="hidden" />
+                                        <newlinw/>
                                         <field name="mode" />
                                         <field name="carrier_connection_id" attrs="{'required': [('mode', '=', 'carrier')]}"/>
                                         <field name="account_ref" />
@@ -439,7 +480,7 @@
                                 </page>
                                 <page string="Zone" name="page_zone">
                                     <group col="4">
-                                        <field name="carrier_zone_ids" colspan="4">
+                                        <field name="carrier_zone_ids" colspan="4" nolabel="1">
                                             <tree string="Zone">
                                                 <field name="name"/>
                                                 <field name="description"/>
