@@ -202,6 +202,10 @@ class CarrierSupplier(orm.Model):
                 ('carrier', 'Corriere'),
                 ('courier', 'Spedizioniere'),
             ], 'Mode', required=True),
+        'carrier_mode': fields.selection([
+            ('transport', 'Trasportatore'),
+            ('auto', 'Autotrasportatore'),
+            ], 'Modalità corriere', required=True),
         'mode_id': fields.many2one(
             'carrier.supplier.mode', 'Modalità',
             domain="[('supplier_id.mode', '=', 'carrier')]",
@@ -213,6 +217,7 @@ class CarrierSupplier(orm.Model):
 
     _defaults = {
         'mode': lambda *x: 'carrier',
+        'carrier_mode': lambda *x: 'transport',
     }
 
 
