@@ -503,15 +503,12 @@
                                         </field>
                                     </group>
                                 </page>
-                                <page string="Extra" name="page_extra_cost">
+                                <page string="Zone broker" name="page_zone">
                                     <group col="4">
-                                        <field name="broker_extra_ids" colspan="4" nolabel="1">
-                                            <tree string="Costi brocker extra:" editable="bottom">
-                                                <field name="is_active" invisible="1"/>
-                                                <field name="mode"/>
-                                                <field name="price"/>
-                                                <field name="date"/>
-                                                <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
+                                        <field name="carrier_zone_ids" colspan="4" nolabel="1">
+                                            <tree string="Zone">
+                                                <field name="name"/>
+                                                <field name="description"/>
                                             </tree>
                                         </field>
                                     </group>
@@ -529,12 +526,15 @@
                                         </field>
                                     </group>
                                 </page>
-                                <page string="Zone broker" name="page_zone">
+                                <page string="Extra" name="page_extra_cost">
                                     <group col="4">
-                                        <field name="carrier_zone_ids" colspan="4" nolabel="1">
-                                            <tree string="Zone">
-                                                <field name="name"/>
-                                                <field name="description"/>
+                                        <field name="broker_extra_ids" colspan="4" nolabel="1">
+                                            <tree string="Costi broker extra:" editable="bottom">
+                                                <field name="is_active" invisible="1"/>
+                                                <field name="mode"/>
+                                                <field name="price"/>
+                                                <field name="date"/>
+                                                <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
                                             </tree>
                                         </field>
                                     </group>
