@@ -11,4 +11,5 @@ access_product_product_shipping_history_user,product.product.shipping.history,mo
 
 access_sale_order_carrier_zone_user,sale.order.carrier.zone,model_sale_order_carrier_zone,base.group_user,1,1,1,1
 access_sale_order_carrier_zone_extra_user,sale.order.carrier.zone.extra,model_sale_order_carrier_zone_extra,base.group_user,1,1,1,1
+access_sale_order_broker_zone_user,sale.order.broker.zone,model_sale_order_broker_zone,base.group_user,1,1,1,1
 access_sale_order_carrier_pricelist_user,sale.order.carrier.pricelist,model_sale_order_carrier_pricelist,base.group_user,1,1,1,1

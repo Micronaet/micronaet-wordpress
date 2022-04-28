@@ -145,6 +145,25 @@ class SaleOrderCarrierZoneExtra(orm.Model):
     }
 
 
+class SaleOrderBrokerZone(orm.Model):
+    """ Model name: Broker Zone also for Courier
+    """
+
+    _name = 'sale.order.broker.zone'
+    _description = 'Zone broker su corriere'
+    _order = 'zone_id'
+    _rec_name = 'zone_id'
+
+    _columns = {
+        'courier_id': fields.many2one(
+            'carrier.supplier', 'Corriere',
+            help='Abbinamento zona broker al corriere'),
+        'zone_id': fields.many2one(
+            'sale.order.carrier.zone', 'Zone',
+            help='Le zone del corriere sono prese dal broker'),
+    }
+
+
 class CarrierSupplierInherit(orm.Model):
     """ Model name: Parcels supplier
     """
@@ -172,6 +191,11 @@ class CarrierSupplierInherit(orm.Model):
             help='Elenco zone extra per corriere, quando non sono le'
                  'stesse per il broker ma vengono customizzate per '
                  'spedizioniere'),
+        'broker_courier_extra_ids': fields.one2many(
+            'sale.order.broker.zone', 'courier_id',
+            'Zone broker su corriere',
+            help='Elenco zone broker utilizzate nel corriere (il corriere'
+                 'non ha le sue zone)'),
 
         'broker_extra_ids': fields.one2many(
             'sale.order.carrier.zone.extra', 'carrier_id',

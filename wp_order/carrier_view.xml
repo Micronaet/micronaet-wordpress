@@ -591,20 +591,15 @@
                                         </field>
                                     </group>
                                 </page>
-                                <!--
-                                todo add extra broker block:
                                 <page string="Zone (broker)" name="page_extra_cost" attrs="{'invisible': [('zone_mode_extra', '=', 'courier')]}">
                                     <group col="4">
                                         <field name="broker_courier_extra_ids" colspan="4" nolabel="1">
-                                            <tree string="Costi corriere / broker extra:" editable="bottom">
+                                            <tree string="Costi corriere / broker extra:">
                                                 <field name="zone_id" domain="[('broker_id', '=', broker_id)]"/>
-                                                <field name="price"/>
-                                                <field name="date"/>
-                                                <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
                                             </tree>
                                         </field>
                                     </group>
-                                </page>-->
+                                </page>
                                 <page string="Zone (corriere)" name="page_zone" attrs="{'invisible': [('zone_mode_extra', '=', 'broker')]}">
                                     <group col="4">
                                         <field name="courier_zone_ids" colspan="4" nolabel="1">
