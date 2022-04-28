@@ -113,6 +113,10 @@ class SaleOrderBrokerZone(orm.Model):
         'courier_id': fields.many2one(
             'carrier.supplier', 'Corriere',
             help='Abbinamento zona broker al corriere'),
+        'broker_id': fields.related(
+            'courier_id', 'broker_id', 
+            type='many2one', relation='carrier.supplier', 
+            string='Broker', store=True), 
         'zone_id': fields.many2one(
             'sale.order.carrier.zone', 'Zone',
             help='Le zone del corriere sono prese dal broker'),
