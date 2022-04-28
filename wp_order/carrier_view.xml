@@ -434,6 +434,7 @@
             <field name="arch" type="xml">
                 <tree string="Carrier supplier" editable="bottom">
                     <field name="hidden" />
+                    <field name="broker_id" />
                     <field name="mode_id" />
                     <field name="name" />
                     <field name="mode" />
