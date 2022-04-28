@@ -100,6 +100,25 @@ class SaleOrderCarrierPricelist(orm.Model):
         }
 
 
+class SaleOrderBrokerZone(orm.Model):
+    """ Model name: Broker Zone also for Courier
+    """
+
+    _name = 'sale.order.broker.zone'
+    _description = 'Zone broker su corriere'
+    _order = 'zone_id'
+    _rec_name = 'zone_id'
+
+    _columns = {
+        'courier_id': fields.many2one(
+            'carrier.supplier', 'Corriere',
+            help='Abbinamento zona broker al corriere'),
+        'zone_id': fields.many2one(
+            'sale.order.carrier.zone', 'Zone',
+            help='Le zone del corriere sono prese dal broker'),
+    }
+
+
 class SaleOrderCarrierZoneExtra(orm.Model):
     """ Model name: Transport zone extra cost
     """
@@ -137,30 +156,15 @@ class SaleOrderCarrierZoneExtra(orm.Model):
             'sale.order.carrier.zone', 'Zona',
             help='Indicato se il sovrapprezzo è applicato direttamente '
                  'alla zona'),
+        'broker_courier_id': fields.many2one(
+            'sale.order.broker.zone', 'Broker corriere',
+            help='Indicato se il sovrapprezzo è applicato direttamente '
+                 'alla zona del broker anche essendo nel corriere'),
     }
 
     _defaults = {
         'is_active': lambda *x: True,
         'mode': lambda *x: 'fixed',
-    }
-
-
-class SaleOrderBrokerZone(orm.Model):
-    """ Model name: Broker Zone also for Courier
-    """
-
-    _name = 'sale.order.broker.zone'
-    _description = 'Zone broker su corriere'
-    _order = 'zone_id'
-    _rec_name = 'zone_id'
-
-    _columns = {
-        'courier_id': fields.many2one(
-            'carrier.supplier', 'Corriere',
-            help='Abbinamento zona broker al corriere'),
-        'zone_id': fields.many2one(
-            'sale.order.carrier.zone', 'Zone',
-            help='Le zone del corriere sono prese dal broker'),
     }
 
 
@@ -218,5 +222,19 @@ class SaleOrderCarrierZoneInherit(orm.Model):
         'zone_extra_ids': fields.one2many(
             'sale.order.carrier.zone.extra', 'zone_id',
             'Prezzi extra zona',
+            help='Elenco prezzi extra per zona')
+        }
+
+
+class SaleOrderBrokerZoneInherit(orm.Model):
+    """ Model name: Transport broker.courier cost
+    """
+
+    _inherit = 'sale.order.broker.zone'
+
+    _columns = {
+        'zone_extra_ids': fields.one2many(
+            'sale.order.carrier.zone.extra', 'broker_courier_id',
+            'Prezzi extra zona broker in corriere',
             help='Elenco prezzi extra per zona')
         }

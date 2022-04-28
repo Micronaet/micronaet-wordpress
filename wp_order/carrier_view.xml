@@ -597,6 +597,24 @@
                                             <tree string="Costi corriere / broker extra:">
                                                 <field name="zone_id" domain="[('broker_id', '=', broker_id)]"/>
                                             </tree>
+                                            <form>
+                                                <sheet>
+                                                    <group col="4">
+                                                        <field name="zone_id" domain="[('broker_id', '=', broker_id)]"/>
+                                                        <newline/>
+                                                        <field name="zone_extra_ids" colspan="4" nolabel="1">
+                                                            <tree string="Costi extra:" editable="bottom">
+                                                                <field name="is_active" invisible="1"/>
+                                                                <field name="mode"/>
+                                                                <field name="price"/>
+                                                                <field name="date"/>
+                                                                <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
+                                                            </tree>
+                                                        </field>
+                                                    </group>
+                                                </sheet>
+                                            </form>
+
                                         </field>
                                     </group>
                                 </page>
