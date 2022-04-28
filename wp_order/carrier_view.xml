@@ -365,10 +365,10 @@
                             <field name="master_tracking_id" /><!--readonly="1"-->
                             <field name="system_reference_id" readonly="1"/>
 
-                            <field name="carrier_state" /><!--TODO readonly="1"-->
+                            <field name="carrier_state" /><!--todo readonly="1"-->
                             <field name="delivery_state" readonly="1"/>
 
-                            <field name="carrier_ok" />   <!--TODO invisible="1"-->
+                            <field name="carrier_ok" />   <!--todo invisible="1"-->
                             <field name="shipper_type" />
 
                             <field name="ship_type" />
@@ -412,7 +412,7 @@
                             <field name="carrier_id" readonly="1"/>
                             <field name="courier_id" readonly="1"/>
                             <field name="zone_extra_ids" colspan="4" nolabel="1">
-                                <tree string="Costi extra:">
+                                <tree string="Costi extra:" editable="bottom">
                                     <field name="is_active" invisible="1"/>
                                     <field name="mode"/>
                                     <field name="price"/>
@@ -471,14 +471,27 @@
                                 <page string="Dettaglio" name="page_detail">
                                     <group col="4">
                                         <field name="hidden" />
-                                        <newlinw/>
+                                        <newline/>
                                         <field name="mode" />
                                         <field name="carrier_connection_id" attrs="{'required': [('mode', '=', 'carrier')]}"/>
                                         <field name="account_ref" />
                                         <field name="accounting_ref" />
                                     </group>
                                 </page>
-                                <page string="Zone" name="page_zone">
+                                <page string="Corrieri" name="page_courier">
+                                    <group col="4">
+                                        <field name="child_ids" colspan="4" nolabel="1">
+                                            <tree string="Corrieri" editable="bottom">
+                                                <field name="mode_id"/>
+                                                <field name="name"/>
+                                                <field name="mode" />
+                                                <field name="account_ref" />
+                                                <field name="accounting_ref" />
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </page>
+                                <page string="Zone broker" name="page_zone">
                                     <group col="4">
                                         <field name="carrier_zone_ids" colspan="4" nolabel="1">
                                             <tree string="Zone">

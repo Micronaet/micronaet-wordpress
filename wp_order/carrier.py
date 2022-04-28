@@ -197,15 +197,18 @@ class CarrierSupplier(orm.Model):
                  'articolo passato al gestonale sarà il codice broker unito'
                  'al codice corriere'),
         'account_ref': fields.char('Codice'),
-        'mode': fields.selection(
-            [
-                ('carrier', 'Corriere'),
-                ('courier', 'Spedizioniere'),
+        'mode': fields.selection([
+            ('carrier', 'Corriere'),
+            ('courier', 'Spedizioniere'),
             ], 'Mode', required=True),
         'carrier_mode': fields.selection([
             ('transport', 'Trasportatore'),
             ('auto', 'Autotrasportatore'),
             ], 'Modalità corriere', required=True),
+        'broker_id': fields.many2one(
+            'carrier.supplier', 'Broker',
+            domain="[('mode', '=', 'carrier')]",
+            help='Broker di appartenenza'),
         'mode_id': fields.many2one(
             'carrier.supplier.mode', 'Modalità',
             domain="[('supplier_id.mode', '=', 'carrier')]",
@@ -897,4 +900,16 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         'shipper_type': lambda *x: 'COURIERLDV',
         'ship_type': lambda *x: 'EXPORT',
         'package_type': lambda *x: 'GENERIC',
+    }
+
+
+class CarrierSupplierInherit(orm.Model):
+    """ Model name: Add relations
+    """
+
+    _inherit = 'carrier.supplier'
+
+    _columns = {
+        'child_ids': fields.one2many(
+            'carrier.supplier', 'broker_id', 'Corrieri'),
     }
