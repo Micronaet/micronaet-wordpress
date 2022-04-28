@@ -68,7 +68,36 @@ class SaleOrderCarrierZone(orm.Model):
             'carrier.supplier', 'Broker',
             help='Indicato se il sovrapprezzo è applicato direttamente '
                  'alla zona'),
+        'cap': fields.text(
+            'Lista CAP', help='Lista dei CAP separti da spazio'),
     }
+
+
+class SaleOrderCarrierPricelist(orm.Model):
+    """ Model name: Transport zone extra cost
+    """
+
+    _name = 'sale.order.carrier.pricelist'
+    _description = 'Prezzi listino base'
+    _order = 'from_weight'
+    _rec_name = 'price'
+
+    _columns = {
+        'broker_id': fields.many2one(
+            'carrier.supplier', 'Broker'),
+        'courier_id': fields.many2one(
+            'carrier.supplier', 'Corriere'),
+
+        'from_weight': fields.float(
+            'Dal peso >=', digits=(10, 2),
+            help='Peggiore tra peso fisico e volumetrico'),
+        'to_weight': fields.float(
+            'Al peso <', digits=(10, 2),
+            help='Peggiore tra peso fisico e volumetrico'),
+        'price': fields.float(
+            'Prezzo', digits=(10, 2),
+            help='Prezzo base per questo range'),
+        }
 
 
 class SaleOrderCarrierZoneExtra(orm.Model):
@@ -96,16 +125,16 @@ class SaleOrderCarrierZoneExtra(orm.Model):
             'Dalla data >=', required=True,
             help='Data da cui viene applicato il sovrapprezzo'),
 
-        'zone_id': fields.many2one(
-            'sale.order.carrier.zone', 'Zona',
+        'carrier_id': fields.many2one(
+            'carrier.supplier', 'Broker',
             help='Indicato se il sovrapprezzo è applicato direttamente '
                  'alla zona'),
         'courier_id': fields.many2one(
             'carrier.supplier', 'Corriere',
             help='Indicato se il sovrapprezzo è applicato direttamente '
                  'alla zona'),
-        'carrier_id': fields.many2one(
-            'carrier.supplier', 'Broker',
+        'zone_id': fields.many2one(
+            'sale.order.carrier.zone', 'Zona',
             help='Indicato se il sovrapprezzo è applicato direttamente '
                  'alla zona'),
     }
@@ -123,6 +152,15 @@ class CarrierSupplierInherit(orm.Model):
     _inherit = 'carrier.supplier'
 
     _columns = {
+        'broker_base_ids': fields.one2many(
+            'sale.order.carrier.pricelist', 'broker_id',
+            'Listino base broker',
+            help='Listino base per Broker'),
+        'courier_base_ids': fields.one2many(
+            'sale.order.carrier.pricelist', 'courier_id',
+            'Listino base corriere',
+            help='Listino base per Broker'),
+
         'carrier_zone_ids': fields.one2many(
             'sale.order.carrier.zone', 'carrier_id',
             'Zone broker',
@@ -135,7 +173,7 @@ class CarrierSupplierInherit(orm.Model):
                  'stesse per il broker ma vengono customizzate per '
                  'spedizioniere'),
 
-        'carrier_extra_ids': fields.one2many(
+        'broker_extra_ids': fields.one2many(
             'sale.order.carrier.zone.extra', 'carrier_id',
             'Prezzi extra broker',
             help='Elenco prezzi extra per broker'),

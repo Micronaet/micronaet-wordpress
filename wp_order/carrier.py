@@ -205,6 +205,13 @@ class CarrierSupplier(orm.Model):
             ('transport', 'Trasportatore'),
             ('auto', 'Autotrasportatore'),
             ], 'Modalità corriere', required=True),
+        'zone_mode_extra': fields.selection([
+            ('broker', 'Broker'),
+            ('auto', 'Corriere'),
+            ], 'Modalità costi extra', required=True,
+            help='Indica se le zone di divisione CAP si prendono quelle '
+                 'del broker o se il corriere ha le sue',
+        ),
         'broker_id': fields.many2one(
             'carrier.supplier', 'Broker',
             domain="[('mode', '=', 'carrier')]",
@@ -221,6 +228,7 @@ class CarrierSupplier(orm.Model):
     _defaults = {
         'mode': lambda *x: 'carrier',
         'carrier_mode': lambda *x: 'transport',
+        'zone_mode_extra': lambda *x: 'broker',
     }
 
 
