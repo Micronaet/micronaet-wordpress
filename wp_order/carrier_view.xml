@@ -595,7 +595,7 @@
                                 </page>
                                 <page string="Zone (broker)" name="page_extra_cost" attrs="{'invisible': [('zone_mode_extra', '=', 'courier')]}">
                                     <group col="4">
-                                        <field name="broker_courier_extra_ids" colspan="4" nolabel="1">
+                                        <field name="broker_courier_extra_ids" colspan="4" nolabel="1" context="{'default_broker_id': broker_id}">
                                             <tree string="Costi corriere / broker extra:">
                                                 <field name="zone_id" />
                                             </tree>
@@ -603,7 +603,7 @@
                                                 <sheet>
                                                     <group col="4">
                                                         <field name="zone_id" domain="[('carrier_id', '=', broker_id)]"/>
-                                                        <field name="broker_id" invisible="1"/>
+                                                        <field name="broker_id" />
                                                         <field name="zone_extra_ids" colspan="4" nolabel="1">
                                                             <tree string="Costi extra:" editable="bottom">
                                                                 <field name="is_active" invisible="1"/>
