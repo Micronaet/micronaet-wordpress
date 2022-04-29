@@ -393,7 +393,7 @@
             <field name="model">sale.order.carrier.zone</field>
             <field name="arch" type="xml">
                 <tree string="Zone">
-                    <field name="carrier_id" />
+                    <field name="broker_id" />
                     <field name="courier_id" />
                     <field name="name" />
                     <field name="description" />
@@ -408,7 +408,7 @@
                     <sheet>
                         <group col="4">
                             <field name="name" />
-                            <field name="carrier_id" readonly="1"/>
+                            <field name="broker_id" readonly="1"/>
                             <field name="courier_id" readonly="1"/>
                             <notebook colspan="4">
                                 <page string="Zone" name="page_zone">
