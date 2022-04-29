@@ -311,6 +311,76 @@ class CarrierSupplierInherit(orm.Model):
 
     _inherit = 'carrier.supplier'
 
+    def print_all_product_broker(self, cr, uid, ids, context=None):
+        """ Print all product for this broker
+        """
+        # Pool used:
+        excel_pool = self.pool.get('excel.writer')
+        web_product_pool = self.pool.get('product.product.web.server')
+
+        # ---------------------------------------------------------------------
+        #                         Excel report:
+        # ---------------------------------------------------------------------
+        today = datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
+        master_ids = web_product_pool.search(cr, uid, [
+            ('wp_parent_template', '=', True),
+            ], context=context)
+
+        ws_name = 'Prezzi prodotti'
+        excel_pool.create_worksheet(ws_name)
+
+        # Load formats:
+        excel_format = {
+            'title': excel_pool.get_format('title'),
+            'header': excel_pool.get_format('header'),
+            'black': {
+                'text': excel_pool.get_format('text'),
+                'number': excel_pool.get_format('number'),
+                },
+            'red': {
+                'text': excel_pool.get_format('bg_red'),
+                'number': excel_pool.get_format('bg_red_number'),
+                },
+            'yellow': {
+                'text': excel_pool.get_format('bg_yellow'),
+                'number': excel_pool.get_format('bg_yellow_number'),
+                },
+            }
+
+        # ---------------------------------------------------------------------
+        # Published product:
+        # ---------------------------------------------------------------------
+        # Width
+        excel_pool.column_width(ws_name, [
+            15, 40, 10, 10, 10, 10, 15,
+            ])
+
+        # Print header
+        row = 0
+        excel_pool.write_xls_line(
+            ws_name, row, [
+                'Codice', 'Nome',
+                'H', 'W', 'L', 'Peso', 'Peso v.',
+                ], default_format=excel_format['header'])
+
+        _logger.warning('Selected product: %s' % len(master_ids))
+        for product in sorted(self.browse(
+                cr, uid, master_ids, context=context),
+                key=lambda o: o.product_id.default_code):
+            color_format = excel_format['black']
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    product.default_code or '',
+                    product.name or '',
+                    product.web_H,
+                    product.web_W,
+                    product.web_L,
+                    product.web_weight,
+                    product.web_volumetric,
+                ], default_format=color_format['text'])
+        return excel_pool.return_attachment(cr, uid, 'web_product')
+
     _columns = {
         # Pallet for auto transporter
         'pallet_ids': fields.one2many(
