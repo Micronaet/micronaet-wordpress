@@ -172,6 +172,49 @@ class SaleOrderCarrierZoneExtra(orm.Model):
     }
 
 
+class SaleOrderCarrierConstraint(orm.Model):
+    """ Model name: Transport zone extra cost
+    """
+
+    _name = 'sale.order.carrier.constraint'
+    _description = 'Vincoli broker corriere'
+    _order = 'mode'
+    _rec_name = 'mode'
+
+    _columns = {
+        'mode': fields.selection([
+            ('weight', 'Peso'),
+            ('1dimension', 'Dimensione max <='),
+            ('2dimension', 'Min + max dime. <='),
+            ('3dimension', 'Somma dimensioni <='),
+            ('parcel', 'Colli <='),  # todo
+        ], 'Vincolo', required=True),
+        'value': fields.float(
+            'Valore', digits=(10, 2), required=True,
+            help='Maggiorazione applicata alla zona standard calcolata '
+                 'con peso'),
+
+        'carrier_id': fields.many2one(
+            'carrier.supplier', 'Broker',
+            help='Indicato se il vincolo è applicato direttamente '
+                 'alla broker'),
+        'courier_id': fields.many2one(
+            'carrier.supplier', 'Corriere',
+            help='Indicato se il vincolo è applicato direttamente '
+                 'alla corriere'),
+
+        # todo needed?:
+        'zone_id': fields.many2one(
+            'sale.order.carrier.zone', 'Zona',
+            help='Indicato se il vincolo è collegato direttamente '
+                 'alla zona'),
+        'broker_courier_id': fields.many2one(
+            'sale.order.broker.zone', 'Broker corriere',
+            help='Indicato se il vincolo è applicato direttamente '
+                 'alla zona del broker anche essendo nel corriere'),
+    }
+
+
 class CarrierSupplierInherit(orm.Model):
     """ Model name: Parcels supplier
     """
@@ -179,6 +222,15 @@ class CarrierSupplierInherit(orm.Model):
     _inherit = 'carrier.supplier'
 
     _columns = {
+        # Constraints
+        'carrier_constraint_ids': fields.one2many(
+            'sale.order.carrier.constraint', 'broker_id',
+            'Vincoli broker', help='Vincoli del  Broker'),
+        'courier_constraint_ids': fields.one2many(
+            'sale.order.carrier.pricelist', 'courier_id',
+            'Vincoli corriere', help='Vincoli del corriere'),
+
+        # Pricelist:
         'broker_base_ids': fields.one2many(
             'sale.order.carrier.pricelist', 'broker_id',
             'Listino base broker',
@@ -188,6 +240,7 @@ class CarrierSupplierInherit(orm.Model):
             'Listino base corriere',
             help='Listino base per Broker'),
 
+        # Zone:
         'carrier_zone_ids': fields.one2many(
             'sale.order.carrier.zone', 'carrier_id',
             'Zone broker',
@@ -205,6 +258,7 @@ class CarrierSupplierInherit(orm.Model):
             help='Elenco zone broker utilizzate nel corriere (il corriere'
                  'non ha le sue zone)'),
 
+        # Extra cost
         'broker_extra_ids': fields.one2many(
             'sale.order.carrier.zone.extra', 'carrier_id',
             'Prezzi extra broker',

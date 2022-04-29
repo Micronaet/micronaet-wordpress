@@ -504,6 +504,16 @@
                                         </field>
                                     </group>
                                 </page>
+                                <page string="Vincoli broker" name="page_constraint_broker">
+                                    <group col="4">
+                                        <field name="carrier_constraint_ids" colspan="4" nolabel="1">
+                                            <tree string="Vincoli" editable="bottom">
+                                                <field name="mode"/>
+                                                <field name="value"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </page>
                                 <page string="Zone broker" name="page_zone">
                                     <group col="4">
                                         <field name="carrier_zone_ids" colspan="4" nolabel="1">
@@ -593,6 +603,17 @@
                                         </field>
                                     </group>
                                 </page>
+                                <page string="Vincoli corriere" name="page_constraint_broker">
+                                    <group col="4">
+                                        <field name="carrier_constraint_ids" colspan="4" nolabel="1">
+                                            <tree string="Vincoli" editable="bottom">
+                                                <field name="mode"/>
+                                                <field name="value"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </page>
+
                                 <page string="Zone (broker)" name="page_extra_cost" attrs="{'invisible': [('zone_mode_extra', '=', 'courier')]}">
                                     <group col="4">
                                         <field name="broker_courier_extra_ids" colspan="4" nolabel="1" context="{'default_broker_id': broker_id}">
