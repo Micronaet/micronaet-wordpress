@@ -79,10 +79,11 @@ class SaleOrderCarrierPricelist(orm.Model):
 
     _name = 'sale.order.carrier.pricelist'
     _description = 'Prezzi listino base'
-    _order = 'from_weight'
+    _order = 'from_weight, sequence'
     _rec_name = 'price'
 
     _columns = {
+        'sequence': fields.integer('Seq.'),
         'broker_id': fields.many2one(
             'carrier.supplier', 'Broker'),
         'courier_id': fields.many2one(
@@ -97,6 +98,11 @@ class SaleOrderCarrierPricelist(orm.Model):
         'price': fields.float(
             'Prezzo', digits=(10, 2),
             help='Prezzo base per questo range'),
+        'zone_id': fields.many2one(
+            'carrier.supplier.carrier.zone', 'Zona',
+            domain="['|', ('carrier_id', '=', broker_id), "
+                   "('courier_id', '=', active_id)]"
+        ),
         }
 
 
