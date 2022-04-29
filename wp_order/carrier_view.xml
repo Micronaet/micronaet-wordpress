@@ -489,8 +489,8 @@
                                             <tree string="Corrieri">
                                                 <field name="mode_id"/>
                                                 <field name="name"/>
-                                                <field name="mode" />
-                                                <field name="account_ref" />
+                                                <!--<field name="mode" />
+                                                <field name="account_ref" />-->
                                                 <field name="accounting_ref" />
                                             </tree>
                                         </field>
@@ -513,7 +513,8 @@
                                                 <field name="sequence" widget="handle"/>
                                                 <field name="from_weight"/>
                                                 <field name="to_weight"/>
-                                                <field name="zone_id"/>
+                                                <field name="zone_id" domain="[('carrier_id', '=', broker_id)]"/>
+                                                <field name="broker_id" invisible="1"/>
                                                 <field name="price"/>
                                             </tree>
                                         </field>
@@ -601,7 +602,8 @@
                                                 <field name="sequence" widget="handle"/>
                                                 <field name="from_weight"/>
                                                 <field name="to_weight"/>
-                                                <field name="zone_id"/>
+                                                <field name="zone_id" domain="['|', ('carrier_id', '=', broker_id), ('courier_id', '=', active_id)]"/>/>
+                                                <field name="broker_id" invisible="1"/>
                                                 <field name="price"/>
                                             </tree>
                                         </field>

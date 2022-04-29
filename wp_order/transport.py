@@ -89,6 +89,12 @@ class SaleOrderCarrierPricelist(orm.Model):
         'courier_id': fields.many2one(
             'carrier.supplier', 'Corriere'),
 
+        'zone_broker_id': fields.related(
+            'courier_id', 'broker_id',
+            type='many2one', relation='carrier.supplier',
+            string='Zona Broker',
+            help='Campo usato per filtrare le zone del broker padre'),
+
         'from_weight': fields.float(
             'Dal peso >=', digits=(10, 2),
             help='Peggiore tra peso fisico e volumetrico'),
@@ -100,8 +106,6 @@ class SaleOrderCarrierPricelist(orm.Model):
             help='Prezzo base per questo range'),
         'zone_id': fields.many2one(
             'carrier.supplier.carrier.zone', 'Zona',
-            domain="['|', ('carrier_id', '=', broker_id), "
-                   "('courier_id', '=', active_id)]"
         ),
         }
 
