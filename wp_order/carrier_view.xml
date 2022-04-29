@@ -483,14 +483,27 @@
                             <field name="carrier_mode" invisible="1"/>
                             <field name="mode_id" invisible="1"/>
                             <notebook colspan="4">
-                                <page string="Dettaglio" name="page_detail">
+                                <page string="Corrieri" name="page_courier">
                                     <group col="4">
-                                        <field name="hidden" />
-                                        <newline/>
-                                        <field name="mode" />
-                                        <field name="carrier_connection_id" attrs="{'required': [('mode', '=', 'carrier')]}"/>
-                                        <field name="account_ref" />
-                                        <field name="accounting_ref" />
+                                        <field name="child_ids" colspan="4" nolabel="1" context="{'form_view_ref': 'wp_order.view_carrier_supplier_courier_form'}">
+                                            <tree string="Corrieri">
+                                                <field name="mode_id"/>
+                                                <field name="name"/>
+                                                <field name="mode" />
+                                                <field name="account_ref" />
+                                                <field name="accounting_ref" />
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </page>
+                                <page string="Zone broker" name="page_zone">
+                                    <group col="4">
+                                        <field name="carrier_zone_ids" colspan="4" nolabel="1">
+                                            <tree string="Zone">
+                                                <field name="name"/>
+                                                <field name="description"/>
+                                            </tree>
+                                        </field>
                                     </group>
                                 </page>
                                 <page string="Listino base broker" name="page_base_broker_pricelist">
@@ -516,29 +529,6 @@
                                         </field>
                                     </group>
                                 </page>
-                                <page string="Zone broker" name="page_zone">
-                                    <group col="4">
-                                        <field name="carrier_zone_ids" colspan="4" nolabel="1">
-                                            <tree string="Zone">
-                                                <field name="name"/>
-                                                <field name="description"/>
-                                            </tree>
-                                        </field>
-                                    </group>
-                                </page>
-                                <page string="Corrieri" name="page_courier">
-                                    <group col="4">
-                                        <field name="child_ids" colspan="4" nolabel="1" context="{'form_view_ref': 'wp_order.view_carrier_supplier_courier_form'}">
-                                            <tree string="Corrieri">
-                                                <field name="mode_id"/>
-                                                <field name="name"/>
-                                                <field name="mode" />
-                                                <field name="account_ref" />
-                                                <field name="accounting_ref" />
-                                            </tree>
-                                        </field>
-                                    </group>
-                                </page>
                                 <page string="Extra" name="page_extra_cost">
                                     <group col="4">
                                         <field name="broker_extra_ids" colspan="4" nolabel="1">
@@ -550,6 +540,16 @@
                                                 <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
                                             </tree>
                                         </field>
+                                    </group>
+                                </page>
+                                <page string="Dettaglio" name="page_detail">
+                                    <group col="4">
+                                        <field name="hidden" />
+                                        <newline/>
+                                        <field name="mode" />
+                                        <field name="carrier_connection_id" attrs="{'required': [('mode', '=', 'carrier')]}"/>
+                                        <field name="account_ref" />
+                                        <field name="accounting_ref" />
                                     </group>
                                 </page>
                             </notebook>
