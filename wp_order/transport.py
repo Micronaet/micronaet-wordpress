@@ -194,7 +194,7 @@ class SaleOrderCarrierConstraint(orm.Model):
             help='Maggiorazione applicata alla zona standard calcolata '
                  'con peso'),
 
-        'carrier_id': fields.many2one(
+        'broker_id': fields.many2one(
             'carrier.supplier', 'Broker',
             help='Indicato se il vincolo è applicato direttamente '
                  'alla broker'),
