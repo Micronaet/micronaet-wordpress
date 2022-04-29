@@ -602,8 +602,8 @@
                                                 <field name="sequence" widget="handle"/>
                                                 <field name="from_weight"/>
                                                 <field name="to_weight"/>
-                                                <field name="zone_id" domain="['|', ('broker_id', '=', broker_id), ('courier_id', '=', active_id)]"/>/>
-                                                <field name="broker_id" invisible="1"/>
+                                                <field name="zone_id" domain="['|', ('broker_id', '=', zone_broker_id), ('courier_id', '=', active_id)]"/>/>
+                                                <field name="zone_broker_id" invisible="1"/>
                                                 <field name="price"/>
                                             </tree>
                                         </field>
