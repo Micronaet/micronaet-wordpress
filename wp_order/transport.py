@@ -164,11 +164,11 @@ class SaleOrderCarrierZoneExtra(orm.Model):
             ('fuel', 'Carburante (perc.)'),
             ('pallet', 'Pallet non sovrapponibile (valore)'),
 
-            ('zone', 'Zona'),
-            ('weight', 'Peso'),
-            ('1dimension', 'Dimensione max <='),
-            ('2dimension', 'Min + max dime. <='),
-            ('3dimension', 'Somma dimensioni <='),
+            ('zone', 'Zona >>'),
+            ('weight', 'Peso >='),
+            ('1dimension', 'Dimensione max >='),
+            ('2dimension', 'Min + max dime. >='),
+            ('3dimension', 'Somma 3 dimensioni >='),
         ], 'Modalità', required=True),
 
         'value': fields.float(
@@ -255,6 +255,56 @@ class SaleOrderCarrierConstraint(orm.Model):
     }
 
 
+class SaleOrderCarrierPallet(orm.Model):
+    """ Model name: Transport pallet
+    """
+    _name = 'sale.order.carrier.pallet'
+    _description = 'Pallet'
+    _order = 'name'
+
+    _columns = {
+        'name': fields.char('Nome', char=50),
+        'broker_id': fields.many2one('carrier.supplier', 'Broker'),
+        'base': fields.float('Altezza base pallet', digits=(10, 2)),
+        'H': fields.float('Altezza cm.', digits=(10, 2)),
+        'W': fields.float('Larghezza cm.', digits=(10, 2)),
+        'L': fields.float('Lunghezza cm.', digits=(10, 2)),
+        'weight': fields.float('Peso max Kg.', digits=(10, 2)),
+    }
+
+
+class ProductProductWebServer(orm.Model):
+    """ Model name: Product web server
+    """
+
+    _inherit = 'product.product.web.server'
+
+    def _function_volumetric(
+            self, cr, uid, ids, fields, args, context=None):
+        """ Fields function for calculate
+        """
+        res = {}
+        for line in self.browse(cr, uid, ids, context=context):
+            res[line.id] = max(
+                line.web_H * line.web_W * line.web_L / 2000.0,
+                line.web_weight,
+            )
+        return res
+
+    _columns = {
+        'web_H': fields.float('Altezza cm.', digits=(10, 2)),
+        'web_W': fields.float('Larghezza cm.', digits=(10, 2)),
+        'web_L': fields.float('Lunghezza cm.', digits=(10, 2)),
+        'web_weight': fields.float('Peso Kg.', digits=(10, 2)),
+        'web_volumetric': fields.function(
+            _function_volumetric, method=True,
+            type='many2one', string='Zona Broker',
+            help='Campo usato per filtrare le zone del broker padre'),
+        # 'pallet_ids': fields.many2many(
+        #    'sale.order.carrier.pallet', 'Pallet autotrasporto'),
+    }
+
+
 class CarrierSupplierInherit(orm.Model):
     """ Model name: Parcels supplier
     """
@@ -262,6 +312,12 @@ class CarrierSupplierInherit(orm.Model):
     _inherit = 'carrier.supplier'
 
     _columns = {
+        # Pallet for auto transporter
+        'pallet_ids': fields.one2many(
+            'sale.order.carrier.pallet', 'broker_id',
+            'Pallet',
+            help='Elenco pallet utilizzati per l\'autotrasporto'),
+
         # Constraints
         'carrier_constraint_ids': fields.one2many(
             'sale.order.carrier.constraint', 'broker_id',

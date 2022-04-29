@@ -1,6 +1,22 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <record id="sale_order_carrier_pallet_view_tree" model="ir.ui.view">
+            <field name="name">sale.order.carrier.pallet.tree</field>
+            <field name="model">sale.order.carrier.pallet</field>
+            <field name="arch" type="xml">
+                <tree string="Pallet autotrasportatore:" editable="bottom">
+                    <field name="name"/>
+                    <field name="broker_id" invisible="1"/>
+                    <field name="base"/>
+                    <field name="W"/>
+                    <field name="L"/>
+                    <field name="H"/>
+                    <field name="weight"/>
+                </tree>
+            </field>
+        </record>
+
         <record id="sale_order_carrier_zone_extra_view_tree" model="ir.ui.view">
             <field name="name">sale.order.carrier.zone.extra.tree</field>
             <field name="model">sale.order.carrier.zone.extra</field>
@@ -464,6 +480,7 @@
                     <field name="name" />
                     <field name="mode" />
                     <field name="carrier_connection_id" attrs="{'required': [('mode', '=', 'carrier')]}"/>
+                    <field name="carrier_mode" />
                     <field name="account_ref" />
                     <field name="accounting_ref" />
                 </tree>
@@ -479,6 +496,7 @@
                     <field name="name" />
                     <field name="mode" />
                     <field name="carrier_connection_id" attrs="{'required': [('mode', '=', 'carrier')]}"/>
+                    <field name="carrier_mode" />
                     <field name="account_ref" />
                     <field name="accounting_ref" />
                 </tree>
@@ -547,6 +565,11 @@
                                 <page string="Extra" name="page_extra_cost">
                                     <group col="4">
                                         <field name="broker_extra_ids" colspan="4" nolabel="1" context="{'default_courier_id': False}"/>
+                                    </group>
+                                </page>
+                                <page string="Dettaglio" name="page_detail" attrs="{'invisible': [('carrier_mode', '!=', 'auto')]}">
+                                    <group col="4">
+                                        <field name="pallet_ids" colspan="4" nolabel="1"/>
                                     </group>
                                 </page>
                                 <page string="Dettaglio" name="page_detail">
