@@ -411,7 +411,7 @@
                             <field name="broker_id" readonly="1"/>
                             <field name="courier_id" readonly="1"/>
                             <notebook colspan="4">
-                                <page string="Zone" name="page_zone">
+                                <page string="Extra" name="page_zone">
                                     <group col="4">
                                         <field name="zone_extra_ids" colspan="4" nolabel="1">
                                             <tree string="Costi extra:" editable="bottom">

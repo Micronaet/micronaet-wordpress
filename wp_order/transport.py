@@ -250,7 +250,7 @@ class CarrierSupplierInherit(orm.Model):
             'sale.order.carrier.constraint', 'broker_id',
             'Vincoli broker', help='Vincoli del  Broker'),
         'courier_constraint_ids': fields.one2many(
-            'sale.order.carrier.pricelist', 'courier_id',
+            'sale.order.carrier.constraint', 'courier_id',
             'Vincoli corriere', help='Vincoli del corriere'),
 
         # Pricelist:
