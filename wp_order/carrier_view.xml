@@ -11,8 +11,8 @@
                     <field name="product_id" readonly="1"/>
                     <field name="connector_id" readonly="1"/>
                     <field name="wp_color_id" readonly="1"/>
-                    <field name="wp_type" readonly="1"/>
-                    <field name="wp_parent_code" readonly="1"/>
+                    <!--<field name="wp_type" readonly="1"/>
+                    <field name="wp_parent_code" readonly="1"/>-->
 
                     <field name="web_W"/>
                     <field name="web_L"/>
