@@ -55,6 +55,9 @@ class SaleOrderCarrierZone(orm.Model):
     _order = 'name'
 
     _columns = {
+        'base': fields.boolean(
+            'Base', help='Zona base di riferimento per i listini, usata'
+                         'per eventuali calcoli di supplementi'),
         'name': fields.char(
             'Zona', size=30, help='Nome della zona del corriere'),
         'description': fields.text(
