@@ -1,6 +1,22 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <record id="sale_order_carrier_zone_extra_view_tree" model="ir.ui.view">
+            <field name="name">sale.order.carrier.zone.extra.tree</field>
+            <field name="model">sale.order.carrier.zone.extra</field>
+            <field name="arch" type="xml">
+                <tree string="Costi extra:" editable="bottom">
+                    <field name="is_active" invisible="1"/>
+                    <field name="mode"/>
+                    <field name="value"/>
+                    <field name="value_zone_id"/>
+                    <field name="price"/>
+                    <field name="date"/>
+                    <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
+                </tree>
+            </field>
+        </record>
+
         <record id="carrier_connection_view_tree" model="ir.ui.view">
             <field name="name">carrier.connection.view.tree</field>
             <field name="model">carrier.connection</field>
@@ -413,15 +429,7 @@
                             <notebook colspan="4">
                                 <page string="Extra" name="page_zone">
                                     <group col="4">
-                                        <field name="zone_extra_ids" colspan="4" nolabel="1">
-                                            <tree string="Costi extra:" editable="bottom">
-                                                <field name="is_active" invisible="1"/>
-                                                <field name="mode"/>
-                                                <field name="price"/>
-                                                <field name="date"/>
-                                                <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
-                                            </tree>
-                                        </field>
+                                        <field name="zone_extra_ids" colspan="4" nolabel="1"/>
                                     </group>
                                 </page>
                                 <page string="CAP" name="page_cap">
@@ -532,15 +540,7 @@
                                 </page>
                                 <page string="Extra" name="page_extra_cost">
                                     <group col="4">
-                                        <field name="broker_extra_ids" colspan="4" nolabel="1">
-                                            <tree string="Costi broker extra:" editable="bottom">
-                                                <field name="is_active" invisible="1"/>
-                                                <field name="mode"/>
-                                                <field name="price"/>
-                                                <field name="date"/>
-                                                <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
-                                            </tree>
-                                        </field>
+                                        <field name="broker_extra_ids" colspan="4" nolabel="1"/>
                                     </group>
                                 </page>
                                 <page string="Dettaglio" name="page_detail">
@@ -609,15 +609,7 @@
                                                     <group col="4">
                                                         <field name="zone_id" domain="[('broker_id', '=', broker_id)]"/>
                                                         <field name="broker_id" />
-                                                        <field name="zone_extra_ids" colspan="4" nolabel="1">
-                                                            <tree string="Costi extra:" editable="bottom">
-                                                                <field name="is_active" invisible="1"/>
-                                                                <field name="mode"/>
-                                                                <field name="price"/>
-                                                                <field name="date"/>
-                                                                <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
-                                                            </tree>
-                                                        </field>
+                                                        <field name="zone_extra_ids" colspan="4" nolabel="1"/>
                                                     </group>
                                                 </sheet>
                                             </form>
@@ -637,15 +629,7 @@
                                 </page>
                                 <page string="Costi extra" name="page_extra_cost">
                                     <group col="4">
-                                        <field name="courier_extra_ids" colspan="4" nolabel="1">
-                                            <tree string="Costi corriere extra:" editable="bottom">
-                                                <field name="is_active" invisible="1"/>
-                                                <field name="mode"/>
-                                                <field name="price"/>
-                                                <field name="date"/>
-                                                <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
-                                            </tree>
-                                        </field>
+                                        <field name="courier_extra_ids" colspan="4" nolabel="1"/>
                                     </group>
                                 </page>
                             </notebook>
