@@ -574,7 +574,7 @@
                             <notebook colspan="4">
                                 <page string="Listino base corriere" name="page_base_courier_pricelist">
                                     <group col="4">
-                                        <field name="courier_base_ids" colspan="4" nolabel="1" context="{'default_courier_id': active_id}">
+                                        <field name="courier_base_ids" colspan="4" nolabel="1" context="{'default_zone_broker_id': broker_id, 'default_courier_id': active_id}">
                                             <tree string="Listino base" editable="bottom">
                                                 <field name="sequence" widget="handle"/>
                                                 <field name="from_weight"/>
