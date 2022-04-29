@@ -6,10 +6,11 @@
             <field name="model">sale.order.carrier.zone.extra</field>
             <field name="arch" type="xml">
                 <tree string="Costi extra:" editable="bottom">
+                    <field name="courier_id" invisible="1"/>
                     <field name="is_active" invisible="1"/>
                     <field name="mode"/>
-                    <field name="value"/>
-                    <field name="value_zone_id"/>
+                    <field name="value" attrs="{'readonly': [('mode', 'not in', ('weight', '1dimension', '2dimension', '3dimension'))], 'required': [('mode', 'in', ('weight', '1dimension', '2dimension', '3dimension'))]}"/>
+                    <field name="value_zone_id" domain="[('courier_id', '=', 'courier_id')]" attrs="{'readonly': [('mode', '!=', 'zone')], 'required': [('mode', '=', 'zone')]}"/>
                     <field name="price"/>
                     <field name="date"/>
                     <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
@@ -429,7 +430,7 @@
                             <notebook colspan="4">
                                 <page string="Extra" name="page_zone">
                                     <group col="4">
-                                        <field name="zone_extra_ids" colspan="4" nolabel="1"/>
+                                        <field name="zone_extra_ids" colspan="4" nolabel="1" context="{'default_courier_id': courier_id}"/>
                                     </group>
                                 </page>
                                 <page string="CAP" name="page_cap">
@@ -540,7 +541,7 @@
                                 </page>
                                 <page string="Extra" name="page_extra_cost">
                                     <group col="4">
-                                        <field name="broker_extra_ids" colspan="4" nolabel="1"/>
+                                        <field name="broker_extra_ids" colspan="4" nolabel="1" context="{'default_courier_id': False}"/>
                                     </group>
                                 </page>
                                 <page string="Dettaglio" name="page_detail">
@@ -629,7 +630,7 @@
                                 </page>
                                 <page string="Costi extra" name="page_extra_cost">
                                     <group col="4">
-                                        <field name="courier_extra_ids" colspan="4" nolabel="1"/>
+                                        <field name="courier_extra_ids" colspan="4" nolabel="1"  context="{'default_courier_id': courier_id}"/>
                                     </group>
                                 </page>
                             </notebook>

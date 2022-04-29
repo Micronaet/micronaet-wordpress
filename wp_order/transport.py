@@ -167,18 +167,10 @@ class SaleOrderCarrierZoneExtra(orm.Model):
 
         'value': fields.float(
             'Valore filtro', digits=(10, 2),
-            attrs="{'readonly': ["
-                  "('mode', 'not in', "
-                  "('weight', '1dimension', '2dimension', '3dimension'))], "
-                  "'required': [('mode', 'in', "
-                  "('weight', '1dimension', '2dimension', '3dimension'))]}",
             help='Dove serve indicare il valore da usare per il filtro '
                  'modalità'),
         'value_zone_id': fields.many2one(
             'sale.order.carrier.zone', 'Zona',
-            domain="[('courier_id', '=', 'courier_id')]",
-            attrs="{'readonly': [('mode', '!=', 'zone')], "
-                  "'required': [('mode', '=', 'zone')]}",
             help='Nel caso di filtro in modalità zona, indicare '
                  'quella da usare'),
 
