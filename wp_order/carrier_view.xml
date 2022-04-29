@@ -6,11 +6,11 @@
             <field name="model">sale.order.carrier.zone.extra</field>
             <field name="arch" type="xml">
                 <tree string="Costi extra:" editable="bottom">
-                    <!--<field name="courier_id" invisible="1"/>domain="[('courier_id', '=', 'courier_id')]"-->
+                    <field name="courier_id" invisible="1"/>
                     <field name="is_active" invisible="1"/>
                     <field name="mode"/>
                     <field name="value" attrs="{'readonly': [('mode', 'not in', ('weight', '1dimension', '2dimension', '3dimension'))], 'required': [('mode', 'in', ('weight', '1dimension', '2dimension', '3dimension'))]}"/>
-                    <field name="value_zone_id"  attrs="{'readonly': [('mode', '!=', 'zone')], 'required': [('mode', '=', 'zone')]}"/>
+                    <field name="value_zone_id"  attrs="{'readonly': [('mode', '!=', 'zone')], 'required': [('mode', '=', 'zone')]}" domain="[('courier_id', '=', courier_id)]"/>
                     <field name="price"/>
                     <field name="date"/>
                     <button name="new_price_history_this" string="Storicizza per cambio prezzo" icon="gtk-new"/>
