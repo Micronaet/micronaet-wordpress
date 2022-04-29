@@ -87,7 +87,7 @@ class SaleOrderCarrierPricelist(orm.Model):
         """ Fields function for calculate
         """
         res = {}
-        for line in self.browse(cr, uid, ids, context=context)[0]:
+        for line in self.browse(cr, uid, ids, context=context):
             res[line.id] = line.courier_id.broker_id.id
         return res
 
