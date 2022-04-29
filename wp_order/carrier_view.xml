@@ -510,7 +510,7 @@
                                     <group col="4">
                                         <field name="broker_base_ids" colspan="4" nolabel="1">
                                             <tree string="Listino base" editable="bottom">
-                                                <field name="sequence"/>
+                                                <field name="sequence" widget="handle"/>
                                                 <field name="from_weight"/>
                                                 <field name="to_weight"/>
                                                 <field name="zone_id"/>
@@ -598,7 +598,7 @@
                                     <group col="4">
                                         <field name="courier_base_ids" colspan="4" nolabel="1">
                                             <tree string="Listino base" editable="bottom">
-                                                <field name="sequence"/>
+                                                <field name="sequence" widget="handle"/>
                                                 <field name="from_weight"/>
                                                 <field name="to_weight"/>
                                                 <field name="zone_id"/>
