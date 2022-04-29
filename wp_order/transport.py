@@ -298,7 +298,7 @@ class ProductProductWebServer(orm.Model):
         'web_weight': fields.float('Peso Kg.', digits=(10, 2)),
         'web_volumetric': fields.function(
             _function_volumetric, method=True,
-            type='many2one', string='Peso volumetrico',
+            type='float', digits=(10, 2), string='Peso volumetrico',
             help='Peso volumetrico (max tra peso e HxLxW / 2000)'),
         # 'pallet_ids': fields.many2many(
         #    'sale.order.carrier.pallet', 'Pallet autotrasporto'),
