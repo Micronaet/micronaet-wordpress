@@ -567,7 +567,7 @@
                                         <field name="broker_extra_ids" colspan="4" nolabel="1" context="{'default_courier_id': False}"/>
                                     </group>
                                 </page>
-                                <page string="Dettaglio" name="page_detail" attrs="{'invisible': [('carrier_mode', '!=', 'auto')]}">
+                                <page string="Pallet" name="page_detail" attrs="{'invisible': [('carrier_mode', '!=', 'auto')]}">
                                     <group col="4">
                                         <field name="pallet_ids" colspan="4" nolabel="1"/>
                                     </group>

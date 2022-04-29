@@ -263,12 +263,12 @@ class SaleOrderCarrierPallet(orm.Model):
     _order = 'name'
 
     _columns = {
-        'name': fields.char('Nome', char=50),
+        'name': fields.char('Nome', char=50, required=True),
         'broker_id': fields.many2one('carrier.supplier', 'Broker'),
         'base': fields.float('Altezza base pallet', digits=(10, 2)),
-        'H': fields.float('Altezza cm.', digits=(10, 2)),
-        'W': fields.float('Larghezza cm.', digits=(10, 2)),
-        'L': fields.float('Lunghezza cm.', digits=(10, 2)),
+        'H': fields.float('Altezza cm.', digits=(10, 2), required=True),
+        'W': fields.float('Larghezza cm.', digits=(10, 2), required=True),
+        'L': fields.float('Lunghezza cm.', digits=(10, 2), required=True),
         'weight': fields.float('Peso max Kg.', digits=(10, 2)),
     }
 
