@@ -151,6 +151,7 @@ class SaleOrderCarrierZoneExtra(orm.Model):
     _rec_name = 'mode'
 
     _columns = {
+        'sequence': fields.integer('Seq.'),
         'is_active': fields.boolean(
             'Attiva', help='Voci disattivate sono da considerare storiche'),
         'mode': fields.selection([
