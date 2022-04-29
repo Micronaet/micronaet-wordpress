@@ -18,6 +18,7 @@
                     <field name="web_L"/>
                     <field name="web_H"/>
                     <field name="web_weight"/>
+                    <field name="web_volumetric"/>
                 </tree>
             </field>
         </record>
