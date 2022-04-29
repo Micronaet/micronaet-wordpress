@@ -118,6 +118,8 @@ class SaleOrderCarrierPricelist(orm.Model):
         'zone_id': fields.many2one(
             'sale.order.carrier.zone', 'Zona', required=True,
         ),
+        'base': fields.related(
+            'zone_id', 'base', type='boolean', string='Base'),
         }
 
 
