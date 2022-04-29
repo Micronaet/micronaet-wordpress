@@ -105,7 +105,7 @@ class SaleOrderCarrierPricelist(orm.Model):
             'Prezzo', digits=(10, 2),
             help='Prezzo base per questo range'),
         'zone_id': fields.many2one(
-            'carrier.supplier.carrier.zone', 'Zona',
+            'sale.order.carrier.zone', 'Zona',
         ),
         }
 
