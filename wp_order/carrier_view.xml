@@ -607,7 +607,7 @@
                                             <form>
                                                 <sheet>
                                                     <group col="4">
-                                                        <field name="zone_id" domain="[('carrier_id', '=', broker_id)]"/>
+                                                        <field name="zone_id" domain="[('broker_id', '=', broker_id)]"/>
                                                         <field name="broker_id" />
                                                         <field name="zone_extra_ids" colspan="4" nolabel="1">
                                                             <tree string="Costi extra:" editable="bottom">
