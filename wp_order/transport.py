@@ -139,6 +139,11 @@ class SaleOrderCarrierZoneExtra(orm.Model):
             ('fixed', 'Fisso (valore)'),
             ('fuel', 'Carburante (perc.)'),
             ('pallet', 'Pallet non sovrapponibile (valore)'),
+
+            ('weight', 'Peso'),
+            ('1dimension', 'Dimensione max <='),
+            ('2dimension', 'Min + max dime. <='),
+            ('3dimension', 'Somma dimensioni <='),
         ], 'Modalità', required=True),
         'price': fields.float(
             'Sovrapprezzo', digits=(10, 2), required=True,
