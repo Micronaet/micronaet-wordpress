@@ -104,16 +104,16 @@ class SaleOrderCarrierPricelist(orm.Model):
             help='Campo usato per filtrare le zone del broker padre'),
 
         'from_weight': fields.float(
-            'Dal peso >=', digits=(10, 2),
+            'Dal peso >=', digits=(10, 2), required=True,
             help='Peggiore tra peso fisico e volumetrico'),
         'to_weight': fields.float(
-            'Al peso <', digits=(10, 2),
+            'Al peso <', digits=(10, 2), required=True,
             help='Peggiore tra peso fisico e volumetrico'),
         'price': fields.float(
-            'Prezzo', digits=(10, 2),
+            'Prezzo', digits=(10, 2), required=True,
             help='Prezzo base per questo range'),
         'zone_id': fields.many2one(
-            'sale.order.carrier.zone', 'Zona',
+            'sale.order.carrier.zone', 'Zona', required=True,
         ),
         }
 
