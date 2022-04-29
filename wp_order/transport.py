@@ -82,6 +82,15 @@ class SaleOrderCarrierPricelist(orm.Model):
     _order = 'from_weight, sequence'
     _rec_name = 'price'
 
+    def _function_get_zone_brocker_id(
+            self, cr, uid, ids, fields, args, context=None):
+        """ Fields function for calculate
+        """
+        res = {}
+        for line in self.browse(cr, uid, ids, context=context)[0]:
+            res[line.id] = line.courier_id.broker_id.id
+        return res
+
     _columns = {
         'sequence': fields.integer('Seq.'),
         'broker_id': fields.many2one(
@@ -89,10 +98,9 @@ class SaleOrderCarrierPricelist(orm.Model):
         'courier_id': fields.many2one(
             'carrier.supplier', 'Corriere'),
 
-        'zone_broker_id': fields.related(
-            'courier_id', 'broker_id',
-            type='many2one', relation='carrier.supplier',
-            string='Zona Broker',
+        'zone_broker_id':  fields.function(
+            _function_get_zone_brocker_id, method=True,
+            type='many2one', string='Zona Broker',
             help='Campo usato per filtrare le zone del broker padre'),
 
         'from_weight': fields.float(
