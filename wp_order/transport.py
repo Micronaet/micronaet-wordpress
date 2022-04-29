@@ -284,10 +284,10 @@ class ProductProductWebServer(orm.Model):
         """ Fields function for calculate
         """
         res = {}
-        for line in self.browse(cr, uid, ids, context=context):
-            res[line.id] = max(
-                line.web_H * line.web_W * line.web_L / 2000.0,
-                line.web_weight,
+        for product in self.browse(cr, uid, ids, context=context):
+            res[product.id] = max(
+                product.web_H * product.web_W * product.web_L / 2000.0,
+                product.web_weight,
             )
         return res
 
