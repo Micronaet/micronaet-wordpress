@@ -329,7 +329,7 @@ class CarrierSupplierInherit(orm.Model):
                 for zone in zones:
                     if zone.base:
                         cache[mode][carrier][1] = zone
-                    cache[mode][carrier][0][pos] = zone
+                    cache[mode][carrier][0][zone] = pos
                     pos += 1
                 cache[mode][carrier][2] = pos
             return cache[mode][carrier]
@@ -346,14 +346,29 @@ class CarrierSupplierInherit(orm.Model):
                 ('courier_id', '=', courier.id),
                 ('broker_id', '=', courier.broker_id.id),
 
-                ('from_weight', '>=', volumetric),
-                ('to_weight', '<', volumetric),
+                ('from_weight', '<', volumetric),
+                ('to_weight', '>=', volumetric),
             ], context=context)
             res = {}
-            _logger.warning('Found %s' % len(courier_price_ids))
+
+            # Broker and Courier pricelist weight rules:
+            base_price = 0.0
             for price in price_pool.browse(
                     cr, uid, courier_price_ids, context=context):
-                res[price.zone_id] = price.price
+                zone = price.zone_id
+                res[zone] = price.price
+                if zone.base:
+                    base_price = price.price
+
+            # todo Extra price zone rule:
+            for extra_rule in courier.courier_extra_ids:
+                if extra_rule.mode == 'zone':  # todo keep zero if no base p.?
+                    # Price is base price + extra for this rule
+                    res[extra_rule.value_zone_id] = \
+                        base_price + extra_rule.price
+
+            # todo Other extra price rule:
+
             return res
 
         # Pool used:
@@ -388,9 +403,13 @@ class CarrierSupplierInherit(orm.Model):
         excel_format = {
             'title': excel_pool.get_format('title'),
             'header': excel_pool.get_format('header'),
-            'black': {
+            'white': {
                 'text': excel_pool.get_format('text'),
                 'number': excel_pool.get_format('number'),
+                },
+            'blue': {
+                'text': excel_pool.get_format('bg_blue'),
+                'number': excel_pool.get_format('bg_blue_number'),
                 },
             'red': {
                 'text': excel_pool.get_format('bg_red'),
@@ -440,7 +459,6 @@ class CarrierSupplierInherit(orm.Model):
                 cr, uid, master_ids, context=context),
                 key=lambda o: o.product_id.default_code):
             product = web_product.product_id
-            color_format = excel_format['black']
             if not row:
                 row += 1
             product_row = row
@@ -465,7 +483,7 @@ class CarrierSupplierInherit(orm.Model):
                     l,
                     weight,
                     volumetric,
-                ], default_format=color_format['text'])
+                ], default_format=excel_format['white']['text'])
 
             for broker in brokers:
                 broker_name = broker.name
@@ -482,70 +500,72 @@ class CarrierSupplierInherit(orm.Model):
                         # -----------------------------------------------------
                         # Header 2: Zones:
                         # -----------------------------------------------------
-                        # Empty:
+                        # 1. Empty:
                         if product_row != row - 1:
                             excel_pool.write_xls_line(
                                 ws_name, row-1, empty,
-                                default_format=color_format['text'],
+                                default_format=excel_format['white']['text'],
                                 )
-                        # Common:
+                        # 2. Fixed common part:
                         excel_pool.write_xls_line(
                             ws_name, row-1, header2,
                             default_format=excel_format['header'],
                             col=product_col)
-                        # Broker Zone:
+                        # 3. Broker Zone:
                         excel_pool.write_xls_line(
                             ws_name, row - 1, [
-                                z.name for z in broker_zones.values()],
+                                z.name for z in broker_zones.keys()],
                             default_format=excel_format['header'],
                             col=broker_col)
-                        # Courier Zone:  # todo comment?
-                        # excel_pool.write_xls_line(
-                        #    ws_name, row - 1, [
-                        #        z.name for z in courier_zones.values()],
-                        #    default_format=excel_format['header'],
-                        #    col=broker_col + len(courier_zones))
 
+                    # ---------------------------------------------------------
+                    # Data price for courier:
+                    # ---------------------------------------------------------
                     courier_zones, _, pos = get_zone(
                         courier, pos, mode='courier', cache=cache)
 
-                    # Empty:
+                    # 1. Empty:
                     excel_pool.write_xls_line(
                         ws_name, row, empty,
-                        default_format=color_format['text'])
-                    # Data:
+                        default_format=excel_format['white']['text'])
+                    # 2. Data:
                     excel_pool.write_xls_line(
                         ws_name, row, [
-                            '',  # choose better
+                            '',  # choose better solution
                             broker_name,
                             courier.name,
                         ],
-                        default_format=color_format['text'], col=product_col)
+                        default_format=excel_format['white']['text'],
+                        col=product_col)
+
                     pricelist = get_prices(courier, volumetric)
                     for zone in pricelist:
                         price = pricelist[zone]
                         price_col = broker_zones.get(zone)
+
+                        if not price:
+                            color_format = excel_format['red']
+                        elif zone == default_zone:
+                            color_format = excel_format['blue']
+                        else:
+                            color_format = excel_format['white']
+
                         # Broker pricelist / zones:
                         if price_col:
                             excel_pool.write_xls_line(
                                 ws_name, row, [price],
-                                default_format=color_format['text'],
+                                default_format=color_format['number'],
                                 col=price_col)
                         else:
                             # Courier pricelist / zones:
-                            price_col = broker_zones.get(zone)
+                            price_col = courier_zones.get(zone)
                             if price_col:
                                 excel_pool.write_xls_line(
                                     ws_name, row, [price],
-                                    default_format=color_format['text'],
+                                    default_format=color_format['number'],
                                     col=price_col)
-                                # todo comment zone name!
-
-                    # excel_pool.write_xls_line(
-                    #    ws_name, row, [cz.name for cz in courier_zones.values(
-                    #    )],
-                    #    default_format=color_format['text'],
-                    #    col=product_col+3)
+                                excel_pool.write_comment(
+                                    ws_name, row, price_col, zone.name)
 
                 row += 1  # to print header
         return excel_pool.return_attachment(cr, uid, 'web_product')
