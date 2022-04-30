@@ -314,19 +314,73 @@ class CarrierSupplierInherit(orm.Model):
     def print_all_product_broker(self, cr, uid, ids, context=None):
         """ Print all product for this broker
         """
-        def get_extra_price(courier, mode='extra', cache=None):
-            """ Return and cache extra price
+        def product_check_constraints(
+                courier, h, w, l, volumetric, weight, mode='contraints',
+                cache=None):
+            """ Return and cache constraints comment
             """
+            # -----------------------------------------------------------------
+            # Cache mode:
+            # -----------------------------------------------------------------
             if cache is None:
                 cache = {}  # Cache will not be used correctly!
-            if mode not in cache[mode]:
+            if mode not in cache:
                 cache[mode] = {}
 
             if courier not in cache[mode]:
+                # Broker:
                 cache[mode][courier] = [
-                    rule for rule in courier.courier_extra_ids]
+                    rule for rule in courier.broker_id.carrier_constraint_ids]
+                # Courier:
                 cache[mode][courier].extend(
-                    [rule for rule in courier.broker_id.broker_extra_ids])
+                    [rule for rule in courier.carrier_constraint_ids])
+
+            # -----------------------------------------------------------------
+            # Check constraints:
+            # -----------------------------------------------------------------
+            comment = ''
+            for constraint in cache[mode][courier]:
+                mode = constraint.mode
+                value = constraint.value
+
+                dimension1 = max(h, w, l)
+                dimension2 = dimension1 + min(h, w, l)
+                dimension3 = sum((h, w, l))
+
+                if mode == 'weight' and weight > value:
+                    comment += '[VINCOLO] Peso <= %s attuale %s' % (
+                        value, weight,
+                    )
+                if mode == '1dimension' and dimension1 > value:
+                    comment += '[VINCOLO] 1 dimens. <= %s attuale %s' % (
+                        value, dimension1,
+                    )
+                if mode == '2dimension' and dimension2 > value:
+                    comment += '[VINCOLO] 2 dimens. <= %s attuale %s' % (
+                        value, dimension2,
+                    )
+                if mode == '3dimension' and dimension3 > value:
+                    comment += '[VINCOLO] 3 dimens. <= %s attuale %s' % (
+                        value, dimension3,
+                    )
+            return comment
+
+        def get_extra_price(courier, mode='extra', cache=None):
+            """ Return and cache extra price rule list
+            """
+            if cache is None:
+                cache = {}  # Cache will not be used correctly!
+            if mode not in cache:
+                cache[mode] = {}
+
+            if courier not in cache[mode]:
+                # todo manage replace and add rate in discount list!
+                # Before Broker:
+                cache[mode][courier] = [
+                    rule for rule in courier.broker_id.broker_extra_ids]
+                # After Courier:
+                cache[mode][courier].extend(
+                    [rule for rule in courier.courier_extra_ids])
             return cache[mode][courier]
 
         def get_zone(carrier, pos, mode='broker', cache=None):
@@ -372,7 +426,9 @@ class CarrierSupplierInherit(orm.Model):
             base_price = 0.0
             # todo add comment to check calc?
 
+            # -----------------------------------------------------------------
             # 1. Range of weight - Zone:
+            # -----------------------------------------------------------------
             for price in price_pool.browse(
                     cr, uid, courier_price_ids, context=context):
                 zone = price.zone_id
@@ -388,15 +444,15 @@ class CarrierSupplierInherit(orm.Model):
                 else:
                     base_comment = ''
 
-                # if zone.courier_id:  # only courier zone?
                 res[zone]['comment'] += '%s\n' % zone.name
                 res[zone]['comment'] += 'Listino %s%s [%s-%s] \n' % (
                     pl_price, base_comment,
                     int(price.from_weight), int(price.to_weight),
                 )
 
+            # -----------------------------------------------------------------
             # 2 Extra price "Zone rule":
-            # todo cache:
+            # -----------------------------------------------------------------
             extra_rules = get_extra_price(courier, cache=cache)
             for extra_rule in extra_rules:
                 if extra_rule.mode == 'zone':
@@ -419,12 +475,14 @@ class CarrierSupplierInherit(orm.Model):
                             '[ERR] Prezzo base a zero\n'
                         res[extra_rule.value_zone_id]['error'] = True
 
+            # -----------------------------------------------------------------
             # 3. Other extra price rule:
+            # -----------------------------------------------------------------
             extra_price = 0.0
             comment = ''
             extra_rate = []
 
-            for extra_rule in courier.courier_extra_ids:
+            for extra_rule in extra_rules:
                 mode = extra_rule.mode
                 value = extra_rule.value
                 price = extra_rule.price
@@ -459,21 +517,28 @@ class CarrierSupplierInherit(orm.Model):
                     res[zone]['comment'] += 'Extra %s: %s\n' % (
                         extra_price, comment)
 
+            # -----------------------------------------------------------------
             # 4. Extra fuel:
+            # -----------------------------------------------------------------
             if extra_rate:  # Loop for add it:
+                this_rate = extra_rate[0]  # For now only one!
+                extra_rate_error = len(extra_rate) > 1
                 for zone in res:
                     current = res[zone]['price']
-                    this_rate = extra_rate[0]  # For now only one!
                     res[zone]['price'] = current * (100.0 + this_rate) / 100.0
                     res[zone]['comment'] += \
                         'Extra benzina B. %s + %s%%: %s\n' % (
                         current, this_rate, res[zone]['price'])
 
-                    if len(extra_rate) > 1:
+                    if extra_rate_error:
                         res[zone]['comment'] += \
                             '[ERR] Troppe %% benzina %s' % (extra_rate, )
+                        res[zone]['error'] = True
             return res
 
+        # ---------------------------------------------------------------------
+        #                 MASTER PROCEDURE:
+        # ---------------------------------------------------------------------
         # Pool used:
         excel_pool = self.pool.get('excel.writer')
         web_product_pool = self.pool.get('product.product.web.server')
@@ -541,7 +606,7 @@ class CarrierSupplierInherit(orm.Model):
 
             5, 12, 12,
         ]
-        col_width.extend([20 for i in range(15)])
+        col_width.extend([10 for i in range(30)])
         excel_pool.column_width(ws_name, col_width)
 
         # Print header
@@ -601,6 +666,9 @@ class CarrierSupplierInherit(orm.Model):
                 for courier in couriers:
                     row += 1
 
+                    # ---------------------------------------------------------
+                    #                    Header 2 (first time)
+                    # ---------------------------------------------------------
                     if header_load:
                         header_load = False
                         # -----------------------------------------------------
@@ -628,7 +696,13 @@ class CarrierSupplierInherit(orm.Model):
                             col=broker_col)
 
                     # ---------------------------------------------------------
-                    # Data price for courier:
+                    #               Check constraints:
+                    # ---------------------------------------------------------
+                    constraint_comment = product_check_constraints(
+                        courier, h, w, l, volumetric, weight, cache=cache)
+
+                    # ---------------------------------------------------------
+                    #               Data price for courier:
                     # ---------------------------------------------------------
                     courier_zones, _, pos = get_zone(
                         courier, pos, mode='courier', cache=cache)
@@ -637,45 +711,48 @@ class CarrierSupplierInherit(orm.Model):
                     excel_pool.write_xls_line(
                         ws_name, row, empty,
                         default_format=excel_format['white']['text'])
-                    # 2. Data:
+
+                    if constraint_comment:
+                        data_color = excel_format['red']
+
+                        # Write comment on courier cell:
+                        excel_pool.write_comment(
+                            ws_name, row, product_col + 2, constraint_comment,
+                            comment_param)
+                    else:
+                        data_color = excel_format['white']
+
+                    # 2. Data (colored depend on constraints):
                     excel_pool.write_xls_line(
                         ws_name, row, [
                             '',  # choose better solution
                             broker_name,
                             courier.name,
                         ],
-                        default_format=excel_format['white']['text'],
+                        default_format=data_color['text'],
                         col=product_col)
 
-                    pricelist = get_prices(
-                        courier, h, w, l, volumetric, weight)
-                    for zone in pricelist:
-                        pl_data = pricelist[zone]
-                        pl_price = pl_data['price']
-                        pl_comment = pl_data['comment']
-                        pl_error = pl_data['error']
-                        price_col = broker_zones.get(zone)
+                    # Pricelist will be added only if not constraints problem:
+                    if not constraint_comment:
+                        pricelist = get_prices(
+                            courier, h, w, l, volumetric, weight)
+                        for zone in pricelist:
+                            # Explode data:
+                            pl_data = pricelist[zone]
+                            pl_price = pl_data['price']
+                            pl_comment = pl_data['comment']
+                            pl_error = pl_data['error']
 
-                        if pl_error or not pl_price:
-                            color_format = excel_format['red']
-                        elif zone == default_zone:
-                            color_format = excel_format['blue']
-                        else:
-                            color_format = excel_format['white']
+                            price_col = broker_zones.get(zone)
 
-                        # Broker pricelist / zones:
-                        if price_col:
-                            excel_pool.write_xls_line(
-                                ws_name, row, [pl_price],
-                                default_format=color_format['number'],
-                                col=price_col)
-                            if pl_comment:
-                                excel_pool.write_comment(
-                                    ws_name, row, price_col, pl_comment,
-                                    comment_param)
-                        else:
-                            # Courier pricelist / zones:
-                            price_col = courier_zones.get(zone)
+                            if pl_error or not pl_price:
+                                color_format = excel_format['red']
+                            elif zone == default_zone:
+                                color_format = excel_format['blue']
+                            else:
+                                color_format = excel_format['white']
+
+                            # Broker pricelist / zones:
                             if price_col:
                                 excel_pool.write_xls_line(
                                     ws_name, row, [pl_price],
@@ -685,6 +762,18 @@ class CarrierSupplierInherit(orm.Model):
                                     excel_pool.write_comment(
                                         ws_name, row, price_col, pl_comment,
                                         comment_param)
+                            else:
+                                # Courier pricelist / zones:
+                                price_col = courier_zones.get(zone)
+                                if price_col:
+                                    excel_pool.write_xls_line(
+                                        ws_name, row, [pl_price],
+                                        default_format=color_format['number'],
+                                        col=price_col)
+                                    if pl_comment:
+                                        excel_pool.write_comment(
+                                            ws_name, row, price_col,
+                                            pl_comment, comment_param)
 
                 row += 1  # to print header
         return excel_pool.return_attachment(cr, uid, 'web_product')
