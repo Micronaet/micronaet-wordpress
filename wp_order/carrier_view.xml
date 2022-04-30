@@ -541,6 +541,9 @@
             <field name="model">carrier.supplier</field>
             <field name="arch" type="xml">
                 <form string="Broker">
+                    <header>
+                        <button name="print_all_product_broker" string="Stampa listino" icon="gtk-print" type="object"/>
+                    </header>
                     <sheet>
                         <group col="4">
                             <field name="name" />

@@ -314,14 +314,67 @@ class CarrierSupplierInherit(orm.Model):
     def print_all_product_broker(self, cr, uid, ids, context=None):
         """ Print all product for this broker
         """
+        def get_zone(carrier, pos, mode='broker', cache=None):
+            """ Search zoned for this carrier (broker or courier)
+                Cache is used for keep value one loaded
+                position for indexing columns
+            """
+            if mode not in cache:
+                cache[mode] = {}
+            if carrier not in cache[mode]:
+                cache[mode][carrier] = [{}, False, 0]  # Zones, Base
+                zones = sorted(
+                    eval('carrier.%s_zone_ids' % mode),
+                    key=lambda z: z.name)
+                for zone in zones:
+                    if zone.base:
+                        cache[mode][carrier][1] = zone
+                    cache[mode][carrier][0][pos] = zone
+                    pos += 1
+                cache[mode][carrier][2] = pos
+            return cache[mode][carrier]
+
+        def get_prices(courier, volumetric):
+            """ Search price in:
+                courier pricelist
+                broker pricelist
+            """
+            price_pool = self.pool.get('sale.order.carrier.pricelist')
+            courier_price_ids = price_pool.search([
+                '&', '&',
+                ('from_weight', '>=', volumetric),
+                ('to_weight', '<', volumetric),
+                '|',
+                ('courier_id', '=', courier.id),
+                ('broker_id', '=', courier.broker_id.id),
+            ])
+            res = {}
+            for price in price_pool.browse(
+                    cr, uid, courier_price_ids, context=context):
+                res[price.zone_id] = price.price
+            return res
+
         # Pool used:
         excel_pool = self.pool.get('excel.writer')
         web_product_pool = self.pool.get('product.product.web.server')
 
+        # Parameters:
+        today = datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
+        fall_back = True  # Fall back of dimension and weight on web product
+        cache = {}
+
+        # Load all brokers:
+        broker_ids = self.search(cr, uid, [
+            ('mode', '=', 'carrier'),
+        ], context=context)
+        brokers = sorted(
+            self.browse(cr, uid, broker_ids, context=context),
+            key=lambda b: b.name,
+        )
+
         # ---------------------------------------------------------------------
         #                         Excel report:
         # ---------------------------------------------------------------------
-        today = datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
         master_ids = web_product_pool.search(cr, uid, [
             ('wp_parent_template', '=', True),
             ], context=context)
@@ -345,67 +398,138 @@ class CarrierSupplierInherit(orm.Model):
                 'text': excel_pool.get_format('bg_yellow'),
                 'number': excel_pool.get_format('bg_yellow_number'),
                 },
+            'green': {
+                'text': excel_pool.get_format('bg_green'),
+                'number': excel_pool.get_format('bg_green_number'),
+                },
             }
 
         # ---------------------------------------------------------------------
         # Published product:
         # ---------------------------------------------------------------------
         # Width
-        excel_pool.column_width(ws_name, [
-            15, 40,
-            10, 10, 10, 10, 15,
-            25, 20,
-            10,
-            ])
-        product_col = 7  # todo changeable
-        empty = ['' for item in range(product_col)]
+        col_width = [
+            12, 30,
+            7, 7, 7, 7, 10,
+
+            5, 12, 12,
+        ]
+        col_width.extend([20 for i in range(20)])
+        excel_pool.column_width(ws_name, col_width)
 
         # Print header
         row = 0
+        header = [
+            'Codice', 'Nome',
+            'H', 'W', 'L', 'Peso', 'Peso v.',
+        ]
+        product_col = len(header)
+        empty = ['' for item in range(product_col)]
         excel_pool.write_xls_line(
-            ws_name, row, [
-                'Codice', 'Nome',
-                'H', 'W', 'L', 'Peso', 'Peso v.',
-                'Broker', 'Corriere',
-                'Zone',  # todo
-                ], default_format=excel_format['header'])
+            ws_name, row, header, default_format=excel_format['header'])
 
+        header2 = [
+            'Scelta', 'Broker', 'Corriere',
+        ]
+        broker_col = product_col + len(header2)
         _logger.warning('Selected product: %s' % len(master_ids))
-        brokers = self.browse(cr, uid, ids, context=context)
+
         for web_product in sorted(web_product_pool.browse(
                 cr, uid, master_ids, context=context),
                 key=lambda o: o.product_id.default_code):
             product = web_product.product_id
             color_format = excel_format['black']
-            row += 1
+            if not row:
+                row += 1
+            product_row = row
+            h = web_product.web_H
+            w = web_product.web_W
+            l = web_product.web_L
+            weight = web_product.web_weight
+            volumetric = web_product.web_volumetric
+            if fall_back:
+                h = h or web_product.pack_h
+                w = w or web_product.pack_l
+                l = l or web_product.pack_p
+                weight = weight or web_product.weight
+                volumetric = volumetric or web_product.wp_volume
+
             excel_pool.write_xls_line(
                 ws_name, row, [
                     product.default_code or '',
                     product.name or '',
-                    web_product.web_H,
-                    web_product.web_W,
-                    web_product.web_L,
-                    web_product.web_weight,
-                    web_product.web_volumetric,
+                    h,
+                    w,
+                    l,
+                    weight,
+                    volumetric,
                 ], default_format=color_format['text'])
+
             for broker in brokers:
                 broker_name = broker.name
-                for courier in broker.child_ids:
+                broker_zones, default_zone, pos = get_zone(
+                    broker, broker_col, cache=cache)
+
+                couriers = sorted(broker.child_ids, key=lambda c: c.name)
+                header_load = True
+                for courier in couriers:
                     row += 1
+
+                    if header_load:
+                        header_load = False
+                        # -----------------------------------------------------
+                        # Header 2: Zones:
+                        # -----------------------------------------------------
+                        # Empty:
+                        if product_row != row - 1:
+                            excel_pool.write_xls_line(
+                                ws_name, row-1, empty,
+                                default_format=color_format['text'],
+                                )
+                        # Common:
+                        excel_pool.write_xls_line(
+                            ws_name, row-1, header2,
+                            default_format=excel_format['header'],
+                            col=product_col)
+                        # Broker Zone:
+                        excel_pool.write_xls_line(
+                            ws_name, row - 1, [
+                                z.name for z in broker_zones.values()],
+                            default_format=excel_format['header'],
+                            col=broker_col)
+                        # Courier Zone:  # todo comment?
+                        # excel_pool.write_xls_line(
+                        #    ws_name, row - 1, [
+                        #        z.name for z in courier_zones.values()],
+                        #    default_format=excel_format['header'],
+                        #    col=broker_col + len(courier_zones))
+
+                    courier_zones, _, pos = get_zone(
+                        courier, pos, mode='courier', cache=cache)
 
                     # Empty:
                     excel_pool.write_xls_line(
                         ws_name, row, empty,
                         default_format=color_format['text'])
-
                     # Data:
                     excel_pool.write_xls_line(
                         ws_name, row, [
+                            '',  # choose better
                             broker_name,
                             courier.name,
                         ],
                         default_format=color_format['text'], col=product_col)
+                    pricelist = get_prices(courier, volumetric)
+                    for zone in pricelist:
+                        price = pricelist[zone]
 
+                    # excel_pool.write_xls_line(
+                    #    ws_name, row, [cz.name for cz in courier_zones.values(
+                    #    )],
+                    #    default_format=color_format['text'],
+                    #    col=product_col+3)
+
+                row += 1  # to print header
         return excel_pool.return_attachment(cr, uid, 'web_product')
 
     _columns = {
