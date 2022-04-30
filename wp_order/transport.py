@@ -340,15 +340,17 @@ class CarrierSupplierInherit(orm.Model):
                 broker pricelist
             """
             price_pool = self.pool.get('sale.order.carrier.pricelist')
-            courier_price_ids = price_pool.search([
+            courier_price_ids = price_pool.search(cr, uid, [
                 '&', '&',
-                ('from_weight', '>=', volumetric),
-                ('to_weight', '<', volumetric),
                 '|',
                 ('courier_id', '=', courier.id),
                 ('broker_id', '=', courier.broker_id.id),
-            ])
+
+                ('from_weight', '>=', volumetric),
+                ('to_weight', '<', volumetric),
+            ], context=context)
             res = {}
+            _logger.warning('Found %s' % len(courier_price_ids))
             for price in price_pool.browse(
                     cr, uid, courier_price_ids, context=context):
                 res[price.zone_id] = price.price
@@ -522,6 +524,22 @@ class CarrierSupplierInherit(orm.Model):
                     pricelist = get_prices(courier, volumetric)
                     for zone in pricelist:
                         price = pricelist[zone]
+                        price_col = broker_zones.get(zone)
+                        # Broker pricelist / zones:
+                        if price_col:
+                            excel_pool.write_xls_line(
+                                ws_name, row, [price],
+                                default_format=color_format['text'],
+                                col=price_col)
+                        else:
+                            # Courier pricelist / zones:
+                            price_col = broker_zones.get(zone)
+                            if price_col:
+                                excel_pool.write_xls_line(
+                                    ws_name, row, [price],
+                                    default_format=color_format['text'],
+                                    col=price_col)
+                                # todo comment zone name!
 
                     # excel_pool.write_xls_line(
                     #    ws_name, row, [cz.name for cz in courier_zones.values(
