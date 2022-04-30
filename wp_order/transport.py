@@ -319,6 +319,8 @@ class CarrierSupplierInherit(orm.Model):
                 Cache is used for keep value one loaded
                 position for indexing columns
             """
+            if cache is None:
+                cache = {}  # Cache will not be used correctly!
             if mode not in cache:
                 cache[mode] = {}
             if carrier not in cache[mode]:
@@ -334,7 +336,7 @@ class CarrierSupplierInherit(orm.Model):
                 cache[mode][carrier][2] = pos
             return cache[mode][carrier]
 
-        def get_prices(courier, volumetric):
+        def get_prices(courier, h, w, l, volumetric, weight):
             """ Search price in:
                 courier pricelist
                 broker pricelist
@@ -353,22 +355,81 @@ class CarrierSupplierInherit(orm.Model):
 
             # Broker and Courier pricelist weight rules:
             base_price = 0.0
+            # todo add comment to check calc?
+
+            # 1. Range of weight - Zone:
             for price in price_pool.browse(
                     cr, uid, courier_price_ids, context=context):
                 zone = price.zone_id
-                res[zone] = price.price
+
+                res[zone] = {
+                    'price': price.price,
+                    'comment': '',
+                    'error': False,
+                }
+                if price.courier_id:
+                    res[zone]['comment'] += zone.name
                 if zone.base:
                     base_price = price.price
 
-            # todo Extra price zone rule:
+            # 2 Extra price "Zone rule":
             for extra_rule in courier.courier_extra_ids:
-                if extra_rule.mode == 'zone':  # todo keep zero if no base p.?
-                    # Price is base price + extra for this rule
-                    res[extra_rule.value_zone_id] = \
-                        base_price + extra_rule.price
+                if extra_rule.mode == 'zone':
+                    # todo Price is base price + extra for this rule:
+                    extra_rule_price = base_price + extra_rule.price
+                    if extra_rule.value_zone_id in res:
+                        res[extra_rule.value_zone_id]['comment'] += \
+                            '[ERR] Prezzo extra e prezzo di listino presenti'
+                        res[extra_rule.value_zone_id]['error'] = True
+                    else:
+                        res[extra_rule.value_zone_id] = {
+                            'price': extra_rule_price,
+                            'comment': 'Extra per zona: Base %s + Extra %s' % (
+                                base_price, extra_rule.price),
+                            'error': False,
+                        }
+                    if not base_price:
+                        res[extra_rule.value_zone_id]['comment'] += \
+                            '[ERR] Prezzo base a zero'
+                        res[extra_rule.value_zone_id]['error'] = True
 
-            # todo Other extra price rule:
+            # 3. todo Other extra price rule:
+            # loop on all zoned pricelist!
+            extra_price = 0.0
+            comment = ''
+            for extra_rule in courier.courier_extra_ids:
+                mode = extra_rule.mode
+                value = extra_rule.value
+                price = extra_rule.price
 
+                dimension1 = max(h, w, l)
+                dimension2 = dimension1 + min(h, w, l)
+                dimension3 = sum((h, w, l))
+
+                if mode == 'zone':
+                    continue  # Yet consider
+                elif mode == 'weight' and weight >= value:
+                    extra_price += price
+                    comment += '[Peso: %s]' % price
+                elif mode == '1dimension' and dimension1 >= value:
+                    extra_price += price
+                    comment += '[1 dim.: %s]' % price
+                elif mode == '2dimension' and dimension2 >= value:
+                    extra_price += price
+                    comment += '[2 dim.: %s]' % price
+                elif mode == '3dimension' and dimension3 >= value:
+                    extra_price += price
+                    comment += '[3 dim.: %s]' % price
+                # elif mode == 'fuel' and dimension2 >= value:  # todo
+                #    extra_price += price
+                # elif mode == 'pallet' and dimension2 >= value:
+                #    extra_price += price
+
+            if extra_price:  # Loop for add it:
+                for zone in res:
+                    res[zone]['price'] += extra_price
+                    res[zone]['comment'] += 'Extra %s: %s' % (
+                        extra_price, comment)
             return res
 
         # Pool used:
@@ -514,7 +575,10 @@ class CarrierSupplierInherit(orm.Model):
                         # 3. Broker Zone:
                         excel_pool.write_xls_line(
                             ws_name, row - 1, [
-                                z.name for z in broker_zones.keys()],
+                                z.name for z in sorted(
+                                    broker_zones,
+                                    key=lambda bz: bz.name
+                                )],
                             default_format=excel_format['header'],
                             col=broker_col)
 
@@ -538,7 +602,8 @@ class CarrierSupplierInherit(orm.Model):
                         default_format=excel_format['white']['text'],
                         col=product_col)
 
-                    pricelist = get_prices(courier, volumetric)
+                    pricelist = get_prices(
+                        courier, h, w, l, volumetric, weight)
                     for zone in pricelist:
                         price = pricelist[zone]
                         price_col = broker_zones.get(zone)
