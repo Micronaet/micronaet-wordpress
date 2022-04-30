@@ -532,7 +532,7 @@
                     <field name="carrier_mode" />
                     <field name="account_ref" />
                     <field name="accounting_ref" />
-                    <button name="print_all_product_broker" string="Stampa listino" icon="gtk-print"/>
+                    <button name="print_all_product_broker" string="Stampa listino" icon="gtk-print" type="object"/>
                 </tree>
             </field>
         </record>

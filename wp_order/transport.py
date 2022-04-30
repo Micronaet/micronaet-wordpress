@@ -326,7 +326,7 @@ class CarrierSupplierInherit(orm.Model):
             ('wp_parent_template', '=', True),
             ], context=context)
 
-        ws_name = 'Prezzi prodotti'
+        ws_name = 'Sviluppo trasporti'
         excel_pool.create_worksheet(ws_name)
 
         # Load formats:
@@ -352,8 +352,13 @@ class CarrierSupplierInherit(orm.Model):
         # ---------------------------------------------------------------------
         # Width
         excel_pool.column_width(ws_name, [
-            15, 40, 10, 10, 10, 10, 15,
+            15, 40,
+            10, 10, 10, 10, 15,
+            25, 20,
+            10,
             ])
+        product_col = 7  # todo changeable
+        empty = ['' for item in range(product_col)]
 
         # Print header
         row = 0
@@ -361,24 +366,46 @@ class CarrierSupplierInherit(orm.Model):
             ws_name, row, [
                 'Codice', 'Nome',
                 'H', 'W', 'L', 'Peso', 'Peso v.',
+                'Broker', 'Corriere',
+                'Zone',  # todo
                 ], default_format=excel_format['header'])
 
         _logger.warning('Selected product: %s' % len(master_ids))
-        for product in sorted(self.browse(
+        brokers = self.browse(cr, uid, ids, context=context)
+        for web_product in sorted(web_product_pool.browse(
                 cr, uid, master_ids, context=context),
                 key=lambda o: o.product_id.default_code):
+            product = web_product.product_id
             color_format = excel_format['black']
             row += 1
             excel_pool.write_xls_line(
                 ws_name, row, [
                     product.default_code or '',
                     product.name or '',
-                    product.web_H,
-                    product.web_W,
-                    product.web_L,
-                    product.web_weight,
-                    product.web_volumetric,
+                    web_product.web_H,
+                    web_product.web_W,
+                    web_product.web_L,
+                    web_product.web_weight,
+                    web_product.web_volumetric,
                 ], default_format=color_format['text'])
+            for broker in brokers:
+                broker_name = broker.name
+                for courier in broker.child_ids:
+                    row += 1
+
+                    # Empty:
+                    excel_pool.write_xls_line(
+                        ws_name, row, empty,
+                        default_format=color_format['text'])
+
+                    # Data:
+                    excel_pool.write_xls_line(
+                        ws_name, row, [
+                            broker_name,
+                            courier.name,
+                        ],
+                        default_format=color_format['text'], col=product_col)
+
         return excel_pool.return_attachment(cr, uid, 'web_product')
 
     _columns = {
