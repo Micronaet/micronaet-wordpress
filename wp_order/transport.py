@@ -314,6 +314,21 @@ class CarrierSupplierInherit(orm.Model):
     def print_all_product_broker(self, cr, uid, ids, context=None):
         """ Print all product for this broker
         """
+        def get_extra_price(courier, mode='extra', cache=None):
+            """ Return and cache extra price
+            """
+            if cache is None:
+                cache = {}  # Cache will not be used correctly!
+            if mode not in cache[mode]:
+                cache[mode] = {}
+
+            if courier not in cache[mode]:
+                cache[mode][courier] = [
+                    rule for rule in courier.courier_extra_ids]
+                cache[mode][courier].extend(
+                    [rule for rule in courier.broker_id.broker_extra_ids])
+            return cache[mode][courier]
+
         def get_zone(carrier, pos, mode='broker', cache=None):
             """ Search zoned for this carrier (broker or courier)
                 Cache is used for keep value one loaded
@@ -381,7 +396,9 @@ class CarrierSupplierInherit(orm.Model):
                 )
 
             # 2 Extra price "Zone rule":
-            for extra_rule in courier.courier_extra_ids:
+            # todo cache:
+            extra_rules = get_extra_price(courier, cache=cache)
+            for extra_rule in extra_rules:
                 if extra_rule.mode == 'zone':
                     # todo Price is base price + extra for this rule:
                     extra_rule_price = base_price + extra_rule.price
@@ -406,6 +423,7 @@ class CarrierSupplierInherit(orm.Model):
             extra_price = 0.0
             comment = ''
             extra_rate = []
+
             for extra_rule in courier.courier_extra_ids:
                 mode = extra_rule.mode
                 value = extra_rule.value
@@ -448,7 +466,7 @@ class CarrierSupplierInherit(orm.Model):
                     this_rate = extra_rate[0]  # For now only one!
                     res[zone]['price'] = current * (100.0 + this_rate) / 100.0
                     res[zone]['comment'] += \
-                        'Extra benzina B. %s + %s: %s\n' % (
+                        'Extra benzina B. %s + %s%%: %s\n' % (
                         current, this_rate, res[zone]['price'])
 
                     if len(extra_rate) > 1:
