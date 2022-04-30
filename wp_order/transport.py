@@ -361,17 +361,24 @@ class CarrierSupplierInherit(orm.Model):
             for price in price_pool.browse(
                     cr, uid, courier_price_ids, context=context):
                 zone = price.zone_id
-
+                pl_price = price.price
                 res[zone] = {
-                    'price': price.price,
-                    'comment': 'Listino [%s-%s]\n' % (
-                        price.from_weight, price.to_weight),
+                    'price': pl_price,
+                    'comment': '',
                     'error': False,
                 }
-                if zone.courier_id:
-                    res[zone]['comment'] += zone.name
                 if zone.base:
-                    base_price = price.price
+                    base_price = pl_price
+                    base_comment = '*'
+                else:
+                    base_comment = ''
+
+                # if zone.courier_id:  # only courier zone?
+                res[zone]['comment'] += '%s\n' % zone.name
+                res[zone]['comment'] += 'Listino %s%s [%s-%s] \n' % (
+                    pl_price, base_comment,
+                    int(price.from_weight), int(price.to_weight),
+                )
 
             # 2 Extra price "Zone rule":
             for extra_rule in courier.courier_extra_ids:
@@ -395,10 +402,10 @@ class CarrierSupplierInherit(orm.Model):
                             '[ERR] Prezzo base a zero\n'
                         res[extra_rule.value_zone_id]['error'] = True
 
-            # 3. todo Other extra price rule:
-            # loop on all zoned pricelist!
+            # 3. Other extra price rule:
             extra_price = 0.0
             comment = ''
+            extra_rate = []
             for extra_rule in courier.courier_extra_ids:
                 mode = extra_rule.mode
                 value = extra_rule.value
@@ -412,26 +419,41 @@ class CarrierSupplierInherit(orm.Model):
                     continue  # Yet consider
                 elif mode == 'weight' and weight >= value:
                     extra_price += price
-                    comment += '[Peso: %s] ' % price
+                    comment += u'[Peso >=%s: %s] ' % (value, price)
                 elif mode == '1dimension' and dimension1 >= value:
                     extra_price += price
-                    comment += '[1 dim.: %s] ' % price
+                    comment += u'[1 dim. >=%s: %s] ' % (value, price)
                 elif mode == '2dimension' and dimension2 >= value:
                     extra_price += price
-                    comment += '[2 dim.: %s] ' % price
+                    comment += u'[2 dim. >=%s: %s] ' % (value, price)
                 elif mode == '3dimension' and dimension3 >= value:
                     extra_price += price
-                    comment += '[3 dim.: %s] ' % price
-                # elif mode == 'fuel' and dimension2 >= value:  # todo
-                #    extra_price += price
+                    comment += u'[3 dim. >=%s: %s] ' % (value, price)
+                elif mode == 'fuel':
+                    extra_rate.append(price)
                 # elif mode == 'pallet' and dimension2 >= value:
                 #    extra_price += price
 
+            # Loop to add extra price:
             if extra_price:  # Loop for add it:
                 for zone in res:
                     res[zone]['price'] += extra_price
                     res[zone]['comment'] += 'Extra %s: %s\n' % (
                         extra_price, comment)
+
+            # 4. Extra fuel:
+            if extra_rate:  # Loop for add it:
+                for zone in res:
+                    current = res[zone]['price']
+                    this_rate = extra_rate[0]  # For now only one!
+                    res[zone]['price'] = current * (100.0 + this_rate) / 100.0
+                    res[zone]['comment'] += \
+                        'Extra benzina B. %s + %s: %s\n' % (
+                        current, this_rate, res[zone]['price'])
+
+                    if len(extra_rate) > 1:
+                        res[zone]['comment'] += \
+                            '[ERR] Troppe %% benzina %s' % (extra_rate, )
             return res
 
         # Pool used:
@@ -442,6 +464,9 @@ class CarrierSupplierInherit(orm.Model):
         today = datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
         fall_back = True  # Fall back of dimension and weight on web product
         cache = {}
+        comment_param = parameters = {
+            'width': 350,
+            }
 
         # Load all brokers:
         broker_ids = self.search(cr, uid, [
@@ -628,7 +653,8 @@ class CarrierSupplierInherit(orm.Model):
                                 col=price_col)
                             if pl_comment:
                                 excel_pool.write_comment(
-                                    ws_name, row, price_col, pl_comment)
+                                    ws_name, row, price_col, pl_comment,
+                                    comment_param)
                         else:
                             # Courier pricelist / zones:
                             price_col = courier_zones.get(zone)
@@ -639,7 +665,8 @@ class CarrierSupplierInherit(orm.Model):
                                     col=price_col)
                                 if pl_comment:
                                     excel_pool.write_comment(
-                                        ws_name, row, price_col, pl_comment)
+                                        ws_name, row, price_col, pl_comment,
+                                        comment_param)
 
                 row += 1  # to print header
         return excel_pool.return_attachment(cr, uid, 'web_product')
