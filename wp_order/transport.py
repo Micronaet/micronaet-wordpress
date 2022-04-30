@@ -364,10 +364,11 @@ class CarrierSupplierInherit(orm.Model):
 
                 res[zone] = {
                     'price': price.price,
-                    'comment': '',
+                    'comment': 'Listino [%s-%s]\n' % (
+                        price.from_weight, price.to_weight),
                     'error': False,
                 }
-                if price.courier_id:
+                if zone.courier_id:
                     res[zone]['comment'] += zone.name
                 if zone.base:
                     base_price = price.price
@@ -379,18 +380,19 @@ class CarrierSupplierInherit(orm.Model):
                     extra_rule_price = base_price + extra_rule.price
                     if extra_rule.value_zone_id in res:
                         res[extra_rule.value_zone_id]['comment'] += \
-                            '[ERR] Prezzo extra e prezzo di listino presenti'
+                            '[ERR] Prezzo extra e prezzo di listino presenti\n'
                         res[extra_rule.value_zone_id]['error'] = True
                     else:
                         res[extra_rule.value_zone_id] = {
                             'price': extra_rule_price,
-                            'comment': 'Extra per zona: Base %s + Extra %s' % (
-                                base_price, extra_rule.price),
+                            'comment': 'Extra (zona): '
+                                       'B. %s + X. %s\n' % (
+                                           base_price, extra_rule.price),
                             'error': False,
                         }
                     if not base_price:
                         res[extra_rule.value_zone_id]['comment'] += \
-                            '[ERR] Prezzo base a zero'
+                            '[ERR] Prezzo base a zero\n'
                         res[extra_rule.value_zone_id]['error'] = True
 
             # 3. todo Other extra price rule:
@@ -410,16 +412,16 @@ class CarrierSupplierInherit(orm.Model):
                     continue  # Yet consider
                 elif mode == 'weight' and weight >= value:
                     extra_price += price
-                    comment += '[Peso: %s]' % price
+                    comment += '[Peso: %s] ' % price
                 elif mode == '1dimension' and dimension1 >= value:
                     extra_price += price
-                    comment += '[1 dim.: %s]' % price
+                    comment += '[1 dim.: %s] ' % price
                 elif mode == '2dimension' and dimension2 >= value:
                     extra_price += price
-                    comment += '[2 dim.: %s]' % price
+                    comment += '[2 dim.: %s] ' % price
                 elif mode == '3dimension' and dimension3 >= value:
                     extra_price += price
-                    comment += '[3 dim.: %s]' % price
+                    comment += '[3 dim.: %s] ' % price
                 # elif mode == 'fuel' and dimension2 >= value:  # todo
                 #    extra_price += price
                 # elif mode == 'pallet' and dimension2 >= value:
@@ -428,7 +430,7 @@ class CarrierSupplierInherit(orm.Model):
             if extra_price:  # Loop for add it:
                 for zone in res:
                     res[zone]['price'] += extra_price
-                    res[zone]['comment'] += 'Extra %s: %s' % (
+                    res[zone]['comment'] += 'Extra %s: %s\n' % (
                         extra_price, comment)
             return res
 
@@ -496,7 +498,7 @@ class CarrierSupplierInherit(orm.Model):
 
             5, 12, 12,
         ]
-        col_width.extend([20 for i in range(20)])
+        col_width.extend([20 for i in range(15)])
         excel_pool.column_width(ws_name, col_width)
 
         # Print header
@@ -605,10 +607,13 @@ class CarrierSupplierInherit(orm.Model):
                     pricelist = get_prices(
                         courier, h, w, l, volumetric, weight)
                     for zone in pricelist:
-                        price = pricelist[zone]
+                        pl_data = pricelist[zone]
+                        pl_price = pl_data['price']
+                        pl_comment = pl_data['comment']
+                        pl_error = pl_data['error']
                         price_col = broker_zones.get(zone)
 
-                        if not price:
+                        if pl_error or not pl_price:
                             color_format = excel_format['red']
                         elif zone == default_zone:
                             color_format = excel_format['blue']
@@ -618,19 +623,23 @@ class CarrierSupplierInherit(orm.Model):
                         # Broker pricelist / zones:
                         if price_col:
                             excel_pool.write_xls_line(
-                                ws_name, row, [price],
+                                ws_name, row, [pl_price],
                                 default_format=color_format['number'],
                                 col=price_col)
+                            if pl_comment:
+                                excel_pool.write_comment(
+                                    ws_name, row, price_col, pl_comment)
                         else:
                             # Courier pricelist / zones:
                             price_col = courier_zones.get(zone)
                             if price_col:
                                 excel_pool.write_xls_line(
-                                    ws_name, row, [price],
+                                    ws_name, row, [pl_price],
                                     default_format=color_format['number'],
                                     col=price_col)
-                                excel_pool.write_comment(
-                                    ws_name, row, price_col, zone.name)
+                                if pl_comment:
+                                    excel_pool.write_comment(
+                                        ws_name, row, price_col, pl_comment)
 
                 row += 1  # to print header
         return excel_pool.return_attachment(cr, uid, 'web_product')
