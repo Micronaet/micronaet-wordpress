@@ -88,7 +88,7 @@
             <field name="name">Prodotti per trasporti</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">product.product.web.server</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">tree,form</field>
             <field name="domain">[('wp_parent_template', '=', True)]</field>
             <field name="context">{'form_view_ref': 'wp_order.product_product_web_server_transport_view_form'}</field>
             <field name="view_id" ref="product_product_web_server_transport_view_tree"/>
@@ -101,30 +101,6 @@
             <field name="arch" type="xml">
                 <tree string="Trasporto consigliato:" editable="bottom">
                     <field name="sequence" widget="handle"/>
-                    <field name="product_id" />
-                    <field name="courier_id"/>
-                    <field name="broker_id" readonly="1"/>
-                    <field name="pallet_id" />
-                    <field name="base_cost"/>
-                </tree>
-            </field>
-        </record>
-        <record id="action_product_product" model="ir.actions.act_window">
-            <field name="name">Prodotti per trasporti</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">product.product.courier</field>
-            <field name="view_mode">tree</field>
-            <field name="domain">[]</field>
-            <field name="view_id" ref="product_product_courier_view_tree"/>
-        </record>
-
-        <!--product.product-->
-        <record id="product_product_view_tree" model="ir.ui.view">
-            <field name="name">product.product.tree</field>
-            <field name="model">product.product</field>
-            <field name="arch" type="xml">
-                <tree string="Trasporto prodotti:" editable="bottom">
-                    <field name="default_code" widget="handle"/>
                     <field name="product_id" />
                     <field name="courier_id"/>
                     <field name="broker_id" readonly="1"/>
