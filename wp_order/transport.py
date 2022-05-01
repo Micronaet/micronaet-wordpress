@@ -641,9 +641,9 @@ class CarrierSupplierInherit(orm.Model):
             1, 12, 30,
             7, 7, 7, 7, 10,
 
-            5, 12, 12,
+            5, 12, 1, 12,
         ]
-        col_width.extend([10 for i in range(30)])
+        col_width.extend([13 for i in range(30)])
         excel_pool.column_width(ws_name, col_width)
 
         # Hide column:
@@ -660,7 +660,7 @@ class CarrierSupplierInherit(orm.Model):
             ws_name, row, header, default_format=excel_format['header'])
 
         header2 = [
-            'Scelta', 'Broker', 'Corriere',
+            'Scelta', 'Broker', 'ID', 'Corriere',
         ]
         broker_col = product_col + len(header2)
         _logger.warning('Selected product: %s' % len(master_ids))
@@ -756,7 +756,7 @@ class CarrierSupplierInherit(orm.Model):
 
                         # Write comment on courier cell:
                         excel_pool.write_comment(
-                            ws_name, row, product_col + 2, constraint_comment,
+                            ws_name, row, product_col + 3, constraint_comment,
                             comment_param)
                     else:
                         data_color = excel_format['white']
