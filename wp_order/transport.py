@@ -638,7 +638,7 @@ class CarrierSupplierInherit(orm.Model):
         # ---------------------------------------------------------------------
         # Width
         col_width = [
-            12, 30,
+            1, 12, 30,
             7, 7, 7, 7, 10,
 
             5, 12, 12,
@@ -646,10 +646,12 @@ class CarrierSupplierInherit(orm.Model):
         col_width.extend([10 for i in range(30)])
         excel_pool.column_width(ws_name, col_width)
 
+        # Hide column:
+        # excel_pool
         # Print header
         row = 0
         header = [
-            'Codice', 'Nome',
+            'ID', 'Codice', 'Nome',
             'H', 'W', 'L', 'Peso', 'Peso v.',
         ]
         product_col = len(header)
