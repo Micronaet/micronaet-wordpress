@@ -101,7 +101,7 @@
             <field name="arch" type="xml">
                 <tree string="Trasporto consigliato:" editable="bottom">
                     <field name="sequence" widget="handle"/>
-                    <field name="product_id" />
+                    <field name="product_id" invisible="1"/>
                     <field name="courier_id"/>
                     <field name="broker_id" readonly="1"/>
                     <field name="pallet_id" />

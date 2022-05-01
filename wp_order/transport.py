@@ -273,7 +273,7 @@ class SaleOrderCarrierPallet(orm.Model):
     }
 
 
-class ProductProductCarrier(orm.Model):
+class ProductProductCourier(orm.Model):
     """ Model name: Transport for product
     """
     _name = 'product.product.courier'
@@ -283,8 +283,9 @@ class ProductProductCarrier(orm.Model):
     _columns = {
         'sequence': fields.integer('Seq.'),
         'product_id': fields.many2one(
-            'product.product', 'Prodotto', required=True),
-        'courier_id': fields.many2one('carrier.supplier', 'Corriere'),
+            'product.product', 'Prodotto'),
+        'courier_id': fields.many2one(
+            'carrier.supplier', 'Corriere', required=True),
         'broker_id': fields.related(
             'courier_id', 'broker_id',
             type='many2one', relation='carrier.supplier',
