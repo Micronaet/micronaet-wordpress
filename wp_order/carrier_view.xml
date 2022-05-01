@@ -102,7 +102,7 @@
                 <tree string="Trasporto consigliato:" editable="bottom">
                     <field name="sequence" widget="handle"/>
                     <field name="product_id" invisible="1"/>
-                    <field name="courier_id"/>
+                    <field name="courier_id" domain="[('broker_id', '!=', False)]"/>
                     <field name="broker_id" readonly="1"/>
                     <field name="pallet_id" /><!--domain="[('broker_id', '=', broker_id)]"-->
                     <field name="base_cost"/>
