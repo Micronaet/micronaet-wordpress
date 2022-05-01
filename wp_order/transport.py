@@ -634,7 +634,7 @@ class CarrierSupplierInherit(orm.Model):
             }
 
         # ---------------------------------------------------------------------
-        # Published product:
+        #                       Published product:
         # ---------------------------------------------------------------------
         # Width
         col_width = [
@@ -674,10 +674,10 @@ class CarrierSupplierInherit(orm.Model):
         broker_col = product_col + len(header2)
         empty = ['' for item in range(product_col)]
 
-        header.extend(header2)  # Write also in header the header2
+        # header.extend(header2)  # Write also in header the header2
         excel_pool.write_xls_line(
             ws_name, row, header, default_format=excel_format['header'])
-        excel_pool.freeze_panes(ws_name, row + 1, 3)
+        excel_pool.freeze_panes(ws_name, 2, 3)
 
         # ---------------------------------------------------------------------
         # Collect data for write in line:
@@ -687,7 +687,7 @@ class CarrierSupplierInherit(orm.Model):
                 cr, uid, master_ids, context=context),
                 key=lambda o: o.product_id.default_code):
             product = web_product.product_id
-            if not row:
+            if row != 1:
                 row += 1
             product_row = row
             h = web_product.web_H
