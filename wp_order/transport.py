@@ -647,7 +647,9 @@ class CarrierSupplierInherit(orm.Model):
         excel_pool.column_width(ws_name, col_width)
 
         # Hide column:
-        # excel_pool
+        excel_pool.column_hidden(ws_name, [0, 10])
+        excel_pool.freeze_panes(ws_name, 1, 3)
+
         # Print header
         row = 0
         header = [
@@ -655,14 +657,17 @@ class CarrierSupplierInherit(orm.Model):
             'H', 'W', 'L', 'Peso', 'Peso v.',
         ]
         product_col = len(header)
-        empty = ['' for item in range(product_col)]
-        excel_pool.write_xls_line(
-            ws_name, row, header, default_format=excel_format['header'])
-
         header2 = [
             'Scelta', 'Broker', 'ID', 'Corriere',
         ]
         broker_col = product_col + len(header2)
+        empty = ['' for item in range(product_col)]
+
+        header.extend(header2)  # Write also in header the header2
+
+        excel_pool.write_xls_line(
+            ws_name, row, header, default_format=excel_format['header'])
+
         _logger.warning('Selected product: %s' % len(master_ids))
 
         for web_product in sorted(web_product_pool.browse(
@@ -686,6 +691,7 @@ class CarrierSupplierInherit(orm.Model):
 
             excel_pool.write_xls_line(
                 ws_name, row, [
+                    product.id,
                     product.default_code or '',
                     product.name or '',
                     h,
@@ -766,6 +772,8 @@ class CarrierSupplierInherit(orm.Model):
                         ws_name, row, [
                             '',  # choose better solution
                             broker_name,
+                            # Hidden ID only if courier present:
+                            '' if constraint_comment else courier.id,
                             courier.name,
                         ],
                         default_format=data_color['text'],
