@@ -19,16 +19,127 @@
                     <field name="web_H"/>
                     <field name="web_weight"/>
                     <field name="web_volumetric"/>
+
+                    <field name="carrier_extra"/>
                 </tree>
             </field>
         </record>
+        <record id="product_product_web_server_transport_view_tree" model="ir.ui.view">
+            <field name="name">product.product.web.server.transport.tree</field>
+            <field name="model">product.product.web.server</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <tree string="Trasporto prodotto">
+                    <field name="published" readonly="1"/>
+                    <field name="product_id" readonly="1"/>
+                    <field name="connector_id" readonly="1"/>
+                    <field name="wp_color_id" readonly="1"/>
+
+                    <field name="web_W"/>
+                    <field name="web_L"/>
+                    <field name="web_H"/>
+                    <field name="web_weight"/>
+                    <field name="web_volumetric"/>
+
+                    <field name="carrier_extra"/>
+                </tree>
+            </field>
+        </record>
+        <record id="product_product_web_server_transport_view_form" model="ir.ui.view">
+            <field name="name">product.product.web.server.form</field>
+            <field name="model">product.product.web.server</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <form string="Trasporto prodotto">
+                    <sheet>
+                        <group col="4">
+                            <field name="published" readonly="1"/>
+                            <field name="product_id" readonly="1"/>
+                            <field name="connector_id" readonly="1"/>
+                            <field name="wp_color_id" readonly="1"/>
+
+                            <field name="web_W"/>
+                            <field name="web_L"/>
+
+                            <field name="web_H"/>
+                            <field name="carrier_extra"/>
+
+                            <field name="web_weight"/>
+                            <field name="web_volumetric"/>
+
+                            <separator string="Corrieri preferenziali" colspan="4"/>
+                            <field name="courier_ids" colspan="4" nolabel="1">
+
+                            </field>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
         <record id="action_product_product_web_server" model="ir.actions.act_window">
-            <field name="name">Prodotti per trasporti</field>
+            <field name="name">Prodotti dimensioni</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">product.product.web.server</field>
             <field name="view_mode">tree</field>
             <field name="domain">[('wp_parent_template', '=', True)]</field>
             <field name="view_id" ref="product_product_web_server_view_tree"/>
+        </record>
+        <record id="action_product_product_web_transport_server" model="ir.actions.act_window">
+            <field name="name">Prodotti per trasporti</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.product.web.server</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[('wp_parent_template', '=', True)]</field>
+            <field name="context">{'form_view_ref': 'wp_order.product_product_web_server_transport_view_form'}</field>
+            <field name="view_id" ref="product_product_web_server_transport_view_tree"/>
+        </record>
+
+        <!--product.product.courier-->
+        <record id="product_product_courier_view_tree" model="ir.ui.view">
+            <field name="name">product.product.courier.tree</field>
+            <field name="model">product.product.courier</field>
+            <field name="arch" type="xml">
+                <tree string="Trasporto consigliato:" editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="product_id" />
+                    <field name="courier_id"/>
+                    <field name="broker_id" readonly="1"/>
+                    <field name="pallet_id" />
+                    <field name="base_cost"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_product_product" model="ir.actions.act_window">
+            <field name="name">Prodotti per trasporti</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.product.courier</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[]</field>
+            <field name="view_id" ref="product_product_courier_view_tree"/>
+        </record>
+
+        <!--product.product-->
+        <record id="product_product_view_tree" model="ir.ui.view">
+            <field name="name">product.product.tree</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <tree string="Trasporto prodotti:" editable="bottom">
+                    <field name="default_code" widget="handle"/>
+                    <field name="product_id" />
+                    <field name="courier_id"/>
+                    <field name="broker_id" readonly="1"/>
+                    <field name="pallet_id" />
+                    <field name="base_cost"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_product_product" model="ir.actions.act_window">
+            <field name="name">Prodotti per trasporti</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.product.courier</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[]</field>
+            <field name="view_id" ref="product_product_courier_view_tree"/>
         </record>
 
         <!--sale.order.carrier.pallet-->
@@ -887,6 +998,12 @@
                         id="menu_product_product_web_server_carrier"
                         action="action_product_product_web_server"
                         sequence="90"
+                        />
+                    <menuitem
+                        parent="menu_carrier_configuration"
+                        id="menu_product_product_web_transport_server"
+                        action="action_product_product_web_transport_server"
+                        sequence="100"
                         />
 
     </data>

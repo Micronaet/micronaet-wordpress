@@ -273,6 +273,31 @@ class SaleOrderCarrierPallet(orm.Model):
     }
 
 
+class ProductProductCarrier(orm.Model):
+    """ Model name: Transport for product
+    """
+    _name = 'product.product.courier'
+    _description = 'Trasporto prodotti'
+    _order = 'product_id'
+
+    _columns = {
+        'sequence': fields.integer('Seq.'),
+        'product_id': fields.many2one(
+            'product.product', 'Prodotto', required=True),
+        'courier_id': fields.many2one('carrier.supplier', 'Corriere'),
+        'broker_id': fields.related(
+            'courier_id', 'broker_id',
+            type='many2one', relation='carrier.supplier',
+            string='Broker'),
+        'base_cost': fields.float(
+            'Costo base', digits=(10, 2),
+            help='Costo extra per la consegna del prodotto (imballaggio,'
+                 'confezionamento, etichettatura o altre spese accessorie'),
+        'pallet_id': fields.many2one(
+            'sale.order.carrier.pallet', 'Pallet autotrasporto'),
+    }
+
+
 class ProductProductWebServer(orm.Model):
     """ Model name: Product web server
     """
@@ -302,6 +327,17 @@ class ProductProductWebServer(orm.Model):
             help='Peso volumetrico (max tra peso e HxLxW / 2000)'),
         # 'pallet_ids': fields.many2many(
         #    'sale.order.carrier.pallet', 'Pallet autotrasporto'),
+
+        # Best transport:
+        'carrier_extra': fields.float(
+            'Extra costo', digits=(10, 2),
+            help='Costo extra per la consegna del prodotto (imballaggio,'
+                 'confezionamento, etichettatura o altre spese accessorie'),
+        'courier_ids': fields.one2many(
+            'product.product.courier', 'courier_id',
+            'Corrieri da usare',
+            help='Elenco corrieri da usare per il trasporto di questo '
+                 'prodotto'),
     }
 
 
@@ -850,7 +886,6 @@ class SaleOrderCarrierZoneInherit(orm.Model):
 class SaleOrderBrokerZoneInherit(orm.Model):
     """ Model name: Transport broker.courier cost
     """
-
     _inherit = 'sale.order.broker.zone'
 
     _columns = {
