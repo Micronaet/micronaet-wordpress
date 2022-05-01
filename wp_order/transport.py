@@ -648,10 +648,21 @@ class CarrierSupplierInherit(orm.Model):
 
         # Hide column:
         excel_pool.column_hidden(ws_name, [0, 10])
-        excel_pool.freeze_panes(ws_name, 1, 3)
 
-        # Print header
+        # ---------------------------------------------------------------------
+        # Hidden row:
+        # ---------------------------------------------------------------------
         row = 0
+        hidden_header = [
+            'id', '', '', '', '', '', '', 'sequence', '', 'courier', 'price']
+        excel_pool.write_xls_line(
+            ws_name, row, hidden_header, default_format=excel_format['header'])
+        excel_pool.row_hidden(ws_name, [row])
+
+        # ---------------------------------------------------------------------
+        # Print header
+        # ---------------------------------------------------------------------
+        row += 1
         header = [
             'ID', 'Codice', 'Nome',
             'H', 'W', 'L', 'Peso', 'Peso v.',
@@ -664,12 +675,14 @@ class CarrierSupplierInherit(orm.Model):
         empty = ['' for item in range(product_col)]
 
         header.extend(header2)  # Write also in header the header2
-
         excel_pool.write_xls_line(
             ws_name, row, header, default_format=excel_format['header'])
+        excel_pool.freeze_panes(ws_name, row + 1, 3)
 
+        # ---------------------------------------------------------------------
+        # Collect data for write in line:
+        # ---------------------------------------------------------------------
         _logger.warning('Selected product: %s' % len(master_ids))
-
         for web_product in sorted(web_product_pool.browse(
                 cr, uid, master_ids, context=context),
                 key=lambda o: o.product_id.default_code):
