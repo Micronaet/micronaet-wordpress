@@ -104,7 +104,7 @@
                     <field name="product_id" invisible="1"/>
                     <field name="courier_id"/>
                     <field name="broker_id" readonly="1"/>
-                    <field name="pallet_id" />
+                    <field name="pallet_id" domain="[('broker_id', '=', broker_id)]"/>
                     <field name="base_cost"/>
                 </tree>
             </field>
