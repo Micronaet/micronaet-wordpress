@@ -654,7 +654,8 @@ class CarrierSupplierInherit(orm.Model):
         # ---------------------------------------------------------------------
         row = 0
         hidden_header = [
-            'id', '', '', '', '', '', '', 'sequence', '', 'courier', 'price']
+            'id', '', '', '', '', '', '', '',
+            'sequence', '', 'courier', '', 'price']
         excel_pool.write_xls_line(
             ws_name, row, hidden_header, default_format=excel_format['header'])
         excel_pool.row_hidden(ws_name, [row])
@@ -674,7 +675,7 @@ class CarrierSupplierInherit(orm.Model):
         broker_col = product_col + len(header2)
         empty = ['' for item in range(product_col)]
 
-        # header.extend(header2)  # Write also in header the header2
+        header.extend(header2)  # Write also in header the header2
         excel_pool.write_xls_line(
             ws_name, row, header, default_format=excel_format['header'])
         excel_pool.freeze_panes(ws_name, 2, 3)
@@ -687,7 +688,7 @@ class CarrierSupplierInherit(orm.Model):
                 cr, uid, master_ids, context=context),
                 key=lambda o: o.product_id.default_code):
             product = web_product.product_id
-            if row != 1:
+            if row == 1:
                 row += 1
             product_row = row
             h = web_product.web_H
