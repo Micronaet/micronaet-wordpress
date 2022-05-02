@@ -531,7 +531,8 @@ class CarrierSupplierInherit(orm.Model):
             for extra_rule in extra_rules:
                 if extra_rule.mode == 'zone':
                     # todo Price is base price + extra for this rule:
-                    extra_rule_price = base_price + extra_rule.price
+                    rule_price = eval(extra_rule.price)  # is a formula
+                    extra_rule_price = base_price + rule_price
                     if extra_rule.value_zone_id in res:
                         res[extra_rule.value_zone_id]['comment'] += \
                             '[ERR] Prezzo extra e prezzo di listino presenti\n'
@@ -541,7 +542,7 @@ class CarrierSupplierInherit(orm.Model):
                             'price': extra_rule_price,
                             'comment': 'Extra (zona): '
                                        'B. %s + X. %s\n' % (
-                                           base_price, extra_rule.price),
+                                           base_price, rule_price),
                             'error': False,
                         }
                     if not base_price:
@@ -559,14 +560,19 @@ class CarrierSupplierInherit(orm.Model):
             for extra_rule in extra_rules:
                 mode = extra_rule.mode
                 value = extra_rule.value
-                price = extra_rule.price
+                formula = extra_rule.formula
+                price = eval(extra_rule.price)  # is formula
 
                 dimension1 = max(h, w, l)
                 dimension2 = dimension1 + min(h, w, l)
                 dimension3 = sum((h, w, l))
+                volume = h * w * l
 
                 if mode == 'zone':
                     continue  # Yet consider
+                elif mode == 'formula' and eval(formula):
+                    extra_price += price
+                    comment += u'[Formula (%s): %s] ' % (formula, price)
                 elif mode == 'weight' and weight >= value:
                     extra_price += price
                     comment += u'[Peso >=%s: %s] ' % (value, price)
