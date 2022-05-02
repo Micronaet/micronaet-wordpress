@@ -555,6 +555,7 @@ class CarrierSupplierInherit(orm.Model):
             # -----------------------------------------------------------------
             extra_price = 0.0
             comment = ''
+            error_extra_price = False
             extra_rate = []
 
             for extra_rule in extra_rules:
@@ -562,19 +563,23 @@ class CarrierSupplierInherit(orm.Model):
                 value = extra_rule.value
                 formula = extra_rule.formula
                 price = eval(extra_rule.price)  # now is formula
-                print(price)
-                pdb.set_trace()
 
                 dimension1 = max(h, w, l)
                 dimension2 = dimension1 + min(h, w, l)
                 dimension3 = sum((h, w, l))
-                volume = h * w * l
+                volume = h * w * l  # used for formula check
 
                 if mode == 'zone':
                     continue  # Yet consider
-                elif mode == 'formula' and eval(formula):
-                    extra_price += price
-                    comment += u'[Formula (%s): %s] ' % (formula, price)
+                elif mode == 'formula':
+                    try:
+                        if eval(formula):
+                            extra_price += price
+                            comment += u'[Formula (%s): %s] ' % (
+                                formula, price)
+                    except:
+                        comment += u'[ERR] Formula error: %s ' % formula
+                        error_extra_price = True
                 elif mode == 'weight' and weight >= value:
                     extra_price += price
                     comment += u'[Peso >=%s: %s] ' % (value, price)
@@ -599,6 +604,8 @@ class CarrierSupplierInherit(orm.Model):
                     res[zone]['price'] += extra_price
                     res[zone]['comment'] += 'Extra %s: %s\n' % (
                         extra_price, comment)
+                    if error_extra_price:
+                        res[zone]['error'] = True
 
             # -----------------------------------------------------------------
             # 4. Extra fuel:
