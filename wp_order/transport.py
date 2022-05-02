@@ -777,7 +777,7 @@ class CarrierSupplierInherit(orm.Model):
                 ('wp_parent_template', '=', True),
                 ])
             master_product.extend([p for p in linked_product_pool.browse(
-                    cr, uid, linked_master_ids, context=context)])
+                    linked_master_ids)])
 
         master_product = sorted(
             master_product,
