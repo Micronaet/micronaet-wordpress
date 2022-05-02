@@ -160,6 +160,9 @@ class SaleOrderCarrierZoneExtra(orm.Model):
         'is_active': fields.boolean(
             'Attiva', help='Voci disattivate sono da considerare storiche'),
         'mode': fields.selection([
+            # Formula:
+            ('formula', 'Formula'),
+
             # Fixed:
             ('fixed', 'Fisso (valore)'),
             ('fuel', 'Carburante (perc.)'),
@@ -181,6 +184,14 @@ class SaleOrderCarrierZoneExtra(orm.Model):
             ('Wdimension', 'Larghezza >='),
 
         ], 'Modalità', required=True),
+
+        'formula': fields.char(
+            'Formula', size=130,
+            help='Formula per il calcolo, es.: '
+                 'l > 180 and l < 210 and weight > 100'
+                 'max(l, h, w) < 100'
+                 'sum(sorted((l, h, w))[-2:])'
+                 'Use: weight, l, h, m, volumetric, volume as variables'),
 
         'value': fields.float(
             'Valore filtro', digits=(10, 2),
@@ -234,6 +245,9 @@ class SaleOrderCarrierConstraint(orm.Model):
 
     _columns = {
         'mode': fields.selection([
+            # Formula:
+            ('formula', 'Formula'),
+
             ('weight', 'Peso >='),
 
             ('Ldimension', 'Lunghezza >='),
