@@ -236,14 +236,13 @@ class SaleOrderCarrierConstraint(orm.Model):
         'mode': fields.selection([
             ('weight', 'Peso >='),
 
-            # todo:
-            # ('Ldimension', 'Lunghezza >='),
-            # ('Hdimension', 'Altezza >='),
-            # ('Wdimension', 'Larghezza >='),
+            ('Ldimension', 'Lunghezza >='),
+            ('Hdimension', 'Altezza >='),
+            ('Wdimension', 'Larghezza >='),
 
             ('1dimension', 'Dimensione max >='),
             ('2dimension', 'Min + max dime. >='),
-            # ('2bdimension', '2 dimens. più lunghe >='),
+            ('2bdimension', '2 dimens. più lunghe >='),
             ('3dimension', 'Somma dimensioni >='),
 
             ('parcel', 'Colli >='),  # todo
