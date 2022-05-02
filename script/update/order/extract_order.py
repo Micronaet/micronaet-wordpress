@@ -158,6 +158,8 @@ if not override_file and os.path.exists(shipping_filename):
 else:
     # Use first company order only:
     order_ids = odoo_db[company_1]['order'].search([
+        '|',
+        ('carrier_supplier_id.no_transport', '=', True),
         ('real_shipping_total', '>', 0),
         # ('shipping_exported', '=', False),  # todo exported always
     ])
