@@ -668,10 +668,6 @@ class CarrierSupplierInherit(orm.Model):
         # ---------------------------------------------------------------------
         #                         Excel report:
         # ---------------------------------------------------------------------
-        master_ids = web_product_pool.search(cr, uid, [
-            ('wp_parent_template', '=', True),
-            ], context=context)
-
         ws_name = 'Sviluppo trasporti'
         excel_pool.create_worksheet(ws_name)
 
@@ -751,10 +747,45 @@ class CarrierSupplierInherit(orm.Model):
         # ---------------------------------------------------------------------
         # Collect data for write in line:
         # ---------------------------------------------------------------------
+        # Generate a cross db product list:
+        master_ids = web_product_pool.search(cr, uid, [
+            ('wp_parent_template', '=', True),
+            ], context=context)
+        # Current database:
+        master_product = [p for p in web_product_pool.browse(
+                cr, uid, master_ids, context=context)]
+
+        # Linked database:
+        connector_pool = self.poolget('connector.server')
+        connector_ids = connector_pool.search(cr, uid, [
+            ('wordpress', '=', True),
+        ], context=context)
+        if connector_ids:
+            wp_connector = connector_pool.browse(
+                cr, uid, connector_ids, context=context)[0]
+
+            odoo = erppeek.Client(
+                'http://%s:%s' % (
+                    wp_connector.linked_server, wp_connector.linked_port),
+                db=wp_connector.linked_dbname,
+                user=wp_connector.linked_user,
+                password=wp_connector.linked_pwd,
+            )
+            # Pool used:
+            linked_product_pool = odoo.model('product.product.web.server')
+            linked_master_ids = linked_product_pool.search([
+                ('wp_parent_template', '=', True),
+                ])
+            master_product.extend([p for p in linked_product_pool.browse(
+                    cr, uid, linked_master_ids, context=context)])
+
+        master_product = sorted(
+            master_product,
+            key=lambda o: o.product_id.default_code,
+        )
+
         _logger.warning('Selected product: %s' % len(master_ids))
-        for web_product in sorted(web_product_pool.browse(
-                cr, uid, master_ids, context=context),
-                key=lambda o: o.product_id.default_code):
+        for web_product in master_product:
             product = web_product.product_id
             if row == 1:
                 row += 1
