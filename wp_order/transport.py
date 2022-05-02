@@ -493,6 +493,7 @@ class CarrierSupplierInherit(orm.Model):
                 courier pricelist
                 broker pricelist
             """
+            volume = h * w * l
             price_pool = self.pool.get('sale.order.carrier.pricelist')
             courier_price_ids = price_pool.search(cr, uid, [
                 '&', '&',
@@ -540,7 +541,15 @@ class CarrierSupplierInherit(orm.Model):
             for extra_rule in extra_rules:
                 if extra_rule.mode == 'zone':
                     # todo Price is base price + extra for this rule:
-                    rule_price = eval(extra_rule.price)  # is a formula
+                    try:
+                        rule_price = extra_rule.price
+                        rule_price = eval(rule_price)  # is a formula
+                    except:
+                        pdb.set_trace()
+                        res[extra_rule.value_zone_id]['comment'] += \
+                            '[ERR] Error formula price: %s\n' % rule_price
+                        res[extra_rule.value_zone_id]['error'] = True
+
                     extra_rule_price = base_price + rule_price
                     if extra_rule.value_zone_id in res:
                         res[extra_rule.value_zone_id]['comment'] += \
