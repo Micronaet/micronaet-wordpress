@@ -174,8 +174,7 @@ else:
 
     mask = '%-3s%-10s%-20s%-10.2f%-10.2f\n'  # todo \r
     for order in orders:
-        if order.name == '83775':
-            pdb.set_trace()
+        no_transport = order.carrier_supplier_id.no_transport
         marketplace = order.marketplace
         previous_ship = order.shipping_total
         current_ship = order.real_shipping_total  # Present because of filter!
@@ -190,7 +189,8 @@ else:
         order_records = []
         if previous_net_total:  # No division by zero!
             rate = current_net_total / previous_net_total
-            if abs(previous_ship - current_ship) > gap:  # Change if different
+            # Change if different or no transport:
+            if no_transport or abs(previous_ship - current_ship) > gap:
                 for line in order.line_ids:
                     try:
                         new_amount = line.total * rate
