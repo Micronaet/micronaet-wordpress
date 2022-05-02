@@ -146,7 +146,7 @@
                     <field name="is_active" invisible="1"/>
                     <field name="mode"/>
                     <field name="formula" attrs="{'readonly': [('mode', '!=', 'formula')], 'required': [('mode', '=', 'formula')]}"/>
-                    <field name="value" attrs="{'readonly': [('mode', 'not in', ('weight', '1dimension', '2dimension', '2bdimension', '3dimension', 'Ldimension', 'Hdimension', 'Wdimension'))], 'required': [('mode', 'in', ('weight', '1dimension', '2dimension', '2bdimension', '3dimension', 'Ldimension', 'Hdimension', 'Wdimension'))]}"/>
+                    <field name="value" attrs="{'readonly': [('mode', 'not in', ('weight', '1dimension', '2dimension', '3dimension'))], 'required': [('mode', 'in', ('weight', '1dimension', '2dimension', '3dimension'))]}"/>
                     <field name="value_zone_id"  attrs="{'readonly': [('mode', '!=', 'zone')], 'required': [('mode', '=', 'zone')]}" domain="[('courier_id', '=', courier_id)]"/>
                     <field name="price"/>
                     <field name="date"/>

@@ -176,12 +176,12 @@ class SaleOrderCarrierZoneExtra(orm.Model):
 
             ('1dimension', 'Dimensione max >='),
             ('2dimension', 'Min + max dime. >='),
-            ('2bdimension', '2 massime dimensioni >='),
+            # ('2bdimension', '2 massime dimensioni >='),
             ('3dimension', 'Somma 3 dimensioni >='),
 
-            ('Ldimension', 'Lunghezza >='),
-            ('Hdimension', 'Altezza >='),
-            ('Wdimension', 'Larghezza >='),
+            # ('Ldimension', 'Lunghezza >='),
+            # ('Hdimension', 'Altezza >='),
+            # ('Wdimension', 'Larghezza >='),
 
         ], 'Modalità', required=True),
 
@@ -192,7 +192,6 @@ class SaleOrderCarrierZoneExtra(orm.Model):
                  'max(l, h, w) < 100'
                  'sum(sorted((l, h, w))[-2:])'
                  'Use: weight, l, h, m, volumetric, volume as variables'),
-
         'value': fields.float(
             'Valore filtro', digits=(10, 2),
             help='Dove serve indicare il valore da usare per il filtro '
@@ -202,10 +201,11 @@ class SaleOrderCarrierZoneExtra(orm.Model):
             help='Nel caso di filtro in modalità zona, indicare '
                  'quella da usare'),
 
-        'price': fields.float(
-            'Sovrapprezzo', digits=(10, 2), required=True,
+        'price': fields.char(
+            'Sovrapprezzo', size=120, required=True,
             help='Maggiorazione applicata alla zona standard calcolata '
-                 'con peso'),
+                 'con peso (il campo è una formula, usarlo quando '
+                 'c\'è da indicare ad esempio: weight *  3.5'),
         'date': fields.date(
             'Dalla data >=', required=True,
             help='Data da cui viene applicato il sovrapprezzo'),
@@ -249,22 +249,25 @@ class SaleOrderCarrierConstraint(orm.Model):
             ('formula', 'Formula'),
 
             ('weight', 'Peso >='),
-
-            ('Ldimension', 'Lunghezza >='),
-            ('Hdimension', 'Altezza >='),
-            ('Wdimension', 'Larghezza >='),
+            # ('Ldimension', 'Lunghezza >='),
+            # ('Hdimension', 'Altezza >='),
+            # ('Wdimension', 'Larghezza >='),
 
             ('1dimension', 'Dimensione max >='),
-            ('2dimension', 'Min + max dime. >='),
-            ('2bdimension', '2 dimens. più lunghe >='),
-            ('3dimension', 'Somma dimensioni >='),
+            ('2dimension', 'Min + max dim. >='),
+            # ('2bdimension', '2 dimens. più lunghe >='),
+            ('3dimension', 'Somma dim. >='),
 
             ('parcel', 'Colli >='),  # todo
         ], 'Vincolo', required=True),
         'value': fields.float(
-            'Valore', digits=(10, 2), required=True,
+            'Valore', digits=(10, 2),
             help='Maggiorazione applicata alla zona standard calcolata '
                  'con peso'),
+        'formula': fields.char(
+            'Formula', size=130,
+            help='Formula con test per capire se il vincolo è rispettato'
+                 'o meno.'),
 
         'broker_id': fields.many2one(
             'carrier.supplier', 'Broker',
