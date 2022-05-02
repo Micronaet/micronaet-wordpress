@@ -160,15 +160,26 @@ class SaleOrderCarrierZoneExtra(orm.Model):
         'is_active': fields.boolean(
             'Attiva', help='Voci disattivate sono da considerare storiche'),
         'mode': fields.selection([
+            # Fixed:
             ('fixed', 'Fisso (valore)'),
             ('fuel', 'Carburante (perc.)'),
             ('pallet', 'Pallet non sovrapponibile (valore)'),
 
+            # Zone with select:
             ('zone', 'Zona >>'),
+
+            # Dimension  with value:
             ('weight', 'Peso >='),
+
             ('1dimension', 'Dimensione max >='),
             ('2dimension', 'Min + max dime. >='),
+            ('2bdimension', '2 massime dimensioni >='),
             ('3dimension', 'Somma 3 dimensioni >='),
+
+            ('Ldimension', 'Lunghezza >='),
+            ('Hdimension', 'Altezza >='),
+            ('Wdimension', 'Larghezza >='),
+
         ], 'Modalità', required=True),
 
         'value': fields.float(
@@ -223,11 +234,19 @@ class SaleOrderCarrierConstraint(orm.Model):
 
     _columns = {
         'mode': fields.selection([
-            ('weight', 'Peso'),
-            ('1dimension', 'Dimensione max <='),
-            ('2dimension', 'Min + max dime. <='),
-            ('3dimension', 'Somma dimensioni <='),
-            ('parcel', 'Colli <='),  # todo
+            ('weight', 'Peso >='),
+
+            # todo:
+            # ('Ldimension', 'Lunghezza >='),
+            # ('Hdimension', 'Altezza >='),
+            # ('Wdimension', 'Larghezza >='),
+
+            ('1dimension', 'Dimensione max >='),
+            ('2dimension', 'Min + max dime. >='),
+            # ('2bdimension', '2 dimens. più lunghe >='),
+            ('3dimension', 'Somma dimensioni >='),
+
+            ('parcel', 'Colli >='),  # todo
         ], 'Vincolo', required=True),
         'value': fields.float(
             'Valore', digits=(10, 2), required=True,
@@ -400,6 +419,8 @@ class CarrierSupplierInherit(orm.Model):
                     comment += '[VINCOLO] 3 dimens. <= %s attuale %s' % (
                         value, dimension3,
                     )
+                # todo manage extra list!
+
             return comment
 
         def get_extra_price(courier, mode='extra', cache=None):
@@ -546,6 +567,7 @@ class CarrierSupplierInherit(orm.Model):
                     extra_rate.append(price)
                 # elif mode == 'pallet' and dimension2 >= value:
                 #    extra_price += price
+                # todo manage extra list!
 
             # Loop to add extra price:
             if extra_price:  # Loop for add it:
