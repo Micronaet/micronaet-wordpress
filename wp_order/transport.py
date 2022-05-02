@@ -450,7 +450,7 @@ class CarrierSupplierInherit(orm.Model):
             if mode not in cache:
                 cache[mode] = {}
             if carrier not in cache[mode]:
-                cache[mode][carrier] = [{}, False, 0]  # Zones, Base
+                cache[mode][carrier] = [{}, False, 0]  # Zones, Base, pos
                 zones = sorted(
                     eval('carrier.%s_zone_ids' % mode),
                     key=lambda z: z.name)
@@ -786,7 +786,7 @@ class CarrierSupplierInherit(orm.Model):
                     #               Data price for courier:
                     # ---------------------------------------------------------
                     courier_zones, _, courier_col = get_zone(
-                        courier, pos, mode='courier', cache=cache)
+                        courier, courier_col, mode='courier', cache=cache)
 
                     # 1. Empty:
                     excel_pool.write_xls_line(
