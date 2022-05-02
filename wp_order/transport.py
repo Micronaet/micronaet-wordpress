@@ -541,14 +541,9 @@ class CarrierSupplierInherit(orm.Model):
             for extra_rule in extra_rules:
                 if extra_rule.mode == 'zone':
                     # todo Price is base price + extra for this rule:
-                    try:
-                        price = extra_rule.price
-                        rule_price = eval(price)  # is a formula
-                    except:
-                        pdb.set_trace()
-                        res[extra_rule.value_zone_id]['comment'] += \
-                            '[ERR] Error formula price: %s\n' % rule_price
-                        res[extra_rule.value_zone_id]['error'] = True
+                    price = extra_rule.price or '0'
+                    rule_price = eval(price)  # is a formula
+                    # todo manage error
 
                     extra_rule_price = base_price + rule_price
                     if extra_rule.value_zone_id in res:
