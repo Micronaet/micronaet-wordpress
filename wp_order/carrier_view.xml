@@ -682,7 +682,8 @@
                                         <field name="carrier_constraint_ids" colspan="4" nolabel="1">
                                             <tree string="Vincoli" editable="bottom">
                                                 <field name="mode"/>
-                                                <field name="value"/>
+                                                <field name="formula" attrs="{'required': [('mode', '=', 'formula')], 'readonly': [('mode', '!=', 'formula')]}"/>
+                                                <field name="value" attrs="{'required': [('mode', '!=', 'formula')], 'readonly': [('mode', '=', 'formula')]}"/>
                                             </tree>
                                         </field>
                                     </group>
@@ -747,7 +748,8 @@
                                         <field name="carrier_constraint_ids" colspan="4" nolabel="1">
                                             <tree string="Vincoli" editable="bottom">
                                                 <field name="mode"/>
-                                                <field name="value"/>
+                                                <field name="formula" attrs="{'required': [('mode', '=', 'formula')], 'readonly': [('mode', '!=', 'formula')]}"/>
+                                                <field name="value" attrs="{'required': [('mode', '!=', 'formula')], 'readonly': [('mode', '=', 'formula')]}"/>
                                             </tree>
                                         </field>
                                     </group>
