@@ -174,6 +174,8 @@ else:
 
     mask = '%-3s%-10s%-20s%-10.2f%-10.2f\n'  # todo \r
     for order in orders:
+        if order.name == '83775':
+            pdb.set_trace()
         marketplace = order.marketplace
         previous_ship = order.shipping_total
         current_ship = order.real_shipping_total  # Present because of filter!
