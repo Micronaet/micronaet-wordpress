@@ -1,6 +1,19 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!--sale.order.carrier.constraint-->
+        <record id="sale_order_carrier_constraint_view_tree" model="ir.ui.view">
+            <field name="name">sale.order.carrier.constraint.tree</field>
+            <field name="model">sale.order.carrier.constraint</field>
+            <field name="arch" type="xml">
+                <tree string="Vincoli" editable="bottom">
+                    <field name="mode"/>
+                    <field name="formula" attrs="{'required': [('mode', '=', 'formula')], 'readonly': [('mode', '!=', 'formula')]}"/>
+                    <field name="value" attrs="{'required': [('mode', '!=', 'formula')], 'readonly': [('mode', '=', 'formula')]}"/>
+                </tree>
+            </field>
+        </record>
+
         <!--product.product.web.server-->
         <record id="product_product_web_server_view_tree" model="ir.ui.view">
             <field name="name">product.product.web.server.tree</field>
@@ -679,13 +692,7 @@
                                 </page>
                                 <page string="Vincoli broker" name="page_constraint_broker">
                                     <group col="4">
-                                        <field name="carrier_constraint_ids" colspan="4" nolabel="1">
-                                            <tree string="Vincoli" editable="bottom">
-                                                <field name="mode"/>
-                                                <field name="formula" attrs="{'required': [('mode', '=', 'formula')], 'readonly': [('mode', '!=', 'formula')]}"/>
-                                                <field name="value" attrs="{'required': [('mode', '!=', 'formula')], 'readonly': [('mode', '=', 'formula')]}"/>
-                                            </tree>
-                                        </field>
+                                        <field name="carrier_constraint_ids" colspan="4" nolabel="1"/>
                                     </group>
                                 </page>
                                 <page string="Extra" name="page_extra_cost">
@@ -745,13 +752,7 @@
                                 </page>
                                 <page string="Vincoli corriere" name="page_constraint_broker">
                                     <group col="4">
-                                        <field name="carrier_constraint_ids" colspan="4" nolabel="1">
-                                            <tree string="Vincoli" editable="bottom">
-                                                <field name="mode"/>
-                                                <field name="formula" attrs="{'required': [('mode', '=', 'formula')], 'readonly': [('mode', '!=', 'formula')]}"/>
-                                                <field name="value" attrs="{'required': [('mode', '!=', 'formula')], 'readonly': [('mode', '=', 'formula')]}"/>
-                                            </tree>
-                                        </field>
+                                        <field name="carrier_constraint_ids" colspan="4" nolabel="1"/>
                                     </group>
                                 </page>
 
