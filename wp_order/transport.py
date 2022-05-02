@@ -411,28 +411,37 @@ class CarrierSupplierInherit(orm.Model):
             # Check constraints:
             # -----------------------------------------------------------------
             comment = ''
+            error = False  # todo needed, if error still red the cell
             for constraint in cache[mode][courier]:
                 mode = constraint.mode
                 value = constraint.value
+                formula = constraint.formula
 
                 dimension1 = max(h, w, l)
                 dimension2 = dimension1 + min(h, w, l)
                 dimension3 = sum((h, w, l))
+                volume = h * w * l
 
+                if mode == 'formula':
+                    try:
+                        if eval(formula):
+                            comment += '[VINCOLO] Formula (%s) ' % formula
+                    except:
+                        comment += '[ERR] Formula errata (%s)' % formula
                 if mode == 'weight' and weight > value:
-                    comment += '[VINCOLO] Peso <= %s attuale %s' % (
+                    comment += '[VINCOLO] Peso <= %s attuale %s ' % (
                         value, weight,
                     )
                 if mode == '1dimension' and dimension1 > value:
-                    comment += '[VINCOLO] 1 dimens. <= %s attuale %s' % (
+                    comment += '[VINCOLO] 1 dimens. <= %s attuale %s ' % (
                         value, dimension1,
                     )
                 if mode == '2dimension' and dimension2 > value:
-                    comment += '[VINCOLO] 2 dimens. <= %s attuale %s' % (
+                    comment += '[VINCOLO] 2 dimens. <= %s attuale %s ' % (
                         value, dimension2,
                     )
                 if mode == '3dimension' and dimension3 > value:
-                    comment += '[VINCOLO] 3 dimens. <= %s attuale %s' % (
+                    comment += '[VINCOLO] 3 dimens. <= %s attuale %s ' % (
                         value, dimension3,
                     )
                 # todo manage extra list!
