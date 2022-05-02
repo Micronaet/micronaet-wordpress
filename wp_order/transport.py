@@ -612,6 +612,7 @@ class CarrierSupplierInherit(orm.Model):
         # Load all brokers:
         broker_ids = self.search(cr, uid, [
             ('mode', '=', 'carrier'),
+            ('no_transport', '=', False),
         ], context=context)
         brokers = sorted(
             self.browse(cr, uid, broker_ids, context=context),
@@ -774,7 +775,7 @@ class CarrierSupplierInherit(orm.Model):
                                 )],
                             default_format=excel_format['header'],
                             col=broker_col)
-
+                    courier_col = broker_col + len(broker_zones)
                     # ---------------------------------------------------------
                     #               Check constraints:
                     # ---------------------------------------------------------
@@ -784,7 +785,7 @@ class CarrierSupplierInherit(orm.Model):
                     # ---------------------------------------------------------
                     #               Data price for courier:
                     # ---------------------------------------------------------
-                    courier_zones, _, pos = get_zone(
+                    courier_zones, _, courier_col = get_zone(
                         courier, pos, mode='courier', cache=cache)
 
                     # 1. Empty:
