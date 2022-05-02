@@ -112,9 +112,9 @@ class SaleOrderCarrierPricelist(orm.Model):
         'to_weight': fields.float(
             'Al peso <', digits=(10, 2), required=True,
             help='Peggiore tra peso fisico e volumetrico'),
-        'price': fields.float(
-            'Prezzo', digits=(10, 2), required=True,
-            help='Prezzo base per questo range'),
+        'price': fields.char(
+            'Prezzo', size=120, required=True,
+            help='Prezzo base per questo range (è un campo formula)'),
         'zone_id': fields.many2one(
             'sale.order.carrier.zone', 'Zona', required=True,
         ),
@@ -516,7 +516,8 @@ class CarrierSupplierInherit(orm.Model):
             for price in price_pool.browse(
                     cr, uid, courier_price_ids, context=context):
                 zone = price.zone_id
-                pl_price = price.price
+
+                pl_price = eval(price.price)
                 res[zone] = {
                     'price': pl_price,
                     'comment': '',
@@ -524,7 +525,7 @@ class CarrierSupplierInherit(orm.Model):
                 }
                 if zone.base:
                     base_price = pl_price
-                    base_comment = '*'
+                    base_comment = '* '
                 else:
                     base_comment = ''
 
