@@ -756,7 +756,7 @@ class CarrierSupplierInherit(orm.Model):
                 cr, uid, master_ids, context=context)]
 
         # Linked database:
-        connector_pool = self.poolget('connector.server')
+        connector_pool = self.pool.get('connector.server')
         connector_ids = connector_pool.search(cr, uid, [
             ('wordpress', '=', True),
         ], context=context)
