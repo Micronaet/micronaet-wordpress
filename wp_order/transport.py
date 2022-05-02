@@ -854,6 +854,11 @@ class CarrierSupplierInherit(orm.Model):
                                         default_format=color_format['number'],
                                         col=price_col)
                                     if pl_comment:
+                                        # Write also zone name:
+                                        pl_comment = '%s\n%s' % (
+                                            zone.name,
+                                            pl_comment,
+                                            )
                                         excel_pool.write_comment(
                                             ws_name, row, price_col,
                                             pl_comment, comment_param)
