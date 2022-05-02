@@ -561,7 +561,9 @@ class CarrierSupplierInherit(orm.Model):
                 mode = extra_rule.mode
                 value = extra_rule.value
                 formula = extra_rule.formula
-                price = eval(extra_rule.price)  # is formula
+                price = eval(extra_rule.price)  # now is formula
+                print(price)
+                pdb.set_trace()
 
                 dimension1 = max(h, w, l)
                 dimension2 = dimension1 + min(h, w, l)
