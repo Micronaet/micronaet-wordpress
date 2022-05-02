@@ -699,7 +699,7 @@
                                 <page string="Dettaglio" name="page_detail">
                                     <group col="4">
                                         <field name="hidden" />
-                                        <newline/>
+                                        <field name="no_transport" />
                                         <field name="mode" />
                                         <field name="carrier_connection_id" attrs="{'required': [('mode', '=', 'carrier')]}"/>
                                         <field name="account_ref" />

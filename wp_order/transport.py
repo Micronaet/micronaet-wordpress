@@ -840,6 +840,10 @@ class CarrierSupplierInherit(orm.Model):
         return excel_pool.return_attachment(cr, uid, 'web_product')
 
     _columns = {
+        'no_transport': fields.boolean(
+            'No trasporto',
+            help='Indica che il corriere non ha costo di trasporto, '
+                 'utilizzato generalmente per il ritoro a magazzino'),
         # Pallet for auto transporter
         'pallet_ids': fields.one2many(
             'sale.order.carrier.pallet', 'broker_id',
