@@ -805,6 +805,7 @@ class CarrierSupplierInherit(orm.Model):
         for web_product in master_product:
             if store_data:
                 json_product = {}
+                json_zone = {}
 
             product = web_product.product_id
             if row == 1:
@@ -953,7 +954,7 @@ class CarrierSupplierInherit(orm.Model):
                                     default_format=color_format['number'],
                                     col=price_col)
 
-                                if store_data:  # todo manage pririty!!
+                                if store_data:
                                     json_product[sequence][key_id][
                                         zone.id] = pl_price
 
@@ -969,10 +970,13 @@ class CarrierSupplierInherit(orm.Model):
                                         ws_name, row, [pl_price],
                                         default_format=color_format['number'],
                                         col=price_col)
-                                    if store_data:  # todo manage priority!
+                                    if store_data:
                                         json_product[sequence][key_id][
                                             zone.id] = pl_price
-
+                                        json_zone[zone.id] = '%s-%s' % (
+                                            sequence,
+                                            pl_price,
+                                        )
                                     if pl_comment:
                                         # Write also zone name:
                                         pl_comment = '%s\n%s' % (
@@ -996,6 +1000,7 @@ class CarrierSupplierInherit(orm.Model):
                     'default_code': product.default_code,
                     'linked_product_ref': linked_product_ref,
                     'json_data': json.dumps(json_product),
+                    'json_zone': json.dumps(json_zone),
                 }, context=context)
 
                 row += 1  # to print header
@@ -1180,7 +1185,14 @@ class CarrierSupplierStoredData(orm.Model):
         'product_id': fields.many2one('product.product', 'Prodotto'),
         'linked_product_ref': fields.integer('Prodotto collegato'),
         'default_code': fields.char('Prodotto collegato', size=20),
-        'json_data': fields.text('JSON Data'),
+        'json_zone': fields.text(
+            'JSON Zone',
+            help='JSON usato per allineare le zone migliori per il calcolo '
+                 'finale del prezzo'),
+        'json_data': fields.text(
+            'JSON Data',
+            help='JSON usato per rappresentazione grafica delle tariffe di '
+                 'spedizione prodotto'),
         'json_data_html':  fields.function(
             _function_json_data_html, method=True,
             type='text', string='Dettaglio trasporti',
