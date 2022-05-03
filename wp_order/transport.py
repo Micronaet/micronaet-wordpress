@@ -1099,9 +1099,9 @@ class CarrierSupplierStoredData(orm.Model):
             self, cr, uid, ids, fields, args, context=None):
         """ Fields function for calculate
         """
-        def tagged(text, color, tag='td'):
+        def tagged(text, color, tag='td', mask='%s'):
             return '<%s bgcolor=%s>%s</%s>' % (
-                tag, color, text, tag
+                tag, color, mask % text, tag
             )
 
         courier_pool = self.pool.get('carrier.supplier')
@@ -1158,14 +1158,12 @@ class CarrierSupplierStoredData(orm.Model):
                             color = 'white'
 
                         res[product.id] += \
-                            '<tr><td>%s</td>' \
-                            '<td>%s</td><td>%s</td>' \
-                            '<td>%s</td><td>%.2f</td>' % (
+                            '<tr>%s%s%s%s%s' % (
                                 tagged(sequence, color),
                                 tagged(courier.broker_id.name, color),
                                 tagged(courier.name, color),
                                 tagged(zone.name, color),
-                                tagged(price, color),
+                                tagged(price, color, mask='%.2f'),
                             )
             res[product.id] = '<table>%s</table>' % res[product.id]
         return res
