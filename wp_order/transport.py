@@ -882,10 +882,12 @@ class CarrierSupplierInherit(orm.Model):
                     else:
                         data_color = excel_format['white']
 
+                    sequence = 0  # todo read from product
                     # 2. Data (colored depend on constraints):
                     excel_pool.write_xls_line(
                         ws_name, row, [
-                            '',  # choose better solution
+                            # choose better solution:
+                            '' if constraint_comment else sequence,
                             broker_name,
                             # Hidden ID only if courier present:
                             '' if constraint_comment else courier.id,
