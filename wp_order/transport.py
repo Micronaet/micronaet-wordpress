@@ -1095,15 +1095,23 @@ class CarrierSupplierStoredData(orm.Model):
     _description = 'Dati storicizzati'
     _rec_name = 'product_id'
 
+    _colors = {
+        'blue': '#a8b1e0',
+        'red': '#efa099',
+        'white': '#FFFFFF',
+    }
+
     def _function_json_data_html(
             self, cr, uid, ids, fields, args, context=None):
         """ Fields function for calculate
         """
         def tagged(text, color, tag='td', mask='%s'):
+            """ Prepare tag with color
+            """
+            color = self._colors.get(color, '#FFFFFF')
             return '<%s bgcolor=%s>%s</%s>' % (
                 tag, color, mask % text, tag
             )
-
         courier_pool = self.pool.get('carrier.supplier')
         zone_pool = self.pool.get('sale.order.carrier.zone')
 
