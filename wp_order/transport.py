@@ -806,7 +806,7 @@ class CarrierSupplierInherit(orm.Model):
 
             excel_pool.write_xls_line(
                 ws_name, row, [
-                    product.id,
+                    u'%s-%s' % (product.company_id.name, product.id),
                     product.default_code or '',
                     product.name or '',
                     h,
