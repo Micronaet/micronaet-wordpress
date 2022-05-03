@@ -1111,27 +1111,40 @@ class CarrierSupplierStoredData(orm.Model):
             if product_id:
                 name = '<b>DB attuale</b>: %s<br/>' % product_id
             else:
-                name = '<b>DB collegato</b>: %s<br/>' % linked_product_ref
-            res[product.id] += '<b>Prodotto</b>: %s<br/>' % name
+                name = '<b>DB attuale</b>: %s<br/>' % linked_product_ref
+            res[product.id] += '<tr><th colspan="5">' \
+                               '<b>Prodotto</b>: %s' \
+                               '</th></tr>' % name
+            res[product.id] += \
+                '<tr><th>Seq./th>' \
+                '<th>Broker</th><th>Corriere</th><th>Zona</th>' \
+                '<th>Prezzo</th><tr>'
 
             product_json = json.loads(product.json_data)
             for sequence in product_json:
-                res[product.id] += '<b>Seq.</b>: %s<br/>' % sequence
+                # res[product.id] += '<b>Seq.</b>: %s<br/>' % sequence
                 for key_id in sorted(product_json[sequence]):
                     broker_id, courier_id = key_id.split('-')
                     courier = courier_pool.browse(
                         cr, uid, int(courier_id), context=context)
-                    res[product.id] += '<b>Broker</b>: %s ' \
-                                       '<b>Corriere</b>: %s' \
-                                       '<br/>' % (courier.broker_id.name,
-                                                  courier.name)
+                    # res[product.id] += '<b>Broker</b>: %s ' \
+                    #                   '<b>Corriere</b>: %s' \
+                    #                   '<br/>' % (courier.broker_id.name,
+                    #                              courier.name)
                     for zone_id in product_json[sequence][key_id]:
                         zone = zone_pool.browse(
                             cr, uid, int(zone_id), context=context)
                         price = product_json[sequence][key_id][zone_id]
-                        res[product.id] += '<b>Zona</b>: %s - ' \
-                                           '<b>Prezzo</b>: %s<br/>' % (
-                            zone.name, price)
+                        # res[product.id] += '<b>Zona</b>: %s - ' \
+                        #                   '<b>Prezzo</b>: %s<br/>' % (
+                        #    zone.name, price)
+                        res[product.id] += \
+                            '<tr><td>%s</td>' \
+                            '<td>%s</td><td>%s</td><td>%s</td><td>%s</td>' % (
+                            sequence, courier.broker_id.name, courier.name,
+                                zone.name, price,
+                            )
+            res[product.id] = '<table>%s</table>' % res[product.id]
         return res
 
     _columns = {
