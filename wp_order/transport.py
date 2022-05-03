@@ -1135,12 +1135,12 @@ class CarrierSupplierStoredData(orm.Model):
                     # No Zone:
                     if not product_json[sequence][key_id]:
                         res[product.id] += \
-                            '<tr><td>%s</td>' \
-                            '<td>%s</td><td>%s</td>' \
-                            '<td>/</td><td>/</td>' % (
+                            '<tr>%s%s%s%s%s' % (
                                 tagged(sequence, 'red'),
                                 tagged(courier.broker_id.name, 'red'),
                                 tagged(courier.name, 'red'),
+                                tagged('/', 'red'),
+                                tagged('/', 'red'),
                                 )
 
                     # Yes Zone:
