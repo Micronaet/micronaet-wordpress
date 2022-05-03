@@ -1122,22 +1122,25 @@ class CarrierSupplierStoredData(orm.Model):
 
             product_json = json.loads(product.json_data)
             for sequence in product_json:
-                # res[product.id] += '<b>Seq.</b>: %s<br/>' % sequence
                 for key_id in sorted(product_json[sequence]):
                     broker_id, courier_id = key_id.split('-')
                     courier = courier_pool.browse(
                         cr, uid, int(courier_id), context=context)
-                    # res[product.id] += '<b>Broker</b>: %s ' \
-                    #                   '<b>Corriere</b>: %s' \
-                    #                   '<br/>' % (courier.broker_id.name,
-                    #                              courier.name)
+
+                    # No Zone:
+                    if not product_json[sequence][key_id]:
+                        res[product.id] += \
+                            '<tr><td>%s</td>' \
+                            '<td>%s</td><td>%s</td>' \
+                            '<td>/</td><td>/</td>' % (
+                            sequence, courier.broker_id.name, courier.name,
+                            )
+
+                    # Yes Zone:
                     for zone_id in product_json[sequence][key_id]:
                         zone = zone_pool.browse(
                             cr, uid, int(zone_id), context=context)
                         price = product_json[sequence][key_id][zone_id]
-                        # res[product.id] += '<b>Zona</b>: %s - ' \
-                        #                   '<b>Prezzo</b>: %s<br/>' % (
-                        #    zone.name, price)
                         res[product.id] += \
                             '<tr><td>%s</td>' \
                             '<td>%s</td><td>%s</td>' \
