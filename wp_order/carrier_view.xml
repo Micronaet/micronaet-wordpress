@@ -9,8 +9,8 @@
                 <search string="Spedizioni storicizzate">
                     <field name="product_id" />
                     <field name="default_code" />
-                    <filter name="this_database" string="DB corrente" domain="[('linked_product_ref','=',False)]"/>
-                    <filter name="other_database" string="DB collegato" domain="[('linked_product_ref','!=',False)]"/>
+                    <filter name="this_database" string="DB corrente" domain="[('linked_product_ref', '=', False)]"/>
+                    <filter name="other_database" string="DB collegato" domain="[('linked_product_ref', '!=', False)]"/>
                 </search>
             </field>
         </record>
@@ -47,7 +47,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">carrier.supplier.stored.data</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[)]</field>
+            <field name="domain">[]</field>
             <field name="view_id" ref="carrier_supplier_stored_data_view_tree"/>
         </record>
 
