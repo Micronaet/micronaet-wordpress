@@ -1094,9 +1094,33 @@ class CarrierSupplierStoredData(orm.Model):
             self, cr, uid, ids, fields, args, context=None):
         """ Fields function for calculate
         """
+        courier_pool = self.pool.get('carrier.supplier')
+        zone_pool = self.pool.get('sale.order.carrier.zone')
+
         res = {}
         for product in self.browse(cr, uid, ids, context=context):
-            res[product.id] = ''
+            product_id = product.product_id
+            linked_product_ref = product.linked_product_ref
+
+            if product_id:
+                name = 'DB attuale: %s\n' % product_id
+            else:
+                name = 'DB collegato: %s\n' % linked_product_ref
+
+            res[product.id] += 'Ordine: %s\n' % sequence
+            product_json = json.loads(product.json_data)
+            for sequence in product_json:
+                res[product.id] += 'Seq.: %s\n' % sequence
+                for courier_id in product_json[sequence]:
+                    courier = courier_pool.browse(
+                        cr, uid, int(courier_id), context=context)
+                    res[product.id] += 'Corriere.: %s\n' % courier.name
+                    for zone_id in product_json[sequence][courier_id]:
+                        zone = zone_pool.browse(
+                            cr, uid, int(zone_id), context=context)
+                        price = product_json[sequence][courier_id][zone_id]
+                        res[product.id] += 'Zona.: %s - Prezzo: %s\n' % (
+                            zone.name, price)
         return res
 
     _columns = {
