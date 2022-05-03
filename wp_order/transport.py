@@ -1099,6 +1099,7 @@ class CarrierSupplierStoredData(orm.Model):
 
         res = {}
         for product in self.browse(cr, uid, ids, context=context):
+            res[product.id] = ''
             product_id = product.product_id
             linked_product_ref = product.linked_product_ref
 
