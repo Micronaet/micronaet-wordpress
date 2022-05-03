@@ -1,6 +1,56 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!--carrier.supplier.stored.data-->
+        <record id="carrier_supplier_stored_data_view_search" model="ir.ui.view">
+            <field name="name">carrier.supplier.stored.data.search</field>
+            <field name="model">carrier.supplier.stored.data</field>
+            <field name="arch" type="xml">
+                <search string="Spedizioni storicizzate">
+                    <field name="product_id" />
+                    <field name="default_code" />
+                    <filter name="this_database" string="DB corrente" domain="[('linked_product_ref','=',False)]"/>
+                    <filter name="other_database" string="DB collegato" domain="[('linked_product_ref','!=',False)]"/>
+                </search>
+            </field>
+        </record>
+        <record id="carrier_supplier_stored_data_view_tree" model="ir.ui.view">
+            <field name="name">carrier.supplier.stored.data.tree</field>
+            <field name="model">carrier.supplier.stored.data</field>
+            <field name="arch" type="xml">
+                <tree string="Storico spedizioni">
+                    <field name="product_id"/>
+                    <field name="linked_product_ref"/>
+                    <field name="default_code" />
+                </tree>
+            </field>
+        </record>
+        <record id="carrier_supplier_stored_data_view_form" model="ir.ui.view">
+            <field name="name">carrier.supplier.stored.data.form</field>
+            <field name="model">carrier.supplier.stored.data</field>
+            <field name="arch" type="xml">
+                <form string="Storico spedizioni">
+                    <sheet>
+                        <group col="4">
+                            <field name="product_id"/>
+                            <field name="linked_product_ref"/>
+                            <field name="default_code" />
+                            <separator string="Spedizioni" colspan="4"/>
+                            <field name="json_data_html" widget="html" colspan="4" nolabel="1" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="action_carrier_supplier_stored_data" model="ir.actions.act_window">
+            <field name="name">Storico spedizioni prodotto</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">carrier.supplier.stored.data</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[)]</field>
+            <field name="view_id" ref="carrier_supplier_stored_data_view_tree"/>
+        </record>
+
         <!--sale.order.carrier.constraint-->
         <record id="sale_order_carrier_constraint_view_tree" model="ir.ui.view">
             <field name="name">sale.order.carrier.constraint.tree</field>
@@ -984,6 +1034,12 @@
                         id="menu_product_product_web_transport_server"
                         action="action_product_product_web_transport_server"
                         sequence="100"
+                        />
+                    <menuitem
+                        parent="menu_carrier_configuration"
+                        id="menu_carrier_supplier_stored_data"
+                        action="action_carrier_supplier_stored_data"
+                        sequence="110"
                         />
 
     </data>
