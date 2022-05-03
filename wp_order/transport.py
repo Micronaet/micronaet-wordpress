@@ -1117,7 +1117,7 @@ class CarrierSupplierStoredData(orm.Model):
             product_json = json.loads(product.json_data)
             for sequence in product_json:
                 res[product.id] += '<b>Seq.</b>: %s<br/>' % sequence
-                for key_id in product_json[sequence]:
+                for key_id in sorted(product_json[sequence]):
                     broker_id, courier_id = key_id.split('-')
                     courier = courier_pool.browse(
                         cr, uid, int(courier_id), context=context)
