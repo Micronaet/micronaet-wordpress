@@ -1099,6 +1099,11 @@ class CarrierSupplierStoredData(orm.Model):
             self, cr, uid, ids, fields, args, context=None):
         """ Fields function for calculate
         """
+        def tagged(text, color, tag='td'):
+            return '<%s bgcolor=%s>%s</%s>' % (
+                tag, color, text, tag
+            )
+
         courier_pool = self.pool.get('carrier.supplier')
         zone_pool = self.pool.get('sale.order.carrier.zone')
 
@@ -1133,20 +1138,34 @@ class CarrierSupplierStoredData(orm.Model):
                             '<tr><td>%s</td>' \
                             '<td>%s</td><td>%s</td>' \
                             '<td>/</td><td>/</td>' % (
-                            sequence, courier.broker_id.name, courier.name,
-                            )
+                                tagged(sequence, 'red'),
+                                tagged(courier.broker_id.name, 'red'),
+                                tagged(courier.name, 'red'),
+                                )
 
                     # Yes Zone:
                     for zone_id in product_json[sequence][key_id]:
                         zone = zone_pool.browse(
                             cr, uid, int(zone_id), context=context)
                         price = product_json[sequence][key_id][zone_id]
+
+                        # Color:
+                        if zone.base:
+                            color = 'blue'
+                        elif not price:
+                            color = 'red'
+                        else:
+                            color = 'white'
+
                         res[product.id] += \
                             '<tr><td>%s</td>' \
                             '<td>%s</td><td>%s</td>' \
                             '<td>%s</td><td>%.2f</td>' % (
-                            sequence, courier.broker_id.name, courier.name,
-                                zone.name, price,
+                                tagged(sequence, color),
+                                tagged(courier.broker_id.name, color),
+                                tagged(courier.name, color),
+                                tagged(zone.name, color),
+                                tagged(price, color),
                             )
             res[product.id] = '<table>%s</table>' % res[product.id]
         return res
