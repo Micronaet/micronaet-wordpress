@@ -1122,10 +1122,10 @@ class CarrierSupplierStoredData(orm.Model):
                     courier = courier_pool.browse(
                         cr, uid, int(courier_id), context=context)
                     res[product.id] += '<b>Corriere</b>: %s<br/>' % courier.name
-                    for zone_id in product_json[sequence][courier_id]:
+                    for zone_id in product_json[sequence][key_id]:
                         zone = zone_pool.browse(
                             cr, uid, int(zone_id), context=context)
-                        price = product_json[sequence][courier_id][zone_id]
+                        price = product_json[sequence][key_id][zone_id]
                         res[product.id] += '<b>Zona</b>: %s - ' \
                                            '<b>Prezzo</b>: %s<br/>' % (
                             zone.name, price)
