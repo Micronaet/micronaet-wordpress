@@ -27,6 +27,7 @@ import sys
 import re
 import logging
 import erppeek
+import json
 import openerp
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
@@ -653,7 +654,6 @@ class CarrierSupplierInherit(orm.Model):
             context = {}
 
         store_data = True  # todo context.get('force_store_data')
-        json_stored = {}
         current_db = cr.dbname  # Used to check external linked product
         if store_data:
             stored_ids = stored_pool.search(cr, uid, [], context=context)
@@ -990,7 +990,7 @@ class CarrierSupplierInherit(orm.Model):
                     'product_id': product_id,
                     'default_code': product.default_code,
                     'linked_product_ref': linked_product_ref,
-                    'json_data': json_stored,
+                    'json_data': json.dumps(json_product),
                 }, context=context)
 
                 row += 1  # to print header
