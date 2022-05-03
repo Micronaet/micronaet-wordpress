@@ -1031,3 +1031,34 @@ class SaleOrderBrokerZoneInherit(orm.Model):
             'Prezzi extra zona broker in corriere',
             help='Elenco prezzi extra per zona')
         }
+
+
+class CarrierSupplierStoredData(orm.Model):
+    """ Model name: Stored data
+    """
+
+    _name = 'carrier.supplier.stored.data'
+    _description = 'Dati storicizzati'
+    _rec_name = 'product_id'
+
+    def _function_json_data_html(
+            self, cr, uid, ids, fields, args, context=None):
+        """ Fields function for calculate
+        """
+        res = {}
+        for product in self.browse(cr, uid, ids, context=context):
+            res[product.id] = ''
+        return res
+
+    _columns = {
+        'product_id': fields.many2one('product.product', 'Prodotto'),
+        'default_code': fields.char('Prodotto collegato', size=20),
+        'linked_product_ref': fields.integer('Prodotto collegato'),
+        'json_data': fields.text('JSON Data'),
+        'json_data_html':  fields.function(
+            _function_json_data_html, method=True,
+            type='text', string='Dettaglio trasporti',
+            help='Campo che sviluppa i trasporti giornalmente per la scelta'
+                 'del migliore da utilizzare'),
+        }
+

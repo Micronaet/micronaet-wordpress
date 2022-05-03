@@ -9,6 +9,7 @@ access_carrier_supplier_mode_user,carrier.supplier.mode,model_carrier_supplier_m
 access_carrier_parcel_template_user,carrier.parcel.template,model_carrier_parcel_template,base.group_user,1,1,1,1
 access_product_product_shipping_history_user,product.product.shipping.history,model_product_product_shipping_history,base.group_user,1,1,1,1
 
+access_carrier_supplier_stored_data_user,carrier.supplier.stored.data,model_carrier_supplier_stored_data,base.group_user,1,1,1,1
 access_product_product_courier_user,product.product.courier,model_product_product_courier,base.group_user,1,1,1,1
 access_sale_order_carrier_zone_user,sale.order.carrier.zone,model_sale_order_carrier_zone,base.group_user,1,1,1,1
 access_sale_order_carrier_pallet_user,sale.order.carrier.pallet,model_sale_order_carrier_pallet,base.group_user,1,1,1,1
