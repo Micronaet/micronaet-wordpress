@@ -425,27 +425,25 @@ class CarrierSupplierInherit(orm.Model):
                 if mode == 'formula':
                     try:
                         if eval(formula):
-                            comment += '[VINCOLO] Formula (%s) ' % formula
+                            comment += '[VINCOLO] Formula (%s) \n' % formula
                     except:
                         comment += '[ERR] Formula errata (%s)' % formula
                 if mode == 'weight' and weight > value:
-                    comment += '[VINCOLO] Peso <= %s attuale %s ' % (
+                    comment += '[VINCOLO] Peso <= %s attuale %s \n' % (
                         value, weight,
                     )
                 if mode == '1dimension' and dimension1 > value:
-                    comment += '[VINCOLO] 1 dimens. <= %s attuale %s ' % (
+                    comment += '[VINCOLO] 1 dimens. <= %s attuale %s \n' % (
                         value, dimension1,
                     )
                 if mode == '2dimension' and dimension2 > value:
-                    comment += '[VINCOLO] 2 dimens. <= %s attuale %s ' % (
+                    comment += '[VINCOLO] 2 dimens. <= %s attuale %s \n' % (
                         value, dimension2,
                     )
                 if mode == '3dimension' and dimension3 > value:
-                    comment += '[VINCOLO] 3 dimens. <= %s attuale %s ' % (
+                    comment += '[VINCOLO] 3 dimens. <= %s attuale %s \n' % (
                         value, dimension3,
                     )
-                # todo manage extra list!
-
             return comment
 
         def get_extra_price(courier, mode='extra', cache=None):
@@ -764,20 +762,24 @@ class CarrierSupplierInherit(orm.Model):
             wp_connector = connector_pool.browse(
                 cr, uid, connector_ids, context=context)[0]
 
-            odoo = erppeek.Client(
-                'http://%s:%s' % (
-                    wp_connector.linked_server, wp_connector.linked_port),
-                db=wp_connector.linked_dbname,
-                user=wp_connector.linked_user,
-                password=wp_connector.linked_pwd,
-            )
-            # Pool used:
-            linked_product_pool = odoo.model('product.product.web.server')
-            linked_master_ids = linked_product_pool.search([
-                ('wp_parent_template', '=', True),
-                ])
-            master_product.extend([p for p in linked_product_pool.browse(
-                    linked_master_ids)])
+            try:
+                odoo = erppeek.Client(
+                    'http://%s:%s' % (
+                        wp_connector.linked_server, wp_connector.linked_port),
+                    db=wp_connector.linked_dbname,
+                    user=wp_connector.linked_user,
+                    password=wp_connector.linked_pwd,
+                )
+
+                # Pool used:
+                linked_product_pool = odoo.model('product.product.web.server')
+                linked_master_ids = linked_product_pool.search([
+                    ('wp_parent_template', '=', True),
+                    ])
+                master_product.extend([p for p in linked_product_pool.browse(
+                        linked_master_ids)])
+            except:
+                _logger.error('Cannot login on linked database')
 
         master_product = sorted(
             master_product,
