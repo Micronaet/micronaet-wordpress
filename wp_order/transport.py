@@ -1116,7 +1116,7 @@ class CarrierSupplierStoredData(orm.Model):
                                '<b>Prodotto</b>: %s' \
                                '</th></tr>' % name
             res[product.id] += \
-                '<tr><th>Seq./th>' \
+                '<tr><th>Seq.</th>' \
                 '<th>Broker</th><th>Corriere</th><th>Zona</th>' \
                 '<th>Prezzo</th><tr>'
 
@@ -1140,7 +1140,8 @@ class CarrierSupplierStoredData(orm.Model):
                         #    zone.name, price)
                         res[product.id] += \
                             '<tr><td>%s</td>' \
-                            '<td>%s</td><td>%s</td><td>%s</td><td>%s</td>' % (
+                            '<td>%s</td><td>%s</td>' \
+                            '<td>%s</td><td>%.2f</td>' % (
                             sequence, courier.broker_id.name, courier.name,
                                 zone.name, price,
                             )
