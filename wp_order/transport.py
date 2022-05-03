@@ -1121,7 +1121,10 @@ class CarrierSupplierStoredData(orm.Model):
                     broker_id, courier_id = key_id.split('-')
                     courier = courier_pool.browse(
                         cr, uid, int(courier_id), context=context)
-                    res[product.id] += '<b>Corriere</b>: %s<br/>' % courier.name
+                    res[product.id] += '<b>Broker</b>: %s ' \
+                                       '<b>Corriere</b>: %s' \
+                                       '<br/>' % (courier.brocker_id.name,
+                                                  courier.name)
                     for zone_id in product_json[sequence][key_id]:
                         zone = zone_pool.browse(
                             cr, uid, int(zone_id), context=context)
