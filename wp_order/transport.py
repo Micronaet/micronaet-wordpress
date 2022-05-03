@@ -644,13 +644,28 @@ class CarrierSupplierInherit(orm.Model):
         # Pool used:
         excel_pool = self.pool.get('excel.writer')
         web_product_pool = self.pool.get('product.product.web.server')
+        stored_pool = self.pool.get('carrier.supplier.stored.data')
+
+        # ---------------------------------------------------------------------
+        # JSON Store management:
+        # ---------------------------------------------------------------------
+        if context is None:
+            context = {}
+
+        store_data = True  # todo context.get('force_store_data')
+        json_stored = {}
+        current_db = cr.dbname  # Used to check external linked product
+        if store_data:
+            stored_ids = stored_pool.search(cr, uid, [], context=context)
+            stored_pool.unlink(cr, uid, stored_ids, context=context)
+            _logger.info('Clean all previous stored data')
 
         # Parameters:
-        today = datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
+        # today = datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
         fall_back = True  # Fall back of dimension and weight on web product
         cache = {}
         comment_param = parameters = {
-            'width': 350,
+            'width': 400,
             }
 
         # Load all brokers:
@@ -788,6 +803,9 @@ class CarrierSupplierInherit(orm.Model):
 
         _logger.warning('Selected product: %s' % len(master_ids))
         for web_product in master_product:
+            if store_data:
+                json_product = {}
+
             product = web_product.product_id
             if row == 1:
                 row += 1
@@ -855,6 +873,7 @@ class CarrierSupplierInherit(orm.Model):
                             default_format=excel_format['header'],
                             col=broker_col)
                     courier_col = broker_col + len(broker_zones)
+
                     # ---------------------------------------------------------
                     #               Check constraints:
                     # ---------------------------------------------------------
@@ -882,7 +901,8 @@ class CarrierSupplierInherit(orm.Model):
                     else:
                         data_color = excel_format['white']
 
-                    sequence = 0  # todo read from product
+                    sequence = 0  # todo read from product correct value
+
                     # 2. Data (colored depend on constraints):
                     excel_pool.write_xls_line(
                         ws_name, row, [
@@ -896,6 +916,12 @@ class CarrierSupplierInherit(orm.Model):
                         default_format=data_color['text'],
                         col=product_col)
 
+                    if store_data and not constraint_comment:  # used courier:
+                        if sequence not in json_product:
+                            json_product[sequence] = {}
+                        if courier.id not in json_product[sequence]:
+                            json_product[sequence][courier.id] = {}
+
                     # Pricelist will be added only if not constraints problem:
                     if not constraint_comment:
                         pricelist = get_prices(
@@ -907,8 +933,6 @@ class CarrierSupplierInherit(orm.Model):
                             pl_comment = pl_data['comment']
                             pl_error = pl_data['error']
 
-                            price_col = broker_zones.get(zone)
-
                             if pl_error or not pl_price:
                                 color_format = excel_format['red']
                             elif zone == default_zone:
@@ -917,11 +941,17 @@ class CarrierSupplierInherit(orm.Model):
                                 color_format = excel_format['white']
 
                             # Broker pricelist / zones:
+                            price_col = broker_zones.get(zone)
                             if price_col:
                                 excel_pool.write_xls_line(
                                     ws_name, row, [pl_price],
                                     default_format=color_format['number'],
                                     col=price_col)
+
+                                if store_data:  # todo manage pririty!!
+                                    json_product[sequence][courier.id][
+                                        zone.id] = pl_price
+
                                 if pl_comment:
                                     excel_pool.write_comment(
                                         ws_name, row, price_col, pl_comment,
@@ -934,6 +964,10 @@ class CarrierSupplierInherit(orm.Model):
                                         ws_name, row, [pl_price],
                                         default_format=color_format['number'],
                                         col=price_col)
+                                    if store_data:  # todo manage priority!
+                                        json_product[sequence][courier.id][
+                                            zone.id] = pl_price
+
                                     if pl_comment:
                                         # Write also zone name:
                                         pl_comment = '%s\n%s' % (
@@ -943,6 +977,21 @@ class CarrierSupplierInherit(orm.Model):
                                         excel_pool.write_comment(
                                             ws_name, row, price_col,
                                             pl_comment, comment_param)
+            # Store JSON data for this product
+            if store_data:
+                if current_db == product.company_id.name:
+                    product_id = product.id
+                    linked_product_ref = ''
+                else:
+                    product_id = False
+                    linked_product_ref = product.id
+
+                stored_pool.create(cr, uid, {
+                    'product_id': product_id,
+                    'default_code': product.default_code,
+                    'linked_product_ref': linked_product_ref,
+                    'json_data': json_stored,
+                }, context=context)
 
                 row += 1  # to print header
         return excel_pool.return_attachment(cr, uid, 'web_product')
