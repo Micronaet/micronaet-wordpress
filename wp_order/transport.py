@@ -835,6 +835,7 @@ class CarrierSupplierInherit(orm.Model):
                 ], default_format=excel_format['white']['text'])
 
             for broker in brokers:
+                broker_id = broker.id
                 broker_name = broker.name
                 broker_zones, default_zone, pos = get_zone(
                     broker, broker_col, cache=cache)
@@ -842,6 +843,7 @@ class CarrierSupplierInherit(orm.Model):
                 couriers = sorted(broker.child_ids, key=lambda c: c.name)
                 header_load = True
                 for courier in couriers:
+                    courier_id = courier.id
                     row += 1
 
                     # ---------------------------------------------------------
@@ -910,7 +912,7 @@ class CarrierSupplierInherit(orm.Model):
                             '' if constraint_comment else sequence,
                             broker_name,
                             # Hidden ID only if courier present:
-                            '' if constraint_comment else courier.id,
+                            '' if constraint_comment else courier_id,
                             courier.name,
                         ],
                         default_format=data_color['text'],
@@ -919,8 +921,10 @@ class CarrierSupplierInherit(orm.Model):
                     if store_data and not constraint_comment:  # used courier:
                         if sequence not in json_product:
                             json_product[sequence] = {}
-                        if courier.id not in json_product[sequence]:
-                            json_product[sequence][courier.id] = {}
+                        if (broker_id, courier_id) not in \
+                                json_product[sequence]:
+                            json_product[sequence][(broker_id, courier_id)] = \
+                                {}
 
                     # Pricelist will be added only if not constraints problem:
                     if not constraint_comment:
@@ -949,7 +953,8 @@ class CarrierSupplierInherit(orm.Model):
                                     col=price_col)
 
                                 if store_data:  # todo manage pririty!!
-                                    json_product[sequence][courier.id][
+                                    json_product[sequence][
+                                        (broker_id, courier_id)][
                                         zone.id] = pl_price
 
                                 if pl_comment:
@@ -965,7 +970,8 @@ class CarrierSupplierInherit(orm.Model):
                                         default_format=color_format['number'],
                                         col=price_col)
                                     if store_data:  # todo manage priority!
-                                        json_product[sequence][courier.id][
+                                        json_product[sequence][
+                                            (broker_id, courier_id)][
                                             zone.id] = pl_price
 
                                     if pl_comment:
@@ -1112,7 +1118,7 @@ class CarrierSupplierStoredData(orm.Model):
             product_json = json.loads(product.json_data)
             for sequence in product_json:
                 res[product.id] += '<b>Seq.</b>: %s<br/>' % sequence
-                for courier_id in product_json[sequence]:
+                for (broker_id, courier_id) in product_json[sequence]:
                     courier = courier_pool.browse(
                         cr, uid, int(courier_id), context=context)
                     res[product.id] += '<b>Corriere</b>: %s<br/>' % courier.name
