@@ -1107,8 +1107,8 @@ class CarrierSupplierStoredData(orm.Model):
                 name = 'DB attuale: %s\n' % product_id
             else:
                 name = 'DB collegato: %s\n' % linked_product_ref
+            res[product.id] += 'Prodotto: %s\n' % name
 
-            res[product.id] += 'Ordine: %s\n' % sequence
             product_json = json.loads(product.json_data)
             for sequence in product_json:
                 res[product.id] += 'Seq.: %s\n' % sequence
