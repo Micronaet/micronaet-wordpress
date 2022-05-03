@@ -1100,7 +1100,7 @@ class CarrierSupplierStoredData(orm.Model):
         res = {}
         for product in self.browse(cr, uid, ids, context=context):
             res[product.id] = ''
-            product_id = product.product_id
+            product_id = product.product_id.id
             linked_product_ref = product.linked_product_ref
 
             if product_id:
@@ -1126,8 +1126,8 @@ class CarrierSupplierStoredData(orm.Model):
 
     _columns = {
         'product_id': fields.many2one('product.product', 'Prodotto'),
-        'default_code': fields.char('Prodotto collegato', size=20),
         'linked_product_ref': fields.integer('Prodotto collegato'),
+        'default_code': fields.char('Prodotto collegato', size=20),
         'json_data': fields.text('JSON Data'),
         'json_data_html':  fields.function(
             _function_json_data_html, method=True,
