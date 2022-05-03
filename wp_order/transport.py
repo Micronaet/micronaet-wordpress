@@ -1104,23 +1104,24 @@ class CarrierSupplierStoredData(orm.Model):
             linked_product_ref = product.linked_product_ref
 
             if product_id:
-                name = 'DB attuale: %s\n' % product_id
+                name = '<b>DB attuale</b>: %s<br/>' % product_id
             else:
-                name = 'DB collegato: %s\n' % linked_product_ref
-            res[product.id] += 'Prodotto: %s\n' % name
+                name = '<b>DB collegato</b>: %s<br/>' % linked_product_ref
+            res[product.id] += '<b>Prodotto</b>: %s<br/>' % name
 
             product_json = json.loads(product.json_data)
             for sequence in product_json:
-                res[product.id] += 'Seq.: %s\n' % sequence
+                res[product.id] += '<b>Seq.</b>: %s<br/>' % sequence
                 for courier_id in product_json[sequence]:
                     courier = courier_pool.browse(
                         cr, uid, int(courier_id), context=context)
-                    res[product.id] += 'Corriere.: %s\n' % courier.name
+                    res[product.id] += '<b>Corriere</b>: %s<br/>' % courier.name
                     for zone_id in product_json[sequence][courier_id]:
                         zone = zone_pool.browse(
                             cr, uid, int(zone_id), context=context)
                         price = product_json[sequence][courier_id][zone_id]
-                        res[product.id] += 'Zona.: %s - Prezzo: %s\n' % (
+                        res[product.id] += '<b>Zona</b>: %s - ' \
+                                           '<b>Prezzo</b>: %s<br/>' % (
                             zone.name, price)
         return res
 
