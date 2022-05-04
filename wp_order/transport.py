@@ -985,6 +985,7 @@ class CarrierSupplierInherit(orm.Model):
                                         excel_pool.write_comment(
                                             ws_name, row, price_col,
                                             pl_comment, comment_param)
+
             # Store JSON data for this product
             if store_data:
                 if current_db == product.company_id.name:
