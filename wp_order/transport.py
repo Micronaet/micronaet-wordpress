@@ -1289,7 +1289,6 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         """
         # Pool used:
         model_pool = self.pool.get('ir.model.data')
-        # carrier_pool = self.pool.get('carrier.supplier')
 
         # Wizard return view:
         form_view_id = model_pool.get_object_reference(
@@ -1303,7 +1302,7 @@ class WordpressSaleOrderRelationTransport(orm.Model):
             'view_type': 'form',
             'view_mode': 'form',
             'res_id': ids[0],
-            'res_model': 'product.product.web.server',
+            'res_model': 'wordpress.sale.order',
             'view_id': form_view_id,
             'views': [(form_view_id, 'form')],
             'domain': [],
