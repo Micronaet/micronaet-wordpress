@@ -1206,6 +1206,7 @@ class WordpressSaleOrderRelationTransport(orm.Model):
     """
     _inherit = 'wordpress.sale.order'
 
+
     def get_product_delivery_data(
             self, cr, uid, sku, zipcode, context=None):
         """ Search if present JSON block for delivery
@@ -1283,6 +1284,73 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         }, context=context)
         return True
 
+    def product_detail_delivery_button(self, cr, uid, ids, context=None):
+        """ Product information for delivery
+        """
+        # Pool used:
+        model_pool = self.pool.get('ir.model.data')
+        # carrier_pool = self.pool.get('carrier.supplier')
+
+        # Wizard return view:
+        form_view_id = model_pool.get_object_reference(
+            cr, uid,
+            'wp_order',
+            'view_wordpress_sale_order_transport_detail')[1]
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Dettaglio ordine per consegna'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': ids[0],
+            'res_model': 'product.product.web.server',
+            'view_id': form_view_id,
+            'views': [(form_view_id, 'form')],
+            'domain': [],
+            'context': context,
+            'target': 'current',
+            'nodestroy': False,
+        }
+
+    def _m2m_detail(self, cr, uid, ids, name, arg, context=None):
+        """ M2M fields for shipping details
+        """
+        stored_pool = self.pool.get('carrier.supplier.stored.data')
+        zone_pool = self.pool.get('sale.order.carrier.zone')
+
+        result = {}
+        if context is None:
+            context = {}
+
+        for order in self.browse(cr, uid, ids, context=context):
+            zip_list = re.findall('[0-9]{5}', order.shipping)
+            force_shipping_zip = order.force_shipping_zip
+            zip_code = force_shipping_zip or zip_list[0]
+
+            # Search product courier zone used
+            zone_ids = zone_pool.search(cr, uid, [
+                ('cap', 'ilike', zip_code),
+            ], context=context)
+
+            sku_list = [line.sku for line in order.line_ids]
+            stored_ids = stored_pool.search(cr, uid, [
+                ('default_code', 'in', sku_list),
+            ], context=context)
+
+            result[order.id] = {
+                'zone_ids': zone_ids,
+                'stored_ids': stored_ids,
+            }
+        return result
+
     _columns = {
         'zone_id': fields.many2one('sale.order.carrier.zone', 'Zona'),
+
+        # Calculated:
+        'zone_ids': fields.function(
+            '_m2m_detail', relation='sale.order.carrier.zone',
+            string='Zone', type='many2many', multi=True),
+        'stored_ids': fields.function(
+            '_m2m_detail', relation='carrier.supplier.stored.data',
+            string='Dettaglio spedizione', type='many2many', multi=True),
     }

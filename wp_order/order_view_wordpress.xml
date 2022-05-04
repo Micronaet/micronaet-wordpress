@@ -239,6 +239,30 @@
                 </form>
             </field>
         </record>
+        <record id="view_wordpress_sale_order_transport_detail" model="ir.ui.view">
+            <field name="name">wordpress.sale.order.transport.detail.form</field>
+            <field name="model">wordpress.sale.order</field>
+            <field name="priority" eval="40"/>
+            <field name="arch" type="xml">
+                <form string="Dettaglio consegna">
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group col="4">
+                            <field name="marketplace"/>
+                            <field name="name"/>
+
+                            <field name="partner_name"/>
+                            <field name="date_order"/>
+
+                            <field name="zone_ids" colspan="4" nolabel="1"/>
+                            <field name="stored_ids" colspan="4" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
         <record id="wordpress_sale_order_view_tree" model="ir.ui.view">
             <field name="name">wordpress.sale.order.tree</field>
             <field name="model">wordpress.sale.order</field>
