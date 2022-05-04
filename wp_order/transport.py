@@ -1236,11 +1236,8 @@ class WordpressSaleOrderRelationTransport(orm.Model):
                        price
                     )
             return False
-
-
-
-
-
+        pdb.set_trace()
+        order = self
         zip_list = re.findall("[0-9]{5}", order.shipping)
         force_shipping_zip = order.force_shipping_zip
         if not zip_list and not force_shipping_zip:
@@ -1250,7 +1247,6 @@ class WordpressSaleOrderRelationTransport(orm.Model):
                 )
 
         zip_code = force_shipping_zip or zip_list[0]
-
         # Search product courier zone used
 
         # Loop on every product
