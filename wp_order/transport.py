@@ -1214,7 +1214,6 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         stored_pool = self.pool.get('carrier.supplier.stored.data')
         zone_pool = self.pool.get('sale.order.carrier.zone')
 
-        pdb.set_trace()
         stored_ids = stored_pool.search(cr, uid, [
             ('default_code', '=', sku),
         ], context=context)
@@ -1226,11 +1225,12 @@ class WordpressSaleOrderRelationTransport(orm.Model):
 
         for sequence, zone_id, price, courier_id in sorted(
                 ship_data, key=lambda x: (x[0], x[1])):
-            zone = zone_pool.browse(cr, uid, int(zone_id), context=context)
+            zone = zone_pool.browse(cr, uid, zone_id, context=context)
             if zipcode in (zone.cap or ''):  # todo manage also no CAP?
                 return (
                     courier_id,
                     zone.broker_id.id or zone.courier_id.broker_id.id,
+                    zone_id,
                     price
                 )
         return False
@@ -1266,9 +1266,10 @@ class WordpressSaleOrderRelationTransport(orm.Model):
             if not res:
                 raise osv.except_osv(
                     _('Errore'),
-                    _('CAP %s con prodotto %s non genera costi di trasporto!'),
+                    _('CAP %s con prodotto %s non genera costi di '
+                      'trasporto!' % (zip_code, default_code)),
                 )
-            courier_id, broker_id, price = res
+            courier_id, broker_id, zone_id, price = res
             total += quantity * price
             # todo manage multi line
 
