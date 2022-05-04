@@ -805,7 +805,7 @@ class CarrierSupplierInherit(orm.Model):
         for web_product in master_product:
             if store_data:
                 json_product = {}
-                json_zone = []
+                json_zone = []  # Hig priority (courier)
 
             product = web_product.product_id
             if row == 1:
@@ -932,6 +932,7 @@ class CarrierSupplierInherit(orm.Model):
                             courier, h, w, l, volumetric, weight)
                         for zone in pricelist:
                             zone_id = zone.id
+
                             # Explode data:
                             pl_data = pricelist[zone]
                             pl_price = pl_data['price']
@@ -972,9 +973,11 @@ class CarrierSupplierInherit(orm.Model):
                                     if store_data:
                                         json_product[sequence][key_id][
                                             zone_id] = pl_price
+                                        priority = 'A' if \
+                                            zone.courier_id else 'B'
                                         json_zone.append(
-                                            [sequence, pl_price, zone_id,
-                                             courier_id])
+                                            [sequence, priority, pl_price,
+                                             zone_id, courier_id])
                                     if pl_comment:
                                         # Write also zone name:
                                         pl_comment = '%s\n%s' % (
@@ -1225,7 +1228,7 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         ship_data = json.loads(product.json_zone)
         ship_data_sort = sorted(ship_data)
         _logger.warning(ship_data_sort)
-        for sequence, price, zone_id, courier_id in ship_data_sort:
+        for sequence, priority, price, zone_id, courier_id in ship_data_sort:
             zone = zone_pool.browse(cr, uid, zone_id, context=context)
             if zipcode in (zone.cap or ''):  # todo manage also no CAP?
                 return (
