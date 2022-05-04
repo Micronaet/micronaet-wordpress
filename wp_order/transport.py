@@ -1236,8 +1236,8 @@ class WordpressSaleOrderRelationTransport(orm.Model):
                        price
                     )
             return False
+        order = self.browse(cr, uid, ids, context=context)[0]
         pdb.set_trace()
-        order = self
         zip_list = re.findall("[0-9]{5}", order.shipping)
         force_shipping_zip = order.force_shipping_zip
         if not zip_list and not force_shipping_zip:
