@@ -1228,15 +1228,28 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         ship_data = json.loads(product.json_zone)
         ship_data_sort = sorted(ship_data)
         _logger.warning(ship_data_sort)
+        courier_price = {}
         for sequence, priority, price, zone_id, courier_id in ship_data_sort:
             zone = zone_pool.browse(cr, uid, zone_id, context=context)
+
             if zipcode in (zone.cap or ''):  # todo manage also no CAP?
-                return (
+                if courier_id not in courier_price:
+                    courier_price[courier_id] = [
+                        carrier_pool.browse(cr, uid, courier_id, context=context),
+                        zone_id,
+                        price,
+                    ]
+            # return sorted(courier_price.values())[0]
+            '''return (
                     # Browse obj:
                     carrier_pool.browse(cr, uid, courier_id, context=context),
                     zone_id,
                     price,
                 )
+            '''
+        if courier_price:
+            return sorted(courier_price.values())[0]
+        else:
         return False
 
     def choose_best_delivery_button(self, cr, uid, ids, context=None):
