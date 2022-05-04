@@ -35,6 +35,7 @@
                             <field name="product_id"/>
                             <field name="linked_product_ref"/>
                             <field name="default_code" />
+                            <field name="shipping" />
                             <notebook>
                                 <page name="page_shipping" string="Spedizioni">
                                     <group col="4">
