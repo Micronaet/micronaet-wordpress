@@ -805,7 +805,7 @@ class CarrierSupplierInherit(orm.Model):
         for web_product in master_product:
             if store_data:
                 json_product = {}
-                json_zone = {}
+                json_zone = []
 
             product = web_product.product_id
             if row == 1:
@@ -923,16 +923,15 @@ class CarrierSupplierInherit(orm.Model):
                     if store_data and not constraint_comment:  # used courier:
                         if sequence not in json_product:
                             json_product[sequence] = {}
-                        if key_id not in \
-                                json_product[sequence]:
-                            json_product[sequence][key_id] = \
-                                {}
+                        if key_id not in json_product[sequence]:
+                            json_product[sequence][key_id] = {}
 
                     # Pricelist will be added only if not constraints problem:
                     if not constraint_comment:
                         pricelist = get_prices(
                             courier, h, w, l, volumetric, weight)
                         for zone in pricelist:
+                            zone_id = zone.id
                             # Explode data:
                             pl_data = pricelist[zone]
                             pl_price = pl_data['price']
@@ -956,7 +955,7 @@ class CarrierSupplierInherit(orm.Model):
 
                                 if store_data:
                                     json_product[sequence][key_id][
-                                        zone.id] = pl_price
+                                        zone_id] = pl_price
 
                                 if pl_comment:
                                     excel_pool.write_comment(
@@ -972,11 +971,9 @@ class CarrierSupplierInherit(orm.Model):
                                         col=price_col)
                                     if store_data:
                                         json_product[sequence][key_id][
-                                            zone.id] = pl_price
-                                        json_zone[zone.id] = '%s-%s' % (
-                                            sequence,
-                                            pl_price,
-                                        )
+                                            zone_id] = pl_price
+                                        json_zone.append(
+                                            [sequence, zone_id, pl_price])
                                     if pl_comment:
                                         # Write also zone name:
                                         pl_comment = '%s\n%s' % (
