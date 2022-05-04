@@ -1227,7 +1227,7 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         for sequence, zone_id, price, courier_id in sorted(
                 ship_data, key=lambda x: (x[0], x[1])):
             zone = zone_pool.browse(cr, uid, int(zone_id), context=context)
-            if zipcode in zone.cap:
+            if zipcode in (zone.cap or ''):  # todo manage also no CAP?
                 return (
                     courier_id,
                     zone.broker_id.id or zone.courier_id.broker_id.id,
