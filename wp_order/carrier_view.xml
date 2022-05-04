@@ -35,8 +35,20 @@
                             <field name="product_id"/>
                             <field name="linked_product_ref"/>
                             <field name="default_code" />
-                            <separator string="Spedizioni" colspan="4"/>
-                            <field name="json_data_html" widget="html" colspan="4" nolabel="1" />
+                            <notebook>
+                                <page name="page_shipping" string="Spedizioni">
+                                    <group col="4">
+                                        <separator string="Spedizioni" colspan="4"/>
+                                        <field name="json_data_html" widget="html" colspan="4" nolabel="1" readonly="1"/>
+                                    </group>
+                                </page>
+                                <page name="page_zone" string="Costi zona">
+                                    <group col="4">
+                                        <separator string="Costi" colspan="4"/>
+                                        <field name="json_zone" colspan="4" nolabel="1" readonly="1"/>
+                                    </group>
+                                </page>
+                            </notebook>
                         </group>
                     </sheet>
                 </form>
