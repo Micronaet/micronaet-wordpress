@@ -973,7 +973,7 @@ class CarrierSupplierInherit(orm.Model):
                                         json_product[sequence][key_id][
                                             zone_id] = pl_price
                                         json_zone.append(
-                                            [sequence, zone_id, pl_price,
+                                            [sequence, pl_price, zone_id,
                                              courier_id])
                                     if pl_comment:
                                         # Write also zone name:
@@ -1223,9 +1223,9 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         product = stored_pool.browse(
             cr, uid, stored_ids, context=context)[0]  # only the first
         ship_data = json.loads(product.json_zone)
-        ship_data_sort = sorted(ship_data, key=lambda s: (s[0], s[2]))
+        ship_data_sort = sorted(ship_data)
         _logger.warning(ship_data_sort)
-        for sequence, zone_id, price, courier_id in ship_data_sort:
+        for sequence, price, zone_id, courier_id in ship_data_sort:
             zone = zone_pool.browse(cr, uid, zone_id, context=context)
             if zipcode in (zone.cap or ''):  # todo manage also no CAP?
                 return (
