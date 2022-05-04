@@ -681,7 +681,7 @@ class CarrierSupplierInherit(orm.Model):
         # ---------------------------------------------------------------------
         #                         Excel report:
         # ---------------------------------------------------------------------
-        ws_name = 'Sviluppo trasporti'
+        ws_name = 'Spese trasporti'
         excel_pool.create_worksheet(ws_name)
 
         # Load formats:
