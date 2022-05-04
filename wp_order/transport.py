@@ -1276,8 +1276,8 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         self.write(cr, uid, ids, {
             'pricelist_shipping_total': total,
             'zone_id': zone_id,
-            # 'carrier_supplier_id': broker_id,
-            # 'courier_supplier_id': courier_id,
+            'carrier_supplier_id': broker_id,
+            'courier_supplier_id': courier_id,
         }, context=context)
         return True
 
