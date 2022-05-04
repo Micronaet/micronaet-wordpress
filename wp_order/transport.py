@@ -1347,9 +1347,9 @@ class WordpressSaleOrderRelationTransport(orm.Model):
 
         # Calculated:
         'zone_ids': fields.function(
-            '_m2m_detail', relation='sale.order.carrier.zone',
+            _m2m_detail, relation='sale.order.carrier.zone',
             string='Zone', type='many2many', multi=True),
         'stored_ids': fields.function(
-            '_m2m_detail', relation='carrier.supplier.stored.data',
+            _m2m_detail, relation='carrier.supplier.stored.data',
             string='Dettaglio spedizione', type='many2many', multi=True),
     }
