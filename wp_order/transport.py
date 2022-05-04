@@ -1278,6 +1278,7 @@ class WordpressSaleOrderRelationTransport(orm.Model):
             'pricelist_shipping_total': total,
             'zone_id': zone_id,
             'carrier_supplier_id': courier.broker_id.id,
+            'carrier_mode_id': courier.mode_id.id,
             'courier_supplier_id': courier.id,
         }, context=context)
         return True
