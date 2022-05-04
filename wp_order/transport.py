@@ -1197,3 +1197,21 @@ class CarrierSupplierStoredData(orm.Model):
                  'del migliore da utilizzare'),
         }
 
+
+class WordpressSaleOrderRelationTransport(orm.Model):
+    """ Model name: Wordpress Sale order
+    """
+    _inherit = 'wordpress.sale.order'
+
+    def choose_best_delivery_button(self, cr, uid, ids, context=None):
+        """ Choose better delivery
+        """
+        order = self
+
+        for line in order.line_ids:
+            default_code = line.sku
+        return True
+
+    _columns = {
+        'zone_id': fields.many2one('sale.order.carrier.zone', 'Zona'),
+    }

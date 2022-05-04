@@ -380,6 +380,7 @@
                     <field name="package_type" invisible="1"/>
                     <field name="carrier_cost_lossy" invisible="1"/>
 
+                    <button name="choose_best_delivery_button" type="object" string="Scegli corriere migliore" icon="gtk-refresh" />
                     <field name="carrier_supplier_id" string="Broker"/>
                     <field name="carrier_mode_id" string="Servizio"/>
                     <button name="carrier_get_better_option" type="object" string="Get better option" icon="STOCK_SORT_DESCENDING" />
@@ -387,6 +388,8 @@
                     <field name="courier_mode_id" string="Modalità"/> <!--readonly="1"-->
                     <field name="master_tracking_id" readonly="1"/>
                     <field name="carrier_track_id" readonly="1"/>
+                    <field name="zone_id" readonly="1"/>
+                    <field name="pricelist_shipping_total" readonly="1" sum="Spedizione da listino" />
                     <field name="carrier_cost" readonly="1" sum="Spedizione calcolata" />
                     <field name="real_shipping_total" sum="Spedizione reale" />
                     <field name="carrier_state" invisible="1"/>
