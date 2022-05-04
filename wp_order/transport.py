@@ -932,6 +932,7 @@ class CarrierSupplierInherit(orm.Model):
                             courier, h, w, l, volumetric, weight)
                         for zone in pricelist:
                             zone_id = zone.id
+                            priority = 'A' if zone.courier_id else 'B'
 
                             # Explode data:
                             pl_data = pricelist[zone]
@@ -957,6 +958,9 @@ class CarrierSupplierInherit(orm.Model):
                                 if store_data:
                                     json_product[sequence][key_id][
                                         zone_id] = pl_price
+                                    json_zone.append(
+                                        [sequence, priority, pl_price,
+                                         zone_id, courier_id])
 
                                 if pl_comment:
                                     excel_pool.write_comment(
@@ -973,8 +977,6 @@ class CarrierSupplierInherit(orm.Model):
                                     if store_data:
                                         json_product[sequence][key_id][
                                             zone_id] = pl_price
-                                        priority = 'A' if \
-                                            zone.courier_id else 'B'
                                         json_zone.append(
                                             [sequence, priority, pl_price,
                                              zone_id, courier_id])
@@ -1235,18 +1237,11 @@ class WordpressSaleOrderRelationTransport(orm.Model):
             if zipcode in (zone.cap or ''):  # todo manage also no CAP?
                 if courier_id not in courier_price:
                     courier_price[courier_id] = [
-                        carrier_pool.browse(cr, uid, courier_id, context=context),
+                        carrier_pool.browse(
+                            cr, uid, courier_id, context=context),
                         zone_id,
                         price,
                     ]
-            # return sorted(courier_price.values())[0]
-            '''return (
-                    # Browse obj:
-                    carrier_pool.browse(cr, uid, courier_id, context=context),
-                    zone_id,
-                    price,
-                )
-            '''
         if courier_price:
             return sorted(courier_price.values())[0]
         else:
