@@ -1250,7 +1250,7 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         if courier_price:
             return sorted(courier_price.values())[0]
         else:
-        return False
+            return False
 
     def choose_best_delivery_button(self, cr, uid, ids, context=None):
         """ Choose better delivery
