@@ -1223,9 +1223,8 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         product = stored_pool.browse(
             cr, uid, stored_ids, context=context)[0]  # only the first
         ship_data = json.loads(product.json_zone)
-
-        for sequence, zone_id, price, courier_id in sorted(
-                ship_data, key=lambda x: (x[0], x[2])):
+        ship_data_sort = sorted(ship_data, key=lambda s: (s[0], s[2]))
+        for sequence, zone_id, price, courier_id in ship_data_sort:
             zone = zone_pool.browse(cr, uid, zone_id, context=context)
             if zipcode in (zone.cap or ''):  # todo manage also no CAP?
                 return (
