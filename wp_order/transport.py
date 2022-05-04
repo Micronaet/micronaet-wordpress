@@ -1213,6 +1213,7 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         # Pool used:
         stored_pool = self.pool.get('carrier.supplier.stored.data')
         zone_pool = self.pool.get('sale.order.carrier.zone')
+        carrier_pool = self.pool.get('carrier.supplier')
 
         stored_ids = stored_pool.search(cr, uid, [
             ('default_code', '=', sku),
@@ -1228,10 +1229,10 @@ class WordpressSaleOrderRelationTransport(orm.Model):
             zone = zone_pool.browse(cr, uid, zone_id, context=context)
             if zipcode in (zone.cap or ''):  # todo manage also no CAP?
                 return (
-                    courier_id,
-                    zone.broker_id.id or zone.courier_id.broker_id.id,
+                    # Browse obj:
+                    carrier_pool.browse(cr, uid, courier_id, context=context),
                     zone_id,
-                    price
+                    price,
                 )
         return False
 
@@ -1269,15 +1270,15 @@ class WordpressSaleOrderRelationTransport(orm.Model):
                     _('CAP %s con prodotto %s non genera costi di '
                       'trasporto!' % (zip_code, default_code)),
                 )
-            courier_id, broker_id, zone_id, price = res
+            courier, zone_id, price = res
             total += quantity * price
             # todo manage multi line
 
         self.write(cr, uid, ids, {
             'pricelist_shipping_total': total,
             'zone_id': zone_id,
-            'carrier_supplier_id': broker_id,
-            'courier_supplier_id': courier_id,
+            'carrier_supplier_id': courier.broker_id.id,
+            'courier_supplier_id': courier.id,
         }, context=context)
         return True
 
