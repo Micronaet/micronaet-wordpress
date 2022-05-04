@@ -1225,6 +1225,7 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         ship_data = json.loads(product.json_zone)
         ship_data_sort = sorted(ship_data)
         _logger.warning(ship_data_sort)
+        pdb.set_trace()
         for sequence, price, zone_id, courier_id in ship_data_sort:
             zone = zone_pool.browse(cr, uid, zone_id, context=context)
             if zipcode in (zone.cap or ''):  # todo manage also no CAP?
