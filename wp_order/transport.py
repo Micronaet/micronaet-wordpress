@@ -682,6 +682,7 @@ class CarrierSupplierInherit(orm.Model):
         #                         Excel report:
         # ---------------------------------------------------------------------
         ws_name = 'Spese trasporti'
+        pdb.set_trace()
         excel_pool.create_worksheet(ws_name)
 
         # Load formats:
