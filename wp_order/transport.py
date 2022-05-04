@@ -28,6 +28,7 @@ import re
 import logging
 import erppeek
 import json
+import re
 import openerp
 import openerp.netsvc as netsvc
 import openerp.addons.decimal_precision as dp
@@ -973,7 +974,8 @@ class CarrierSupplierInherit(orm.Model):
                                         json_product[sequence][key_id][
                                             zone_id] = pl_price
                                         json_zone.append(
-                                            [sequence, zone_id, pl_price])
+                                            [sequence, zone_id, pl_price,
+                                             courier_id])
                                     if pl_comment:
                                         # Write also zone name:
                                         pl_comment = '%s\n%s' % (
@@ -1206,10 +1208,54 @@ class WordpressSaleOrderRelationTransport(orm.Model):
     def choose_best_delivery_button(self, cr, uid, ids, context=None):
         """ Choose better delivery
         """
-        order = self
+        def get_product_delivery_data(
+                self, cr, uid, sku, zipcode, context=None):
+            """ Search if present JSON block for delivery
+            """
+            # Pool used:
+            stored_pool = self.pool.get('carrier.supplier.stored.data')
+            zone_pool = self.pool.get('sale.order.carrier.zone')
 
+            stored_ids = stored_pool.search(cr, uid, [
+                ('default_code', '=', sku),
+            ], context=context)
+            if not stored_ids:
+                return False
+            product = stored_pool.browse(
+                cr, uid, stored_ids, context=context)[0]  # only the first
+            ship_data = json.loads(product.json_zone)
+
+            for sequence, zone_id, price, courier_id in sorted(
+                    ship_data, key=lambda x: (x[0], x[1])):
+                zone = zone_pool.browse(cr, uid, int(zone_id), context=context)
+                if zipcode in zone.cap:
+                    return (
+                       courier_id,
+                       zone.broker_id.id or zone.courier_id.broker_id.id,
+                       price
+                    )
+            return False
+
+
+
+
+
+        zip_list = re.findall("[0-9]{5}", order.shipping)
+        force_shipping_zip = order.force_shipping_zip
+        if not zip_list and not force_shipping_zip:
+            raise osv.except_osv(
+                _('Errore'),
+                _('CAP non trovato nell\'indirizzo, forzarlo a mano!'),
+                )
+
+        zip_code = force_shipping_zip or zip_list[0]
+
+        # Search product courier zone used
+
+        # Loop on every product
         for line in order.line_ids:
             default_code = line.sku
+
         return True
 
     _columns = {
