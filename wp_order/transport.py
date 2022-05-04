@@ -1252,7 +1252,8 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         # Loop on every product
         for line in order.line_ids:
             default_code = line.sku
-
+            get_product_delivery_data(
+                cr, uid, default_code, zip_code, context=context)
         return True
 
     _columns = {
