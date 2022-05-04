@@ -101,7 +101,7 @@ class ResCompany(orm.Model):
         'carrier_save_label': fields.boolean(
             'Salva etichette', help='Salva le etichette senza stamparle'),
         'carrier_save_label_path': fields.char(
-            'Carrier_save_label_path', size=100),
+            'Percorso salvataggio su file', size=100),
     }
 
 
@@ -116,36 +116,37 @@ class CarrierConnection(orm.Model):
         'name': fields.char('Nome', size=64, required=True),
         'company_id': fields.many2one(
             'res.company',
-            'Company',
+            'Azienda',
             required=True),
 
         'location': fields.char(
-            'Location root', size=140, required=True,
-            help='Path for endpoint, ex.: https://api.mbeonline.it/ws'),
+            'Root', size=140, required=True,
+            help='Path dell\'endpoint, es.: https://api.mbeonline.it/ws'),
         'username': fields.char('Username', size=64, required=True),
         'passphrase': fields.char('Passphrase', size=64, required=True),
 
         'system': fields.char(
-            'System', size=10, required=True,
-            help='Old way to manage marketplace country'),
+            'Sistema', size=10, required=True,
+            help='Vecchio modo per gestire la nazionalità'),
         'internal_reference': fields.char(
-            'Internal reference', size=10,
-            help='Code assigned to every call and returned, used as ID'),
+            'Riferimento interno', size=10,
+            help='Codice utilizzato in ogni chiamata, usato come ID'),
         'customer_id': fields.integer(
-            'Customer ID', required=True, help='Code found in web management'),
+            'ID Cliente', required=True, help='Codice nella gestione del portale'),
         'store_id': fields.char(
-            'Store ID', size=4, required=True,
-            help='Code used for some calls'),
+            'ID Store', size=4, required=True,
+            help='Codice usato in alcune chiamate'),
 
         'auto_print_label': fields.boolean(
-            'Autoprint label', help='Print label when delivery was sent'),
+            'Stampa automatica',
+            help='Stampa etichetta quando è richiesta la consegna'),
         'cups_printer_id': fields.many2one(
             'cups.printer', 'CUPS printer',
-            help='Label order print with this'),
+            help='Etichetta ordine stampata con questa'),
 
         # Not used for now:
-        'sam_id': fields.char('SAM ID', size=4, help=''),
-        'department_id': fields.char('Department ID', size=4, help=''),
+        'sam_id': fields.char('ID SAM', size=4, help=''),
+        'department_id': fields.char('ID Dipartimento', size=4, help=''),
     }
 
     _defaults = {
@@ -169,7 +170,7 @@ class CarrierSupplierMode(orm.Model):
     # -------------------------------------------------------------------------
     _columns = {
         'name': fields.char('Nome', required=True),
-        'account_ref': fields.char('Account ref.'),
+        'account_ref': fields.char('Rif. contabile'),
         'hidden': fields.boolean('Nascosto'),
         'cups_printer_id': fields.many2one(
             'cups.printer', 'CUPS printer',
@@ -222,7 +223,7 @@ class CarrierSupplier(orm.Model):
             help='Modalità dello spedizioniere'),
 
         'carrier_connection_id': fields.many2one(
-            'carrier.connection', 'Carrier Connection'),
+            'carrier.connection', 'Connessione broker'),
         }
 
     _defaults = {
@@ -240,7 +241,7 @@ class CarrierSupplierModeRelations(orm.Model):
 
     _columns = {
         'supplier_id': fields.many2one(
-            'carrier.supplier', 'Carrier', required=True),
+            'carrier.supplier', 'Broker', required=True),
     }
 
 
@@ -249,7 +250,7 @@ class CarrierParcelTemplate(orm.Model):
     """
 
     _name = 'carrier.parcel.template'
-    _description = 'Parcel template'
+    _description = 'Modelli imballo'
     _rec_name = 'name'
 
     def _get_volumetric_weight(
@@ -267,12 +268,12 @@ class CarrierParcelTemplate(orm.Model):
     # -------------------------------------------------------------------------
     _columns = {
         'is_active': fields.boolean('Attivo'),
-        'name': fields.char('Name'),
-        'no_label': fields.boolean('No label'),
-        'carrier_supplier_id': fields.many2one('carrier.supplier', 'Carrier'),
-        'length': fields.float('Length', digits=(16, 2), required=True),
-        'width': fields.float('Width', digits=(16, 2), required=True),
-        'height': fields.float('Height', digits=(16, 2), required=True),
+        'name': fields.char('Nome'),
+        'no_label': fields.boolean('No etichetta'),
+        'carrier_supplier_id': fields.many2one('carrier.supplier', 'Broker'),
+        'length': fields.float('Lunghezza', digits=(16, 2), required=True),
+        'width': fields.float('Larghezza', digits=(16, 2), required=True),
+        'height': fields.float('Altezza', digits=(16, 2), required=True),
         'dimension_uom_id': fields.many2one('product.uom', 'Product UOM'),
         'weight': fields.function(
             _get_volumetric_weight,
@@ -286,10 +287,10 @@ class CarrierParcelTemplate(orm.Model):
 
         'package_type': fields.selection(
             [
-                ('GENERIC', 'Generic'),
-                ('ENVELOPE', 'Envelope'),
-                ('DOCUMENTS', 'Documents'),
-            ], 'Package type', required=True),
+                ('GENERIC', 'Generico'),
+                ('ENVELOPE', 'Busta'),
+                ('DOCUMENTS', 'Documenti'),
+            ], 'Tipo imballo', required=True),
     }
 
     _defaults = {
@@ -357,8 +358,8 @@ class SaleOrderParcel(orm.Model):
         'no_label': fields.boolean('No etichetta'),
         'carrier_connection_id': fields.many2one(
             'carrier.connection',
-            string='Carrier Connection',
-            help='Force carrier connection for small package')
+            string='Connessione broker',
+            help='Forza connessione per piccoli pacchetti')
     }
 
 
@@ -748,54 +749,54 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
     _columns = {
         'carrier_ok': fields.boolean(
-            'Carrier OK',
-            help='Carrier must be confirmed when done!'),
+            'OK spedizione',
+            help='La consegna deve essere confermata quando fatta!'),
 
         # Master Carrier:
         'carrier_supplier_id': fields.many2one(
-            'carrier.supplier', 'Carrier',
+            'carrier.supplier', 'Broker',
             domain="[('mode', '=', 'carrier')]"),
         'carrier_mode_id': fields.many2one(
-            'carrier.supplier.mode', 'Carrier service',
+            'carrier.supplier.mode', 'Servizio broker',
             domain="[('supplier_id', '=', carrier_supplier_id)]",
         ),
 
         'courier_supplier_id': fields.many2one(
-            'carrier.supplier', 'Courier',
+            'carrier.supplier', 'Corriere',
             domain="[('hidden', '=', False), "
                    "('mode', '=', 'courier'),"
                    "('mode_id', '=', carrier_mode_id)]"),
         'courier_mode_id': fields.many2one(
-            'carrier.supplier.mode', 'Courier service',
+            'carrier.supplier.mode', 'Servizio corriere',
             domain="[('hidden', '=', False), "
                    "('supplier_id', '=', courier_supplier_id)]",
         ),
 
         'carrier_parcel_template_id': fields.many2one(
-            'carrier.parcel.template', 'Parcel template'),
+            'carrier.parcel.template', 'Modelli imballo'),
         'carrier_check': fields.text(
-            'Carrier check', help='Check carrier address', multi=True,
+            'Controllo corriere', help='Controlla indirizzo corriere', multi=True,
             compute='_get_carrier_check_address', widget='html'),
         'carrier_check_error': fields.text(
-            'Carrier check', help='Check carrier address error', multi=True,
-            compute='_get_carrier_check_address', widget='html'),
+            'Controllo errore corriere', help='Controlla errore indirizzo corriere',
+            multi=True, compute='_get_carrier_check_address', widget='html'),
 
-        'carrier_description': fields.text('Carrier description'),
-        'carrier_note': fields.text('Carrier note'),
-        'carrier_stock_note': fields.text('Stock operator note'),
-        'carrier_total': fields.float('Goods value', digits=(16, 2)),
-        'carrier_ensurance': fields.float('Ensurance', digits=(16, 2)),
+        'carrier_description': fields.text('Descrizione corriere'),
+        'carrier_note': fields.text('Note corriere'),
+        'carrier_stock_note': fields.text('Note magazziniere'),
+        'carrier_total': fields.float('Valore bene', digits=(16, 2)),
+        'carrier_ensurance': fields.float('Assicurazione', digits=(16, 2)),
         'carrier_cash_delivery': fields.float(
-            'Cash on delivery', digits=(16, 2)),
+            'Contrassegno', digits=(16, 2)),
         'carrier_pay_mode': fields.selection([
-            ('CASH', 'Cash'),
-            ('CHECK', 'Check'),
-            ], 'Pay mode'),
+            ('CASH', 'Contante'),
+            ('CHECK', 'Assegno'),
+            ], 'Modalità pagamento'),
         'parcel_ids': fields.one2many(
-            'sale.order.parcel', 'order_id', 'Parcels'),
+            'sale.order.parcel', 'order_id', 'Colli'),
         'parcel_detail': fields.function(
             _get_parcel_detail,
-            string='Parcel detail', type='text'),
+            string='Dettaglio colli', type='text'),
         'delivery_detail': fields.function(
             _get_delivery_detail,
             string='Dettaglio', type='text'),
@@ -805,34 +806,34 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         ),
         'destination_country_id': fields.related(
             'partner_shipping_id', 'country_id',
-            string='Destination', relation='res.country', type='many2one',
+            string='Destizione', relation='res.country', type='many2one',
         ),
 
         # Data from Carrier:
         'carrier_cost': fields.float(
-            'Cost', digits=(16, 2), help='Net shipment price'),
+            'Cost', digits=(16, 2), help='Costo verificato'),
         'carrier_cost_total': fields.float(
-            'Cost', digits=(16, 2), help='Net shipment total price'),
+            'Cost', digits=(16, 2), help='Totale trasporto'),
         'carrier_cost_lossy': fields.function(
             _check_carrier_cost_value,
-            string='Under carrier cost', mode='boolean',
-            help='Carrier cost payed less that request!',
+            string='Perdita su spedizione', mode='boolean',
+            help='Perdita su spedizione rispetto a quello esposto!',
             store=False,
         ),
         'carrier_track_id': fields.char(
-            'Track ID', size=64),
+            'Tracking ID', size=64),
         # TODO extra data needed!
 
-        'has_cod': fields.boolean('Has COD'),  # CODAvailable
+        'has_cod': fields.boolean('Ha COD'),  # CODAvailable
         'has_insurance': fields.boolean(
-            'Has Insurance'),  # InsuranceAvailable
+            'Assicurato'),  # InsuranceAvailable
         'has_safe_value': fields.boolean(
-            'Has safe value'),  # MBESafeValueAvailable
+            'Valore assicurato'),  # MBESafeValueAvailable
 
         'carrier_delivery_date': fields.datetime(
-            'Delivery date', readonly=True),
+            'Data consegna', readonly=True),
         'carrier_delivery_sign': fields.datetime(
-            'Delivery sign', readonly=True),
+            'Data firma', readonly=True),
 
         # 'NetShipmentTotalPrice': Decimal('6.80'),  # ??
         # 'IdSubzone': 125,
@@ -840,31 +841,32 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         # MBE Portal:
         'parcel_weight_tree': fields.float(
-            'Weight', help='Tree view only for fast insert parcel'),
+            'Peso',
+            help='Peso in vista lista per velocizzare inserimento'),
         'carrier_connection_id': fields.many2one(
-            'carrier.connection', 'Carrier Connection',
-            help='Carrier connection used for better quotation'),
-        'carrier_id': fields.integer('Carrier ID'),
+            'carrier.connection', 'Connessione broker',
+            help='Connessione per avere la quotazione migliore'),
+        'carrier_id': fields.integer('ID Broker'),
         'carrier_state': fields.selection(
             [
-                ('draft', 'Draft'),
-                ('pending', 'Pending'),
-                ('sent', 'Sent'),
-                ('delivered', 'Delivered'),  # Closed
-            ], 'Carrier state', required=True),
+                ('draft', 'Bozza'),
+                ('pending', 'Pendente'),
+                ('sent', 'Spedito'),
+                ('delivered', 'Consegnato'),  # Closed
+            ], 'Stato consegna', required=True),
         'delivery_state': fields.selection(
             [
-                ('WAITING_DELIVERY', 'Waiting'),
-                ('PARTIALLY_DELIVERED', 'Partially delivered'),
-                ('DELIVERED', 'Delivered'),
-                ('EXCEPTION', 'Exception'),
-                ('NOT_AVAILABLE', 'Not available'),
-            ], 'Delivery state', required=True),
+                ('WAITING_DELIVERY', 'In attesa'),
+                ('PARTIALLY_DELIVERED', 'Consegnato parzialmente'),
+                ('DELIVERED', 'Consegnato'),
+                ('EXCEPTION', 'Eccezione'),
+                ('NOT_AVAILABLE', 'Non disponibile'),
+            ], 'Dettaglio consegna', required=True),
         'master_tracking_id': fields.char('Master Tracking', size=20),
-        'system_reference_id': fields.char('System reference ID', size=20),
+        'system_reference_id': fields.char('Riferimento di sistema', size=20),
         'shipper_type': fields.selection(
             [
-                ('COURIERLDV', 'Courier LDV'),
+                ('COURIERLDV', 'LDV Corriere'),
                 ('MBE', 'MBE'),
             ], 'Shipper type', required=True,
             ),
@@ -873,14 +875,14 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             [
                 ('EXPORT', 'Export'),
                 ('IMPORT', 'Import'),
-                ('RETURN', 'Return'),
-            ], 'Ship type', required=True),
+                ('RETURN', 'Ritorno'),
+            ], 'Tipo consegna', required=True),
         'package_type': fields.selection(
             [
-                ('GENERIC', 'Generic'),
-                ('ENVELOPE', 'Envelope'),
-                ('DOCUMENTS', 'Documents'),
-            ], 'Package type', required=True),
+                ('GENERIC', 'Generico'),
+                ('ENVELOPE', 'Busta'),
+                ('DOCUMENTS', 'Documenti'),
+            ], 'Tipo imballo', required=True),
 
         # Force data:
         'force_invoice_zip': fields.char('Forza CAP', size=5),
