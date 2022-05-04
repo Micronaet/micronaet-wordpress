@@ -536,16 +536,17 @@ class CarrierSupplierInherit(orm.Model):
                 )
 
             # -----------------------------------------------------------------
-            # 2 Extra price "Zone rule":
+            # 2 Extra price "Zone rule" and collect Extra fuel here:
             # -----------------------------------------------------------------
+            extra_rate = []  # Extra fuel rate
             extra_rules = get_extra_price(courier, cache=cache)
             for extra_rule in extra_rules:
-                if extra_rule.mode == 'zone':
-                    # todo Price is base price + extra for this rule:
-                    price = extra_rule.price or '0'
-                    rule_price = eval(price)  # is a formula
-                    # todo manage error
+                mode = extra_rule.mode
+                price = extra_rule.price or '0'
+                rule_price = eval(price)  # is a formula
 
+                if mode == 'zone':
+                    # todo manage error
                     extra_rule_price = base_price + rule_price
                     if extra_rule.value_zone_id in res:
                         res[extra_rule.value_zone_id]['comment'] += \
@@ -563,15 +564,33 @@ class CarrierSupplierInherit(orm.Model):
                         res[extra_rule.value_zone_id]['comment'] += \
                             '[ERR] Prezzo base a zero\n'
                         res[extra_rule.value_zone_id]['error'] = True
+                elif mode == 'fuel':
+                    extra_rate.append(rule_price)
 
             # -----------------------------------------------------------------
-            # 3. Other extra price rule:
+            # 3. Extra fuel:
+            # -----------------------------------------------------------------
+            if extra_rate:  # Loop for add it:
+                this_rate = extra_rate[0]  # For now only one!
+                extra_rate_error = len(extra_rate) > 1
+                for zone in res:
+                    current = res[zone]['price']
+                    res[zone]['price'] = current * (100.0 + this_rate) / 100.0
+                    res[zone]['comment'] += \
+                        'Extra benzina B. %s + %s%%: %s\n' % (
+                        current, this_rate, res[zone]['price'])
+
+                    if extra_rate_error:
+                        res[zone]['comment'] += \
+                            '[ERR] Troppe %% benzina %s' % (extra_rate, )
+                        res[zone]['error'] = True
+
+            # -----------------------------------------------------------------
+            # 4. Other extra price rule:
             # -----------------------------------------------------------------
             extra_price = 0.0
             comment = ''
             error_extra_price = False
-            extra_rate = []
-
             for extra_rule in extra_rules:
                 mode = extra_rule.mode
                 value = extra_rule.value
@@ -583,8 +602,8 @@ class CarrierSupplierInherit(orm.Model):
                 dimension3 = sum((h, w, l))
                 volume = h * w * l  # used for formula check
 
-                if mode == 'zone':
-                    continue  # Yet consider
+                if mode in ('zone', 'fuel'):
+                    continue  # Yet managed
                 elif mode == 'formula':
                     try:
                         if eval(formula):
@@ -606,8 +625,6 @@ class CarrierSupplierInherit(orm.Model):
                 elif mode == '3dimension' and dimension3 >= value:
                     extra_price += price
                     comment += u'[3 dim. >=%s: %s] ' % (value, price)
-                elif mode == 'fuel':
-                    extra_rate.append(price)
                 # elif mode == 'pallet' and dimension2 >= value:
                 #    extra_price += price
                 # todo manage extra list!
@@ -619,24 +636,6 @@ class CarrierSupplierInherit(orm.Model):
                     res[zone]['comment'] += 'Extra %s: %s\n' % (
                         extra_price, comment)
                     if error_extra_price:
-                        res[zone]['error'] = True
-
-            # -----------------------------------------------------------------
-            # 4. Extra fuel:
-            # -----------------------------------------------------------------
-            if extra_rate:  # Loop for add it:
-                this_rate = extra_rate[0]  # For now only one!
-                extra_rate_error = len(extra_rate) > 1
-                for zone in res:
-                    current = res[zone]['price']
-                    res[zone]['price'] = current * (100.0 + this_rate) / 100.0
-                    res[zone]['comment'] += \
-                        'Extra benzina B. %s + %s%%: %s\n' % (
-                        current, this_rate, res[zone]['price'])
-
-                    if extra_rate_error:
-                        res[zone]['comment'] += \
-                            '[ERR] Troppe %% benzina %s' % (extra_rate, )
                         res[zone]['error'] = True
             return res
 
