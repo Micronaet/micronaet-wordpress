@@ -1214,6 +1214,7 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         stored_pool = self.pool.get('carrier.supplier.stored.data')
         zone_pool = self.pool.get('sale.order.carrier.zone')
 
+        pdb.set_trace()
         stored_ids = stored_pool.search(cr, uid, [
             ('default_code', '=', sku),
         ], context=context)
@@ -1238,7 +1239,6 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         """ Choose better delivery
         """
         order = self.browse(cr, uid, ids, context=context)[0]
-        pdb.set_trace()
         zip_list = re.findall("[0-9]{5}", order.shipping)
         force_shipping_zip = order.force_shipping_zip
         if not zip_list and not force_shipping_zip:
