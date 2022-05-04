@@ -1206,36 +1206,37 @@ class WordpressSaleOrderRelationTransport(orm.Model):
     """
     _inherit = 'wordpress.sale.order'
 
+    def get_product_delivery_data(
+            self, cr, uid, sku, zipcode, context=None):
+        """ Search if present JSON block for delivery
+        """
+        # Pool used:
+        stored_pool = self.pool.get('carrier.supplier.stored.data')
+        zone_pool = self.pool.get('sale.order.carrier.zone')
+
+        stored_ids = stored_pool.search(cr, uid, [
+            ('default_code', '=', sku),
+        ], context=context)
+        if not stored_ids:
+            return False
+        product = stored_pool.browse(
+            cr, uid, stored_ids, context=context)[0]  # only the first
+        ship_data = json.loads(product.json_zone)
+
+        for sequence, zone_id, price, courier_id in sorted(
+                ship_data, key=lambda x: (x[0], x[1])):
+            zone = zone_pool.browse(cr, uid, int(zone_id), context=context)
+            if zipcode in zone.cap:
+                return (
+                    courier_id,
+                    zone.broker_id.id or zone.courier_id.broker_id.id,
+                    price
+                )
+        return False
+
     def choose_best_delivery_button(self, cr, uid, ids, context=None):
         """ Choose better delivery
         """
-        def get_product_delivery_data(
-                self, cr, uid, sku, zipcode, context=None):
-            """ Search if present JSON block for delivery
-            """
-            # Pool used:
-            stored_pool = self.pool.get('carrier.supplier.stored.data')
-            zone_pool = self.pool.get('sale.order.carrier.zone')
-
-            stored_ids = stored_pool.search(cr, uid, [
-                ('default_code', '=', sku),
-            ], context=context)
-            if not stored_ids:
-                return False
-            product = stored_pool.browse(
-                cr, uid, stored_ids, context=context)[0]  # only the first
-            ship_data = json.loads(product.json_zone)
-
-            for sequence, zone_id, price, courier_id in sorted(
-                    ship_data, key=lambda x: (x[0], x[1])):
-                zone = zone_pool.browse(cr, uid, int(zone_id), context=context)
-                if zipcode in zone.cap:
-                    return (
-                       courier_id,
-                       zone.broker_id.id or zone.courier_id.broker_id.id,
-                       price
-                    )
-            return False
         order = self.browse(cr, uid, ids, context=context)[0]
         pdb.set_trace()
         zip_list = re.findall("[0-9]{5}", order.shipping)
@@ -1250,10 +1251,30 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         # Search product courier zone used
 
         # Loop on every product
+        if len(order.line_ids) >= 2:
+            raise osv.except_osv(
+                _('Errore'),
+                _('Attualmente non possibile gestire più di una riga!'),
+            )
+
+        total = 0.0
         for line in order.line_ids:
             default_code = line.sku
-            get_product_delivery_data(
+            quantity = line.quantity
+            res = self.get_product_delivery_data(
                 cr, uid, default_code, zip_code, context=context)
+            if not res:
+                raise osv.except_osv(
+                    _('Errore'),
+                    _('CAP %s con prodotto %s non genera costi di trasporto!'),
+                )
+            courier_id, broker_id, price = res
+            total += quantity * price
+            # todo manage multi line
+
+        self.write(cr, uid, ids, {
+            'pricelist_shipping_total': total,
+        }, context=context)
         return True
 
     _columns = {
