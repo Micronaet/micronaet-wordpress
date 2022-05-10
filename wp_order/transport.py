@@ -905,7 +905,8 @@ class CarrierSupplierInherit(orm.Model):
                     else:
                         data_color = excel_format['white']
 
-                    sequence = 0  # todo read from product correct value
+                    sequence = 1  # todo read from product correct value
+                    # todo sequence 0 not consider!
 
                     # 2. Data (colored depend on constraints):
                     excel_pool.write_xls_line(

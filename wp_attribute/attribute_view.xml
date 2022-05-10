@@ -158,6 +158,12 @@
             <field name="arch" type="xml">
                 <field name="product_id" position="after">
                     <field name="product_id" string="Codice" filter_domain="[('product_id.default_code','ilike',self)]"/>
+                    <field name="wp_it_id" string="WP ID (it)" />
+                    <field name="wp_en_id" string="WP ID (it)" />
+                    <field name="wp_es_id" string="WP ID (it)" />
+                    <field name="wp_fr_id" string="WP ID (it)" />
+                    <field name="wp_de_id" string="WP ID (it)" />
+                    <field name="wp_pt_id" string="WP ID (it)" />
 
                     <filter name="manual_stock_management" string="Magazzino manuale" domain="[('force_manual_stock','=',True)]"/>
                     <filter name="auto_stock_management" string="Magazzino automatico" domain="[('force_manual_stock','=',False)]"/>
