@@ -731,6 +731,18 @@
                                         </field>
                                     </group>
                                 </page>
+                                <page string="Modalità" name="page_mode">
+                                    <group col="4">
+                                        <field name="mode_ids" colspan="4" nolabel="1">
+                                            <tree string="Modalità" editable="bottom">
+                                                <field name="name"/>
+                                                <field name="hidden" />
+                                                <field name="account_ref" />
+                                                <field name="cups_printer_id" />
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </page>
                                 <page string="Zone broker" name="page_zone">
                                     <group col="4">
                                         <field name="broker_zone_ids" colspan="4" nolabel="1">

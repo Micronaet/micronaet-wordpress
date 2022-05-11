@@ -920,6 +920,10 @@ class CarrierSupplierInherit(orm.Model):
     _inherit = 'carrier.supplier'
 
     _columns = {
+        'mode_ids': fields.one2many(
+            'carrier.supplier.mode', 'supplier_id', 'Modalità',
+            help='Modalità di consegna del corriere attuale',
+        ),
         'child_ids': fields.one2many(
             'carrier.supplier', 'broker_id', 'Corrieri'),
     }
