@@ -734,7 +734,7 @@
                                 <page string="Modalità" name="page_mode">
                                     <group col="4">
                                         <field name="mode_ids" colspan="4" nolabel="1">
-                                            <tree string="Modalità" editable="bottom">
+                                            <tree string="Modalità" editable="bottom" colors="grey:hidden == True">
                                                 <field name="name"/>
                                                 <field name="hidden" />
                                                 <field name="account_ref" />
@@ -832,7 +832,7 @@
                                 <page string="Modalità" name="page_mode">
                                     <group col="4">
                                         <field name="mode_ids" colspan="4" nolabel="1">
-                                            <tree string="Modalità" editable="bottom">
+                                            <tree string="Modalità" editable="bottom" colors="grey:hidden == True">
                                                 <field name="name"/>
                                                 <field name="hidden" />
                                                 <field name="account_ref" />
