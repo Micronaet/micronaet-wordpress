@@ -44,6 +44,10 @@ class WordpressSaleOrderCarrierTop(orm.Model):
     """
     _inherit = 'wordpress.sale.order'
 
+    def clean_text(self, text):
+        # 'replace' = ?
+        return text.decode('utf8').encode('ascii', 'xmlcharrefreplace')
+
     # -------------------------------------------------------------------------
     #                             API interface:
     # -------------------------------------------------------------------------
