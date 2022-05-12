@@ -407,6 +407,7 @@
                     <field name="courier_supplier_id" string="Corriere"/> <!--readonly="1"-->
                     <field name="courier_mode_id" string="Modalità"/> <!--readonly="1"-->
                     <button name="carrier_get_better_option" type="object" string="Get better option" icon="STOCK_SORT_DESCENDING" />
+                    <button name="carrier_get_reservation" type="object" string="Prenota consegna" icon="gtk-yes" />
 
                     <field name="master_tracking_id" readonly="1"/>
                     <field name="carrier_track_id" readonly="1"/>

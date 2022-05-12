@@ -146,7 +146,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
                     sys.exc_info()
                 ),
             )
-
+        pdb.set_trace()
         if reply.ok:
             reply_data = reply.json()
             total = reply_data.get('shipping', {}).get('imp_totale')
