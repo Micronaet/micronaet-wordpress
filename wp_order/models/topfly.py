@@ -96,7 +96,6 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         )
         if reply.ok:
             reply_data = reply.json()
-            pdb.set_trace()
             error = reply_data.get('error')
             if error:
                 raise osv.except_osv(
