@@ -1028,7 +1028,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         if context is None:
             context = {}
         ctx = context.copy()
-        ctx['force_api_code'] = 'create'
+        ctx['force_api_mode'] = 'create'
         return self.get_rate(cr, uid, ids, context=ctx)
 
     # -------------------------------------------------------------------------
