@@ -92,7 +92,9 @@ class WordpressSaleOrderCarrierTop(orm.Model):
             location,
             data=json.dumps({}),
             headers=header,
+            verify=False,
         )
+        pdb.set_trace()
         if reply.ok:
             reply_data = reply.json()
             result = reply_data['result']
