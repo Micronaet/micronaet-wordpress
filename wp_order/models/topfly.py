@@ -97,8 +97,13 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         if reply.ok:
             reply_data = reply.json()
             pdb.set_trace()
-            result = reply_data['result']
-
+            error = reply_data.get('error')
+            if error:
+                raise osv.except_osv(
+                    _('Portale Topfly:'),
+                    _('Errore segnalato dal portale:\n%s') % error,
+                )
+            result = reply_data.get('result')
             if result:
                 self.write(cr, uid, ids, {
                     'master_tracking_id': False,
