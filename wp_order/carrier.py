@@ -387,6 +387,19 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             'nodestroy': False,
         }
 
+    def get_product_from_wp_order_line(
+            self, cr, uid, connector_id, line, context=None):
+        """ Check if product is from this database or from linked
+        """
+        connector_pool = self.pool.get('connector.server')
+
+        product = line.product_id
+        if not product:  # Linked database:
+            product = connector_pool.get_product_linked_database(
+                cr, uid, [connector_id], line.sku, context=context)
+
+        return product
+
     def generate_parcel_from_order(self, cr, uid, ids, context=None):
         """ Generate parcels from sale order
         """
@@ -405,11 +418,13 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # Generate parcel from product:
         connector_id = order.connector_id.id
         for line in order.line_ids:
-            product = line.product_id
-            if not product:
-                # Linked database:
-                product = connector_pool.get_product_linked_database(
-                    cr, uid, [connector_id], line.sku, context=context)
+            product = self.get_product_from_wp_order_line(
+                cr, uid, connector_id, line, context=context)
+            # product = line.product_id
+            # if not product:
+            #    # Linked database:
+            #    product = connector_pool.get_product_linked_database(
+            #        cr, uid, [connector_id], line.sku, context=context)
             if product:
                 # This database:
                 for counter in range(int(line.quantity)):
