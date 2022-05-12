@@ -146,9 +146,15 @@ class WordpressSaleOrderCarrierTop(orm.Model):
                     sys.exc_info()
                 ),
             )
-        pdb.set_trace()
         if reply.ok:
             reply_data = reply.json()
+            error = reply_data.get('error')
+            if error:
+                raise osv.except_osv(
+                    _('Risposta portale topfly:'),
+                    error,
+                    )
+
             total = reply_data.get('shipping', {}).get('imp_totale')
             self.write(cr, uid, ids, {
                 'pricelist_shipping_total': total,  # quotation price
