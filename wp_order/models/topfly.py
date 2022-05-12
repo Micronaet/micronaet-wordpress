@@ -51,7 +51,6 @@ class WordpressSaleOrderCarrierTop(orm.Model):
     def print_label(self, cr, uid, ids, context=None):
         """ Extract label
         """
-        pdb.set_trace()
         if context is None:
             context = {}
 
