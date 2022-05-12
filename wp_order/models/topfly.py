@@ -138,13 +138,13 @@ class WordpressSaleOrderCarrierTop(orm.Model):
             return self.send_report_to_cups_printer(
                 cr, uid, ids, fullname, printer_code, context=context)
 
-    def clean_text(self, text):
+    def clean_text(self, text, cut=35):
         """ Return char in ASCII
         """
         # return (text or '').decode('utf8').encode(
         # 'ascii', 'xmlcharrefreplace')
         # return (text or u'').decode('utf8').encode('ascii', 'replace')
-        return (text or u'').encode('ascii', 'replace')
+        return (text or u'').encode('ascii', 'replace')[:cut]
 
     # -------------------------------------------------------------------------
     #                             API interface:
@@ -254,29 +254,44 @@ class WordpressSaleOrderCarrierTop(orm.Model):
             'Content-Type': 'application/json',
         }
 
+        partner_name = self.clean_text(u'%s %s' % (
+            shipping.get('last_name', ''),
+            shipping.get('first_name', ''),
+            ), 50)
+        note = ''
+        for line in order.line_ids:
+            sku = line.sku or ''
+            quantity = line.quantity
+            note += '%s%s%s' % (
+                '-' if note else '',
+                ('%sx' % quantity) if quantity > 1 else '',
+                sku
+            )
+        note = u'[%s] %s %s' % (
+            order.name,
+            note,
+            wp_record.get('customer_note'),
+        )
         payload = {
             'header': {
                 'codice_servizio': self.clean_text(service_code),
-                'dest_destinatario': self.clean_text(order.partner_name),
+                'dest_destinatario': partner_name[:35],
                 'dest_via': self.clean_text(u'%s %s' % (
                     shipping.get('address_1', ''),
                     shipping.get('address_2', ''),
-                    )),
-                'dest_comune': self.clean_text(shipping.get('city')),
-                'dest_cap': self.clean_text(shipping.get('postcode')),
-                'dest_provincia': self.clean_text(shipping.get('state')),
-                'dest_nazione': self.clean_text(shipping.get('country', 'IT')),
-                'dest_tel': self.clean_text(billing.get('phone', '')),
-                'dest_email': self.clean_text(billing.get('mail', '')),
-                'dest_riferimento': self.clean_text(u'%s %s' % (
-                    shipping.get('last_name', ''),
-                    shipping.get('first_name', ''),
-                )),
+                    ), 105),
+                'dest_comune': self.clean_text(shipping.get('city'), 35),
+                'dest_cap': self.clean_text(shipping.get('postcode'), 9),
+                'dest_provincia': self.clean_text(shipping.get('state'), 2),
+                'dest_nazione': self.clean_text(
+                    shipping.get('country', 'IT'), 2),
+                'dest_tel': self.clean_text(billing.get('phone', ''), 15),
+                'dest_email': self.clean_text(billing.get('mail', ''), 50),
+                'dest_riferimento': partner_name,  # 50
                 'valore_merce': 0,
                 'imp_assicurato': 0,
                 'imp_contrassegno': 0,
-                'note_spedizioniere': self.clean_text(wp_record.get(
-                    'customer_note')),
+                'note_spedizioniere': self.clean_text(note, 50),
                 'service_option_CONTRASSEGNO': False,
             },
             'colli': [],
