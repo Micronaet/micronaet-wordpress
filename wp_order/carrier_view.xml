@@ -408,6 +408,7 @@
                     <field name="courier_mode_id" string="Modalità"/> <!--readonly="1"-->
                     <button name="carrier_get_better_option" type="object" string="Get better option" icon="STOCK_SORT_DESCENDING" />
                     <button name="carrier_get_reservation" type="object" string="Prenota consegna" icon="gtk-ok" />
+                    <button name="carrier_remove_reservation" type="object" string="Rimuovi prenotazione" icon="gtk-cancel" attrs="{'invisible': [('carrier_track_id', '=', False)]}" confirm="Vuoi rimuovere la prenotazione dal portale (se non è già stata ritirata la merce)?"/>
 
                     <field name="master_tracking_id" invisible="1"/>
                     <field name="carrier_track_id" invisible="1"/>

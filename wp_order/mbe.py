@@ -1031,11 +1031,18 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         ctx['force_api_code'] = 'create'
         return self.get_rate(cr, uid, ids, context=ctx)
 
+    # -------------------------------------------------------------------------
     # Will be overridden:
+    def carrier_remove_reservation(self, cr, uid, ids, context=None):
+        """ Delete reservation
+        """
+        return True
+
     def get_rate(self, cr, uid, ids, context=None):
         """ Get rate with this prameters
         """
         return True
+    # -------------------------------------------------------------------------
 
     def shipment_options_request(self, cr, uid, ids, context=None):
         """ 17. API ShippingOptionsRequest: Get better quotation

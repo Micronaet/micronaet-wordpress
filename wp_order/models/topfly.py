@@ -55,6 +55,60 @@ class WordpressSaleOrderCarrierTop(orm.Model):
     # -------------------------------------------------------------------------
     #                             API interface:
     # -------------------------------------------------------------------------
+    def carrier_remove_reservation(self, cr, uid, ids, context=None):
+        """ Delete reservation
+        """
+        if context is None:
+            context = {}
+
+        order = self.browse(cr, uid, ids, context=context)[0]
+
+        carrier = order.carrier_supplier_id
+        if carrier.account_ref != 'TOP':
+            return super(
+                WordpressSaleOrderCarrierTop, self).carrier_remove_reservation(
+                cr, uid, ids, context=context)
+
+        # Connection:
+        connection = carrier.carrier_connection_id
+        root = connection.location
+        token = connection.passphrase
+
+        tracking_id = order.carrier_track_id  # must exist
+        if not tracking_id:
+            raise osv.except_osv(
+                _('Errore Cancellazione:'),
+                _('Impossibile cancellare la prenotazione, Tracking ID '
+                  'non presente, usare il portale!'),
+            )
+
+        location = '%sshippings/%s?apitoken=%s' % (
+            root, tracking_id, token)
+
+        header = {
+            'Content-Type': 'application/json',
+        }
+        reply = requests.delete(
+            location,
+            data=json.dumps({}),
+            headers=header,
+        )
+        if reply.ok:
+            reply_data = reply.json()
+            result = reply_data['result']
+            if result:
+                self.write(cr, uid, {
+                    'master_tracking_id': False,
+                    'carrier_track_id': False,
+                })
+            else:
+                raise osv.except_osv(
+                    _('Errore Cancellazione:'),
+                    _('La chiamata non permette la cancellazione di questo'
+                      'Tracking ID, usare il portale!'),
+                )
+        return True
+
     def get_rate(self, cr, uid, ids, context=None):
         """ Get best rate for this order
             Context parameter:
