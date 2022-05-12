@@ -582,7 +582,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             'width': template.width,
             'height': template.height,
             'no_label': template.no_label,
-            'real_weight': template.parcel_weight_tree,
+            'real_weight': order.parcel_weight_tree,
             }, context=context)
 
     def carrier_get_better_option(self, cr, uid, ids, context=None):
