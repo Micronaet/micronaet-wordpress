@@ -45,8 +45,10 @@ class WordpressSaleOrderCarrierTop(orm.Model):
     _inherit = 'wordpress.sale.order'
 
     def clean_text(self, text):
+        """ Return char in ASCII
+        """
         # 'replace' = ?
-        return text.decode('utf8').encode('ascii', 'xmlcharrefreplace')
+        return (text or '').decode('utf8').encode('ascii', 'xmlcharrefreplace')
 
     # -------------------------------------------------------------------------
     #                             API interface:
@@ -90,26 +92,27 @@ class WordpressSaleOrderCarrierTop(orm.Model):
 
         payload = {
             'header': {
-                'codice_servizio': service_code or '',
-                'dest_destinatario': order.partner_name or '',
-                'dest_via': u'%s %s' % (
+                'codice_servizio': self.clean_text(service_code),
+                'dest_destinatario': self.clean_text(order.partner_name),
+                'dest_via': self.clean_text(u'%s %s' % (
                     shipping.get('address_1', ''),
                     shipping.get('address_2', ''),
-                    ),
-                'dest_comune': shipping.get('city', ''),
-                'dest_cap': shipping.get('postcode', ''),
-                'dest_provincia': shipping.get('state', ''),
-                'dest_nazione': shipping.get('country', 'IT'),
-                'dest_tel': billing.get('phone', ''),
-                'dest_email': billing.get('mail', ''),
-                'dest_riferimento': u'%s %s' % (
+                    )),
+                'dest_comune': self.clean_text(shipping.get('city')),
+                'dest_cap': self.clean_text(shipping.get('postcode')),
+                'dest_provincia': self.clean_text(shipping.get('state')),
+                'dest_nazione': self.clean_text(shipping.get('country', 'IT')),
+                'dest_tel': self.clean_text(billing.get('phone', '')),
+                'dest_email': self.clean_text(billing.get('mail', '')),
+                'dest_riferimento': self.clean_text(u'%s %s' % (
                     shipping.get('last_name', ''),
                     shipping.get('first_name', ''),
-                ),
+                )),
                 'valore_merce': 0,
                 'imp_assicurato': 0,
                 'imp_contrassegno': 0,
-                'note_spedizioniere': wp_record.get('customer_note', ''),
+                'note_spedizioniere': self.clean_text(wp_record.get(
+                    'customer_note')),
                 'service_option_CONTRASSEGNO': False,
             },
             'colli': [],
