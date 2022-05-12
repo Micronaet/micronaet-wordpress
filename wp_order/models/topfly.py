@@ -130,12 +130,20 @@ class WordpressSaleOrderCarrierTop(orm.Model):
                 'h': parcel.height,
                 })
 
-        pdb.set_trace()
-        reply = requests.post(
-            location,
-            data=json.dumps(payload),
-            headers=header,
-        )
+        try:
+            json_payload = json.dumps(payload)
+            reply = requests.post(
+                location,
+                data=json_payload,
+                headers=header,
+            )
+        except:
+            raise osv.except_osv(
+                _('Errore chiamata:'),
+                _('URL: %s\nHeader: %s\Payload: %s') % (
+                    location, header, json_payload
+                ),
+            )
 
         if reply.ok:
             reply_data = reply.json()
