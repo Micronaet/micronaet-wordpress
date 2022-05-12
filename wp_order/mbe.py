@@ -1027,6 +1027,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """
         assert len(ids) == 1, 'Un ordine alla volta'
 
+        return self.get_rate(cr, uid, ids, context=context)
+
+        # todo move in MBE Module <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         order = self.browse(cr, uid, ids, context=context)[0]
 
         # Carrier connection (B)
