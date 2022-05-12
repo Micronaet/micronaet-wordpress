@@ -96,7 +96,9 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         )
         if reply.ok:
             reply_data = reply.json()
+            pdb.set_trace()
             result = reply_data['result']
+
             if result:
                 self.write(cr, uid, ids, {
                     'master_tracking_id': False,
