@@ -50,13 +50,10 @@ class WordpressSaleOrderCarrierTop(orm.Model):
     def get_rate(self, cr, uid, ids, context=None):
         """ Get best rate for this order
         """
-        pdb.set_trace()
-        web_product_pool = self.pool.get('product.product.web.server')
-
         order = self.browse(cr, uid, ids, context=context)[0]
 
         carrier = order.carrier_supplier_id
-        if carrier.code != 'TOP':
+        if carrier.account_ref != 'TOP':
             return super(WordpressSaleOrderCarrierTop, self).get_rate(
                 cr, uid, ids, context=context)
 
@@ -75,7 +72,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
             )
 
         # Connection:
-        connection = carrier.connection_id
+        connection = carrier.carrier_connection_id
         root = connection.location
         token = connection.passphrase
         location = '%sshippings/preview?apitoken=%s' % (root, token)
