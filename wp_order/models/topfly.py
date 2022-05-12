@@ -140,8 +140,9 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         except:
             raise osv.except_osv(
                 _('Errore chiamata:'),
-                _('URL: %s\n\nHeader: %s\n\nPayload: %s') % (
-                    location, header, json_payload
+                _('URL: %s\n\nHeader: %s\n\nPayload: %s\n\n') % (
+                    location, header, json_payload,
+                    sys.exc_info()
                 ),
             )
 
