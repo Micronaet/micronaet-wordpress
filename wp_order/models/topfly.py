@@ -86,19 +86,19 @@ class WordpressSaleOrderCarrierTop(orm.Model):
 
         payload = {
             'header': {
-                'codice_servizio': service_code,
-                'dest_destinatario': order.partner_name,
-                'dest_via': '%s %s' % (
-                    shipping.get('address_1'),
-                    shipping.get('address_2'),
+                'codice_servizio': service_code or '',
+                'dest_destinatario': order.partner_name or '',
+                'dest_via': u'%s %s' % (
+                    shipping.get('address_1', ''),
+                    shipping.get('address_2', ''),
                     ),
-                'dest_comune': shipping.get('city'),
-                'dest_cap': shipping.get('postcode'),
-                'dest_provincia': shipping.get('state'),
+                'dest_comune': shipping.get('city', ''),
+                'dest_cap': shipping.get('postcode', ''),
+                'dest_provincia': shipping.get('state', ''),
                 'dest_nazione': shipping.get('country', 'IT'),
-                'dest_tel': billing.get('phone'),
-                'dest_email': billing.get('mail'),
-                'dest_riferimento': '%s %s' % (
+                'dest_tel': billing.get('phone', ''),
+                'dest_email': billing.get('mail', ''),
+                'dest_riferimento': u'%s %s' % (
                     shipping.get('last_name', ''),
                     shipping.get('first_name', ''),
                 ),
