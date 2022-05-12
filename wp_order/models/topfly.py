@@ -114,7 +114,6 @@ class WordpressSaleOrderCarrierTop(orm.Model):
             Context parameter:
                 force_api_mode: preview, create
         """
-        pdb.set_trace()
         if context is None:
             context = {}
 
