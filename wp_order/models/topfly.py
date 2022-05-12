@@ -47,8 +47,9 @@ class WordpressSaleOrderCarrierTop(orm.Model):
     def clean_text(self, text):
         """ Return char in ASCII
         """
-        # 'replace' = ?
-        return (text or '').decode('utf8').encode('ascii', 'xmlcharrefreplace')
+        # return (text or '').decode('utf8').encode(
+        # 'ascii', 'xmlcharrefreplace')
+        return (text or u'').decode('utf8').encode('ascii', 'replace')
 
     # -------------------------------------------------------------------------
     #                             API interface:
