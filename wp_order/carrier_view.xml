@@ -372,6 +372,13 @@
 
             <field name="arch" type="xml">
                 <tree string="Sale order for carrier" editable="bottom" colors="green: carrier_state == 'delivered';blue: carrier_state == 'pending'; grey:carrier_state == 'draft' and (not parcel_ids or not carrier_supplier_id)" >
+                    <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="gtk-yes" />
+                    <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="gtk-undo" />
+                    <button name="carrier_print_label" type="object" string="Print label" icon="gtk-print" attrs="{'invisible': [('carrier_track_id', '=', False)]}"/>
+                    <!--<field name="carrier_delivery_state" invisible="1"/>-->
+                    <button name="order_form_detail" type="object" string="Dettaglio ordine" icon="gtk-find"/>
+                    <button name="extract_wordpress_published_report" type="object" string="Ordini spediti oggi" icon="gtk-info"/>
+
                     <!--<field name="connector_id"/>
                     <field name="wp_date_created"/>
                     -->
@@ -397,9 +404,10 @@
                     <button name="choose_best_delivery_button" type="object" string="Scegli corriere migliore" icon="gtk-refresh" />
                     <field name="carrier_supplier_id" string="Broker"/>
                     <field name="carrier_mode_id" string="Servizio"/>
-                    <button name="carrier_get_better_option" type="object" string="Get better option" icon="STOCK_SORT_DESCENDING" />
                     <field name="courier_supplier_id" string="Corriere"/> <!--readonly="1"-->
                     <field name="courier_mode_id" string="Modalità"/> <!--readonly="1"-->
+                    <button name="carrier_get_better_option" type="object" string="Get better option" icon="STOCK_SORT_DESCENDING" />
+
                     <field name="master_tracking_id" readonly="1"/>
                     <field name="carrier_track_id" readonly="1"/>
                     <field name="zone_id" readonly="1"/>
@@ -414,13 +422,6 @@
 
                     <!--<field name="soap_last_error" invisible="1"/>
                     <button name="soap_comment_last_error" string="Last error present" type="object" attrs="{'invisible': [('soap_last_error', '=', False)]}" icon="fa-exclamation-triangle fa-2x" />-->
-
-                    <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="gtk-yes" />
-                    <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="gtk-undo" />
-                    <button name="carrier_print_label" type="object" string="Print label" icon="gtk-print" attrs="{'invisible': [('carrier_track_id', '=', False)]}"/>
-                    <!--<field name="carrier_delivery_state" invisible="1"/>-->
-                    <button name="order_form_detail" type="object" string="Dettaglio ordine" icon="gtk-find"/>
-                    <button name="extract_wordpress_published_report" type="object" string="Ordini spediti oggi" icon="gtk-info"/>
                     <field name="state" />
                 </tree>
             </field>
