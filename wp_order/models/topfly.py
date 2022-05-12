@@ -49,7 +49,10 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         """
         # return (text or '').decode('utf8').encode(
         # 'ascii', 'xmlcharrefreplace')
-        return (text or u'').decode('utf8').encode('ascii', 'replace')
+        try:
+            return (text or u'').decode('utf8').encode('ascii', 'replace')
+        except:
+            pdb.set_trace()
 
     # -------------------------------------------------------------------------
     #                             API interface:
