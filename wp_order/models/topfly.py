@@ -263,7 +263,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
             sku = line.sku or ''
             quantity = line.quantity
             note += '%s%s%s' % (
-                '-' if note else '',
+                ';' if note else '',
                 ('%sx' % quantity) if quantity > 1 else '',
                 sku
             )
