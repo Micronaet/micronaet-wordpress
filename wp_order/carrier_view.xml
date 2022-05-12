@@ -409,8 +409,8 @@
                     <button name="carrier_get_better_option" type="object" string="Get better option" icon="STOCK_SORT_DESCENDING" />
                     <button name="carrier_get_reservation" type="object" string="Prenota consegna" icon="gtk-yes" />
 
-                    <field name="master_tracking_id" readonly="1"/>
-                    <field name="carrier_track_id" readonly="1"/>
+                    <field name="master_tracking_id" invisible="1"/>
+                    <field name="carrier_track_id" invisible="1"/>
                     <field name="zone_id" readonly="1"/>
                     <field name="pricelist_shipping_total" readonly="1" sum="Spedizione da listino" />
                     <field name="carrier_cost" readonly="1" sum="Spedizione calcolata" />
