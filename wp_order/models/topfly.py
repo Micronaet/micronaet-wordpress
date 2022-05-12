@@ -26,6 +26,7 @@ import pdb
 import sys
 import logging
 import requests
+import shutil
 import json
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
@@ -43,6 +44,92 @@ class WordpressSaleOrderCarrierTop(orm.Model):
     """ Model name: Wordpress Sale order for carrier operations
     """
     _inherit = 'wordpress.sale.order'
+
+    # -------------------------------------------------------------------------
+    # Utility:
+    # -------------------------------------------------------------------------
+    def print_label(self, cr, uid, ids, context=None):
+        """ Extract label
+        """
+        pdb.set_trace()
+        if context is None:
+            context = {}
+
+        order_id = ids[0]
+        order = self.browse(cr, uid, order_id, context=context)
+
+        carrier = order.carrier_supplier_id
+        if carrier.account_ref != 'TOP':
+            return super(
+                WordpressSaleOrderCarrierTop, self).print_label(
+                cr, uid, ids, context=context)
+
+        # ---------------------------------------------------------------------
+        #                              Download label:
+        # ---------------------------------------------------------------------
+        # Connection:
+        connection = carrier.carrier_connection_id
+        root = connection.location
+        token = connection.passphrase
+
+        tracking_id = order.carrier_track_id  # must exist
+        if not tracking_id:
+            raise osv.except_osv(
+                _('Errore Cancellazione:'),
+                _('Impossibile cancellare la prenotazione, Tracking ID '
+                  'non presente, usare il portale!'),
+            )
+
+        location = '%sshippings/%s/label/pdf?termica=1&apitoken=%s' % (
+            root, tracking_id, token)
+        header = {
+            'Content-Type': 'application/json',
+        }
+        reply = requests.get(
+            location,
+            data=json.dumps({}),
+            headers=header,
+        )
+        if reply.ok:
+            data_pdf = reply.content
+            pdf_file = open('/tmp/%s.pdf' % tracking_id, 'wb')
+            pdf_file.write(data_pdf)
+            pdf_file.close()
+
+        # ---------------------------------------------------------------------
+        # Save to file:
+        # ---------------------------------------------------------------------
+        user = self.pool.get('res.users').browse(
+            cr, uid, uid, context=context)
+        path = self.get_folder_root_path(cr, 'tracking')
+
+        # todo not managed for now:
+        parcel_path = self.get_folder_root_path(cr, 'parcel', root_path=path)
+        label_path = self.get_folder_root_path(cr, 'label', root_path=path)
+        filename = '%s.1.PDF' % order_id
+        fullname = os.path.join(label_path, filename)
+
+        # ---------------------------------------------------------------------
+        # Print file:
+        # ---------------------------------------------------------------------
+        printer_code = \
+            order.carrier_mode_id.cups_printer_id.code or \
+            order.carrier_connection_id.cups_printer_id.code
+
+        # Check if need to print or to save:
+        company = user.company_id
+        if company.carrier_save_label:  # todo needed?
+            saved_path = os.path.join(
+                os.path.expanduser(company.carrier_save_label_path),
+                printer_code,
+            )
+            os.system('mkdir -p %s' % saved_path)  # Create path
+            saved_fullname = os.path.join(saved_path, filename)
+            shutil.copy(fullname, saved_fullname)
+            _logger.warning('Saved label in: %s' % saved_fullname)
+        else:
+            return self.send_report_to_cups_printer(
+                cr, uid, ids, fullname, printer_code, context=context)
 
     def clean_text(self, text):
         """ Return char in ASCII

@@ -170,7 +170,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         printer = False
         if printer_code:
-            printer_ids = printer_pool.search(cr, uid,[
+            printer_ids = printer_pool.search(cr, uid, [
                 ('code', '=', printer_code),
             ], context=context)
             if printer_ids:
