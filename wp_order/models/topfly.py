@@ -338,10 +338,14 @@ class WordpressSaleOrderCarrierTop(orm.Model):
             }
             if api_mode == 'create':
                 tracking_id = reply_data['id']
+                master_tracking_id = reply_data.get(
+                    'shipping', {}).get('lettera_di_vettura', '')
+
                 data.update({
                     'real_shipping_total': total,  # confirmed price
                     'carrier_track_id': tracking_id,
-                    'master_tracking_id': tracking_id,  # needed?
+                    # LDV Tracking:
+                    'master_tracking_id': master_tracking_id or tracking_id,
                     })
             self.write(cr, uid, ids, data, context=context)
         return True
