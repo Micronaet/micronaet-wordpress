@@ -103,6 +103,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
             location,
             data=json.dumps({}),
             headers=header,
+            verify=False,
         )
         if reply.ok:
             data_pdf = reply.content
