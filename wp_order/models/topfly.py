@@ -67,7 +67,21 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         # ---------------------------------------------------------------------
         #                              Download label:
         # ---------------------------------------------------------------------
+        # Save to file:
+        # ---------------------------------------------------------------------
+        user = self.pool.get('res.users').browse(
+            cr, uid, uid, context=context)
+        path = self.get_folder_root_path(cr, 'tracking')
+
+        # todo not managed for now:
+        parcel_path = self.get_folder_root_path(cr, 'parcel', root_path=path)
+        label_path = self.get_folder_root_path(cr, 'label', root_path=path)
+        filename = '%s.1.PDF' % order_id
+        fullname = os.path.join(label_path, filename)
+
+        # ---------------------------------------------------------------------
         # Connection:
+        # ---------------------------------------------------------------------
         connection = carrier.carrier_connection_id
         root = connection.location
         token = connection.passphrase
@@ -75,9 +89,9 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         tracking_id = order.carrier_track_id  # must exist
         if not tracking_id:
             raise osv.except_osv(
-                _('Errore Cancellazione:'),
-                _('Impossibile cancellare la prenotazione, Tracking ID '
-                  'non presente, usare il portale!'),
+                _('Errore Etichetta:'),
+                _('Impossibile scaricare etichette se non è presente '
+                  'il tracking ID!'),
             )
 
         location = '%sshippings/%s/label/pdf?termica=1&apitoken=%s' % (
@@ -92,22 +106,15 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         )
         if reply.ok:
             data_pdf = reply.content
-            pdf_file = open('/tmp/%s.pdf' % tracking_id, 'wb')
+            pdf_file = open(fullname, 'wb')
             pdf_file.write(data_pdf)
             pdf_file.close()
-
-        # ---------------------------------------------------------------------
-        # Save to file:
-        # ---------------------------------------------------------------------
-        user = self.pool.get('res.users').browse(
-            cr, uid, uid, context=context)
-        path = self.get_folder_root_path(cr, 'tracking')
-
-        # todo not managed for now:
-        parcel_path = self.get_folder_root_path(cr, 'parcel', root_path=path)
-        label_path = self.get_folder_root_path(cr, 'label', root_path=path)
-        filename = '%s.1.PDF' % order_id
-        fullname = os.path.join(label_path, filename)
+            _logger.warning('Save label to file: %s' % fullname)
+        else:
+            raise osv.except_osv(
+                _('Errore etichetta:'),
+                _('Il portale non ha restituito nessuna etichetta!'),
+            )
 
         # ---------------------------------------------------------------------
         # Print file:
