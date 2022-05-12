@@ -94,15 +94,14 @@ class WordpressSaleOrderCarrierTop(orm.Model):
             headers=header,
             verify=False,
         )
-        pdb.set_trace()
         if reply.ok:
             reply_data = reply.json()
             result = reply_data['result']
             if result:
-                self.write(cr, uid, {
+                self.write(cr, uid, ids, {
                     'master_tracking_id': False,
                     'carrier_track_id': False,
-                })
+                }, context=context)
             else:
                 raise osv.except_osv(
                     _('Errore Cancellazione:'),
