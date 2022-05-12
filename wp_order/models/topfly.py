@@ -57,7 +57,12 @@ class WordpressSaleOrderCarrierTop(orm.Model):
     # -------------------------------------------------------------------------
     def get_rate(self, cr, uid, ids, context=None):
         """ Get best rate for this order
+            Context parameter:
+                force_api_mode: preview, create
         """
+        if context is None:
+            context = {}
+
         order = self.browse(cr, uid, ids, context=context)[0]
 
         carrier = order.carrier_supplier_id
@@ -68,6 +73,8 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         # ---------------------------------------------------------------------
         # Parameters:
         # ---------------------------------------------------------------------
+        api_mode = context.get('force_api_mode', 'preview')
+
         carrier_mode = order.carrier_mode_id
         courier_supplier = order.courier_supplier_id
         courier_mode = order.courier_mode_id
@@ -83,7 +90,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         connection = carrier.carrier_connection_id
         root = connection.location
         token = connection.passphrase
-        location = '%sshippings/preview?apitoken=%s' % (root, token)
+        location = '%sshippings/%s?apitoken=%s' % (root, api_mode, token)
 
         wp_record = eval(order.wp_record)
         billing = wp_record.get('billing', {})
@@ -156,9 +163,15 @@ class WordpressSaleOrderCarrierTop(orm.Model):
                     )
 
             total = reply_data.get('shipping', {}).get('imp_totale')
-            self.write(cr, uid, ids, {
+            data = {
                 'pricelist_shipping_total': total,  # quotation price
-                # 'real_shipping_total': total,  # confirmed price
-            }, context=context)
-            # todo manage error
+            }
+            if api_mode == 'create':
+                tracking_id = reply_data['id']
+                data.update({
+                    'real_shipping_total': total,  # confirmed price
+                    'carrier_track_id': tracking_id,
+                    'master_tracking_id': tracking_id,  # needed?
+                    })
+            self.write(cr, uid, ids, data, context=context)
         return True

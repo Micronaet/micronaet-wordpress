@@ -1022,6 +1022,21 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         return self.update_order_with_soap_reply(
             cr, uid, ids, result_data, context=context)
 
+    def carrier_get_reservation(self, cr, uid, ids, context=None):
+        """ Create delivery with this parameters
+        """
+        if context is None:
+            context = {}
+        ctx = context.copy()
+        ctx['force_api_code'] = 'create'
+        return self.get_rate(cr, uid, ids, context=ctx)
+
+    # Will be overridden:
+    def get_rate(self, cr, uid, ids, context=None):
+        """ Get rate with this prameters
+        """
+        return True
+
     def shipment_options_request(self, cr, uid, ids, context=None):
         """ 17. API ShippingOptionsRequest: Get better quotation
         """
