@@ -121,6 +121,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
                 'h': parcel.height,
                 })
 
+        pdb.set_trace()
         reply = requests.post(
             location,
             data=json.dumps(payload),
