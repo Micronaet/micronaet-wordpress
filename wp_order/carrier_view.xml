@@ -374,7 +374,6 @@
                 <tree string="Sale order for carrier" editable="bottom" colors="green: carrier_state == 'delivered';blue: carrier_state == 'pending'; grey:carrier_state == 'draft' and (not parcel_ids or not carrier_supplier_id)" >
                     <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="gtk-yes" />
                     <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="gtk-undo" />
-                    <button name="carrier_print_label" type="object" string="Print label" icon="gtk-print" attrs="{'invisible': [('carrier_track_id', '=', False)]}"/>
                     <!--<field name="carrier_delivery_state" invisible="1"/>-->
                     <button name="order_form_detail" type="object" string="Dettaglio ordine" icon="gtk-find"/>
                     <button name="extract_wordpress_published_report" type="object" string="Ordini spediti oggi" icon="gtk-info"/>
@@ -406,9 +405,10 @@
                     <field name="carrier_mode_id" string="Servizio"/>
                     <field name="courier_supplier_id" string="Corriere"/> <!--readonly="1"-->
                     <field name="courier_mode_id" string="Modalità"/> <!--readonly="1"-->
-                    <button name="carrier_get_better_option" type="object" string="Get better option" icon="STOCK_SORT_DESCENDING" />
+                    <button name="carrier_get_better_option" type="object" string="Get better option" icon="STOCK_SORT_DESCENDING" attrs="{'invisible': [('carrier_track_id', '!=', False)]}" />
                     <button name="carrier_get_reservation" type="object" string="Prenota consegna" icon="gtk-ok" attrs="{'invisible': [('carrier_track_id', '!=', False)]}" confirm="Confermi prenotazione consegna al portale?"/>
                     <button name="carrier_remove_reservation" type="object" string="Rimuovi prenotazione" icon="gtk-cancel" attrs="{'invisible': [('carrier_track_id', '=', False)]}" confirm="Vuoi rimuovere la prenotazione dal portale (se non è già stata ritirata la merce)?"/>
+                    <button name="carrier_print_label" type="object" string="Print label" icon="gtk-print" attrs="{'invisible': [('carrier_track_id', '=', False)]}"/>
 
                     <field name="master_tracking_id" invisible="1"/>
                     <field name="carrier_track_id" invisible="1"/>

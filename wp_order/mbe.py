@@ -229,7 +229,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         order_id = ids[0]
         order = self.browse(cr, uid, order_id, context=context)
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
-        # TODO mode = 'label_01'
+        # todo mode = 'label_01'
         path = self.get_folder_root_path(cr, 'tracking')
 
         # todo not managed for now:
