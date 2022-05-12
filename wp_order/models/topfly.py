@@ -22,6 +22,7 @@
 ###############################################################################
 
 import os
+import pdb
 import sys
 import logging
 import requests
@@ -46,18 +47,18 @@ class WordpressSaleOrderCarrierTop(orm.Model):
     # -------------------------------------------------------------------------
     #                             API interface:
     # -------------------------------------------------------------------------
-    def get_rate(self, cr, uid, ids, code, context=None):
+    def get_rate(self, cr, uid, ids, context=None):
         """ Get best rate for this order
         """
+        pdb.set_trace()
         web_product_pool = self.pool.get('product.product.web.server')
 
         order = self.browse(cr, uid, ids, context=context)[0]
 
         carrier = order.carrier_supplier_id
-
         if carrier.code != 'TOP':
             return super(WordpressSaleOrderCarrierTop, self).get_rate(
-                cr, uid, ids, code, context=context)
+                cr, uid, ids, context=context)
 
         # ---------------------------------------------------------------------
         # Parameters:
@@ -113,37 +114,14 @@ class WordpressSaleOrderCarrierTop(orm.Model):
             'colli': [],
         }
         colli = payload['colli']
-        connector_id = False
-        for line in order.line_ids:
-            if not connector_id:
-                connector_id = order.connector_id.id
-
-            # Search sku data on 2 database
-            product = self.get_product_from_wp_order_line(
-                cr, uid, connector_id, line, context=context)
-            if not product:
-                # raise error
-                continue
-
-            product_id = product.id
-            web_product = web_product_pool.search(cr, uid, [
-                ('product_id', '=', product_id),
-                ('connector_id.wordpress', '=', True),
-            ], context=context)
-
-            h = web_product.web_H or web_product.pack_h
-            w = web_product.web_W or web_product.pack_l
-            l = web_product.web_L or web_product.pack_p
-            weight = web_product.web_weight or web_product.product_id.weight
-            # volumetric = web_product.web_volumetric
-
+        for parcel in order.parcel_ids:
             colli.append({
                 'tipo': 'merce',  # todo 'documenti',
-                'pesodic': weight,
-                'desc': 'una scatola',
-                'p': l,
-                'l': w,
-                'h': h,
+                'pesodic': parcel.real_weight,
+                'desc': 'Scatola',  # todo?
+                'p': parcel.length,
+                'l': parcel.width,
+                'h': parcel.height,
                 })
 
         reply = requests.post(
