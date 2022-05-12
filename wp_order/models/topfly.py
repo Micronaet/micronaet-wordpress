@@ -136,6 +136,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
                 location,
                 data=json_payload,
                 headers=header,
+                verify=False,
             )
         except:
             raise osv.except_osv(
