@@ -730,6 +730,7 @@ class CarrierSupplierInherit(orm.Model):
         # Hidden row:
         # ---------------------------------------------------------------------
         row = 0
+        _logger.warning('%s. Riga nascosta')
         hidden_header = [
             'id', '', '', '', '', '', '', '',
             'sequence', '', 'courier', '', 'price']
@@ -741,6 +742,7 @@ class CarrierSupplierInherit(orm.Model):
         # Print header
         # ---------------------------------------------------------------------
         row += 1
+        _logger.warning('%s. Intestazione padre')
         header = [
             'ID', 'Codice', 'Nome',
             'H', 'W', 'L', 'Peso', 'Peso v.',
@@ -834,6 +836,7 @@ class CarrierSupplierInherit(orm.Model):
                     weight,
                     volumetric,
                 ], default_format=excel_format['white']['text'])
+            _logger.warning('%s. Dati prodotto')
 
             for broker in brokers:
                 broker_id = broker.id
@@ -845,6 +848,7 @@ class CarrierSupplierInherit(orm.Model):
                 header_load = True
                 for courier in couriers:
                     courier_id = courier.id
+                    courier_name = courier.name
                     key_id = '%s-%s' % (broker_id, courier_id)
                     row += 1
 
@@ -858,6 +862,8 @@ class CarrierSupplierInherit(orm.Model):
                         # -----------------------------------------------------
                         # 1. Empty:
                         header_row = row - 1
+                        _logger.warning('%s. Intestazione %s - %s' % (
+                            header_row, broker_name, courier_name))
                         if product_row != header_row:  # Write all line not 1st
                             excel_pool.write_xls_line(
                                 ws_name, header_row, empty,
@@ -910,6 +916,8 @@ class CarrierSupplierInherit(orm.Model):
                     # todo sequence 0 not consider!
 
                     # 2. Data (colored depend on constraints):
+                    _logger.warning('%s. Courier data %s - %s' % (
+                        row, broker_name, courier_name))
                     excel_pool.write_xls_line(
                         ws_name, row, [
                             # choose better solution:
@@ -1008,8 +1016,8 @@ class CarrierSupplierInherit(orm.Model):
                     'json_data': json.dumps(json_product),
                     'json_zone': json.dumps(json_zone),
                 }, context=context)
-
             row += 1  # to print header
+
         return excel_pool.return_attachment(cr, uid, 'web_product')
 
     _columns = {
