@@ -808,7 +808,7 @@ class CarrierSupplierInherit(orm.Model):
                 json_zone = []  # Hig priority (courier)
 
             product = web_product.product_id
-            if row == 1:
+            if row == 1:  # Only first time start next line
                 row += 1
             product_row = row
             h = web_product.web_H
@@ -843,8 +843,6 @@ class CarrierSupplierInherit(orm.Model):
 
                 couriers = sorted(broker.child_ids, key=lambda c: c.name)
                 header_load = True
-                if broker_name == 'TOP':
-                    pdb.set_trace()
                 for courier in couriers:
                     courier_id = courier.id
                     key_id = '%s-%s' % (broker_id, courier_id)
@@ -859,19 +857,20 @@ class CarrierSupplierInherit(orm.Model):
                         # Header 2: Zones:
                         # -----------------------------------------------------
                         # 1. Empty:
-                        if product_row != row - 1:
+                        header_row = row - 1
+                        if product_row != header_row:  # Write all line not 1st
                             excel_pool.write_xls_line(
-                                ws_name, row-1, empty,
+                                ws_name, header_row, empty,
                                 default_format=excel_format['white']['text'],
                                 )
                         # 2. Fixed common part:
                         excel_pool.write_xls_line(
-                            ws_name, row-1, header2,
+                            ws_name, header_row, header2,
                             default_format=excel_format['header'],
                             col=product_col)
                         # 3. Broker Zone:
                         excel_pool.write_xls_line(
-                            ws_name, row - 1, [
+                            ws_name, header_row, [
                                 z.name for z in sorted(
                                     broker_zones,
                                     key=lambda bz: bz.name
@@ -1010,7 +1009,7 @@ class CarrierSupplierInherit(orm.Model):
                     'json_zone': json.dumps(json_zone),
                 }, context=context)
 
-                row += 1  # to print header
+            row += 1  # to print header
         return excel_pool.return_attachment(cr, uid, 'web_product')
 
     _columns = {
