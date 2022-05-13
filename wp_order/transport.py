@@ -999,6 +999,7 @@ class CarrierSupplierInherit(orm.Model):
                                         excel_pool.write_comment(
                                             ws_name, row, price_col,
                                             pl_comment, comment_param)
+                row += 1  # to print header
 
             # Store JSON data for this product
             if store_data:
@@ -1016,7 +1017,6 @@ class CarrierSupplierInherit(orm.Model):
                     'json_data': json.dumps(json_product),
                     'json_zone': json.dumps(json_zone),
                 }, context=context)
-            row += 1  # to print header
 
         return excel_pool.return_attachment(cr, uid, 'web_product')
 
