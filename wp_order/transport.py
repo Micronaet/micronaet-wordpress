@@ -843,6 +843,8 @@ class CarrierSupplierInherit(orm.Model):
 
                 couriers = sorted(broker.child_ids, key=lambda c: c.name)
                 header_load = True
+                if broker_name == 'TOP':
+                    pdb.set_trace()
                 for courier in couriers:
                     courier_id = courier.id
                     key_id = '%s-%s' % (broker_id, courier_id)
