@@ -730,7 +730,7 @@ class CarrierSupplierInherit(orm.Model):
         # Hidden row:
         # ---------------------------------------------------------------------
         row = 0
-        _logger.warning('%s. Riga nascosta')
+        _logger.warning('%s. Riga nascosta' % row)
         hidden_header = [
             'id', '', '', '', '', '', '', '',
             'sequence', '', 'courier', '', 'price']
@@ -742,7 +742,7 @@ class CarrierSupplierInherit(orm.Model):
         # Print header
         # ---------------------------------------------------------------------
         row += 1
-        _logger.warning('%s. Intestazione padre')
+        _logger.warning('%s. Intestazione padre' % row)
         header = [
             'ID', 'Codice', 'Nome',
             'H', 'W', 'L', 'Peso', 'Peso v.',
@@ -836,7 +836,7 @@ class CarrierSupplierInherit(orm.Model):
                     weight,
                     volumetric,
                 ], default_format=excel_format['white']['text'])
-            _logger.warning('%s. Dati prodotto')
+            _logger.warning('%s. Dati prodotto' % row)
 
             for broker in brokers:
                 broker_id = broker.id
@@ -862,8 +862,8 @@ class CarrierSupplierInherit(orm.Model):
                         # -----------------------------------------------------
                         # 1. Empty:
                         header_row = row - 1
-                        _logger.warning('%s. Intestazione %s - %s' % (
-                            header_row, broker_name, courier_name))
+                        _logger.warning('%s. Intestazione broker %s' % (
+                            header_row, broker_name))
                         if product_row != header_row:  # Write all line not 1st
                             excel_pool.write_xls_line(
                                 ws_name, header_row, empty,
