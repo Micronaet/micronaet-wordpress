@@ -532,7 +532,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # 2. Create request:
         error = self.shipment_request(cr, uid, ids, context=context)
         if error:
-            return order.log_error(
+            return self.log_error(
                 cr, uid, ids,
                 error,
                 context=context,
