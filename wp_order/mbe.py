@@ -169,7 +169,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
 
         printer = False
-        if printer_code:
+        if printer_code:  # parameter for the procedure
             printer_ids = printer_pool.search(cr, uid, [
                 ('code', '=', printer_code),
             ], context=context)

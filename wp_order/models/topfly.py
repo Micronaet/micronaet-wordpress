@@ -120,7 +120,10 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         # Print file:
         # ---------------------------------------------------------------------
         printer_code = \
+            order.courier_mode_id.cups_printer_id.code or \
+            order.courier_supplier_id.cups_printer_id.code or \
             order.carrier_mode_id.cups_printer_id.code or \
+            order.carrier_supplier_id.cups_printer_id.code or \
             order.carrier_connection_id.cups_printer_id.code
 
         # Check if need to print or to save:
