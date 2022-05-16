@@ -588,6 +588,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     def carrier_get_better_option(self, cr, uid, ids, context=None):
         """ Get better options
         """
+        pdb.set_trace()
         order = self.browse(cr, uid, ids, context=context)[0]
         if not order.carrier_supplier_id:
             raise osv.except_osv(
