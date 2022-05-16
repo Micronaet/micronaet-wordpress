@@ -980,47 +980,11 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             })
         return error
 
+    # todo remove:
     def shipment_request(self, cr, uid, ids, context=None):
         """ 15. API Shipment Request: Insert new carrier request
         """
-        assert len(ids) == 1, 'Un\'ordine alla volta'
-
-        order = self.browse(cr, uid, ids, context=context)[0]
-
-        carrier_connection = order.carrier_connection_id
-        if not carrier_connection:
-            return 'Order %s has carrier without SOAP ref.!' % order.name
-        # todo if order.state not in 'draft':
-        #    return 'Order %s not in draft mode so no published!' % order.name
-
-        # todo verificare che campo era (ex. carrier_soap_id)
-        # if order.carrier_supplier_id:
-        #    return 'Order %s has SOAP ID %s cannot publish!' % (
-        #            order.name, order.carrier_supplier_id)
-
-        # Write description if not present:
-        if not order.carrier_description:
-            self.set_default_carrier_description(cr, uid, ids, context=context)
-
-        # -----------------------------------------------------------------
-        # HTML insert call:
-        # -----------------------------------------------------------------
-        data = order.get_request_container(
-            customer=False, system=True, connection=carrier_connection)
-        data.update({
-            'Recipient': self.get_recipient_container(
-                cr, uid, ids, context=context),
-            'Shipment': self.get_shipment_container(
-                cr, uid, ids, context=context),
-            })
-
-        result_data = self.html_post(
-            cr, uid, ids,
-            carrier_connection, 'ShipmentRequest', data, undo_error=True,
-            context=context,
-            )
-        return self.update_order_with_soap_reply(
-            cr, uid, ids, result_data, context=context)
+        return True
 
     def carrier_get_reservation(self, cr, uid, ids, context=None):
         """ Create delivery with this parameters
@@ -1046,6 +1010,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
     def shipment_options_request(self, cr, uid, ids, context=None):
         """ 17. API ShippingOptionsRequest: Get better quotation
+            get_rate!
         """
         assert len(ids) == 1, 'Un ordine alla volta'
         return self.get_rate(cr, uid, ids, context=context)

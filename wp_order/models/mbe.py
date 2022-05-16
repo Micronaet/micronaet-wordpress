@@ -152,6 +152,50 @@ class WordpressSaleOrderCarrierTop(orm.Model):
     # -------------------------------------------------------------------------
     #                             API interface:
     # -------------------------------------------------------------------------
+    def shipment_request(self, cr, uid, ids, context=None):
+        """ 15. API Shipment Request: Insert new carrier request
+        """
+        assert len(ids) == 1, 'Un\'ordine alla volta'
+
+        pdb.set_trace()
+        order = self.browse(cr, uid, ids, context=context)[0]
+
+        carrier_connection = order.carrier_connection_id
+        if not carrier_connection:
+            return 'Order %s has carrier without SOAP ref.!' % order.name
+        # todo if order.state not in 'draft':
+        #    return 'Order %s not in draft mode so no published!' % order.name
+
+        # todo verificare che campo era (ex. carrier_soap_id)
+        # if order.carrier_supplier_id:
+        #    return 'Order %s has SOAP ID %s cannot publish!' % (
+        #            order.name, order.carrier_supplier_id)
+
+        # Write description if not present:
+        if not order.carrier_description:
+            self.set_default_carrier_description(cr, uid, ids, context=context)
+
+        # -----------------------------------------------------------------
+        # HTML insert call:
+        # -----------------------------------------------------------------
+        data = order.get_request_container(
+            customer=False, system=True, connection=carrier_connection)
+        data.update({
+            'Recipient': self.get_recipient_container(
+                cr, uid, ids, context=context),
+            'Shipment': self.get_shipment_container(
+                cr, uid, ids, context=context),
+            })
+
+        result_data = self.html_post(
+            cr, uid, ids,
+            carrier_connection, 'ShipmentRequest', data, undo_error=True,
+            context=context,
+            )
+        return self.update_order_with_soap_reply(
+            cr, uid, ids, result_data, context=context)
+
+    # todo change:
     def carrier_remove_reservation(self, cr, uid, ids, context=None):
         """ Delete reservation
         """
@@ -224,11 +268,18 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         order = self.browse(cr, uid, ids, context=context)[0]
 
         carrier = order.carrier_supplier_id
-        pdb.set_trace()
         if carrier.account_ref != 'MBE':
             return super(WordpressSaleOrderCarrierTop, self).get_rate(
                 cr, uid, ids, context=context)
-        pdb.set_trace()
+        # ---------------------------------------------------------------------
+        # Create mode:
+        # ---------------------------------------------------------------------
+        if context.get('force_api_mode') == 'create':
+            return self.shipment_request(cr, uid, ids, context=context)
+
+        # ---------------------------------------------------------------------
+        # Get rate mode:
+        # ---------------------------------------------------------------------
         order = self.browse(cr, uid, ids, context=context)[0]
 
         # Carrier connection (B)
