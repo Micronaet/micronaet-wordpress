@@ -40,7 +40,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 _logger = logging.getLogger(__name__)
 
 
-class WordpressSaleOrderCarrierTop(orm.Model):
+class WordpressSaleOrderCarrierMBE(orm.Model):
     """ Model name: Wordpress Sale order for carrier operations
     """
     _inherit = 'wordpress.sale.order'
@@ -60,7 +60,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         carrier = order.carrier_supplier_id
         if carrier.account_ref != 'MBE':
             return super(
-                WordpressSaleOrderCarrierTop, self).print_label(
+                WordpressSaleOrderCarrierMBE, self).print_label(
                 cr, uid, ids, context=context)
 
         # ---------------------------------------------------------------------
@@ -199,7 +199,16 @@ class WordpressSaleOrderCarrierTop(orm.Model):
     def carrier_remove_reservation(self, cr, uid, ids, context=None):
         """ 4. API Delete Shipment Request: Delete shipment request
         """
+        if context is None:
+            context = {}
+
         order = self.browse(cr, uid, ids, context=context)[0]
+        carrier = order.carrier_supplier_id
+        if carrier.account_ref != 'MBE':
+            return super(
+                WordpressSaleOrderCarrierMBE, self).carrier_remove_reservation(
+                cr, uid, ids, context=context)
+
         error = ''
         carrier_connection = order.carrier_connection_id
         if not carrier_connection:
@@ -217,7 +226,6 @@ class WordpressSaleOrderCarrierTop(orm.Model):
                 carrier_connection, 'DeleteShipmentsRequest', data,
                 context=context,
             )
-
         else:
             _logger.error(
                 'Order %s has no master tracking, cannot delete!' %
@@ -250,7 +258,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
 
         carrier = order.carrier_supplier_id
         if carrier.account_ref != 'MBE':
-            return super(WordpressSaleOrderCarrierTop, self).get_rate(
+            return super(WordpressSaleOrderCarrierMBE, self).get_rate(
                 cr, uid, ids, context=context)
         # ---------------------------------------------------------------------
         # Create mode:
