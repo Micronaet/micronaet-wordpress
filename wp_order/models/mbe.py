@@ -224,6 +224,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         order = self.browse(cr, uid, ids, context=context)[0]
 
         carrier = order.carrier_supplier_id
+        pdb.set_trace()
         if carrier.account_ref != 'MBE':
             return super(WordpressSaleOrderCarrierTop, self).get_rate(
                 cr, uid, ids, context=context)
