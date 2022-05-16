@@ -940,46 +940,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         #    )
         return result_data
 
-    def delete_shipments_request(self, cr, uid, ids, context=None):
-        """ 4. API Delete Shipment Request: Delete shipment request
-        """
-        order = self.browse(cr, uid, ids, context=context)[0]
-        error = ''
-        carrier_connection = order.carrier_connection_id
-        if not carrier_connection:
-            return 'Order %s has carrier without SOAP ref.!' % order.name
-
-        master_tracking_id = order.master_tracking_id
-        if master_tracking_id:
-            data = self.get_request_container(
-                cr, uid, ids, system='SystemType',
-                connection=carrier_connection, context=context)
-            data['MasterTrackingsMBE'] = master_tracking_id  # Also with Loop
-            result_data = self.html_post(
-                cr, uid, ids,
-                carrier_connection, 'DeleteShipmentsRequest', data,
-                context=context,
-            )
-
-        else:
-            _logger.error('Order %s has no master tracking, cannot delete!' %
-                          order.name)
-
-        # Check carrier_track_id for permit delete:
-        if not error:
-            order.write({
-                'carrier_soap_state': 'draft',
-                'master_tracking_id': False,
-                'system_reference_id': False,
-                'carrier_track_id': False,
-                'carrier_mode_id': False,
-                'courier_supplier_id': False,
-                'courier_mode_id': False,
-                'carrier_cost': False,
-                'label_printed': True,
-            })
-        return error
-
     # todo remove:
     def shipment_request(self, cr, uid, ids, context=None):
         """ 15. API Shipment Request: Insert new carrier request

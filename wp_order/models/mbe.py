@@ -197,65 +197,46 @@ class WordpressSaleOrderCarrierTop(orm.Model):
 
     # todo change:
     def carrier_remove_reservation(self, cr, uid, ids, context=None):
-        """ Delete reservation
+        """ 4. API Delete Shipment Request: Delete shipment request
         """
-        if context is None:
-            context = {}
-
         order = self.browse(cr, uid, ids, context=context)[0]
+        error = ''
+        carrier_connection = order.carrier_connection_id
+        if not carrier_connection:
+            return 'Order %s has carrier without SOAP ref.!' % order.name
 
-        carrier = order.carrier_supplier_id
-        if carrier.account_ref != 'MBE':
-            return super(
-                WordpressSaleOrderCarrierTop, self).carrier_remove_reservation(
-                cr, uid, ids, context=context)
-
-        # Connection:
-        connection = carrier.carrier_connection_id
-        root = connection.location
-        token = connection.passphrase
-
-        tracking_id = order.carrier_track_id  # must exist
-        if not tracking_id:
-            raise osv.except_osv(
-                _('Errore Cancellazione:'),
-                _('Impossibile cancellare la prenotazione, Tracking ID '
-                  'non presente, usare il portale!'),
+        master_tracking_id = order.master_tracking_id
+        if master_tracking_id:
+            data = self.get_request_container(
+                cr, uid, ids, system='SystemType',
+                connection=carrier_connection, context=context)
+            data[
+                'MasterTrackingsMBE'] = master_tracking_id  # Also with Loop
+            result_data = self.html_post(
+                cr, uid, ids,
+                carrier_connection, 'DeleteShipmentsRequest', data,
+                context=context,
             )
 
-        location = '%sshippings/%s?apitoken=%s' % (
-            root, tracking_id, token)
+        else:
+            _logger.error(
+                'Order %s has no master tracking, cannot delete!' %
+                order.name)
 
-        header = {
-            'Content-Type': 'application/json',
-        }
-        reply = requests.delete(
-            location,
-            data=json.dumps({}),
-            headers=header,
-            verify=False,
-        )
-        if reply.ok:
-            reply_data = reply.json()
-            error = reply_data.get('error')
-            if error:
-                raise osv.except_osv(
-                    _('Portale Topfly:'),
-                    _('Errore segnalato dal portale:\n%s') % error,
-                )
-            result = reply_data.get('result')
-            if result:
-                self.write(cr, uid, ids, {
-                    'master_tracking_id': False,
-                    'carrier_track_id': False,
-                }, context=context)
-            else:
-                raise osv.except_osv(
-                    _('Errore Cancellazione:'),
-                    _('La chiamata non permette la cancellazione di questo'
-                      'Tracking ID, usare il portale!'),
-                )
-        return True
+        # Check carrier_track_id for permit delete:
+        if not error:
+            order.write({
+                'carrier_soap_state': 'draft',
+                'master_tracking_id': False,
+                'system_reference_id': False,
+                'carrier_track_id': False,
+                'carrier_mode_id': False,
+                'courier_supplier_id': False,
+                'courier_mode_id': False,
+                'carrier_cost': False,
+                'label_printed': True,
+            })
+        return error
 
     def get_rate(self, cr, uid, ids, context=None):
         """ Get best rate for this order
