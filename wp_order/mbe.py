@@ -1048,50 +1048,5 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """ 17. API ShippingOptionsRequest: Get better quotation
         """
         assert len(ids) == 1, 'Un ordine alla volta'
-
         return self.get_rate(cr, uid, ids, context=context)
-
-        # todo move in MBE Module <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        order = self.browse(cr, uid, ids, context=context)[0]
-
-        # Carrier connection (B)
-        # todo write correct test:
-        carrier_connection = order.carrier_supplier_id.carrier_connection_id
-        if not carrier_connection:
-            return 'Ordine %s non ha il riferimento alla connessione!' % \
-                   order.name
-        # if order.state not in 'draft':
-        #    return 'Ordine %s è a bozza quindi non pubblicato!' % order.name
-        # if order.carrier_supplier_id:
-        #    return 'Order %s has SOAP ID %s cannot publish!' % (
-        #            order.name, order.carrier_supplier_id)
-
-        # ---------------------------------------------------------------------
-        # SOAP insert call:
-        # ---------------------------------------------------------------------
-        # A. Economy request:
-        # TODO no more use parcel connection (removed from list):
-        #    item.soap_connection_id for item in self.parcel_ids
-        #    if item.soap_connection_id]
-
-        # B. Standard request:
-        error = ''
-        reply_list = []
-
-        # Generate data for request:
-        data = self.get_request_container(
-            cr, uid, ids,
-            customer=False, system=True, connection=carrier_connection,
-            context=context,
-        )
-        data['ShippingParameters'] = order.get_shipment_parameters_container()
-        result_data = self.html_post(
-            cr, uid, ids, carrier_connection, 'ShippingOptionsRequest', data,
-            undo_error=False, context=context)  # todo True
-        reply_list.append((carrier_connection, result_data))
-
-        # if not error:
-        # Update data for real call
-        self.update_with_quotation(cr, uid, ids, reply_list, context=context)
-        return error
 
