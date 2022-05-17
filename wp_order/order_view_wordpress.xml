@@ -128,7 +128,7 @@
 
                     <!--<field name="partner_name" filter_domain="[('partner_id','=',self)]"/>-->
 
-                    <filter name="traking_date_on" string="Consegnare oggi" domain="[('traking_date','=',str(datetime.now())[:10])]"/>
+                    <filter name="traking_date_on" string="Consegnare oggi" domain="[('traking_date', '=', time.strftime('%Y-%m-%d'))]"/>
 
                     <filter name="state_opened" string="Opened states" domain="[('state','in',('pending', 'processing', 'on-hold'))]"/>
                     <filter name="state_closed" string="Closed states" domain="[('state','=','completed')]"/>
