@@ -382,7 +382,7 @@
                     <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="gtk-undo" />-->
 
                     <!--<field name="carrier_delivery_state" invisible="1"/>-->
-                    <button name="is_prime" invisible="1"/>
+                    <field name="is_prime" invisible="1"/>
                     <button name="order_form_detail" type="object" string="Dettaglio ordine" icon="gtk-find"/>
                     <button name="extract_wordpress_published_report" type="object" string="Ordini spediti oggi" icon="terp-go-month"/>
 
