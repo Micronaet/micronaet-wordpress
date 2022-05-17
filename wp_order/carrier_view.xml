@@ -372,8 +372,14 @@
 
             <field name="arch" type="xml">
                 <tree string="Sale order for carrier" editable="bottom" colors="green: carrier_state == 'delivered';blue: carrier_state == 'pending'; grey:carrier_state == 'draft' and (not parcel_ids or not carrier_supplier_id)" >
+                    <button name="delivery_today_on" type="object" string="Consegna oggi!" icon="star-on" attrs="{'invisible': [('delivery_date', '!=', False)]}"/>
+                    <button name="delivery_today_off" type="object" string="Non consegnare oggi" icon="star-off" attrs="{'invisible': [('delivery_date', '=', False)]}"/>
+
+                    <!--
+                    todo restore after check code:
                     <button name="set_carrier_ok_yes" string="Delivery confirmed" type="object" attrs="{'invisible': [('carrier_ok', '=', True)]}" icon="gtk-yes" />
-                    <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="gtk-undo" />
+                    <button name="set_carrier_ok_no" string="Delivery undo" type="object" attrs="{'invisible': [('carrier_ok', '=', False)]}" icon="gtk-undo" />-->
+
                     <!--<field name="carrier_delivery_state" invisible="1"/>-->
                     <button name="order_form_detail" type="object" string="Dettaglio ordine" icon="gtk-find"/>
                     <button name="extract_wordpress_published_report" type="object" string="Ordini spediti oggi" icon="gtk-info"/>
@@ -381,17 +387,18 @@
                     <!--<field name="connector_id"/>
                     <field name="wp_date_created"/>
                     -->
-                    <field name="date_order" readonly="1"/>
                     <field name="name" readonly="1"/>
+                    <field name="date_order" readonly="1"/>
+                    <field name="delivery_date" readonly="1"/>
                     <field name="partner_name" readonly="1"/>
                     <field name="shipping" readonly="1"/>
 
                     <field name="carrier_parcel_template_id" domain="['|',('carrier_supplier_id','=',False),('carrier_supplier_id','=',carrier_supplier_id)]" />
-                    <field name="parcel_weight_tree" />
+                    <field name="parcel_weight_tree" string="Imballi"/>
                     <button name="load_template_parcel" string="Add parcel" icon="gtk-add" type="object" attrs="{'invisible': [('carrier_parcel_template_id','=',False)]}" class="oe_highlight" />
                     <button name="generate_parcel_from_order" type="object" string="Genera colli da ordine" icon="gtk-execute" confirm="I colli verranno ricalcolati da quelli nei prodotti in ordine, confermi?"/>
 
-                    <field name="parcel_detail" readonly="1"/>
+                    <field name="parcel_detail" readonly="1" string="Colli"/>
                     <button name="product_detail_delivery_button" type="object" string="Dettaglio di spedizione" icon="gtk-info" />
                     <field name="delivery_detail" readonly="1"/>
 
@@ -414,9 +421,9 @@
                     <field name="master_tracking_id" invisible="1"/>
                     <field name="carrier_track_id" invisible="1"/>
                     <field name="zone_id" readonly="1"/>
-                    <field name="pricelist_shipping_total" readonly="1" sum="Spedizione da listino" />
-                    <field name="carrier_cost" readonly="1" sum="Spedizione calcolata" />
-                    <field name="real_shipping_total" sum="Spedizione reale" />
+                    <field name="pricelist_shipping_total" readonly="1" sum="Sped. list." />
+                    <field name="carrier_cost" readonly="1" sum="Sped. sito" />
+                    <field name="real_shipping_total" sum="Sped. reale" />
                     <field name="carrier_state" invisible="1"/>
                     <field name="carrier_ok" invisible="1"/>
                     <field name="state" invisible="1"/>
