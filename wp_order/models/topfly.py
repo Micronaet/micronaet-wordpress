@@ -256,16 +256,15 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         header = {
             'Content-Type': 'application/json',
         }
-        pdb.set_trace()
         company = shipping.get('company', '')
         partner_name = self.clean_text(u'%s%s%s' % (
             company,
-            ' ' if company else '',
+            '-' if company else '',
             '%s %s' % (
                 shipping.get('last_name', ''),
                 shipping.get('first_name', ''),
             ),
-        ), 50)
+        ), 35)
         note = ''
         for line in order.line_ids:
             sku = line.sku or ''
@@ -283,7 +282,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         payload = {
             'header': {
                 'codice_servizio': self.clean_text(service_code),
-                'dest_destinatario': partner_name[:35],
+                'dest_destinatario': partner_name,  # 35
                 'dest_via': self.clean_text(u'%s %s' % (
                     shipping.get('address_1', ''),
                     shipping.get('address_2', ''),
@@ -295,7 +294,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
                     shipping.get('country', 'IT'), 2),
                 'dest_tel': self.clean_text(billing.get('phone', ''), 15),
                 'dest_email': self.clean_text(billing.get('mail', ''), 50),
-                'dest_riferimento': partner_name,  # 50
+                'dest_riferimento': partner_name,  # 35
                 'valore_merce': 0,
                 'imp_assicurato': 0,
                 'imp_contrassegno': 0,
