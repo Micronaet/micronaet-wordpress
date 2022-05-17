@@ -54,23 +54,18 @@ class WordpressSaleOrder(orm.Model):
         """
         res = {}
         for order in self.browse(cr, uid, ids, context=context):
-            order_id = order.id
-            wp_order = order.wp_record # json.loads(order.wp_record)
+            wp_order = order.wp_record
             # Fast way:
             if 'Service Level NextDay Prime Premium Order' in wp_order:
-                res[order_id] = True
+                res[order.id] = True
             else:
-                res[order_id] = False
+                res[order.id] = False
         return res
 
     _columns = {
-        # 'prime_detail': fields.function(
-        #    _function_get_price_information, method=True, size=60,
-        #    type='char', string='Prime', store=False, multi=True,
-        #    help='Elenco di articoli prime presenti'),
         'is_prime': fields.function(
             _function_get_price_information, method=True,
-            type='boolean', string='Prime', store=False, # multi=True,
+            type='boolean', string='Prime', store=False,
             help='Elenco di articoli prime presenti'
         ),
 
