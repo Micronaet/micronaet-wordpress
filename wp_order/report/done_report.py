@@ -160,7 +160,7 @@ class WordpressSaleOrder(orm.Model):
             excel_pool.write_xls_line(
                 ws_name, row, [
                     order.marketplace,
-                    '',
+                    'X' if order.is_prime else '',
                     order.name,
                     order.traking_date or '',
 
