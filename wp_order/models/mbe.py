@@ -156,8 +156,6 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
         """ 15. API Shipment Request: Insert new carrier request
         """
         assert len(ids) == 1, 'Un\'ordine alla volta'
-
-        pdb.set_trace()
         order = self.browse(cr, uid, ids, context=context)[0]
 
         carrier_connection = order.carrier_connection_id
