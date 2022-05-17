@@ -90,10 +90,10 @@ class WordpressSaleOrder(orm.Model):
         # Width
         excel_pool.column_width(ws_name, [
             8, 10,
-            20, 40,
-            25, 35,
-            12, 12, 12, 12,
-            19, 15,
+            12, 35,
+            20, 35,
+            10, 10, 12, 12,
+            19, 10,
             ])
 
         # Print header
