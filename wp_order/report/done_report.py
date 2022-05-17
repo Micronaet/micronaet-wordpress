@@ -89,7 +89,10 @@ class WordpressSaleOrder(orm.Model):
         # ---------------------------------------------------------------------
         # Width
         excel_pool.column_width(ws_name, [
-            8, 10, 19, 25, 35, 15, 15, 15, 15, 20, 40, 15
+            8, 10, 19,
+            25, 35,
+            12, 12, 12, 12,
+            20, 40, 15,
             ])
 
         # Print header
@@ -98,10 +101,8 @@ class WordpressSaleOrder(orm.Model):
             ws_name, row, [
                 'Ordine', 'Consegna', 'Tracking',
                 'Cliente', 'Destinazione',
-                'Corriere', 'Tipo',
-                'Spedizioniere', 'Servizio',
-                'Imballo', 'Dettaglio',
-                'Stato',
+                'Corriere', 'Tipo', 'Spedizioniere', 'Servizio',
+                'Imballo', 'Dettaglio', 'Stato',
                 ], default_format=excel_format['header'])
 
         _logger.warning('Selected order: %s' % len(order_ids))
