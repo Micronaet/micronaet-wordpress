@@ -256,11 +256,16 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         header = {
             'Content-Type': 'application/json',
         }
-
-        partner_name = self.clean_text(u'%s %s' % (
+        company = shipping.get('company', '')
+        name = '%s %s' % (
             shipping.get('last_name', ''),
             shipping.get('first_name', ''),
-            ), 50)
+            )
+        partner_name = self.clean_text(u'%s%s%s' % (
+            company,
+            ' ' if company else '',
+            name,
+        ), 50)
         note = ''
         for line in order.line_ids:
             sku = line.sku or ''
