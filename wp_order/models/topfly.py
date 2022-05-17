@@ -330,29 +330,34 @@ class WordpressSaleOrderCarrierTop(orm.Model):
                     sys.exc_info()
                 ),
             )
-        if reply.ok:
-            reply_data = reply.json()
-            error = reply_data.get('error')
-            if error:
-                raise osv.except_osv(
-                    _('Risposta portale topfly:'),
-                    error,
-                    )
+        if not reply.ok:
+            raise osv.except_osv(
+                _('Errore portale topfly:'),
+                'Mancata risposta dal portale Topfly',
+            )
+        # Reply OK:
+        reply_data = reply.json()
+        error = reply_data.get('error')
+        if error:
+            raise osv.except_osv(
+                _('Risposta portale topfly:'),
+                error,
+                )
 
-            total = reply_data.get('shipping', {}).get('imp_totale')
-            data = {
-                'pricelist_shipping_total': total,  # quotation price
-            }
-            if api_mode == 'create':
-                tracking_id = reply_data['id']
-                master_tracking_id = reply_data.get(
-                    'shipping', {}).get('lettera_di_vettura', '')
+        total = reply_data.get('shipping', {}).get('imp_totale')
+        data = {
+            'pricelist_shipping_total': total,  # quotation price
+        }
+        if api_mode == 'create':
+            tracking_id = reply_data['id']
+            master_tracking_id = reply_data.get(
+                'shipping', {}).get('lettera_di_vettura', '')
 
-                data.update({
-                    'real_shipping_total': total,  # confirmed price
-                    'carrier_track_id': tracking_id,
-                    # LDV Tracking:
-                    'master_tracking_id': master_tracking_id or tracking_id,
-                    })
-            self.write(cr, uid, ids, data, context=context)
+            data.update({
+                'real_shipping_total': total,  # confirmed price
+                'carrier_track_id': tracking_id,
+                # LDV Tracking:
+                'master_tracking_id': master_tracking_id or tracking_id,
+                })
+        self.write(cr, uid, ids, data, context=context)
         return True
