@@ -691,13 +691,16 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             undo_error=True, context=None):
         """ Call portal with payload parameter
         """
+        verbose = True
         assert len(ids) == 1, 'Un\'ordine alla volta'
 
         header = {'Content-Type': 'text/xml'}
         payload = self.get_envelope(endpoint, data)
-        _logger.info('Call: %s' % data)
+        location = carrier_connection.location
+        if verbose:
+            _logger.warning('Calling: %s' % location)
         reply = requests.post(
-            carrier_connection.location,
+            location,
             auth=HTTPBasicAuth(
                 carrier_connection.username,
                 carrier_connection.passphrase),
@@ -722,7 +725,15 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # Manage error
         error = self.check_reply_status(
             cr, uid, ids, result_data, undo_error=undo_error)
-        _logger.warning('\n%s\n\n%s\n' % (data, reply))
+        if verbose:
+            _logger.warning(
+                'Call: %s\nHeader: %s\n\nData: %s\n\nXML: %s\n\nReply: %s' % (
+                    location,
+                    header,
+                    data,
+                    payload,
+                    reply,
+                    ))
         if error:
             raise osv.except_osv(
                 _('Errore Server MBE'),
