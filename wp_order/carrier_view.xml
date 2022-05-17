@@ -389,7 +389,7 @@
                     -->
                     <field name="name" readonly="1"/>
                     <field name="date_order" readonly="1"/>
-                    <field name="traking_date" readonly="1"/>
+                    <field name="traking_date" readonly="1" string="Consegna"/>
                     <field name="partner_name" readonly="1"/>
                     <field name="shipping" readonly="1"/>
 
