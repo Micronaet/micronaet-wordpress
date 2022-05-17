@@ -87,13 +87,13 @@ class XmlListConfig(list):
 class XmlDictConfig(dict):
     """
     Example usage:
-    >>> tree = ElementTree.parse('your_file.xml')
-    >>> root = tree.getroot()
-    >>> xmldict = XmlDictConfig(root)
+      --> tree = ElementTree.parse('your_file.xml')
+      --> root = tree.getroot()
+      --> xmldict = XmlDictConfig(root)
 
     Or, if you want to use an XML string:
-    >>> root = ElementTree.XML(xml_string)
-    >>> xmldict = XmlDictConfig(root)
+      --> root = ElementTree.XML(xml_string)
+      --> xmldict = XmlDictConfig(root)
 
     And then use xmldict for what it is... a dict.
     """
@@ -136,72 +136,25 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
     _inherit = 'wordpress.sale.order'
 
     # -------------------------------------------------------------------------
-    # HTML List of function:
-    # -------------------------------------------------------------------------
-    def html_post(
-            self, cr, uid, ids, carrier_connection, endpoint, data,
-            undo_error=True, context=None):
-        """ Call portal with payload parameter
-        """
-        verbose = True
-        assert len(ids) == 1, 'Un\'ordine alla volta'
-
-        header = {'Content-Type': 'text/xml'}
-        payload = self.get_envelope(endpoint, data)
-        location = carrier_connection.location
-        if verbose:
-            _logger.warning('Calling: %s' % location)
-        reply = requests.post(
-            location,
-            auth=HTTPBasicAuth(
-                carrier_connection.username,
-                carrier_connection.passphrase),
-            headers=header,
-            data=payload,
-        )
-
-        # ---------------------------------------------------------------------
-        # Clean reply:
-        # ---------------------------------------------------------------------
-        reply_text = reply.text
-        data_block = reply_text.split(
-            '<RequestContainer>')[-1].split('</RequestContainer>')[0]
-
-        data_block = (
-                '<RequestContainer>%s</RequestContainer>' % data_block
-        ).encode('ascii', 'ignore').decode('ascii')
-
-        root = ElementTree.XML(data_block)
-        result_data = XmlDictConfig(root)
-
-        # Manage error
-        error = self.check_reply_status(
-            cr, uid, ids, result_data, undo_error=undo_error)
-        if verbose:
-            _logger.warning(
-                'Call: %s\nHeader: %s\n\nData: %s\n\nXML: %s\n\nReply: %s' % (
-                    location,
-                    header,
-                    data,
-                    payload,
-                    reply,
-                    ))
-        if error:
-            raise osv.except_osv(
-                _('Errore Server MBE'),
-                error,
-            )
-
-        # if error:
-        #    error = 'Error deleting: Track: %s\n%s' % (
-        #        master_tracking_id,
-        #        error,
-        #    )
-        return result_data
-
-    # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
+    def get_envelope(self, request, data, cr=''):
+        """ Extract xml from dict and put in envelope:
+        """
+        reply = self.dict2xml(data, level=4, cr=cr)
+        result = '''<soapenv:Envelope xmlns:soapenv=
+            "http://schemas.xmlsoap.org/soap/envelope/" 
+            xmlns:ws="http://www.onlinembe.it/ws/">
+            <soapenv:Header/>
+            <soapenv:Body>
+                <ws:%s>
+                    <RequestContainer>%s</RequestContainer>
+          </ws:%s>
+         </soapenv:Body>
+        </soapenv:Envelope>''' % (request, reply, request)
+        result = result.replace('\n', '').replace('\t', '    ')
+        return str(result)
+
     def update_with_quotation(
             self, cr, uid, ids, reply_list=None, context=None):
         """ Update order courier fields with reply SOAP
@@ -408,6 +361,70 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
             })
             return 'Error updating data on order (clean quotation)'
         return ''
+
+    # -------------------------------------------------------------------------
+    # HTML List of function:
+    # -------------------------------------------------------------------------
+    def html_post(
+            self, cr, uid, ids, carrier_connection, endpoint, data,
+            undo_error=True, context=None):
+        """ Call portal with payload parameter
+        """
+        verbose = True
+        assert len(ids) == 1, 'Un\'ordine alla volta'
+
+        header = {'Content-Type': 'text/xml'}
+        payload = self.get_envelope(endpoint, data)
+        location = carrier_connection.location
+        if verbose:
+            _logger.warning('Calling: %s' % location)
+        reply = requests.post(
+            location,
+            auth=HTTPBasicAuth(
+                carrier_connection.username,
+                carrier_connection.passphrase),
+            headers=header,
+            data=payload,
+        )
+
+        # ---------------------------------------------------------------------
+        # Clean reply:
+        # ---------------------------------------------------------------------
+        reply_text = reply.text
+        data_block = reply_text.split(
+            '<RequestContainer>')[-1].split('</RequestContainer>')[0]
+
+        data_block = (
+                '<RequestContainer>%s</RequestContainer>' % data_block
+        ).encode('ascii', 'ignore').decode('ascii')
+
+        root = ElementTree.XML(data_block)
+        result_data = XmlDictConfig(root)
+
+        # Manage error
+        error = self.check_reply_status(
+            cr, uid, ids, result_data, undo_error=undo_error)
+        if verbose:
+            _logger.warning(
+                'Call: %s\nHeader: %s\n\nData: %s\n\nXML: %s\n\nReply: %s' % (
+                    location,
+                    header,
+                    data,
+                    payload,
+                    reply,
+                    ))
+        if error:
+            raise osv.except_osv(
+                _('Errore Server MBE'),
+                error,
+            )
+
+        # if error:
+        #    error = 'Error deleting: Track: %s\n%s' % (
+        #        master_tracking_id,
+        #        error,
+        #    )
+        return result_data
 
     def print_label(self, cr, uid, ids, context=None):
         """ Extract label

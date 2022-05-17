@@ -289,23 +289,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 result += '%s<%s>%s</%s>%s' % (spaces, key, value, key, cr)
         return result
 
-    def get_envelope(self, request, data, cr=''):
-        """ Extract xml from dict and put in envelope:
-        """
-        reply = self.dict2xml(data, level=4, cr=cr)
-        result = '''<soapenv:Envelope xmlns:soapenv=
-            "http://schemas.xmlsoap.org/soap/envelope/" 
-            xmlns:ws="http://www.onlinembe.it/ws/">
-            <soapenv:Header/>
-            <soapenv:Body>
-                <ws:%s>
-                    <RequestContainer>%s</RequestContainer>
-          </ws:%s>
-         </soapenv:Body>
-        </soapenv:Envelope>''' % (request, reply, request)
-        result = result.replace('\n', '').replace('\t', '    ')
-        return str(result)
-
     def get_items_parcel_block(self, cr, uid, ids, context=None):
         """ Return parcels block
         """
