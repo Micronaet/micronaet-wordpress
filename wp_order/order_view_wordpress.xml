@@ -173,6 +173,7 @@
                                 <field name="key"/>
                                 <field name="sale_order_id"/>
                                 <field name="date_order"/>
+                                <field name="traking_date"/>
                                 <field name="wp_date_paid"/>
                                 <field name="wp_date_completed" />
                                 <field name="payment"/>
