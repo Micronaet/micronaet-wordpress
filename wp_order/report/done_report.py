@@ -82,6 +82,10 @@ class WordpressSaleOrder(orm.Model):
                 'text': excel_pool.get_format('bg_yellow'),
                 'number': excel_pool.get_format('bg_yellow_number'),
                 },
+            'green': {
+                'text': excel_pool.get_format('bg_green'),
+                'number': excel_pool.get_format('bg_green_number'),
+                },
             }
 
         # ---------------------------------------------------------------------
@@ -113,14 +117,21 @@ class WordpressSaleOrder(orm.Model):
         for order in sorted(self.browse(
                 cr, uid, order_ids, context=context),
                 key=lambda o: o.delivery_detail):
-            color_format = excel_format['black']
             row += 1
+            master_tracking_id = order.master_tracking_id or ''
+            parcel_detail = order.parcel_detail or ''
+            if master_tracking_id:
+                color_format = excel_format['green']
+            elif not parcel_detail:
+                color_format = excel_format['yellow']
+            else:
+                color_format = excel_format['black']
             excel_pool.write_xls_line(
                 ws_name, row, [
                     order.name,
                     order.traking_date or '',
 
-                    order.parcel_detail or '',
+                    parcel_detail,
                     order.delivery_detail or '',
 
                     order.partner_name,
@@ -131,7 +142,7 @@ class WordpressSaleOrder(orm.Model):
                     order.courier_supplier_id.name or '',
                     order.courier_mode_id.name or '',
 
-                    order.master_tracking_id or '',
+                    master_tracking_id,
                     order.carrier_state or '',
                 ], default_format=color_format['text'])
             excel_pool.row_height(ws_name, row, 36)
