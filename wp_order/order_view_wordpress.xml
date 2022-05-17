@@ -156,6 +156,8 @@
             <field name="arch" type="xml">
                 <form string="Wordpress Order">
                     <header>
+                        <button name="delivery_today_on" type="object" string="Consegna oggi!" icon="star-on" attrs="{'invisible': [('delivery_date', '!=', False)]}"/>
+                        <button name="delivery_today_off" type="object" string="Non consegnare oggi" icon="star-off" attrs="{'invisible': [('delivery_date', '=', False)]}"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -171,6 +173,7 @@
                                 <field name="key"/>
                                 <field name="sale_order_id"/>
                                 <field name="date_order"/>
+                                <field name="delivery_date"/>
                                 <field name="wp_date_paid"/>
                                 <field name="wp_date_completed" />
                                 <field name="payment"/>

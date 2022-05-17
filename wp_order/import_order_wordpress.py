@@ -462,6 +462,20 @@ class WordpressSaleOrder(orm.Model):
             _logger.error('Error send message, insert only order!')
             return False
 
+    def delivery_today_on(self, cr, uid, ids, context=None):
+        """ Delivery today
+        """
+        return self.write(cr, uid, ids, {
+            'delivery_date': str(datetime.now())[:10],
+        }, context=context)
+
+    def delivery_today_off(self, cr, uid, ids, context=None):
+        """ Delivery today off
+        """
+        return self.write(cr, uid, ids, {
+            'delivery_date': False,
+        }, context=context)
+
     _columns = {
         'from_web': fields.boolean(
             'Scaricato dal web',
@@ -483,6 +497,7 @@ class WordpressSaleOrder(orm.Model):
         'real_shipping_total': fields.float(
             'Spedizione effettiva', digits=(10, 2)),
         'currency': fields.char('Currency'),
+        'delivery_date': fields.date('Data di consegna'),
         'date_order': fields.date('Date order'),
         'traking_date': fields.date(
             'Data track',
