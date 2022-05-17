@@ -98,19 +98,21 @@ class WordpressSaleOrder(orm.Model):
 
         # Print header
         row = 0
+        header = [
+            'Ordine', 'Consegna',
+            'Imballo', 'Dettaglio',
+            'Cliente', 'Destinazione',
+            'Corriere', 'Tipo', 'Spedizioniere', 'Servizio',
+            'Tracking', 'Stato',
+            ]
         excel_pool.write_xls_line(
-            ws_name, row, [
-                'Ordine', 'Consegna',
-                'Imballo', 'Dettaglio',
-                'Cliente', 'Destinazione',
-                'Corriere', 'Tipo', 'Spedizioniere', 'Servizio',
-                'Tracking', 'Stato',
-                ], default_format=excel_format['header'])
+            ws_name, row, header, default_format=excel_format['header'])
+        excel_pool.autofilter(ws_name, row, 0, row, len(header) - 1)
 
         _logger.warning('Selected order: %s' % len(order_ids))
         for order in sorted(self.browse(
                 cr, uid, order_ids, context=context),
-                key=lambda o: o.name, reverse=True):
+                key=lambda o: o.delivery_detail):
             color_format = excel_format['black']
             row += 1
             excel_pool.write_xls_line(
