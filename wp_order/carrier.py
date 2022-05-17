@@ -645,9 +645,9 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         for order in self.browse(cr, uid, ids, context=context):
             detail = ''
             for line in order.line_ids:
-                detail += '%sx [%s] %s...\n' % (
-                    int(line.quantity),
+                detail += '[%s] x %s: %s...\n' % (
                     line.sku,
+                    int(line.quantity),
                     line.name[:20],
                 )
             res[order.id] = detail
