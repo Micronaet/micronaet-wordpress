@@ -257,14 +257,13 @@ class WordpressSaleOrderCarrierTop(orm.Model):
             'Content-Type': 'application/json',
         }
         company = shipping.get('company', '')
-        name = '%s %s' % (
-            shipping.get('last_name', ''),
-            shipping.get('first_name', ''),
-            )
         partner_name = self.clean_text(u'%s%s%s' % (
             company,
             ' ' if company else '',
-            name,
+            '%s %s' % (
+                shipping.get('last_name', ''),
+                shipping.get('first_name', ''),
+            ),
         ), 50)
         note = ''
         for line in order.line_ids:
