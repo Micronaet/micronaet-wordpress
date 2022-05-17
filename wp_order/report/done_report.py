@@ -125,7 +125,7 @@ class WordpressSaleOrder(orm.Model):
                     order.courier_mode_id.name or '',
 
                     order.parcel_detail or '',
-                    order.carrier_description or '',
+                    order.delivery_detail or '',
                     order.carrier_state or '',
                 ], default_format=color_format['text'])
 
