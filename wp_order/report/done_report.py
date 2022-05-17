@@ -38,6 +38,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DEFAULT_SERVER_DATETIME_FORMAT,
     DATETIME_FORMATS_MAP,
     float_compare)
+import json
 
 _logger = logging.getLogger(__name__)
 
@@ -46,6 +47,34 @@ class WordpressSaleOrder(orm.Model):
     """ Model name: WP order
     """
     _inherit = 'wordpress.sale.order'
+
+    def _function_get_price_information(
+            self, cr, uid, ids, fields, args, context=None):
+        """ Fields function for calculate
+        """
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            order_id = order.id
+            wp_order = order.wp_record # json.loads(order.wp_record)
+            # Fast way:
+            if 'Service Level NextDay Prime Premium Order' in wp_order:
+                res[order_id] = True
+            else:
+                res[order_id] = False
+        return res
+
+    _columns = {
+        # 'prime_detail': fields.function(
+        #    _function_get_price_information, method=True, size=60,
+        #    type='char', string='Prime', store=False, multi=True,
+        #    help='Elenco di articoli prime presenti'),
+        'is_prime': fields.function(
+            _function_get_price_information, method=True,
+            type='boolean', string='Prime', store=False, # multi=True,
+            help='Elenco di articoli prime presenti'
+        ),
+
+    }
 
     def extract_wordpress_published_report(self, cr, uid, ids, context=None):
         """ Extract list of published elements:
@@ -93,6 +122,7 @@ class WordpressSaleOrder(orm.Model):
         # ---------------------------------------------------------------------
         # Width
         excel_pool.column_width(ws_name, [
+            8, 3,
             8, 10,
             12, 35,
             20, 35,
@@ -103,6 +133,7 @@ class WordpressSaleOrder(orm.Model):
         # Print header
         row = 0
         header = [
+            'Marketplace', 'Prime',
             'Ordine', 'Consegna',
             'Imballo', 'Dettaglio',
             'Cliente', 'Destinazione',
@@ -128,6 +159,8 @@ class WordpressSaleOrder(orm.Model):
                 color_format = excel_format['black']
             excel_pool.write_xls_line(
                 ws_name, row, [
+                    order.marketplace,
+                    '',
                     order.name,
                     order.traking_date or '',
 
