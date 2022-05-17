@@ -147,7 +147,7 @@ class ConnectorServer(orm.Model):
         row = 0
         excel_pool.write_xls_line(
             ws_name, row, [
-            # TODO aggiungere wp_sequence
+            # todo aggiungere wp_sequence
             'Pubbl.', 'Codice', 'GTIN', 'Colore', 'Brand',
             'Nome', 'Descrizione',
             '(Name)', '(Description)',

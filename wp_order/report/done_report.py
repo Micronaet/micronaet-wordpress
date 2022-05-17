@@ -89,14 +89,14 @@ class WordpressSaleOrder(orm.Model):
         # ---------------------------------------------------------------------
         # Width
         excel_pool.column_width(ws_name, [
-            8, 19, 25, 35, 15, 15, 15, 15, 20, 40, 15
+            8, 10, 19, 25, 35, 15, 15, 15, 15, 20, 40, 15
             ])
 
         # Print header
         row = 0
         excel_pool.write_xls_line(
             ws_name, row, [
-                'Ordine', 'Tracking',
+                'Ordine', 'Consegna', 'Tracking',
                 'Cliente', 'Destinazione',
                 'Corriere', 'Tipo',
                 'Spedizioniere', 'Servizio',
@@ -113,13 +113,16 @@ class WordpressSaleOrder(orm.Model):
             excel_pool.write_xls_line(
                 ws_name, row, [
                     order.name,
+                    order.traking_date or '',
                     order.master_tracking_id or '',
                     order.partner_name,
                     order.shipping,
-                    order.carrier_connection_id.name or '',
+
+                    order.carrier_supplier_id.name or '',
                     order.carrier_mode_id.name or '',
                     order.courier_supplier_id.name or '',
                     order.courier_mode_id.name or '',
+
                     order.parcel_detail or '',
                     order.carrier_description or '',
                     order.carrier_state or '',
