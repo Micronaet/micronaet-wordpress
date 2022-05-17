@@ -638,7 +638,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             'carrier_state': 'pending',
             'master_tracking_id': master_tracking_id,
             'system_reference_id': system_reference_id,
-            'carrier_track_id': courier_track_id,
+            'carrier_track_id': courier_track_id or master_tracking_id,
         }, context=context)
         return error
 

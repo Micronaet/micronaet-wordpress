@@ -249,6 +249,7 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
                 'carrier_cost': 0.0,
                 'carrier_mode_id': False,
                 'courier_supplier_id': False,
+                # 'carrier_supplier_id': False,
                 'courier_mode_id': False,
             })
             return 'Error updating data on order (clean quotation)'
