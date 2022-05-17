@@ -30,20 +30,174 @@ import shutil
 import json
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
-from openerp import tools
+from requests.auth import HTTPBasicAuth  # or HTTPDigestAuth, or OAuth1, etc.
+import xml.etree.cElementTree as ElementTree
 from openerp.tools.translate import _
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
-    DEFAULT_SERVER_DATETIME_FORMAT,
-    DATETIME_FORMATS_MAP,
-    float_compare)
 
 _logger = logging.getLogger(__name__)
+
+
+# -----------------------------------------------------------------------------
+# Utility object for convert reply:
+# -----------------------------------------------------------------------------
+def get_in_type(text):
+    """ Return in correct value
+    """
+    # Boolean:
+    if text == 'true':
+        return True
+    if text == 'false':
+        return False
+
+        # Datetime
+
+    # Date
+
+    # Integer
+    if not (text or '').startswith('0'):
+        try:
+            return int(text)
+        except:
+            pass
+
+            # Float
+        try:
+            return float(text)
+        except:
+            pass
+    return text
+
+
+class XmlListConfig(list):
+    def __init__(self, aList):
+        for element in aList:
+            if element:
+                # treat like dict
+                if len(element) == 1 or element[0].tag != element[1].tag:
+                    self.append(XmlDictConfig(element))
+                # treat like list
+                elif element[0].tag == element[1].tag:
+                    self.append(XmlListConfig(element))
+            elif element.text:
+                text = element.text.strip()
+                if text:
+                    self.append(text)
+
+
+class XmlDictConfig(dict):
+    """
+    Example usage:
+    >>> tree = ElementTree.parse('your_file.xml')
+    >>> root = tree.getroot()
+    >>> xmldict = XmlDictConfig(root)
+
+    Or, if you want to use an XML string:
+    >>> root = ElementTree.XML(xml_string)
+    >>> xmldict = XmlDictConfig(root)
+
+    And then use xmldict for what it is... a dict.
+    """
+
+    def __init__(self, parent_element):
+        if parent_element.items():
+            self.update(dict(parent_element.items()))
+        for element in parent_element:
+            if element:
+                # treat like dict - we assume that if the first two tags
+                # in a series are different, then they are all different.
+                if len(element) == 1 or element[0].tag != element[1].tag:
+                    aDict = XmlDictConfig(element)
+                # treat like list - we assume that if the first two tags
+                # in a series are the same, then the rest are the same.
+                else:
+                    # here, we put the list in dictionary; the key is the
+                    # tag name the list elements all share in common, and
+                    # the value is the list itself
+                    aDict = {element[0].tag: XmlListConfig(element)}
+                # if the tag has attributes, add those to the dict
+                if element.items():
+                    aDict.update(dict(element.items()))
+                self.update({element.tag: aDict})
+            # this assumes that if you've got an attribute in a tag,
+            # you won't be having any text. This may or may not be a
+            # good idea -- time will tell. It works for the way we are
+            # currently doing XML configuration files...
+            elif element.items():
+                self.update({element.tag: dict(element.items())})
+            # finally, if there are no child tags and no attributes, extract
+            # the text
+            else:
+                self.update({element.tag: get_in_type(element.text)})
 
 
 class WordpressSaleOrderCarrierMBE(orm.Model):
     """ Model name: Wordpress Sale order for carrier operations
     """
     _inherit = 'wordpress.sale.order'
+
+    # -------------------------------------------------------------------------
+    # HTML List of function:
+    # -------------------------------------------------------------------------
+    def html_post(
+            self, cr, uid, ids, carrier_connection, endpoint, data,
+            undo_error=True, context=None):
+        """ Call portal with payload parameter
+        """
+        verbose = True
+        assert len(ids) == 1, 'Un\'ordine alla volta'
+
+        header = {'Content-Type': 'text/xml'}
+        payload = self.get_envelope(endpoint, data)
+        location = carrier_connection.location
+        if verbose:
+            _logger.warning('Calling: %s' % location)
+        reply = requests.post(
+            location,
+            auth=HTTPBasicAuth(
+                carrier_connection.username,
+                carrier_connection.passphrase),
+            headers=header,
+            data=payload,
+        )
+
+        # ---------------------------------------------------------------------
+        # Clean reply:
+        # ---------------------------------------------------------------------
+        reply_text = reply.text
+        data_block = reply_text.split(
+            '<RequestContainer>')[-1].split('</RequestContainer>')[0]
+
+        data_block = (
+                '<RequestContainer>%s</RequestContainer>' % data_block
+        ).encode('ascii', 'ignore').decode('ascii')
+
+        root = ElementTree.XML(data_block)
+        result_data = XmlDictConfig(root)
+
+        # Manage error
+        error = self.check_reply_status(
+            cr, uid, ids, result_data, undo_error=undo_error)
+        if verbose:
+            _logger.warning(
+                'Call: %s\nHeader: %s\n\nData: %s\n\nXML: %s\n\nReply: %s' % (
+                    location,
+                    header,
+                    data,
+                    payload,
+                    reply,
+                    ))
+        if error:
+            raise osv.except_osv(
+                _('Errore Server MBE'),
+                error,
+            )
+
+        # if error:
+        #    error = 'Error deleting: Track: %s\n%s' % (
+        #        master_tracking_id,
+        #        error,
+        #    )
+        return result_data
 
     # -------------------------------------------------------------------------
     # Utility:
