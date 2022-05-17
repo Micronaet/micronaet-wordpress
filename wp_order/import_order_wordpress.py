@@ -476,7 +476,26 @@ class WordpressSaleOrder(orm.Model):
             'traking_date': False,
         }, context=context)
 
+    def _function_get_prime_information(
+            self, cr, uid, ids, fields, args, context=None):
+        """ Fields function for calculate
+        """
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            wp_order = order.wp_record
+            # Fast way:
+            if 'Service Level NextDay Prime Premium Order' in wp_order:
+                res[order.id] = True
+            else:
+                res[order.id] = False
+        return res
+
     _columns = {
+        'is_prime': fields.function(
+            _function_get_prime_information, method=True,
+            type='boolean', string='Prime', store=False,
+            help='Elenco di articoli prime presenti'
+        ),
         'from_web': fields.boolean(
             'Scaricato dal web',
             help='Ordine chiuso da web e scaricato durante la sincro ordini'),

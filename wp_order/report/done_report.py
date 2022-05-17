@@ -48,29 +48,6 @@ class WordpressSaleOrder(orm.Model):
     """
     _inherit = 'wordpress.sale.order'
 
-    def _function_get_price_information(
-            self, cr, uid, ids, fields, args, context=None):
-        """ Fields function for calculate
-        """
-        res = {}
-        for order in self.browse(cr, uid, ids, context=context):
-            wp_order = order.wp_record
-            # Fast way:
-            if 'Service Level NextDay Prime Premium Order' in wp_order:
-                res[order.id] = True
-            else:
-                res[order.id] = False
-        return res
-
-    _columns = {
-        'is_prime': fields.function(
-            _function_get_price_information, method=True,
-            type='boolean', string='Prime', store=False,
-            help='Elenco di articoli prime presenti'
-        ),
-
-    }
-
     def extract_wordpress_published_report(self, cr, uid, ids, context=None):
         """ Extract list of published elements:
         """
