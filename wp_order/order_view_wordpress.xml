@@ -128,6 +128,8 @@
 
                     <!--<field name="partner_name" filter_domain="[('partner_id','=',self)]"/>-->
 
+                    <filter name="traking_date_on" string="Consegnare oggi" domain="[('traking_date','=',str(datetime.now())[:10])]"/>
+
                     <filter name="state_opened" string="Opened states" domain="[('state','in',('pending', 'processing', 'on-hold'))]"/>
                     <filter name="state_closed" string="Closed states" domain="[('state','=','completed')]"/>
                     <filter name="state_refunded" string="Refunded states" domain="[('state','=','refunded')]"/>
@@ -140,6 +142,7 @@
                         <filter string="Connector" context="{'group_by': 'connector_id'}" />
                         <filter string="Payment" context="{'group_by': 'payment'}" />
                         <filter string="Date" context="{'group_by': 'date_order'}" />
+                        <filter string="Consegna" context="{'group_by': 'traking_date'}" />
                         <filter string="Created" context="{'group_by': 'wp_date_created'}" />
                         <filter string="Modify" context="{'group_by': 'wp_date_modify'}" />
                         <filter string="Paid" context="{'group_by': 'wp_date_paid'}" />
