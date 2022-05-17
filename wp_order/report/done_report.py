@@ -134,5 +134,5 @@ class WordpressSaleOrder(orm.Model):
                     order.master_tracking_id or '',
                     order.carrier_state or '',
                 ], default_format=color_format['text'])
-
+            excel_pool.row_height(ws_name, row, 40)
         return excel_pool.return_attachment(cr, uid, 'web_product')
