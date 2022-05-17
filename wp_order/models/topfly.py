@@ -256,6 +256,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
         header = {
             'Content-Type': 'application/json',
         }
+        pdb.set_trace()
         company = shipping.get('company', '')
         partner_name = self.clean_text(u'%s%s%s' % (
             company,
