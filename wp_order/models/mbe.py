@@ -404,19 +404,22 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
         # Manage error
         error = self.check_reply_status(
             cr, uid, ids, result_data, undo_error=undo_error)
+        call_text = \
+            u'Call: %s\nHeader: %s\n\nData: %s\n\nXML: %s\n\nReply: %s' % (
+                location,
+                header,
+                data,
+                payload,
+                reply,
+                )
         if verbose:
-            _logger.warning(
-                'Call: %s\nHeader: %s\n\nData: %s\n\nXML: %s\n\nReply: %s' % (
-                    location,
-                    header,
-                    data,
-                    payload,
-                    reply,
-                    ))
+            _logger.warning(call_text)
+
+        # todo add debug mode parameter
         if error:
             raise osv.except_osv(
                 _('Errore Server MBE'),
-                error,
+                u'%s\n\n%s' % (error, call_text),
             )
 
         # if error:
