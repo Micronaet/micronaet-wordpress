@@ -518,7 +518,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         # TrackingMBE* : {'TrackingMBE': ['RL28102279']
 
         self.write(cr, uid, ids, {
-            'carrier_state': 'pending',
+            # 'carrier_state': 'pending',  # todo enable when used portal!
             'master_tracking_id': master_tracking_id,
             'system_reference_id': system_reference_id,
             'carrier_track_id': courier_track_id or master_tracking_id,
