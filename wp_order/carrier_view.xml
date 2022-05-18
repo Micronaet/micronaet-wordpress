@@ -389,6 +389,7 @@
                     <field name="wp_date_created"/>
                     -->
                     <field name="is_prime" invisible="1"/>
+                    <field name="marketplace" readonly="1"/>
                     <field name="name" readonly="1"/>
                     <field name="date_order" readonly="1"/>
                     <field name="traking_date" readonly="1" string="Consegna"/>
