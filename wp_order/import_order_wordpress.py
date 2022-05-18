@@ -486,6 +486,8 @@ class WordpressSaleOrder(orm.Model):
             # Fast way:
             if ('Service Level NextDay Prime Premium Order' in wp_order or
                     'Amazon Shipment: Service Level Standard Prime' in wp_order
+                    or 'Amazon Shipment: Service Level '
+                       'SecondDay Prime Premium Order' in wp_order
                     ):
                 res[order.id] = True
             else:
