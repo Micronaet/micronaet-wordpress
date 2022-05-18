@@ -279,6 +279,8 @@
                             <field name="auto_print_label" />
                             <field name="cups_printer_id" />
 
+                            <field name="debug" />
+
                         </group>
                     </sheet>
                 </form>

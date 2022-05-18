@@ -140,6 +140,9 @@ class CarrierConnection(orm.Model):
         'auto_print_label': fields.boolean(
             'Stampa automatica',
             help='Stampa etichetta quando è richiesta la consegna'),
+        'debug': fields.boolean(
+            'Debug',
+            help='Ritorna messaggi di errore più dettagliati'),
         'cups_printer_id': fields.many2one(
             'cups.printer', 'CUPS printer',
             help='Etichetta ordine stampata con questa'),

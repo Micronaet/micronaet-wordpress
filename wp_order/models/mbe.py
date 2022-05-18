@@ -417,9 +417,11 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
 
         # todo add debug mode parameter
         if error:
+            if carrier_connection.debug:
+                error = u'%s\n\n%s' % (error, call_text)
             raise osv.except_osv(
                 _('Errore Server MBE'),
-                u'%s\n\n%s' % (error, call_text),
+                error,
             )
 
         # if error:
