@@ -546,9 +546,9 @@ class WordpressSaleOrder(orm.Model):
         'marketplace': fields.function(
             get_marketplace_field,
             selection=[
-            ('AMZ', 'Amazon'),
-            ('EBA', 'Ebay'),
-            ('WP', 'Wordpress'),
+                ('AMZ', 'Amazon'),
+                ('EBA', 'Ebay'),
+                ('WP', 'Wordpress'),
             ], string='Marketplace',
             type='selection', store=True,
         ),

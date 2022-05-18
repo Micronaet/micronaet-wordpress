@@ -191,6 +191,7 @@ class CarrierSupplier(orm.Model):
     # -------------------------------------------------------------------------
     _columns = {
         'hidden': fields.boolean('Nascosto'),
+        'prime': fields.boolean('Prime'),
         'name': fields.char('Nome'),
         'accounting_ref': fields.char(
             'Codice contabile', size=10,

@@ -805,6 +805,7 @@
                                         <field name="carrier_connection_id" attrs="{'required': [('mode', '=', 'carrier')]}"/>
                                         <field name="account_ref" />
                                         <field name="accounting_ref" />
+                                        <field name="prime" attrs="{'invisible': [('mode', '!=', 'courier')]}"/>
                                     </group>
                                 </page>
                             </notebook>
