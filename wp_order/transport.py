@@ -1265,6 +1265,7 @@ class WordpressSaleOrderRelationTransport(orm.Model):
         # ---------------------------------------------------------------------
         #                             Prime order:
         # ---------------------------------------------------------------------
+        pdb.set_trace()
         if order.is_prime:
             # Manage as prime order:
             courier_ids = courier_pool.search(cr, uid, [
