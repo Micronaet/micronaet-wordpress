@@ -1260,7 +1260,32 @@ class WordpressSaleOrderRelationTransport(orm.Model):
     def choose_best_delivery_button(self, cr, uid, ids, context=None):
         """ Choose better delivery
         """
+        courier_pool = self.pool.get('carrier.supplier')
         order = self.browse(cr, uid, ids, context=context)[0]
+        # ---------------------------------------------------------------------
+        #                             Prime order:
+        # ---------------------------------------------------------------------
+        if order.is_prime:
+            # Manage as prime order:
+            courier_ids = courier_pool.search(cr, uid, [
+                ('prime', '=', True),
+                ], context=context)
+            if not courier_ids:
+                raise osv.except_osv(
+                    _('Errore'),
+                    _('Spedizione prime ma non trovato il corriere!'),
+                )
+            courier_id = courier_ids[0]
+            courier = courier_pool.browse(cr, uid, courier_id, context=context)
+            self.write(cr, uid, [order.id], {
+                'courier_supplier_id': courier_id,
+                'carrier_mode_id': courier.carrier_mode_id.id,
+                'carrier_supplier_id': courier.carrier_id.id,
+            }, context=context)
+
+        # ---------------------------------------------------------------------
+        #                       Normal order:
+        # ---------------------------------------------------------------------
         zip_list = re.findall("[0-9]{5}", order.shipping)
         force_shipping_zip = order.force_shipping_zip
         if not zip_list and not force_shipping_zip:
@@ -1301,7 +1326,7 @@ class WordpressSaleOrderRelationTransport(orm.Model):
             'carrier_supplier_id': courier.broker_id.id,
             'carrier_mode_id': courier.mode_id.id,
             'courier_supplier_id': courier.id,
-        }, context=context)
+            }, context=context)
         return True
 
     def product_detail_delivery_button(self, cr, uid, ids, context=None):
