@@ -1279,8 +1279,8 @@ class WordpressSaleOrderRelationTransport(orm.Model):
             courier = courier_pool.browse(cr, uid, courier_id, context=context)
             self.write(cr, uid, [order.id], {
                 'courier_supplier_id': courier_id,
-                'carrier_mode_id': courier.carrier_mode_id.id,
-                'carrier_supplier_id': courier.carrier_id.id,
+                'carrier_mode_id': courier.mode_id.id,
+                'carrier_supplier_id': courier.broker_id.id,
             }, context=context)
 
         # ---------------------------------------------------------------------
