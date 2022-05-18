@@ -1283,6 +1283,7 @@ class WordpressSaleOrderRelationTransport(orm.Model):
                 'carrier_mode_id': courier.mode_id.id,
                 'carrier_supplier_id': courier.broker_id.id,
             }, context=context)
+            return True
 
         # ---------------------------------------------------------------------
         #                       Normal order:
