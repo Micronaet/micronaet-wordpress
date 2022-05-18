@@ -484,7 +484,8 @@ class WordpressSaleOrder(orm.Model):
         for order in self.browse(cr, uid, ids, context=context):
             wp_order = order.wp_record
             # Fast way:
-            if 'Service Level NextDay Prime Premium Order' in wp_order:
+            if ('Service Level NextDay Prime Premium Order' in wp_order or
+                'Amazon Shipment: Service Level Standard Prime' in wp_order):
                 res[order.id] = True
             else:
                 res[order.id] = False
