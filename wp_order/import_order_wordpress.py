@@ -476,28 +476,39 @@ class WordpressSaleOrder(orm.Model):
             'traking_date': False,
         }, context=context)
 
-    def _function_get_prime_information(
+    def _function_get_prime_manual_information(
             self, cr, uid, ids, fields, args, context=None):
         """ Fields function for calculate
         """
         res = {}
         for order in self.browse(cr, uid, ids, context=context):
             wp_order = order.wp_record
-            # Fast way:
+            # -----------------------------------------------------------------
+            #                       Order type: (Fast way)
+            # -----------------------------------------------------------------
+            # Amazon Prime:
             if ('Service Level NextDay Prime Premium Order' in wp_order or
                     'Amazon Shipment: Service Level Standard Prime' in wp_order
                     or 'Amazon Shipment: Service Level '
-                       'SecondDay Prime Premium Order' in wp_order
-                    ):
-                res[order.id] = True
+                       'SecondDay Prime Premium Order' in wp_order):
+                res[order.id] = 'prime'
+            # Manual delivery:
+            elif 'method_free_shipping' in wp_order:
+                res[order.id] = 'manual'
+            # Normal delivery:
             else:
-                res[order.id] = False
+                res[order.id] = 'normal'
         return res
 
     _columns = {
-        'is_prime': fields.function(
-            _function_get_prime_information, method=True,
-            type='boolean', string='Prime', store=False,
+        'delivery_mode': fields.function(
+            _function_get_prime_manual_information, method=True,
+            type='select', selection=[
+                ('prime', 'Amazon Prime'),
+                ('manual', 'Ritiro in sede'),
+                ('normal', 'Spedizione normale'),
+            ],
+            string='Tipo ritiro', store=False,
             help='Elenco di articoli prime presenti'
         ),
         'from_web': fields.boolean(

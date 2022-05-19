@@ -132,12 +132,13 @@ class WordpressSaleOrder(orm.Model):
                 color_format = excel_format['yellow']
             else:
                 color_format = excel_format['black']
+
             excel_pool.write_xls_line(
                 ws_name, row, [
                     '',
                     '',
                     order.marketplace,
-                    'X' if order.is_prime else '',
+                    order.delivery_mode,
                     order.name,
                     order.traking_date or '',
 
