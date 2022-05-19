@@ -26,6 +26,7 @@ import logging
 import telepot
 import pdb
 import time
+import json
 
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
@@ -486,6 +487,8 @@ class WordpressSaleOrder(orm.Model):
             # -----------------------------------------------------------------
             #                       Order type: (Fast way)
             # -----------------------------------------------------------------
+            json_order = json.loads(wp_order)
+            pdb.set_trace()
             # Amazon Prime:
             if ('Service Level NextDay Prime Premium Order' in wp_order or
                     'Amazon Shipment: Service Level Standard Prime' in wp_order
@@ -493,8 +496,8 @@ class WordpressSaleOrder(orm.Model):
                        'SecondDay Prime Premium Order' in wp_order):
                 res[order.id] = 'prime'
             # Manual delivery:
-            elif order.marketplace == 'WP' and  \
-                    '\'shipping_total\': u\'0\'' in wp_order:
+            elif order.marketplace == 'WP' and \
+                    json_order.get('shipping_total') == 0:
                 res[order.id] = 'normal'  # todo change condition 'manual'
             # Normal delivery:
             else:
