@@ -51,6 +51,11 @@ class WordpressSaleOrder(orm.Model):
     def extract_wordpress_published_report(self, cr, uid, ids, context=None):
         """ Extract list of published elements:
         """
+        delivery_mode_text = {
+            'manual': 'GPB',
+            'prime': 'PRIME',
+            'normal': '',
+        }
         # Pool used:
         excel_pool = self.pool.get('excel.writer')
 
@@ -138,7 +143,7 @@ class WordpressSaleOrder(orm.Model):
                     '',
                     '',
                     order.marketplace,
-                    order.delivery_mode,
+                    delivery_mode_text.get(order.delivery_mode, ''),
                     order.name,
                     order.traking_date or '',
 
