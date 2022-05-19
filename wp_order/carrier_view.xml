@@ -401,7 +401,7 @@
                     <field name="carrier_parcel_template_id" domain="['|',('carrier_supplier_id','=',False),('carrier_supplier_id','=',carrier_supplier_id)]" string="Imposta imb."/>
                     <field name="parcel_weight_tree" string="Peso"/>
                     <button name="load_template_parcel" string="Add parcel" icon="gtk-add" type="object" attrs="{'invisible': [('carrier_parcel_template_id','=',False)]}" class="oe_highlight" />
-                    <button name="generate_parcel_from_order" type="object" string="Genera colli da ordine" icon="gtk-execute" confirm="I colli verranno ricalcolati da quelli nei prodotti in ordine, confermi?"/>
+                    <button name="generate_parcel_from_order" type="object" string="Genera colli da ordine" icon="gtk-execute" /><!--confirm="I colli verranno ricalcolati da quelli nei prodotti in ordine, confermi?"-->
 
                     <field name="parcel_detail" readonly="1" string="Colli"/>
                     <button name="parcel_detail_clean" type="object" string="Pulisci imballi impostati per questa consegna" icon="gtk-delete" attrs="{'invisible': [('parcel_detail','=',False)]}"/>
