@@ -117,7 +117,7 @@ class WordpressSaleOrder(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, header, default_format=excel_format['header'])
         excel_pool.autofilter(ws_name, row, 0, row, len(header) - 1)
-        excel_pool.freeze_panes(ws_name, 1, 5)
+        excel_pool.freeze_panes(ws_name, 1, 7)
 
         _logger.warning('Selected order: %s' % len(order_ids))
         for order in sorted(self.browse(
