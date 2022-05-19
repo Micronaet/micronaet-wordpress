@@ -649,7 +649,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                     int(parcel.length),
                     parcel.weight,
                 )
-            res[order.id] = detail
+            res[order.id] = detail or False  # for attrs
         return res
 
     def _get_delivery_detail(
