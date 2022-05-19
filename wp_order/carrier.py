@@ -643,7 +643,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         for order in self.browse(cr, uid, ids, context=context):
             detail = ''
             for parcel in order.parcel_ids:
-                detail += '%sx%sx%s (%sKg.)\n' % (
+                detail += '%sx%sx%s-%.1fKg.\n' % (
                     int(parcel.height),
                     int(parcel.width),
                     int(parcel.length),
