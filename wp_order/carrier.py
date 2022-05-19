@@ -404,6 +404,16 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         return product
 
+    def parcel_detail_clean(self, cr, uid, ids, context=None):
+        """ Clean packaging selected
+        """
+        order_id = ids[0]
+        parcel_pool = self.pool.get('sale.order.parcel')
+        parcel_ids = parcel_pool.search(cr, uid, [
+            ('order_id', '=', order_id),
+        ], context=context)
+        return parcel_pool.unlink(cr, uid, parcel_ids, context=context)
+
     def generate_parcel_from_order(self, cr, uid, ids, context=None):
         """ Generate parcels from sale order
         """
@@ -633,10 +643,11 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         for order in self.browse(cr, uid, ids, context=context):
             detail = ''
             for parcel in order.parcel_ids:
-                detail += '%sx%sx%s\n' % (
+                detail += '%sx%sx%s (%sKg.)\n' % (
                     int(parcel.height),
                     int(parcel.width),
                     int(parcel.length),
+                    parcel.weight,
                 )
             res[order.id] = detail
         return res
