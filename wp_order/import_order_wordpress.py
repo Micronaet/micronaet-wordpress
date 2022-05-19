@@ -503,7 +503,7 @@ class WordpressSaleOrder(orm.Model):
     _columns = {
         'delivery_mode': fields.function(
             _function_get_prime_manual_information, method=True,
-            type='select', selection=[
+            type='selection', selection=[
                 ('prime', 'Amazon Prime'),
                 ('manual', 'Ritiro in sede'),
                 ('normal', 'Spedizione normale'),
