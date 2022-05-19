@@ -499,8 +499,8 @@ class WordpressSaleOrder(orm.Model):
                        'SecondDay Prime Premium Order' in wp_order):
                 res[order.id] = 'prime'
             # Manual delivery:
-            elif order.marketplace == 'WP' and False:
-                res[order.id] = 'normal'  # todo change condition 'manual'
+            elif order.marketplace == 'WP' and not order.shipping_total:
+                res[order.id] = 'manual'  # todo change condition 'manual'
             # Normal delivery:
             else:
                 res[order.id] = 'normal'
