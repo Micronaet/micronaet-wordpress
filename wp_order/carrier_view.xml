@@ -427,8 +427,8 @@
                     <field name="master_tracking_id" invisible="1"/>
                     <field name="carrier_track_id" invisible="1"/>
                     <field name="zone_id" readonly="1"/>
-                    <field name="pricelist_shipping_total" readonly="1" sum="total" string="Sped. list." />
                     <field name="carrier_cost" readonly="1" sum="total_cost" string="Sped. sito" />
+                    <field name="pricelist_shipping_total" readonly="1" sum="total" string="Sped. list." />
                     <field name="real_shipping_total" sum="total_real" string="Sped. reale" />
                     <field name="carrier_state" invisible="1"/>
                     <field name="carrier_ok" invisible="1"/>
