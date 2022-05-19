@@ -94,6 +94,7 @@ class WordpressSaleOrder(orm.Model):
         # ---------------------------------------------------------------------
         # Width
         excel_pool.column_width(ws_name, [
+            5, 5,
             8, 3,
             8, 10,
             12, 35,
@@ -105,6 +106,7 @@ class WordpressSaleOrder(orm.Model):
         # Print header
         row = 0
         header = [
+            'Pronto', 'Spedito'
             'Marketplace', 'Prime',
             'Ordine', 'Consegna',
             'Imballo', 'Dettaglio',
@@ -115,6 +117,7 @@ class WordpressSaleOrder(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, header, default_format=excel_format['header'])
         excel_pool.autofilter(ws_name, row, 0, row, len(header) - 1)
+        excel_pool.freeze_panes(ws_name, 1, 5)
 
         _logger.warning('Selected order: %s' % len(order_ids))
         for order in sorted(self.browse(
@@ -131,6 +134,8 @@ class WordpressSaleOrder(orm.Model):
                 color_format = excel_format['black']
             excel_pool.write_xls_line(
                 ws_name, row, [
+                    '',
+                    '',
                     order.marketplace,
                     'X' if order.is_prime else '',
                     order.name,
