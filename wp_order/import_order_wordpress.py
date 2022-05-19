@@ -488,6 +488,9 @@ class WordpressSaleOrder(orm.Model):
             #                       Order type: (Fast way)
             # -----------------------------------------------------------------
             pdb.set_trace()
+            import re
+            p = re.compile('(?<!\\\\)\'')
+            wp_order = p.sub('\"', wp_order)
             json_order = json.loads(wp_order)
             # Amazon Prime:
             if ('Service Level NextDay Prime Premium Order' in wp_order or
