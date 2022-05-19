@@ -373,7 +373,7 @@
             <field name="priority" eval="40"/>
 
             <field name="arch" type="xml">
-                <tree string="Sale order for carrier" editable="bottom" fonts="bold:delivery_mode == 'prime'"  colors="green: carrier_state == 'delivered';blue: carrier_state == 'pending'; grey:carrier_state == 'draft' and (not parcel_ids or not carrier_supplier_id)" >
+                <tree string="Sale order for carrier" editable="bottom" fonts="bold:delivery_mode == 'prime';italic:delivery_mode == 'manual'"  colors="green: carrier_state == 'delivered';blue: carrier_state == 'pending'; grey:carrier_state == 'draft' and (not parcel_ids or not carrier_supplier_id)" >
 
                     <button name="delivery_today_on" type="object" string="Consegna oggi!" icon="star-on" attrs="{'invisible': [('traking_date', '!=', False)]}"/>
                     <button name="delivery_today_off" type="object" string="Non consegnare oggi" icon="star-off" attrs="{'invisible': [('traking_date', '=', False)]}"/>
