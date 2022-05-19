@@ -100,7 +100,7 @@ class WordpressSaleOrder(orm.Model):
         # Width
         excel_pool.column_width(ws_name, [
             5, 5,
-            8, 3,
+            8, 5,
             8, 10,
             12, 35,
             20, 35,
