@@ -392,14 +392,14 @@
                     -->
                     <field name="is_prime" invisible="1"/>
                     <field name="marketplace" readonly="1"/>
-                    <field name="name" readonly="1"/>
-                    <field name="date_order" readonly="1"/>
+                    <field name="name" readonly="1" string="Numero"/>
+                    <field name="date_order" readonly="1" string="Data"/>
                     <field name="traking_date" readonly="1" string="Consegna"/>
                     <field name="partner_name" readonly="1"/>
                     <field name="shipping" readonly="1"/>
 
-                    <field name="carrier_parcel_template_id" domain="['|',('carrier_supplier_id','=',False),('carrier_supplier_id','=',carrier_supplier_id)]" />
-                    <field name="parcel_weight_tree" string="Imballi"/>
+                    <field name="carrier_parcel_template_id" domain="['|',('carrier_supplier_id','=',False),('carrier_supplier_id','=',carrier_supplier_id)]" string="Imposta imb."/>
+                    <field name="parcel_weight_tree" string="Peso"/>
                     <button name="load_template_parcel" string="Add parcel" icon="gtk-add" type="object" attrs="{'invisible': [('carrier_parcel_template_id','=',False)]}" class="oe_highlight" />
                     <button name="generate_parcel_from_order" type="object" string="Genera colli da ordine" icon="gtk-execute" confirm="I colli verranno ricalcolati da quelli nei prodotti in ordine, confermi?"/>
 
@@ -427,9 +427,9 @@
                     <field name="master_tracking_id" invisible="1"/>
                     <field name="carrier_track_id" invisible="1"/>
                     <field name="zone_id" readonly="1"/>
-                    <field name="pricelist_shipping_total" readonly="1" sum="Sped. list." />
-                    <field name="carrier_cost" readonly="1" sum="Sped. sito" />
-                    <field name="real_shipping_total" sum="Sped. reale" />
+                    <field name="pricelist_shipping_total" readonly="1" sum="total" string="Sped. list." />
+                    <field name="carrier_cost" readonly="1" sum="total_cost" string="Sped. sito" />
+                    <field name="real_shipping_total" sum="total_real" string="Sped. reale" />
                     <field name="carrier_state" invisible="1"/>
                     <field name="carrier_ok" invisible="1"/>
                     <field name="state" invisible="1"/>
