@@ -494,7 +494,7 @@ class WordpressSaleOrder(orm.Model):
                 res[order.id] = 'prime'
             # Manual delivery:
             elif 'method_free_shipping' in wp_order:
-                res[order.id] = 'manual'
+                res[order.id] = 'normal'  # todo change conditon 'manual'
             # Normal delivery:
             else:
                 res[order.id] = 'normal'
