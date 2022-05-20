@@ -175,14 +175,17 @@ class WordpressSaleOrder(orm.Model):
             ]
         excel_pool.write_xls_line(
             ws_name, row, header, default_format=excel_format['header'])
+        excel_pool.merge_cell(ws_name, [row, 0, row, 2])
 
         # todo loop:
         row += 1
+        excel_pool.merge_cell(ws_name, [row, 0, row, 2])
         excel_pool.write_xls_line(
             ws_name, row, ['Prime', '', '', ],
             default_format=excel_format['text'])
 
         row += 1
+        excel_pool.merge_cell(ws_name, [row, 0, row, 2])
         excel_pool.write_xls_line(
             ws_name, row, ['Normali', '', '', ],
             default_format=excel_format['text'])
