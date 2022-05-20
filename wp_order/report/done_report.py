@@ -131,8 +131,8 @@ class WordpressSaleOrder(orm.Model):
             row += 1
             master_tracking_id = order.master_tracking_id or ''
             parcel_detail = order.parcel_detail or ''
-            label_manual = order.label_manual
-            if master_tracking_id or label_manual:
+            manual_label = order.manual_label
+            if master_tracking_id or manual_label:
                 color_format = excel_format['green']
             elif not parcel_detail:
                 color_format = excel_format['yellow']
