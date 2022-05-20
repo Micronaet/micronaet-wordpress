@@ -205,19 +205,19 @@ class WordpressSaleOrder(orm.Model):
                 mode_text = mode
             else:
                 mode_text = 'Normale'
-            for line in summary[mode]:
-                row += 1
-                line_data = [
-                    mode,
-                    '',
-                    '',
-                    summary[mode]['total'],
-                    summary[mode]['weight'],
-                    summary[mode]['parcel'],
-                    summary[mode]['label'],
-                ]
-                excel_pool.merge_cell(ws_name, [row, 0, row, 2])
-                excel_pool.write_xls_line(
-                    ws_name, row, line_data,
-                    default_format=excel_format['black']['text'])
+            line = summary[mode]
+            row += 1
+            line_data = [
+                mode_text,
+                '',
+                '',
+                line['total'],
+                line['weight'],
+                line['parcel'],
+                line['label'],
+            ]
+            excel_pool.merge_cell(ws_name, [row, 0, row, 2])
+            excel_pool.write_xls_line(
+                ws_name, row, line_data,
+                default_format=excel_format['black']['text'])
         return excel_pool.return_attachment(cr, uid, 'web_product')
