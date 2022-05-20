@@ -100,7 +100,7 @@ class WordpressSaleOrder(orm.Model):
         # Width
         excel_pool.column_width(ws_name, [
             5, 5, 5,
-            8, 5,
+            8, 6,
             8, 10,
             12, 35, 10,
             20, 35,
@@ -125,6 +125,7 @@ class WordpressSaleOrder(orm.Model):
         excel_pool.freeze_panes(ws_name, row + 1, 7)
 
         _logger.warning('Selected order: %s' % len(order_ids))
+        summary = {}
         for order in sorted(self.browse(
                 cr, uid, order_ids, context=context),
                 key=lambda o: o.delivery_detail):
@@ -139,14 +140,34 @@ class WordpressSaleOrder(orm.Model):
             else:
                 color_format = excel_format['red']
 
+            parcels = len(order.parcel_ids)
             weight = sum([p.real_weight for p in order.parcel_ids])
+            mode = delivery_mode_text.get(order.delivery_mode, '')
+
+            # -----------------------------------------------------------------
+            # Summary total:
+            # -----------------------------------------------------------------
+            if mode not in summary:
+                summary[mode] = {
+                    'weight': 0.0,
+                    'total': 0,
+                    'parcel': 0,
+                    'label': 0,
+                }
+            summary[mode]['weight'] += weight
+            summary[mode]['total'] += 1
+            summary[mode]['parcel'] += parcels
+            if order.label_printed:
+                summary[mode]['label'] += 1
+            # -----------------------------------------------------------------
+
             excel_pool.write_xls_line(
                 ws_name, row, [
                     'X' if order.label_printed else '',
                     '',
                     '',
                     order.marketplace,
-                    delivery_mode_text.get(order.delivery_mode, ''),
+                    mode,
                     order.name,
                     order.traking_date or '',
 
@@ -177,17 +198,24 @@ class WordpressSaleOrder(orm.Model):
             ws_name, row, header, default_format=excel_format['header'])
         excel_pool.merge_cell(ws_name, [row, 0, row, 2])
 
-        # todo loop:
-        row += 1
-        excel_pool.merge_cell(ws_name, [row, 0, row, 2])
-        excel_pool.write_xls_line(
-            ws_name, row, ['Prime', '', '', ],
-            default_format=excel_format['text'])
-
-        row += 1
-        excel_pool.merge_cell(ws_name, [row, 0, row, 2])
-        excel_pool.write_xls_line(
-            ws_name, row, ['Normali', '', '', ],
-            default_format=excel_format['text'])
-
+        for mode in summary:
+            if mode:
+                mode_text = mode
+            else:
+                mode_text = 'Normale'
+            for line in summary[mode]:
+                row += 1
+                line_data = [
+                    mode,
+                    '',
+                    '',
+                    summary[mode]['total'],
+                    summary[mode]['weight'],
+                    summary[mode]['parcel'],
+                    summary[mode]['label'],
+                ]
+                excel_pool.merge_cell(ws_name, [row, 0, row, 2])
+                excel_pool.write_xls_line(
+                    ws_name, row, line_data,
+                    default_format=excel_format['black']['text'])
         return excel_pool.return_attachment(cr, uid, 'web_product')
