@@ -517,12 +517,15 @@ class WordpressSaleOrder(orm.Model):
                 path[connector] = connector.wp_label_path
             label_path = path[connector]
             if not label_path:
+                _logger.error('Path not found')
                 res[order.id] = False
                 continue
             fullname = os.path.join(label_path, '%s.pdf' % order.name)
             if os.path.isfile(fullname):
+                _logger.info('File: %s' % fullname)
                 res[order.id] = fullname
             else:
+                _logger.info('File not found')
                 res[order.id] = False
         return res
 
