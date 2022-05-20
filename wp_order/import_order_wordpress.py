@@ -88,6 +88,53 @@ class WordpressSaleOrder(orm.Model):
                 cr, uid, ids, order, label_fullname, context=context)
         return False
 
+    def download_label(self, cr, uid, ids, context=None):
+        """ Return attachment for label
+        """
+        if context is None:
+            context = {
+                'lang': 'it_IT',
+                }
+        order = self.browse(cr, uid, ids, context=context)
+        label_fullname = order.manual_label
+        if not label_fullname:
+            raise osv.except_osv(
+                _('Errore download'),
+                _('File non trovato per ordine: %s') % order.name,
+            )
+        name_of_file = '/tmp/etichetta_%s.xlsx' % order.name
+
+        # Pool used:
+        attachment_pool = self.pool.get('ir.attachment')
+
+        self._close_workbook() # if not closed manually
+        try:
+            b64 = open(label_fullname, 'rb').read().encode('base64')
+        except:
+            _logger.error(_('Cannot return file: %s') % label_fullname)
+            raise osv.except_osv(
+                _('Report error'),
+                _('Cannot return file: %s') % label_fullname,
+                )
+
+        attachment_id = attachment_pool.create(cr, uid, {
+            'name': order.name,
+            'datas_fname': name_of_file,
+            'type': 'binary',
+            'datas': b64,
+            'partner_id': 1,
+            'res_model': 'wordpress.sale.order',
+            'res_id': 1,
+            }, context=context)
+        _logger.info('Return XLSX file: %s' % label_fullname)
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/binary/saveas?model=ir.attachment&field=datas&'
+                    'filename_field=datas_fname&id=%s' % attachment_id,
+            'target': 'self',
+            }
+
     def delete_order_not_unloaded(self, cr, uid, ids, context=None):
         """ Delete order that is not closed with stock management
         """
