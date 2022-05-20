@@ -133,11 +133,11 @@ class WordpressSaleOrder(orm.Model):
             parcel_detail = order.parcel_detail or ''
             manual_label = order.manual_label
             if master_tracking_id or manual_label:
-                color_format = excel_format['green']
+                color_format = excel_format['black']
             elif not parcel_detail:
                 color_format = excel_format['yellow']
             else:
-                color_format = excel_format['black']
+                color_format = excel_format['red']
 
             weight = sum([p.real_weight for p in order.parcel_ids])
             excel_pool.write_xls_line(
