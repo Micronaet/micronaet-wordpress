@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <!-- ========================== todo was removed from openerp ============================== -->
         <record model="ir.ui.view" id="view_wordpress_connector_order_button_form">
             <field name="name">connector.server.load.order.form</field>
             <field name="model">connector.server</field>

@@ -20,7 +20,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
-
+import os.path
 import sys
 import logging
 import telepot
@@ -506,6 +506,25 @@ class WordpressSaleOrder(orm.Model):
                 res[order.id] = 'normal'
         return res
 
+    def _get_manual_label(self, cr, uid, ids, fields, args, context=None):
+        """ Manual label
+        """
+        res = {}
+        path = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            connector = order.connector_id
+            if connector not in path:
+                path[connector] = connector.wp_label_path
+            label_path = path[connector]
+            if not label_path:
+                res[order.id] = False
+            fullname = os.path.join(label_path, '%s.pdf' % order.name)
+            if os.path.isfile(fullname):
+                res[order.id] = fullname
+            else:
+                res[order.id] = False
+        return res
+
     _columns = {
         'delivery_mode': fields.function(
             _function_get_prime_manual_information, method=True,
@@ -559,6 +578,10 @@ class WordpressSaleOrder(orm.Model):
         'connector_id': fields.many2one(
             'connector.server', 'Connector',
             help='Connector Marketplace, is the origin web site'),
+
+        'manual_label': fields.function(
+            _get_manual_label, method=True, type='char', size=180,
+            string='Etichetta manuale', store=False),
 
         'marketplace': fields.function(
             get_marketplace_field,

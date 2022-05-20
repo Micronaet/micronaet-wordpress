@@ -413,6 +413,14 @@ class ConnectorServer(orm.Model):
             'All category',
             help='Public all product with category and parent also'),
 
+        # Label:
+        'wp_label_path': fields.char(
+            'Path etichette', size=180,
+            help='Se l\'ordine ha una etichetta forzata manualmente viene '
+                 'salvata in questo path e stampata prendendo questo '
+                 'file PDF, il file PDF devono essere salvati con il nome e'
+                 '.pdf in minuscolo'),
+
         # Media:
         'wp_username': fields.char('WP username', size=180),
         'wp_password': fields.char('WP password', size=180),

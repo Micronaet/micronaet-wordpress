@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
+        <record model="ir.ui.view" id="view_wordpress_connector_label_form">
+            <field name="name">connector.server.label.form</field>
+            <field name="model">connector.server</field>
+            <field name="inherit_id" ref="wp_connector.view_wordpress_connector_form"/>
+            <field name="arch" type="xml">
+                <field name="wp_auto_fees_mode" position="after">
+                    <field name="wp_label_path" colspan="4"/>
+                </field>
+            </field>
+        </record>
+
         <!--carrier.supplier.stored.data-->
         <record id="carrier_supplier_stored_data_view_search" model="ir.ui.view">
             <field name="name">carrier.supplier.stored.data.search</field>
@@ -421,9 +432,10 @@
                     <button name="carrier_get_better_option" type="object" string="Get better option" icon="STOCK_SORT_DESCENDING" attrs="{'invisible': [('carrier_track_id', '!=', False)]}" />
                     <button name="carrier_get_reservation" type="object" string="Prenota consegna" icon="gtk-ok" attrs="{'invisible': [('carrier_track_id', '!=', False)]}" confirm="Confermi prenotazione consegna al portale?"/>
                     <button name="carrier_remove_reservation" type="object" string="Rimuovi prenotazione" icon="gtk-cancel" attrs="{'invisible': [('master_tracking_id', '=', False), ('carrier_track_id', '=', False)]}" confirm="Vuoi rimuovere la prenotazione dal portale (se non è già stata ritirata la merce)?"/>
-                    <button name="print_label" type="object" string="Scarica e stampa etichetta" icon="gtk-print" attrs="{'invisible': [('carrier_track_id', '=', False)]}"/>
+                    <button name="print_label" type="object" string="Scarica e stampa etichetta" icon="gtk-print" attrs="{'invisible': [('manual_label', '=', False),('carrier_track_id', '=', False)]}"/>
                     <!-- todo for MBE: <button name="carrier_print_label" type="object" string="Print label" icon="gtk-print" attrs="{'invisible': [('carrier_track_id', '=', False)]}"/>-->
 
+                    <field name="manual_label" invisible="1"/>
                     <field name="master_tracking_id" invisible="1"/>
                     <field name="carrier_track_id" invisible="1"/>
                     <field name="zone_id" readonly="1"/>
