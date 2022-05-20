@@ -91,6 +91,9 @@ class WordpressSaleOrder(orm.Model):
     def download_label(self, cr, uid, ids, context=None):
         """ Return attachment for label
         """
+        # Pool used:
+        attachment_pool = self.pool.get('ir.attachment')
+
         if context is None:
             context = {
                 'lang': 'it_IT',
@@ -104,10 +107,6 @@ class WordpressSaleOrder(orm.Model):
             )
         name_of_file = '/tmp/etichetta_%s.xlsx' % order.name
 
-        # Pool used:
-        attachment_pool = self.pool.get('ir.attachment')
-
-        self._close_workbook() # if not closed manually
         try:
             b64 = open(label_fullname, 'rb').read().encode('base64')
         except:
