@@ -647,7 +647,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                     int(parcel.height),
                     int(parcel.width),
                     int(parcel.length),
-                    parcel.weight,
+                    parcel.real_weight,
                 )
             res[order.id] = detail or False  # for attrs
         return res
