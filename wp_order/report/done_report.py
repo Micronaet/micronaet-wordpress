@@ -99,7 +99,7 @@ class WordpressSaleOrder(orm.Model):
         # ---------------------------------------------------------------------
         # Width
         excel_pool.column_width(ws_name, [
-            5, 5,
+            5, 5, 5,
             8, 5,
             8, 10,
             12, 35, 10,
@@ -111,7 +111,7 @@ class WordpressSaleOrder(orm.Model):
         # Print header
         row = 0
         header = [
-            'Pronto', 'Spedito',
+            'Etich', 'Pronto', 'Spedito',
             'Marketplace', 'Prime',
             'Ordine', 'Consegna',
             'Imballo', 'Dettaglio', 'Peso',
@@ -142,6 +142,7 @@ class WordpressSaleOrder(orm.Model):
             weight = sum([p.real_weight for p in order.parcel_ids])
             excel_pool.write_xls_line(
                 ws_name, row, [
+                    'X' if order.label_printed else '',
                     '',
                     '',
                     order.marketplace,
