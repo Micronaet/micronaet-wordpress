@@ -518,6 +518,7 @@ class WordpressSaleOrder(orm.Model):
             label_path = path[connector]
             if not label_path:
                 res[order.id] = False
+                continue
             fullname = os.path.join(label_path, '%s.pdf' % order.name)
             if os.path.isfile(fullname):
                 res[order.id] = fullname
