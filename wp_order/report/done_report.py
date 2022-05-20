@@ -128,6 +128,7 @@ class WordpressSaleOrder(orm.Model):
         _logger.warning('Selected order: %s' % len(order_ids))
 
         summary = {}
+        pdb.set_trace()
         for mode in delivery_mode_text.values():
             summary[mode] = {
                 'weight': 0.0,
