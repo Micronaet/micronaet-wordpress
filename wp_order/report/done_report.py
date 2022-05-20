@@ -102,7 +102,7 @@ class WordpressSaleOrder(orm.Model):
             5, 5,
             8, 5,
             8, 10,
-            12, 35,
+            12, 35, 10,
             20, 35,
             10, 10, 12, 12,
             19, 10,
@@ -111,10 +111,10 @@ class WordpressSaleOrder(orm.Model):
         # Print header
         row = 0
         header = [
-            'Pronto', 'Spedito'
+            'Pronto', 'Spedito',
             'Marketplace', 'Prime',
             'Ordine', 'Consegna',
-            'Imballo', 'Dettaglio',
+            'Imballo', 'Dettaglio', 'Peso',
             'Cliente', 'Destinazione',
             'Corriere', 'Tipo', 'Spedizioniere', 'Servizio',
             'Tracking', 'Stato',
@@ -139,6 +139,7 @@ class WordpressSaleOrder(orm.Model):
             else:
                 color_format = excel_format['black']
 
+            weight = sum([p.real_weight for p in order.parcel_ids])
             excel_pool.write_xls_line(
                 ws_name, row, [
                     '',
@@ -150,6 +151,7 @@ class WordpressSaleOrder(orm.Model):
 
                     parcel_detail,
                     order.delivery_detail or '',
+                    weight or '',
 
                     order.partner_name,
                     order.shipping,
