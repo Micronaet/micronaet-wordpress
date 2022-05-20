@@ -45,7 +45,8 @@ class WordpressSaleOrder(orm.Model):
     _order = 'name desc'
 
     # Utility:
-    def send_pdf_to_printer(self, cr, uid, ids, order, fullname, context=None):
+    def send_pdf_to_printer(
+            self, cr, uid, ids, order, fullname, loop=1, context=None):
         """ Procedure used from all print_label function for sent to printer
             the PDF filename
         """
@@ -76,16 +77,26 @@ class WordpressSaleOrder(orm.Model):
             _logger.warning('Saved label in: %s' % saved_fullname)
         else:
             return self.send_report_to_cups_printer(
-                cr, uid, ids, fullname, printer_code, context=context)
+                cr, uid, ids, fullname, printer_code, loop=loop,
+                context=context)
 
     def print_label(self, cr, uid, ids, context=None):
         """ Extract label
         """
         order = self.browse(cr, uid, ids, context=context)
         label_fullname = order.manual_label
+
         if label_fullname:
+            # Multi parcel with one line!
+            parcels = len(order.parcel_ids)
+            if len(order.line_ids) == 1 and parcels > 1:
+                loop = parcels
+            else:
+                loop = 1
+
             return self.send_pdf_to_printer(
-                cr, uid, ids, order, label_fullname, context=context)
+                cr, uid, ids, order, label_fullname, loop=loop,
+                context=context)
         return False
 
     def download_label(self, cr, uid, ids, context=None):

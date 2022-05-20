@@ -60,7 +60,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     # Printing:
     # -------------------------------------------------------------------------
     def send_report_to_cups_printer(
-            self, cr, uid, ids, fullname, printer_code=False, context=None):
+            self, cr, uid, ids, fullname, printer_code=False, loop=1,
+            context=None):
         """ Send report to CUPS printer
             Report file
             Printer code (see printers list)
@@ -111,8 +112,10 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         #    _('Printing %s on %s ...') % (fullname, printer_name))
 
         try:
-            os.system(print_command)
-            _logger.info('Printing call: %s' % print_command)
+            for repeat in range(loop):
+                os.system(print_command)
+                _logger.info('Printing call [time: %s]: %s' % (
+                    repeat + 1, print_command))
             self.write(cr, uid, ids, {
                 'label_printed': True,
             }, context=context)
