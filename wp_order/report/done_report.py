@@ -128,7 +128,6 @@ class WordpressSaleOrder(orm.Model):
         _logger.warning('Selected order: %s' % len(order_ids))
 
         summary = {}
-        pdb.set_trace()
         for mode in delivery_mode_text.values():
             summary[mode] = {
                 'weight': 0.0,
@@ -210,7 +209,7 @@ class WordpressSaleOrder(orm.Model):
             line = summary[mode]
             row += 1
             line_data = [
-                mode_text,
+                (mode_text, excel_format['black']['text']),
                 '',
                 '',
                 line['total'],
@@ -221,5 +220,5 @@ class WordpressSaleOrder(orm.Model):
             excel_pool.merge_cell(ws_name, [row, 0, row, 2])
             excel_pool.write_xls_line(
                 ws_name, row, line_data,
-                default_format=excel_format['black']['text'])
+                default_format=excel_format['black']['number'])
         return excel_pool.return_attachment(cr, uid, 'web_product')
