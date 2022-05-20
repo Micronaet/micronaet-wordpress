@@ -123,7 +123,7 @@ class WordpressSaleOrder(orm.Model):
             'datas': b64,
             'partner_id': 1,
             'res_model': 'wordpress.sale.order',
-            'res_id': 1,
+            'res_id': order.id,
             }, context=context)
         _logger.info('Return XLSX file: %s' % label_fullname)
 
