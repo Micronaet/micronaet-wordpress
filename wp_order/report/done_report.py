@@ -126,11 +126,16 @@ class WordpressSaleOrder(orm.Model):
         excel_pool.freeze_panes(ws_name, row + 1, 7)
 
         _logger.warning('Selected order: %s' % len(order_ids))
-        summary = {
-            'GPB': {},
-            'PRIME': {},
-            'normal': {},
+
+        summary = {}
+        for mode in delivery_mode_text.values():
+            summary[mode] = {
+                'weight': 0.0,
+                'total': 0,
+                'parcel': 0,
+                'label': 0,
             }
+
         for order in sorted(self.browse(
                 cr, uid, order_ids, context=context),
                 key=lambda o: o.delivery_detail):
@@ -152,13 +157,6 @@ class WordpressSaleOrder(orm.Model):
             # -----------------------------------------------------------------
             # Summary total:
             # -----------------------------------------------------------------
-            if mode not in summary:
-                summary[mode] = {
-                    'weight': 0.0,
-                    'total': 0,
-                    'parcel': 0,
-                    'label': 0,
-                }
             summary[mode]['weight'] += weight
             summary[mode]['total'] += 1
             summary[mode]['parcel'] += parcels
