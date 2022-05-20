@@ -462,42 +462,44 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
         fullname = os.path.join(label_path, filename)
 
         # ---------------------------------------------------------------------
-        # Connection:
+        # Load label from portal if not present
         # ---------------------------------------------------------------------
-        connection = carrier.carrier_connection_id
-        root = connection.location
-        token = connection.passphrase
+        if not os.path.isfile(fullname):
+            # Connection:
+            connection = carrier.carrier_connection_id
+            root = connection.location
+            token = connection.passphrase
 
-        tracking_id = order.carrier_track_id  # must exist
-        if not tracking_id:
-            raise osv.except_osv(
-                _('Errore Etichetta:'),
-                _('Impossibile scaricare etichette se non è presente '
-                  'il tracking ID!'),
-            )
+            tracking_id = order.carrier_track_id  # must exist
+            if not tracking_id:
+                raise osv.except_osv(
+                    _('Errore Etichetta:'),
+                    _('Impossibile scaricare etichette se non è presente '
+                      'il tracking ID!'),
+                )
 
-        location = '%sshippings/%s/label/pdf?termica=1&apitoken=%s' % (
-            root, tracking_id, token)
-        header = {
-            'Content-Type': 'application/json',
-        }
-        reply = requests.get(
-            location,
-            data=json.dumps({}),
-            headers=header,
-            verify=False,
-        )
-        if reply.ok:
-            data_pdf = reply.content
-            pdf_file = open(fullname, 'wb')
-            pdf_file.write(data_pdf)
-            pdf_file.close()
-            _logger.warning('Save label to file: %s' % fullname)
-        else:
-            raise osv.except_osv(
-                _('Errore etichetta:'),
-                _('Il portale non ha restituito nessuna etichetta!'),
+            location = '%sshippings/%s/label/pdf?termica=1&apitoken=%s' % (
+                root, tracking_id, token)
+            header = {
+                'Content-Type': 'application/json',
+            }
+            reply = requests.get(
+                location,
+                data=json.dumps({}),
+                headers=header,
+                verify=False,
             )
+            if reply.ok:
+                data_pdf = reply.content
+                pdf_file = open(fullname, 'wb')
+                pdf_file.write(data_pdf)
+                pdf_file.close()
+                _logger.warning('Save label to file: %s' % fullname)
+            else:
+                raise osv.except_osv(
+                    _('Errore etichetta:'),
+                    _('Il portale non ha restituito nessuna etichetta!'),
+                )
 
         # ---------------------------------------------------------------------
         # Print file:
