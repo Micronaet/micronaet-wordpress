@@ -109,7 +109,7 @@ class WordpressSaleOrder(orm.Model):
             ])
 
         # Print header
-        row = 0
+        row = 5
         header = [
             'Etich', 'Pronto', 'Spedito',
             'Marketplace', 'Prime',
@@ -122,7 +122,7 @@ class WordpressSaleOrder(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, header, default_format=excel_format['header'])
         excel_pool.autofilter(ws_name, row, 0, row, len(header) - 1)
-        excel_pool.freeze_panes(ws_name, 1, 7)
+        excel_pool.freeze_panes(ws_name, row + 1, 7)
 
         _logger.warning('Selected order: %s' % len(order_ids))
         for order in sorted(self.browse(
@@ -166,4 +166,25 @@ class WordpressSaleOrder(orm.Model):
                     order.carrier_state or '',
                 ], default_format=color_format['text'])
             excel_pool.row_height(ws_name, row, 36)
+
+        # Summary table:
+        row = 0
+        header = [
+            'Dettaglio', '', '',
+            'Ordini', 'Peso', 'Colli', 'Etichette'
+            ]
+        excel_pool.write_xls_line(
+            ws_name, row, header, default_format=excel_format['header'])
+
+        # todo loop:
+        row += 1
+        excel_pool.write_xls_line(
+            ws_name, row, ['Prime', '', '', ],
+            default_format=excel_format['text'])
+
+        row += 1
+        excel_pool.write_xls_line(
+            ws_name, row, ['Normali', '', '', ],
+            default_format=excel_format['text'])
+
         return excel_pool.return_attachment(cr, uid, 'web_product')
