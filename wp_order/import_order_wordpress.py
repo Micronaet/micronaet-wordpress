@@ -105,8 +105,6 @@ class WordpressSaleOrder(orm.Model):
                 _('Errore download'),
                 _('File non trovato per ordine: %s') % order.name,
             )
-        name_of_file = '/tmp/etichetta_%s.pdf' % order.name
-
         try:
             b64 = open(label_fullname, 'rb').read().encode('base64')
         except:
@@ -117,8 +115,8 @@ class WordpressSaleOrder(orm.Model):
                 )
 
         attachment_id = attachment_pool.create(cr, uid, {
-            'name': order.name,
-            'datas_fname': name_of_file,
+            'name': 'Etichetta ordine: %s' % order.name,
+            'datas_fname': 'Etichetta_Ordine_%s.pdf' % order.name,
             'type': 'binary',
             'datas': b64,
             'partner_id': 1,
