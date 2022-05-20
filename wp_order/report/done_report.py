@@ -203,7 +203,6 @@ class WordpressSaleOrder(orm.Model):
             ws_name, row, header, default_format=excel_format['header'])
         excel_pool.merge_cell(ws_name, [row, 0, row, 2])
 
-        pdb.set_trace()
         for mode in summary:
             if mode:
                 mode_text = mode
