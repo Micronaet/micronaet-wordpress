@@ -36,7 +36,7 @@
         'sale',
         'stock',
         'wp_connector',
-        'cups_printing',
+        # 'cups_printing',
         'connector_web_base',
         'order_destination',
         'force_as_corresponding',  # Unload material with corresponding pick
