@@ -105,7 +105,7 @@ class WordpressSaleOrder(orm.Model):
                 _('Errore download'),
                 _('File non trovato per ordine: %s') % order.name,
             )
-        name_of_file = '/tmp/etichetta_%s.xlsx' % order.name
+        name_of_file = '/tmp/etichetta_%s.pdf' % order.name
 
         try:
             b64 = open(label_fullname, 'rb').read().encode('base64')
