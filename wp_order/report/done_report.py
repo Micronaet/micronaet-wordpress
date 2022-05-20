@@ -212,10 +212,10 @@ class WordpressSaleOrder(orm.Model):
                 (mode_text, excel_format['black']['text']),
                 '',
                 '',
-                line['total'],
+                int(line['total']),
                 line['weight'],
-                line['parcel'],
-                line['label'],
+                int(line['parcel']),
+                int(line['label']),
             ]
             excel_pool.merge_cell(ws_name, [row, 0, row, 2])
             excel_pool.write_xls_line(
