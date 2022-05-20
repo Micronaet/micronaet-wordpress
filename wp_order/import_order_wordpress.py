@@ -44,6 +44,16 @@ class WordpressSaleOrder(orm.Model):
     _description = 'Wordpress order'
     _order = 'name desc'
 
+    def print_label(self, cr, uid, ids, context=None):
+        """ Extract label
+        """
+        order = self.browse(cr, uid, ids, context=context)
+        label_fullname = order.manual_label
+        if label_fullname:
+            return self.send_pdf_to_printer(
+                cr, uid, ids, order, label_fullname, context=context)
+        return False
+
     def delete_order_not_unloaded(self, cr, uid, ids, context=None):
         """ Delete order that is not closed with stock management
         """
@@ -1387,16 +1397,6 @@ class ConnectorServer(orm.Model):
         else:
             return self.send_report_to_cups_printer(
                 cr, uid, ids, fullname, printer_code, context=context)
-
-    def print_label(self, cr, uid, ids, context=None):
-        """ Extract label
-        """
-        order = self.browse(cr, uid, ids, context=context)
-        label_fullname = order.manual_label
-        if label_fullname:
-            return self.send_pdf_to_printer(
-                cr, uid, ids, order, label_fullname, context=context)
-        return False
 
     def sold_product_on_website(self, cr, uid, ids, context=None):
         """ Return sold product for default_code
