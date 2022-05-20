@@ -110,7 +110,7 @@ class WordpressSaleOrder(orm.Model):
             ])
 
         # Print header
-        row = 6
+        row = 4
         header = [
             'Etich', 'Pronto', 'Spedito',
             'Marketplace', 'Prime',
@@ -126,7 +126,11 @@ class WordpressSaleOrder(orm.Model):
         excel_pool.freeze_panes(ws_name, row + 1, 7)
 
         _logger.warning('Selected order: %s' % len(order_ids))
-        summary = {}
+        summary = {
+            'GPB': {},
+            'PRIME': {},
+            'normal': {},
+            }
         for order in sorted(self.browse(
                 cr, uid, order_ids, context=context),
                 key=lambda o: o.delivery_detail):
