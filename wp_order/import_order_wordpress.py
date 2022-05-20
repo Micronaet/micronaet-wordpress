@@ -58,10 +58,10 @@ class WordpressSaleOrder(orm.Model):
 
         printer_code = \
             order.courier_mode_id.cups_printer_id.code or \
-            order.courier_supplier_id.cups_printer_id.code or \
             order.carrier_mode_id.cups_printer_id.code or \
             order.carrier_supplier_id.cups_printer_id.code or \
             order.carrier_connection_id.cups_printer_id.code
+        # order.courier_supplier_id.cups_printer_id.code or # todo not present
 
         # Check if need to print or to save:
         company = user.company_id
