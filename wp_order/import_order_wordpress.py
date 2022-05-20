@@ -24,6 +24,7 @@ import os.path
 import sys
 import logging
 import telepot
+import shutil
 import pdb
 import time
 import json
@@ -1357,6 +1358,49 @@ class ConnectorServer(orm.Model):
             return excel_pool.return_attachment(cr, uid, 'wordpress_order')
 
     # Override function to get sold status
+    def send_pdf_to_printer(self, cr, uid, ids, order, fullname, context=None):
+        """ Procedure used from all print_label function for sent to printer
+            the PDF filename
+        """
+        # ---------------------------------------------------------------------
+        # Print file:
+        # ---------------------------------------------------------------------
+        filename = os.path.basename(fullname)
+        user = self.pool.get('res.users').browse(
+            cr, uid, uid, context=context)
+
+        printer_code = \
+            order.courier_mode_id.cups_printer_id.code or \
+            order.courier_supplier_id.cups_printer_id.code or \
+            order.carrier_mode_id.cups_printer_id.code or \
+            order.carrier_supplier_id.cups_printer_id.code or \
+            order.carrier_connection_id.cups_printer_id.code
+
+        # Check if need to print or to save:
+        company = user.company_id
+        if company.carrier_save_label:  # todo needed?
+            saved_path = os.path.join(
+                os.path.expanduser(company.carrier_save_label_path),
+                printer_code,
+            )
+            os.system('mkdir -p %s' % saved_path)  # Create path
+            saved_fullname = os.path.join(saved_path, filename)
+            shutil.copy(fullname, saved_fullname)
+            _logger.warning('Saved label in: %s' % saved_fullname)
+        else:
+            return self.send_report_to_cups_printer(
+                cr, uid, ids, fullname, printer_code, context=context)
+
+    def print_label(self, cr, uid, ids, context=None):
+        """ Extract label
+        """
+        order = self.browse(cr, uid, ids, context=context)
+        label_fullname = order.manual_label
+        if label_fullname:
+            return self.send_pdf_to_printer(
+                cr, uid, ids, order, label_fullname, context=context)
+        return False
+
     def sold_product_on_website(self, cr, uid, ids, context=None):
         """ Return sold product for default_code
             ids = connector used

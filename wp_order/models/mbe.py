@@ -502,27 +502,8 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
         # ---------------------------------------------------------------------
         # Print file:
         # ---------------------------------------------------------------------
-        printer_code = \
-            order.courier_mode_id.cups_printer_id.code or \
-            order.courier_supplier_id.cups_printer_id.code or \
-            order.carrier_mode_id.cups_printer_id.code or \
-            order.carrier_supplier_id.cups_printer_id.code or \
-            order.carrier_connection_id.cups_printer_id.code
-
-        # Check if need to print or to save:
-        company = user.company_id
-        if company.carrier_save_label:  # todo needed?
-            saved_path = os.path.join(
-                os.path.expanduser(company.carrier_save_label_path),
-                printer_code,
-            )
-            os.system('mkdir -p %s' % saved_path)  # Create path
-            saved_fullname = os.path.join(saved_path, filename)
-            shutil.copy(fullname, saved_fullname)
-            _logger.warning('Saved label in: %s' % saved_fullname)
-        else:
-            return self.send_report_to_cups_printer(
-                cr, uid, ids, fullname, printer_code, context=context)
+        return self.send_pdf_to_printer(
+            cr, uid, ids, order, fullname, context=context)
 
     def clean_text(self, text, cut=35):
         """ Return char in ASCII
