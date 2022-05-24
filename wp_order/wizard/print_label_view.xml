@@ -27,5 +27,11 @@
           <field name="target">new</field>
           <field name="view_id" ref="wordpress_sale_oder_print_label_wizard_view"/>
       </record>
+
+      <menuitem
+          id="menu_wordpress_sale_oder_print_label_wizard"
+          parent="carrier_root_menu"
+          action="action_wordpress_sale_oder_print_label_wizard"
+          sequence="15"/>
     </data>
 </openerp>
