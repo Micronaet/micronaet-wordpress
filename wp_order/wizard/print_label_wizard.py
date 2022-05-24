@@ -66,7 +66,7 @@ class WordpressSaleOderPrintLabelWizard(orm.TransientModel):
         today = str(datetime.now())[:10]
         order_ids = order_pool.search(cr, uid, [
             ('traking_date', '=', today),
-            ('label_printed', '=', False),
+            ('label_printed', '=', True),
             # ('manual_label', '!=', False),
         ], context=context)
         if not order_ids:
