@@ -81,9 +81,9 @@ class WordpressSaleOderPrintLabelWizard(orm.TransientModel):
             if not order.manual_label:  # Jump not manual label
                 continue
             order_id = order.id
-            _logger.info('Print order label: %s' % order.name)
             try:
-                order_pool.print_label(cr, uid, [order_id], context=context)
+                _logger.info('Print order label: %s' % order.name)
+                # order_pool.print_label(cr, uid, [order_id], context=context)
             except:
                 failed_ids.append(order_id)
 
