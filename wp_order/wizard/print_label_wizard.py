@@ -67,7 +67,7 @@ class WordpressSaleOderPrintLabelWizard(orm.TransientModel):
         order_ids = order_pool.search(cr, uid, [
             ('traking_date', '=', today),
             ('label_printed', '=', True),
-            # ('manual_label', '!=', False),
+            # todo remove: ('manual_label', '!=', False),
         ], context=context)
         if not order_ids:
             raise osv.except_osv(
@@ -77,7 +77,6 @@ class WordpressSaleOderPrintLabelWizard(orm.TransientModel):
             )
         failed_ids = []
         counter = 0
-        pdb.set_trace()
         for order in order_pool.browse(cr, uid, order_ids, context=context):
             order_name = order.name
             if order.delivery_mode != 'prime':  # Jump no prime order
@@ -91,7 +90,7 @@ class WordpressSaleOderPrintLabelWizard(orm.TransientModel):
             order_id = order.id
             try:
                 _logger.info('Print order label: %s' % order_name)
-                # order_pool.print_label(cr, uid, [order_id], context=context)
+                order_pool.print_label(cr, uid, [order_id], context=context)
                 counter += 1
             except:
                 failed_ids.append(order_id)
