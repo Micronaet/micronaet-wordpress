@@ -77,6 +77,7 @@ class WordpressSaleOderPrintLabelWizard(orm.TransientModel):
             )
         failed_ids = []
         counter = 0
+        pdb.set_trace()
         for order in order_pool.browse(cr, uid, order_ids, context=context):
             order_name = order.name
             if order.delivery_mode != 'prime':  # Jump no prime order
