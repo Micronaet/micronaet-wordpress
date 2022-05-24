@@ -23,6 +23,7 @@
 
 
 import os
+import pdb
 import sys
 import logging
 import openerp
@@ -58,6 +59,7 @@ class WordpressSaleOderPrintLabelWizard(orm.TransientModel):
             context = {}
 
         # Read parameter (todo not now)
+        pdb.set_trace()
         wizard = self.browse(cr, uid, ids, context=context)[0]
         only_prime = wizard.only_prime
         only_unprinted = wizard.only_unprinted
