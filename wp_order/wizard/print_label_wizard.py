@@ -74,16 +74,39 @@ class WordpressSaleOderPrintLabelWizard(orm.TransientModel):
                 _('Etichette Prime, non stampate, in consegna oggi '
                   'non presenti!'),
             )
+        failed_ids = []
         for order in order_pool.browse(cr, uid, order_ids, context=context):
             if order.delivery_mode != 'prime':  # Jump no prime order
                 continue
             if not order.manual_label:  # Jump not manual label
                 continue
+            order_id = order.id
             _logger.info('Print order label: %s' % order.name)
+            try:
+                order_pool.print_label(cr, uid, [order_id], context=context)
+            except:
+                failed_ids.append(order_id)
 
-        # todo return order error?
+        if not failed_ids:
+            return True
+
+        model_pool = self.pool.get('ir.model.data')
+        view_id = model_pool.get_object_reference(
+            cr, uid,
+            'wp_order', 'carrier_sale_order_tree')[1]
         return {
-            'type': 'ir.actions.act_window_close'
+            'type': 'ir.actions.act_window',
+            'name': 'Etichette non sampate',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_id': False,
+            'res_model': 'wordpress.sale.order',
+            'view_id': view_id,
+            'views': [(False, 'tree')],
+            'domain': [('id', 'in', failed_ids)],
+            'context': context,
+            'target': 'current',
+            'nodestroy': False,
             }
 
     _columns = {
