@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <!-- wordpress.sale.oder.print.label.wizard -->
+       <record id="wordpress_sale_oder_print_label_wizard_view" model="ir.ui.view">
+            <field name="name">Stampa etichette</field>
+            <field name="model">wordpress.sale.oder.print.label.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Wizard" version="7.0">
+                   <header>
+                       <button string="Annulla" special="cancel" />
+                       <button name="action_print" string="Stampa" type="object" icon="gtk-print" class="oe_highlight" />
+                   </header>
+                   <group colspan="4" col="4">
+                        <field name="only_prime" />
+                        <field name="only_unprinted" />
+                   </group>
+                </form>
+            </field>
+      </record>
+
+      <record model="ir.actions.act_window" id="action_wordpress_sale_oder_print_label_wizard">
+          <field name="name">Stampa etichette</field>
+          <field name="res_model">wordpress.sale.oder.print.label.wizard</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="target">new</field>
+          <field name="view_id" ref="wordpress_sale_oder_print_label_wizard_view"/>
+      </record>
+    </data>
+</openerp>
