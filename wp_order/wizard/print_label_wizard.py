@@ -57,13 +57,23 @@ class WordpressSaleOderPrintLabelWizard(orm.TransientModel):
         if context is None:
             context = {}
 
+        # Read parameter (todo not now)
         wizard = self.browse(cr, uid, ids, context=context)[0]
+        only_prime = wizard.only_prime
+        only_unprinted = wizard.only_unprinted
+
         today = str(datetime.now())[:10]
         order_ids = order_pool.search(cr, uid, [
             ('traking_date', '=', today),
             ('label_printed', '=', False),
             # ('manual_label', '!=', False),
         ], context=context)
+        if not order_ids:
+            raise osv.except_osv(
+                _('Errore'),
+                _('Etichette Prime, non stampate, in consegna oggi '
+                  'non presenti!'),
+            )
         for order in order_pool.browse(cr, uid, order_ids, context=context):
             if order.delivery_mode != 'prime':  # Jump no prime order
                 continue
