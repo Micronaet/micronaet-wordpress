@@ -77,17 +77,31 @@ class WordpressSaleOderPrintLabelWizard(orm.TransientModel):
                   'non presenti!'),
             )
         failed_ids = []
+        counter = 0
         for order in order_pool.browse(cr, uid, order_ids, context=context):
+            order_name = order.name
             if order.delivery_mode != 'prime':  # Jump no prime order
+                _logger.warning('Ordine non prime: %s' % order_name)
                 continue
             if not order.manual_label:  # Jump not manual label
+                _logger.warning('Ordine senza etichetta manuale: %s' %
+                                order_name)
                 continue
+
             order_id = order.id
             try:
-                _logger.info('Print order label: %s' % order.name)
+                _logger.info('Print order label: %s' % order_name)
                 # order_pool.print_label(cr, uid, [order_id], context=context)
+                counter += 1
             except:
                 failed_ids.append(order_id)
+
+        if not failed_ids and not counter:
+            raise osv.except_osv(
+                _('Errore'),
+                _('Non trovate Etichette Prime, non stampate, in consegna '
+                  'oggi'),
+            )
 
         if not failed_ids:
             return True
