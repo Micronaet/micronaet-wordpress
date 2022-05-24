@@ -96,11 +96,15 @@ class WordpressSaleOderPrintLabelWizard(orm.TransientModel):
                 failed_ids.append(order_id)
 
         if not failed_ids and not counter:
-            raise osv.except_osv(
-                _('Errore'),
-                _('Non trovate Etichette Prime, non stampate, in consegna '
-                  'oggi'),
-            )
+            return {
+                'type': 'ir.actions.act_window_close'
+            }
+            # Wont' raise
+            # raise osv.except_osv(
+            #    _('Errore'),
+            #    _('Non trovate Etichette Prime, non stampate, in consegna '
+            #      'oggi'),
+            # )
 
         if not failed_ids:
             return True
