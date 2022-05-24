@@ -20,7 +20,7 @@
       </record>
 
       <record model="ir.actions.act_window" id="action_wordpress_sale_oder_print_label_wizard">
-          <field name="name">Stampa etichette</field>
+          <field name="name">Procedura stampa etichette</field>
           <field name="res_model">wordpress.sale.oder.print.label.wizard</field>
           <field name="view_type">form</field>
           <field name="view_mode">form</field>
