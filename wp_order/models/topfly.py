@@ -88,7 +88,7 @@ class WordpressSaleOrderCarrierTop(orm.Model):
             tracking_id = order.carrier_track_id  # must exist
             if not tracking_id:
                 raise osv.except_osv(
-                    _('Errore Etichetta:'),
+                    _('Errore Etichetta TOPFLY:'),
                     _('Impossibile scaricare etichette se non è presente '
                       'il tracking ID!'),
                 )
