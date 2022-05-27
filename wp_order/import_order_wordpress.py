@@ -594,7 +594,7 @@ class WordpressSaleOrder(orm.Model):
             # json_order = json.loads(wp_order)
             # Amazon Prime:
             if ('Amazon Shipment: ' in wp_order and
-                ' Prime ' in wp_order):
+                ' Prime' in wp_order):
                 res[order.id] = 'prime'
             # Manual delivery:
             elif order.marketplace == 'WP' and not order.shipping_total:
