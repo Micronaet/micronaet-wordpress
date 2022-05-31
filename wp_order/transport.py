@@ -349,7 +349,7 @@ class ProductProductWebServer(orm.Model):
         res = {}
         for product in self.browse(cr, uid, ids, context=context):
             res[product.id] = max(
-                (product.web_H * product.web_W * product.web_L) / 2000.0,
+                (product.web_H * product.web_W * product.web_L) / 5000.0,
                 product.web_weight,
             )
         return res
