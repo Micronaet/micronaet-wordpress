@@ -46,6 +46,15 @@ _logger = logging.getLogger(__name__)
 
 vat_rate = 1.22
 
+lang_order = {
+    'it': 1,
+    'en': 2,
+    'fr': 3,
+    'ep': 4,
+    'pt': 5,
+    'de': 6,
+}
+
 
 class ConnectorCarrierShipping(orm.Model):
     """ Carrier shipping mode
@@ -603,10 +612,7 @@ class ProductPublicCategory(orm.Model):
         def lang_sort(lang):
             """ Setup lang order
             """
-            if 'it' in lang:
-                return 1
-            elif 'en' in lang:
-                return 2
+            return lang_order.get(lang, 100)
 
         # =====================================================================
         # Log operation on Excel file:
