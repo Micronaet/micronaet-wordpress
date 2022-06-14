@@ -174,6 +174,8 @@ else:
 
     mask = '%-3s%-10s%-20s%-10.2f%-10.2f\n'  # todo \r
     for order in orders:
+        if order.name == '84558':
+            pdb.set_trace()
         no_transport = order.carrier_supplier_id.no_transport
         marketplace = order.marketplace
         previous_ship = order.shipping_total
