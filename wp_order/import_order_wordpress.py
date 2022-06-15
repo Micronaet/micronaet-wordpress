@@ -343,7 +343,7 @@ class WordpressSaleOrder(orm.Model):
                 continue
         return True
 
-    def confirm_all_new_sale_order(self, cr, uid, order, context=None):
+    def generate_sale_order_post_action(self, cr, uid, order, context=None):
         """ Post action
         """
         try:
