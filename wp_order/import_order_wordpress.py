@@ -374,8 +374,8 @@ class WordpressSaleOrder(orm.Model):
             # todo put here telegram message!
             self.generate_sale_order(cr, uid, [order.id], context=None)
 
-            self.generate_sale_order_post_action(
-                cr, uid, order, context=context)
+            # self.generate_sale_order_post_action(
+            #     cr, uid, order, context=context)
         return True
 
     def generate_sale_order(self, cr, uid, ids, context=None):
