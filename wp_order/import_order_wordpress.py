@@ -346,21 +346,25 @@ class WordpressSaleOrder(orm.Model):
     def confirm_all_new_sale_order(self, cr, uid, order, context=None):
         """ Post action
         """
-        connection = order.connector_id
-        # For prime order load package and update carrier:
-        # Note only in DB where managed (send telegram message)
-        order_id = order.id
-        if connection.telegram_message and order.delivery_mode == 'prime':
-            _logger.warning(
-                'Update prime order with package and carrier: %s' % order.name)
+        try:
+            connection = order.connector_id
+            # For prime order load package and update carrier:
+            # Note only in DB where managed (send telegram message)
+            order_id = order.id
+            if connection.telegram_message and order.delivery_mode == 'prime':
+                _logger.warning(
+                    'Update prime order with package and carrier: %s' %
+                    order.name)
 
-            # Generate package list:
-            self.generate_parcel_from_order(
-                cr, uid, [order_id], context=context)
+                # Generate package list:
+                self.generate_parcel_from_order(
+                    cr, uid, [order_id], context=context)
 
-            # Assign amazon carrier:
-            self.choose_best_delivery_button(
-                cr, uid, [order_id], context=context)
+                # Assign amazon carrier:
+                self.choose_best_delivery_button(
+                    cr, uid, [order_id], context=context)
+        except:
+            _logger.error('Error updating package and carrier data')
         return True
 
     def confirm_all_new_sale_order(self, cr, uid, ids, context=None):
