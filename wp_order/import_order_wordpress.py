@@ -88,11 +88,12 @@ class WordpressSaleOrder(orm.Model):
 
         if label_fullname:
             # Multi parcel with one line!
-            parcels = len(order.parcel_ids)
-            if len(order.line_ids) == 1 and parcels > 1:
-                loop = parcels
-            else:
-                loop = 1
+            # parcels = len(order.parcel_ids)
+            # if len(order.line_ids) == 1 and parcels > 1:
+            #    loop = parcels
+            # else:
+            #    loop = 1
+            loop = 1  # Not managed for now
 
             return self.send_pdf_to_printer(
                 cr, uid, ids, order, label_fullname, loop=loop,
