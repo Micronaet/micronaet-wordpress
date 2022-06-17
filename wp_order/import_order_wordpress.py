@@ -1688,7 +1688,7 @@ class ConnectorServer(orm.Model):
                         billing['country'],
                     )
 
-                    partner_shipping = '%s %s %s >> %s %s, %s-%s [%s]' % (
+                    partner_shipping = '%s %s %s >> %s %s, %s-%s (%s) [%s]' % (
                         shipping['first_name'],
                         shipping['last_name'],
                         shipping['company'] or '/',
@@ -1697,6 +1697,7 @@ class ConnectorServer(orm.Model):
                         shipping['address_2'],
                         shipping['postcode'],
                         shipping['city'],
+                        shipping['state'],
                         shipping['country'],
                     )
 
