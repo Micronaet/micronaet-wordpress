@@ -156,10 +156,10 @@
             <field name="model">product.product.web.server</field>
             <field name="inherit_id" ref="connector_web_product.view_product_web_server_search"/>
             <field name="arch" type="xml">
-                <!--<field name="group_connector" position="after">
+                <field name="group_connector" position="after">
                      <filter name="group_brand" string="Brand" context="{'group_by': 'brand_id'}"/>
                      <filter name="group_color" string="Colore" context="{'group_by': 'wp_color_id'}"/>
-                </field>-->
+                </field>
                 <field name="product_id" position="after">
                     <field name="product_id" string="Codice" filter_domain="[('product_id.default_code','ilike',self)]"/>
                     <field name="brand_id" string="Brand" filter_domain="[('brand_id.name','ilike',self)]"/>
