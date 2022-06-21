@@ -228,6 +228,7 @@
                     <field name="published"/>
                     <field name="product_id" />
                     <field name="connector_id" />
+                    <field name="brand_id" />
                     <field name="wp_color_id" />
                     <field name="wp_type" />
                     <field name="wp_parent_code" />
