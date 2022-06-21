@@ -156,6 +156,10 @@
             <field name="model">product.product.web.server</field>
             <field name="inherit_id" ref="connector_web_product.view_product_web_server_search"/>
             <field name="arch" type="xml">
+                <field name="group_product" position="after">
+                     <filter name="group_brand" string="Brand" context="{'group_by': 'brand_id'}"/>
+                     <filter name="group_color" string="Colore" context="{'group_by': 'wp_color_id'}"/>
+                </field>
                 <field name="product_id" position="after">
                     <field name="product_id" string="Codice" filter_domain="[('product_id.default_code','ilike',self)]"/>
                     <field name="wp_it_id" string="WP ID (it)" />
@@ -170,6 +174,7 @@
 
                     <filter name="force_min_stock_management" string="Con soglia minima" domain="[('force_min_stock','&gt;',0)]"/>
                 </field>
+
             </field>
         </record>
 
@@ -692,7 +697,7 @@
             <field name="context">{'search_default_manual_stock_management': True}</field>
         </record>
 
-        <!-- OVERRIDED: -->
+        <!-- OVERRIDDEN: -->
         <record model="ir.actions.act_window" id="wp_connector.action_product_product_web_server_form">
             <field name="name">Product published</field>
             <field name="res_model">product.product.web.server</field>
