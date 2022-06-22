@@ -138,19 +138,19 @@ class ProductProductWebServerIntegration(orm.Model):
         # Print header
         row = 4
         header = [
-            'ID', 'Pubbl.', 'Marketplace',
+            u'ID', u'Pubbl.', u'Marketplace',
 
-            'Codice', 'Nome',
-            'E\' master', 'Padre',
-            'Brand',
+            u'Codice', u'Nome',
+            u'E\' master', u'Padre',
+            u'Brand',
 
-            '[Forzato (no IVA)]',
-            'Forzato (IVA)',
+            u'[Forzato (no IVA)]',
+            u'Forzato (IVA)',
 
-            '[Prezzo scontato (no IVA)]',
-            'Prezzo scontato (IVA)',
+            u'[Prezzo scontato (no IVA)]',
+            u'Prezzo scontato (IVA)',
 
-            '[Prezzo web (no IVA)]',
+            u'[Prezzo web (no IVA)]',
             ]
 
         excel_pool.write_xls_line(
@@ -194,7 +194,7 @@ class ProductProductWebServerIntegration(orm.Model):
             }
             row += 1
             excel_pool.write_xls_line(
-                ws_name, row, header, default_format=color)
+                ws_name, row, data, default_format=color)
 
         return excel_pool.return_attachment(cr, uid, 'web_product')
 
