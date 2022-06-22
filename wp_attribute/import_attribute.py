@@ -131,7 +131,7 @@ class ProductProductWebServerIntegration(orm.Model):
             5, 5, 15,
             15, 30,
             5, 15,
-            18,
+            18, 18,
             15, 15, 15,
             15,  # 15,
             15,
@@ -144,7 +144,7 @@ class ProductProductWebServerIntegration(orm.Model):
 
             u'Codice', u'Nome',
             u'E\' master', u'Padre',
-            u'Brand',
+            u'Brand', u'Colore',
 
             u'[Prezzo ODOO (no IVA)]',
             u'[Forzato (no IVA)]',
@@ -207,6 +207,7 @@ class ProductProductWebServerIntegration(orm.Model):
                 'X' if master else '',
                 parent.product_id.default_code or '',
                 web_product.brand_id.name or '',
+                web_product.wp_color_id.name or '',
 
                 product.lst_price or '',
                 web_product.force_price or '',
