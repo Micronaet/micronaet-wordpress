@@ -133,7 +133,7 @@ class ProductProductWebServerIntegration(orm.Model):
             5, 15,
             18,
             15, 15,
-            15, 15,
+            15, # 15,
             15,
             ])
 
@@ -149,8 +149,8 @@ class ProductProductWebServerIntegration(orm.Model):
             u'[Forzato (no IVA)]',
             u'Forzato (IVA)',
 
-            u'[Prezzo scontato (no IVA)]',
-            u'Prezzo scontato (IVA)',
+            u'[Prezzo scontato (IVA)]',
+            # u'Prezzo scontato (IVA)',
 
             u'[Prezzo web (no IVA)]',
             ]
@@ -212,7 +212,7 @@ class ProductProductWebServerIntegration(orm.Model):
                 web_product.force_vat_price or '',
 
                 web_product.force_discounted or '',
-                web_product.wp_web_discounted_net or '',
+                # web_product.wp_web_discounted_net or '',
 
                 price or '',
                 # web_product.wp_web_pricelist or '',
