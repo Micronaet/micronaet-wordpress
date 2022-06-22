@@ -92,7 +92,7 @@ class ProductProductWebServerIntegration(orm.Model):
             ('connector_id.wordpress', '=', True),
             ], context=context)
 
-        ws_name = 'Prezzi prodotti'
+        ws_name = u'Prezzi prodotti'
         excel_pool.create_worksheet(ws_name)
 
         # Load formats:
@@ -193,8 +193,9 @@ class ProductProductWebServerIntegration(orm.Model):
                 web_product.wp_web_pricelist or '',
             ]
             row += 1
-            #excel_pool.write_xls_line(
-            #    ws_name, row, data, default_format=color)
+            print(data)
+            excel_pool.write_xls_line(
+                ws_name, row, data, default_format=color)
             break
 
         return excel_pool.return_attachment(cr, uid, 'web_product')
