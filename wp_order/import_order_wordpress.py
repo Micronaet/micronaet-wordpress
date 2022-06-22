@@ -29,6 +29,7 @@ import pdb
 import time
 import json
 
+from pyPdf import PdfFileWriter, PdfFileReader
 from openerp.osv import fields, osv, expression, orm
 from datetime import datetime, timedelta
 from openerp.tools.translate import _
@@ -86,6 +87,40 @@ class WordpressSaleOrder(orm.Model):
         order = self.browse(cr, uid, ids, context=context)
         label_fullname = order.manual_label
 
+        # ---------------------------------------------------------------------
+        # Crop file before printing if courier request this operation:
+        # ---------------------------------------------------------------------
+        # todo need autofit parameters?
+        crop_mode = order.crop_mode
+        if label_fullname and crop_mode:
+            origin = label_fullname
+            destination = '/tmp/%s.pdf' % order.id
+
+            block = crop_mode.split('-')
+            if len(block) == 4:
+                output_pdf = PdfFileWriter()
+                input_pdf = PdfFileReader(file(origin, 'rb'))
+                page = input_pdf.getPage(0)
+
+                # page.mediaBox.lowerLeft = (30.0, 390.0)  # left >>, bottom ^^
+                # page.mediaBox.upperRight = (330.0, 815.0)  # right dx,
+                page.mediaBox.lowerLeft = (
+                    float(block[0].strip()),
+                    float(block[1].strip()),
+                )
+                page.mediaBox.upperRight = (
+                    float(block[2].strip()),
+                    float(block[3].strip()),
+                )
+                output_pdf.addPage(page)
+                outputStream = file(destination, 'wb')
+                output_pdf.write(outputStream)
+                outputStream.close()
+                label_fullname = destination  # Only if done correctly
+
+        # ---------------------------------------------------------------------
+        # Send to printer if present:
+        # ---------------------------------------------------------------------
         if label_fullname:
             # Multi parcel with one line!
             # parcels = len(order.parcel_ids)

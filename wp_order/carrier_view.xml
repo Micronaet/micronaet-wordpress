@@ -825,6 +825,7 @@
                                         <field name="account_ref" />
                                         <field name="accounting_ref" />
                                         <field name="prime" attrs="{'invisible': [('mode', '!=', 'courier')]}"/>
+                                        <field name="crop_mode" attrs="{'invisible': [('mode', '!=', 'courier')]}"/>
                                     </group>
                                 </page>
                             </notebook>

@@ -195,6 +195,10 @@ class CarrierSupplier(orm.Model):
     _columns = {
         'hidden': fields.boolean('Nascosto'),
         'prime': fields.boolean('Prime'),
+        'crop_mode': fields.char(
+            'Modalità Crop',
+            help='Indica che il corriere richiede un crop del PDF prima di '
+                 'stamparla, mettere il box tipo: 30.0-390.0-330.0-815.0'),
         'name': fields.char('Nome'),
         'accounting_ref': fields.char(
             'Codice contabile', size=10,
