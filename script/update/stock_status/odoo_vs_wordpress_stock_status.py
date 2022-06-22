@@ -221,7 +221,7 @@ for company in database:
                 price = web_product_pool.get_wp_price_external(variation.id)
                 sale_price = u'%s' % (
                         (variation.force_discounted / vat_rate) or '')
-                # TODO Always 0:
+                # todo Always 0:
                 # sale_price = variation.wp_web_discounted_net or ''
 
                 # -------------------------------------------------------------
