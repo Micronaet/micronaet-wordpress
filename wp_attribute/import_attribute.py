@@ -174,15 +174,15 @@ class ProductProductWebServerIntegration(orm.Model):
             else:
                 color = excel_format['black']
 
-            data = {
+            data = [
                 web_product.id,
-                #'X' if published else '',
-                #web_product.connector_id.name or '',
-                #product.default_code or '',
-                #product.name or '',
-                #'X' if web_product.wp_parent_template else '',
-                #parent.product_id.default_code or '',
-                # web_product.brand_id.name or '',
+                'X' if published else '',
+                web_product.connector_id.name or '',
+                product.default_code or '',
+                product.name or '',
+                'X' if web_product.wp_parent_template else '',
+                parent.product_id.default_code or '',
+                web_product.brand_id.name or '',
 
                 web_product.force_price or '',
                 web_product.force_vat_price or '',
@@ -191,7 +191,7 @@ class ProductProductWebServerIntegration(orm.Model):
                 web_product.wp_web_discounted_net or '',
 
                 web_product.wp_web_pricelist or '',
-            }
+            ]
             row += 1
             excel_pool.write_xls_line(
                 ws_name, row, data, default_format=color)
