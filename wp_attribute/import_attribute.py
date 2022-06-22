@@ -84,6 +84,7 @@ class ProductProductWebServerIntegration(orm.Model):
         """
         # Pool used:
         excel_pool = self.pool.get('excel.writer')
+        connector_pool = self.pool.get('product.product.web.server')
 
         # ---------------------------------------------------------------------
         #                         Excel report:
@@ -183,6 +184,9 @@ class ProductProductWebServerIntegration(orm.Model):
             published = web_product.published
             parent = web_product.wp_parent_id
             master = web_product.wp_parent_template
+
+            price = connector_pool.get_wp_price(web_product)
+
 
             # Color:
             if not published:

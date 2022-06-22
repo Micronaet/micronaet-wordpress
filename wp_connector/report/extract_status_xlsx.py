@@ -83,7 +83,9 @@ class ConnectorServer(orm.Model):
                             )
             return res
 
+        # Parameters:
         stock_status = True
+        bullet_col = 39
 
         # Pool used:
         excel_pool = self.pool.get('excel.writer')
@@ -159,7 +161,10 @@ class ConnectorServer(orm.Model):
             'Mod. imb.', 'Imballo', 'Dimensioni prodotto', 'Vol.',
             'Garanzia',
             'Tipo WP', 'Master', 'Padre',
-            'WPID it.', 'WPID en.', 'WPID es.', 'WPID fr.', 'WPID de.', 'WPID pt.',
+
+            'WPID it.', 'WPID en.', 'WPID es.', 'WPID fr.', 'WPID de.',
+            'WPID pt.',
+
             'Bullet 1', '(Bullet 1)', 'Bullet 2', '(Bullet 2)',
             'Bullet 3', '(Bullet 3)', 'Bullet 4', '(Bullet 4)',
             'Bullet 5', '(Bullet 5)',
@@ -319,7 +324,8 @@ class ConnectorServer(orm.Model):
 
         ctx = context.copy()
         ctx['lang'] = 'en_US'
-        # TODO use line loop (for force name!!!)
+        # todo use line loop (for force name!!!)
+
         for line in connector_pool.browse(
                 cr, uid, line_ids, context=ctx):
             product = line.product_id
@@ -345,19 +351,19 @@ class ConnectorServer(orm.Model):
             # Bullet point:
             excel_pool.write_xls_line(
                 ws_name, row, [line.bullet_point_1 or ''],
-                default_format=color_format['text'], col=32)
+                default_format=color_format['text'], col=bullet_col)
             excel_pool.write_xls_line(
                 ws_name, row, [line.bullet_point_2 or ''],
-                default_format=color_format['text'], col=34)
+                default_format=color_format['text'], col=bullet_col + 2)
             excel_pool.write_xls_line(
                 ws_name, row, [line.bullet_point_3 or ''],
-                default_format=color_format['text'], col=36)
+                default_format=color_format['text'], col=bullet_col + 4)
             excel_pool.write_xls_line(
                 ws_name, row, [line.bullet_point_4 or ''],
-                default_format=color_format['text'], col=38)
+                default_format=color_format['text'], col=bullet_col + 6)
             excel_pool.write_xls_line(
                 ws_name, row, [line.bullet_point_5 or ''],
-                default_format=color_format['text'], col=40)
+                default_format=color_format['text'], col=bullet_col + 8)
 
         # ---------------------------------------------------------------------
         # Web Schema
