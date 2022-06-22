@@ -146,7 +146,7 @@ class ProductProductWebServerIntegration(orm.Model):
             u'E\' master', u'Padre',
             u'Brand',
 
-            u'[Prezzo ODOO (no IVA)]'
+            u'[Prezzo ODOO (no IVA)]',
             u'[Forzato (no IVA)]',
             u'Forzato (IVA)',
 
