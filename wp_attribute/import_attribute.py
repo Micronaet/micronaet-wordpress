@@ -214,7 +214,8 @@ class ProductProductWebServerIntegration(orm.Model):
                 web_product.force_discounted or '',
                 web_product.wp_web_discounted_net or '',
 
-                web_product.wp_web_pricelist or '',
+                price or '',
+                # web_product.wp_web_pricelist or '',
             ]
             row += 1
             excel_pool.write_xls_line(
