@@ -98,7 +98,8 @@ class WordpressSaleOrder(orm.Model):
 
             block = crop_mode.split('-')
             if len(block) == 4:
-                _logger.warning('Crop mode label: %s >> %s' % (origin, destination))
+                _logger.warning('Crop mode label: %s >> %s' % (
+                    origin, destination))
                 output_pdf = PdfFileWriter()
                 input_pdf = PdfFileReader(file(origin, 'rb'))
                 page = input_pdf.getPage(0)
