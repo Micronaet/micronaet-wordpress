@@ -132,8 +132,8 @@ class ProductProductWebServerIntegration(orm.Model):
             15, 30,
             5, 15,
             18,
-            15, 15,
-            15, # 15,
+            15, 15, 15,
+            15,  # 15,
             15,
             ])
 
@@ -146,6 +146,7 @@ class ProductProductWebServerIntegration(orm.Model):
             u'E\' master', u'Padre',
             u'Brand',
 
+            u'[Prezzo ODOO (no IVA)]'
             u'[Forzato (no IVA)]',
             u'Forzato (IVA)',
 
@@ -187,7 +188,6 @@ class ProductProductWebServerIntegration(orm.Model):
 
             price = connector_pool.get_wp_price(web_product)
 
-
             # Color:
             if not published:
                 color = excel_format['grey']
@@ -208,6 +208,7 @@ class ProductProductWebServerIntegration(orm.Model):
                 parent.product_id.default_code or '',
                 web_product.brand_id.name or '',
 
+                product.lst_price or '',
                 web_product.force_price or '',
                 web_product.force_vat_price or '',
 
