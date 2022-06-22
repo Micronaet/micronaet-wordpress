@@ -79,6 +79,125 @@ class ProductProductWebServerIntegration(orm.Model):
     # -------------------------------------------------------------------------
     # Button event:
     # -------------------------------------------------------------------------
+    def export_web_price_status(self, cr, uid, ids, context=None):
+        """ Export price status for updating
+        """
+        # Pool used:
+        excel_pool = self.pool.get('excel.writer')
+
+        # ---------------------------------------------------------------------
+        #                         Excel report:
+        # ---------------------------------------------------------------------
+        product_ids = self.search(cr, uid, [
+            ('connector_id.wordpress', '=', True),
+            ], context=context)
+
+        ws_name = 'Prezzi prodotti'
+        excel_pool.create_worksheet(ws_name)
+
+        # Load formats:
+        excel_format = {
+            'title': excel_pool.get_format('title'),
+            'header': excel_pool.get_format('header'),
+            'black': {
+                'text': excel_pool.get_format('text'),
+                'number': excel_pool.get_format('number'),
+                },
+            'red': {
+                'text': excel_pool.get_format('bg_red'),
+                'number': excel_pool.get_format('bg_red_number'),
+                },
+            'yellow': {
+                'text': excel_pool.get_format('bg_yellow'),
+                'number': excel_pool.get_format('bg_yellow_number'),
+                },
+            'green': {
+                'text': excel_pool.get_format('bg_green'),
+                'number': excel_pool.get_format('bg_green_number'),
+                },
+            'grey': {
+                'text': excel_pool.get_format('bg_grey'),
+                'number': excel_pool.get_format('bg_grey_number'),
+                },
+            }
+
+        # ---------------------------------------------------------------------
+        # Published product:
+        # ---------------------------------------------------------------------
+        # Width
+        excel_pool.column_width(ws_name, [
+            5, 5, 15,
+            15, 30,
+            5, 15,
+            18,
+            10, 10,
+            10, 10,
+            10,
+            ])
+
+        # Print header
+        row = 4
+        header = [
+            'ID', 'Pubbl.', 'Marketplace',
+
+            'Codice', 'Nome',
+            'E\' master', 'Padre',
+            'Brand',
+
+            '[Forzato (no IVA)]',
+            'Forzato (IVA)',
+
+            '[Prezzo scontato (no IVA)]',
+            'Prezzo scontato (IVA)',
+
+            '[Prezzo web (no IVA)]',
+            ]
+
+        excel_pool.write_xls_line(
+            ws_name, row, header, default_format=excel_format['header'])
+        excel_pool.autofilter(ws_name, row, 0, row, len(header) - 1)
+        excel_pool.freeze_panes(ws_name, row + 1, 3)
+
+        _logger.warning('Selected product: %s' % len(product_ids))
+
+        for web_product in self.browse(
+                cr, uid, ids, product_ids, context=context):
+            product = web_product.product_id
+            published = web_product.published
+            parent = web_product.wp_parent_id
+
+            # Color:
+            if published:
+                color = excel_format['grey']
+            elif not parent:
+                color = excel_format['red']
+            else:
+                color = excel_format['black']
+
+            data = {
+                web_product.id,
+                'X' if published else '',
+                web_product.connector_id.name or '',
+                product.default_code or '',
+                product.name or '',
+                'X' if web_product.wp_parent_template else '',
+                parent.product_id.default_code or '',
+                web_product.brand_id.name or '',
+
+                web_product.force_price or '',
+                web_product.force_vat_price or '',
+
+                web_product.force_discounted or '',
+                web_product.wp_web_discounted_net or '',
+
+                web_product.wp_web_pricelist or '',
+            }
+            row += 1
+            excel_pool.write_xls_line(
+                ws_name, row, header, default_format=color)
+
+        return excel_pool.return_attachment(cr, uid, 'web_product')
+
     def open_permalink(self, cr, uid, ids, context=None):
         """ Return URL
         """
