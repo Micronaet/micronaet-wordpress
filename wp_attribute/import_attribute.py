@@ -90,6 +90,7 @@ class ProductProductWebServerIntegration(orm.Model):
         # ---------------------------------------------------------------------
         product_ids = self.search(cr, uid, [
             ('connector_id.wordpress', '=', True),
+            # ('wp_parent_template', '!=', False),
             ], context=context)
 
         ws_name = u'Prezzi prodotti'
@@ -156,21 +157,30 @@ class ProductProductWebServerIntegration(orm.Model):
         excel_pool.write_xls_line(
             ws_name, row, header, default_format=excel_format['header'])
         excel_pool.autofilter(ws_name, row, 0, row, len(header) - 1)
-        excel_pool.freeze_panes(ws_name, row + 1, 3)
+        excel_pool.freeze_panes(ws_name, row + 1, 4)
 
         _logger.warning('Selected product: %s' % len(product_ids))
 
-        for web_product in self.browse(
-                cr, uid, product_ids, context=context):
+        for web_product in sorted(
+                self.browse(cr, uid, product_ids, context=context),
+                key=lambda wp: (
+                        '' if wp.wp_parent_template else
+                        wp.wp_parent_template.product_id.default_code,
+                        wp.product_id.default_code,
+                        ),
+                ):
             product = web_product.product_id
             published = web_product.published
             parent = web_product.wp_parent_id
+            master = web_product.wp_parent_template
 
             # Color:
-            if published:
+            if not published:
                 color = excel_format['grey']
             elif not parent:
                 color = excel_format['red']
+            elif master:
+                color = excel_format['green']
             else:
                 color = excel_format['black']
 
@@ -180,7 +190,7 @@ class ProductProductWebServerIntegration(orm.Model):
                 web_product.connector_id.name or '',
                 product.default_code or '',
                 product.name or '',
-                'X' if web_product.wp_parent_template else '',
+                'X' if master else '',
                 parent.product_id.default_code or '',
                 web_product.brand_id.name or '',
 
