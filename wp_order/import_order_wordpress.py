@@ -91,7 +91,7 @@ class WordpressSaleOrder(orm.Model):
         # Crop file before printing if courier request this operation:
         # ---------------------------------------------------------------------
         # todo need autofit parameters?
-        crop_mode = order.crop_mode
+        crop_mode = order.courier_supplier_id.crop_mode
         if label_fullname and crop_mode:
             origin = label_fullname
             destination = '/tmp/%s.pdf' % order.id
