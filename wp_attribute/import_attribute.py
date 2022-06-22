@@ -153,8 +153,8 @@ class ProductProductWebServerIntegration(orm.Model):
             u'[Prezzo web (no IVA)]',
             ]
 
-        #excel_pool.write_xls_line(
-        #    ws_name, row, header, default_format=excel_format['header'])
+        excel_pool.write_xls_line(
+            ws_name, row, header, default_format=excel_format['header'])
         excel_pool.autofilter(ws_name, row, 0, row, len(header) - 1)
         excel_pool.freeze_panes(ws_name, row + 1, 3)
 
@@ -193,10 +193,8 @@ class ProductProductWebServerIntegration(orm.Model):
                 web_product.wp_web_pricelist or '',
             ]
             row += 1
-            print(data)
             excel_pool.write_xls_line(
-                ws_name, row, data, default_format=color)
-            break
+                ws_name, row, data, default_format=color['text'])
 
         return excel_pool.return_attachment(cr, uid, 'web_product')
 
