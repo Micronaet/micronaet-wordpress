@@ -161,7 +161,7 @@ class ProductProductWebServerIntegration(orm.Model):
         _logger.warning('Selected product: %s' % len(product_ids))
 
         for web_product in self.browse(
-                cr, uid, ids, product_ids, context=context):
+                cr, uid, product_ids, context=context):
             product = web_product.product_id
             published = web_product.published
             parent = web_product.wp_parent_id
