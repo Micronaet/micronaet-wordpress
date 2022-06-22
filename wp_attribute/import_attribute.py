@@ -90,7 +90,7 @@ class ProductProductWebServerIntegration(orm.Model):
         # ---------------------------------------------------------------------
         product_ids = self.search(cr, uid, [
             ('connector_id.wordpress', '=', True),
-            # ('wp_parent_template', '!=', False),
+            # ('wp_parent_id', '!=', False),
             ], context=context)
 
         ws_name = u'Prezzi prodotti'
@@ -131,9 +131,9 @@ class ProductProductWebServerIntegration(orm.Model):
             15, 30,
             5, 15,
             18,
-            10, 10,
-            10, 10,
-            10,
+            15, 15,
+            15, 15,
+            15,
             ])
 
         # Print header
@@ -164,8 +164,18 @@ class ProductProductWebServerIntegration(orm.Model):
         for web_product in sorted(
                 self.browse(cr, uid, product_ids, context=context),
                 key=lambda wp: (
-                        '' if wp.wp_parent_template else
-                        wp.wp_parent_template.product_id.default_code,
+                        # Check parent:
+                        '' if not wp.wp_parent_id else
+                        wp.wp_parent_id.product_id.default_code,
+
+                        # Child master:
+                        0 if wp.product_id.default_code ==
+                             wp.wp_parent_id.product_id.default_code else 1,
+
+                        # Code parent:
+                        wp.wp_parent_id.product_id.default_code,
+
+                        # Code child:
                         wp.product_id.default_code,
                         ),
                 ):
