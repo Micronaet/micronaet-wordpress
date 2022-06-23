@@ -131,7 +131,7 @@ class ProductProductWebServerIntegration(orm.Model):
             5, 5, 15,
             15, 30,
             5, 15,
-            18, 18,
+            18, 18, 10,
             15, 15, 15,
             15,  # 15,
             15,
@@ -144,7 +144,7 @@ class ProductProductWebServerIntegration(orm.Model):
 
             u'Codice', u'Nome',
             u'E\' master', u'Padre',
-            u'Brand', u'Colore',
+            u'Brand', u'Colore', u'Magazzino',
 
             u'[Prezzo ODOO (no IVA)]',
             u'[Forzato (no IVA)]',
@@ -188,6 +188,14 @@ class ProductProductWebServerIntegration(orm.Model):
 
             price = connector_pool.get_wp_price(web_product)
 
+            # Stock:
+            stock_qty, stock_comment = \
+                connector_pool.get_existence_for_product(
+                    cr, uid, web_product, context=context)
+            multiplier = web_product.price_multi or 1
+            if multiplier > 1:
+                stock_qty = stock_qty // multiplier
+
             # Color:
             if not published:
                 color = excel_format['grey']
@@ -208,6 +216,7 @@ class ProductProductWebServerIntegration(orm.Model):
                 parent.product_id.default_code or '',
                 web_product.brand_id.name or '',
                 web_product.wp_color_id.name or '',
+                stock_qty or '',
 
                 product.lst_price or '',
                 web_product.force_price or '',
