@@ -303,7 +303,10 @@ if not mailer_ids:
     print('[ERR] No mail server configured in ODOO')
     sys.exit()
 
-odoo_mailer = mailer.browse(mailer_ids)[0]
+odoo_mailer = sorted(
+    mailer.browse(mailer_ids),
+    key=lambda x: x.sequence,
+    )[0]
 
 # Open connection:
 print('[INFO] Sending using "%s" connection [%s:%s]' % (
