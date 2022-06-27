@@ -542,6 +542,7 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
         # -----------------------------------------------------------------
         # HTML insert call:
         # -----------------------------------------------------------------
+        pdb.set_trace()
         data = order.get_request_container(
             customer=False, system=True, connection=carrier_connection)
         data.update({
@@ -551,7 +552,6 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
                 cr, uid, ids, context=context),
             })
 
-        pdb.set_trace()
         result_data = self.html_post(
             cr, uid, ids,
             carrier_connection, 'ShipmentRequest', data, undo_error=True,
