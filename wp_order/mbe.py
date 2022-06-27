@@ -176,6 +176,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         if not text:
             return ''
         res = ''
+        pdb.set_trace()
         for c in text:
             if c in replace_list:
                 res += replace_list[c]
@@ -340,7 +341,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         city = self.clean_ascii_text(
             order.force_shipping_city or shipping.get('city', ''))
-        pdb.set_trace()
         data = {
             'DestinationInfo': {
                 'ZipCode':  # 12
