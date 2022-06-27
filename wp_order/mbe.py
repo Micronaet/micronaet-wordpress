@@ -433,7 +433,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         address = self.clean_ascii_text(
             order.force_shipping_address1 or shipping['address_1'])
         address2 = self.clean_ascii_text(
-            order.force_shipping_address2 or shipping['address_2'])
+            order.force_shipping_address2 or address2)
         city = self.clean_ascii_text(
             order.force_shipping_city or shipping['city'])
         data = {
@@ -457,7 +457,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             'SubzoneId': '',  # integer
             'SubzoneDesc': '',
         }
-        _logger.info(data)
         return data
 
     def get_shipment_container(self, cr, uid, ids, context=None):
