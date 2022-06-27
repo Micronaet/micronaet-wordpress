@@ -667,7 +667,6 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
             context=context,
         )
         data['ShippingParameters'] = order.get_shipment_parameters_container()
-        pdb.set_trace()
         result_data = self.html_post(
             cr, uid, ids, carrier_connection, 'ShippingOptionsRequest', data,
             undo_error=False, context=context)  # todo True
