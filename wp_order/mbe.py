@@ -162,7 +162,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     # Utility:
     # -------------------------------------------------------------------------
     def clean_ascii_text(self, text):
-        """ Replace accent
+        """ Replace not ASCII char
         """
         replace_list = {
             u'è': 'e\'',
@@ -174,7 +174,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             u'č': 'c',
             u'ć': 'c',
             u'ž': 'z',
-        }
+            }
         if not text:
             return ''
         res = ''
