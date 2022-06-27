@@ -176,7 +176,6 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         if not text:
             return ''
         res = ''
-        pdb.set_trace()
         for c in text:
             if c in replace_list:
                 res += replace_list[c]
