@@ -166,12 +166,12 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         """ Replace accent
         """
         replace_list = {
-            'è': 'e\'',
-            'é': 'e\'',
-            'ò': 'o\'',
-            'à': 'a\'',
-            'ì': 'i\'',
-            'ù': 'u\'',
+            u'è': 'e\'',
+            u'é': 'e\'',
+            u'ò': 'o\'',
+            u'à': 'a\'',
+            u'ì': 'i\'',
+            u'ù': 'u\'',
         }
         if not text:
             return ''
