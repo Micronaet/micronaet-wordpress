@@ -152,6 +152,7 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
           </ws:%s>
          </soapenv:Body>
         </soapenv:Envelope>''' % (request, reply, request)
+        pdb.set_trace()
         result = result.replace('\n', '').replace('\t', '    ')
         return str(result)
 
