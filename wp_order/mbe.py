@@ -162,6 +162,28 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
     # -------------------------------------------------------------------------
     # Utility:
     # -------------------------------------------------------------------------
+    def clean_ascii_text(self, text):
+        """ Replace accent
+        """
+        replace_list = {
+            'è': 'e\'',
+            'é': 'e\'',
+            'ò': 'o\'',
+            'à': 'a\'',
+            'ì': 'i\'',
+            'ù': 'u\'',
+        }
+        if not text:
+            return ''
+        res = ''
+        for c in text:
+            if c in replace_list:
+                res += replace_list[c]
+            else:
+                res += c
+        return res
+
+
     def get_folder_root_path(
             self, cr, mode, root_path=None):
         """
@@ -321,7 +343,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
                 'ZipCode':  # 12
                     order.force_shipping_zip or shipping.get('postcode', ''),
                 'City':  # * 50
-                    order.force_shipping_city or shipping.get('city', ''),
+                    self.clean_ascii_text(
+                        order.force_shipping_city or shipping.get('city', '')),
                 'State':  # * 2
                     order.force_shipping_state or shipping.get('state', ''),
                 'Country':  # 2
