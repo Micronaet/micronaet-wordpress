@@ -345,14 +345,13 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         data = {
             'DestinationInfo': {
                 'ZipCode':  # 12
-                    order.force_shipping_zip or shipping.get('postcode', ''),
+                order.force_shipping_zip or shipping.get('postcode', ''),
                 'City':  # * 50
-                    city,
+                city,
                 'State':  # * 2
-                    order.force_shipping_state or shipping.get('state', ''),
+                order.force_shipping_state or shipping.get('state', ''),
                 'Country':  # 2
-                    order.force_shipping_country or
-                    shipping.get('country', ''),
+                order.force_shipping_country or shipping.get('country', ''),
                 'idSubzone': '',  # * int
                 },
 
@@ -426,7 +425,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             #     partner.write({'street2': note})
             address2 = note
 
-        name = '%s %s' % (shipping['first_name'], shipping['last_name'])
+        name = self.clean_ascii_text(
+            '%s %s' % (shipping['first_name'], shipping['last_name']))
         address = self.clean_ascii_text(
             order.force_shipping_address1 or shipping['address_1'])
         address2 = self.clean_ascii_text(
@@ -481,7 +481,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             'LabelFormat': 'NEW',  # * token (OLD, NEW)
             'Items': order.get_items_parcel_block(),
 
-            # TODO Option not used for now:
+            # todo Option not used for now:
             'Insurance': False,  # boolean
             'COD': False,  # boolean
             # 'CODValue': '',  # * decimal
