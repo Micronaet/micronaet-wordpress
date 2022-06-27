@@ -374,6 +374,7 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
         assert len(ids) == 1, 'Un\'ordine alla volta'
 
         header = {'Content-Type': 'text/xml'}
+        pdb.set_trace()
         payload = self.get_envelope(endpoint, data)
         location = carrier_connection.location
         if verbose:
@@ -542,7 +543,6 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
         # -----------------------------------------------------------------
         # HTML insert call:
         # -----------------------------------------------------------------
-        pdb.set_trace()
         data = order.get_request_container(
             customer=False, system=True, connection=carrier_connection)
         data.update({
