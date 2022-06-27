@@ -425,25 +425,26 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             address2 = note
 
         name = '%s %s' % (shipping['first_name'], shipping['last_name'])
+        address = self.clean_ascii_text(
+            order.force_shipping_address1 or shipping['address_1'])
+        address2 = self.clean_ascii_text(
+            order.force_shipping_address2 or shipping['address_2'])
+        city = self.clean_ascii_text(
+            order.force_shipping_city or shipping['city'])
         return {
             'Name': self.clean_charset(name[:35]),
             'CompanyName': self.clean_charset(
                 (shipping['company'] or name)[:35]),
             'Nickname': ''[:100],
             'Address':
-                self.clean_charset(
-                    order.force_shipping_address1 or
-                    shipping['address_1'][:100]),
+                self.clean_charset(address[:100]),
             'Address2':
-                self.clean_charset(
-                    order.force_shipping_address2 or
-                    shipping['address_2'][:35]),
+                self.clean_charset(address2[:35]),
             'Address3': ''[:35],  # self.clean_charset(
             'Phone': billing['phone'][:50],
             'ZipCode':
                 (order.force_shipping_zip or shipping['postcode'])[:12],
-            'City':
-                (order.force_shipping_city or shipping['city'])[:50],
+            'City': city[:50],
             'State':
                 (order.force_shipping_state or shipping['state'])[:2],
             'Country':
