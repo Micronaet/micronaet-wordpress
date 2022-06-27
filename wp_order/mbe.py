@@ -22,7 +22,6 @@
 ###############################################################################
 
 import os
-import sys
 import re
 import logging
 import pdb
@@ -342,6 +341,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         city = self.clean_ascii_text(
             order.force_shipping_city or shipping.get('city', ''))
+        pdb.set_trace()
         data = {
             'DestinationInfo': {
                 'ZipCode':  # 12
