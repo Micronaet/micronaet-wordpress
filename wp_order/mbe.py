@@ -338,13 +338,15 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
         wp_record = eval(order.wp_record)
         shipping = wp_record.get('shipping', {})
 
+        city = self.clean_ascii_text(
+            order.force_shipping_city or shipping.get('city', ''))
+        pdb.set_trace()
         data = {
             'DestinationInfo': {
                 'ZipCode':  # 12
                     order.force_shipping_zip or shipping.get('postcode', ''),
                 'City':  # * 50
-                    self.clean_ascii_text(
-                        order.force_shipping_city or shipping.get('city', '')),
+                    city,
                 'State':  # * 2
                     order.force_shipping_state or shipping.get('state', ''),
                 'Country':  # 2
