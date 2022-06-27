@@ -425,6 +425,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             #     partner.write({'street2': note})
             address2 = note
 
+        pdb.set_trace()
         name = self.clean_ascii_text(
             '%s %s' % (shipping['first_name'], shipping['last_name']))
         company = self.clean_ascii_text(shipping['company'] or name)
