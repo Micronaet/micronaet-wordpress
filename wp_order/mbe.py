@@ -427,6 +427,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
 
         name = self.clean_ascii_text(
             '%s %s' % (shipping['first_name'], shipping['last_name']))
+        company = self.clean_ascii_text(shipping['company'] or name)
+
         address = self.clean_ascii_text(
             order.force_shipping_address1 or shipping['address_1'])
         address2 = self.clean_ascii_text(
@@ -435,8 +437,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             order.force_shipping_city or shipping['city'])
         return {
             'Name': self.clean_charset(name[:35]),
-            'CompanyName': self.clean_charset(
-                (shipping['company'] or name)[:35]),
+            'CompanyName': self.clean_charset(company[:35]),
             'Nickname': ''[:100],
             'Address':
                 self.clean_charset(address[:100]),
