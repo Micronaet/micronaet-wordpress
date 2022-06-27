@@ -674,5 +674,6 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
 
         # if not error:
         # Update data for real call
+        pdb.set_trace()
         self.update_with_quotation(cr, uid, ids, reply_list, context=context)
         return error
