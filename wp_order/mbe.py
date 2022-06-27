@@ -172,6 +172,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             u'à': 'a\'',
             u'ì': 'i\'',
             u'ù': 'u\'',
+            u'č': 'c',
+            u'ć': 'c',
         }
         if not text:
             return ''
