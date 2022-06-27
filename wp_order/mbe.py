@@ -435,7 +435,7 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             order.force_shipping_address2 or shipping['address_2'])
         city = self.clean_ascii_text(
             order.force_shipping_city or shipping['city'])
-        return {
+        data = {
             'Name': self.clean_charset(name[:35]),
             'CompanyName': self.clean_charset(company[:35]),
             'Nickname': ''[:100],
@@ -456,6 +456,8 @@ class WordpressSaleOrderRelationCarrier(orm.Model):
             'SubzoneId': '',  # integer
             'SubzoneDesc': '',
         }
+        _logger.info(data)
+        return data
 
     def get_shipment_container(self, cr, uid, ids, context=None):
         """ Return dict for order shipment
