@@ -31,7 +31,7 @@ update = {
 option_log = 'Start options:'
 for option in update:
     option_log += '\n%s: %s' % (option, update[option])
-print option_log
+print(option_log)
 
 pools = {}
 for company in company_list:
@@ -175,8 +175,8 @@ for company in company_list:
             if need_update:
                 call = 'products/%s' % wp_id
                 reply = wcapi.put(call, data).json()
-                print 'Company: %s [%s] wcapi.put(%s, %s)' % (
-                    company, lang, call, data)
+                print('Company: %s [%s] wcapi.put(%s, %s)' % (
+                    company, lang, call, data))
 
             # -----------------------------------------------------------------
             # Slave image:
@@ -217,13 +217,13 @@ for company in company_list:
                                 break # Only one image in variant!
 
                         if not variation_update:
-                            print '  Variation no image in %s [%s] %s' % (
-                                variation_sku, variation_lang, data)
+                            print('  Variation no image in %s [%s] %s' % (
+                                variation_sku, variation_lang, data))
                             continue
 
                         reply = wcapi.put('products/%s/variations/%s' % (
                             wp_id, variation_id), data).json()
-                        print '  Variation update image in %s [%s] %s' % (
-                            variation_sku, variation_lang, data)
-                        break # no other company
+                        print('  Variation update image in %s [%s] %s' % (
+                            variation_sku, variation_lang, data))
+                        break  # no other company
 

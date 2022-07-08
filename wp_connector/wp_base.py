@@ -1254,7 +1254,6 @@ class ProductProductWebServer(orm.Model):
                             # -------------------------------------------------
                             # LOG on file WP ID for timeout problem
                             # -------------------------------------------------
-                            import pdb; pdb.set_trace()
                             if wp_id:
                                 wp_file.write('%s|%s|%s\n' % (
                                     item.id,
