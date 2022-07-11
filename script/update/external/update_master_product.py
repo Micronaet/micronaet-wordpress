@@ -214,7 +214,7 @@ for company in company_list:
                                         'src': image.dropbox_link,
                                         }]
                                     variation_update = True
-                                break # Only one image in variant!
+                                break  # Only one image in variant!
 
                         if not variation_update:
                             print('  Variation no image in %s [%s] %s' % (

@@ -502,6 +502,7 @@ class WordpressSaleOrder(orm.Model):
             product = line.product_id
             sequence += 1
             product_uom_qty = line.quantity
+            # todo use product price_multi for quantity!
 
             line_data = line_pool.product_id_change_with_wh(
                 cr, uid, False,
