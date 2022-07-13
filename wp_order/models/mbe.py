@@ -331,7 +331,8 @@ class WordpressSaleOrderCarrierMBE(orm.Model):
 
                 self.write(cr, uid, ids, {
                     'carrier_connection_id': connection.id,
-                    'carrier_cost': data['NetShipmentPrice'],
+                    # 'carrier_cost': data['NetShipmentPrice'],
+                    'pricelist_shipping_total': data['NetShipmentPrice'],
                     'carrier_cost_total': data['NetShipmentTotalPrice'],
                     'has_cod': data['CODAvailable'],
                     'has_insurance': data['InsuranceAvailable'],
