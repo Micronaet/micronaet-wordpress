@@ -223,7 +223,7 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
         return excel_pool.return_attachment(cr, uid, 'carrier_cost')
 
     _columns = {
-        'from_date': fields.boolean('Dalla data', required=True),
-        'to_date': fields.boolean('Alla data', required=True),
+        'from_date': fields.date('Dalla data', required=True),
+        'to_date': fields.date('Alla data', required=True),
         }
 
