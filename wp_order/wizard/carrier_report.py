@@ -179,10 +179,12 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
                 master_tracking_id = order.master_tracking_id or ''
                 parcel_detail = order.parcel_detail or ''
                 manual_label = order.manual_label
-                if master_tracking_id or manual_label:
+
+                # Color:
+                # if not parcel_detail:
+                #    color_format = excel_format['yellow']
+                if master_tracking_id or prime_order:
                     color_format = excel_format['black']
-                elif not parcel_detail:
-                    color_format = excel_format['yellow']
                 else:
                     color_format = excel_format['red']
 
