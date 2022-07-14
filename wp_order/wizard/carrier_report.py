@@ -71,10 +71,10 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
         # Generate Domain:
         # ---------------------------------------------------------------------
         domain = []
-        if from_date:
-            domain.append(('traking_date', '>=', from_date))
-        if to_date:
-            domain.append(('traking_date', '<=', to_date))
+        # if from_date:
+        #    domain.append(('traking_date', '>=', from_date))
+        # if to_date:
+        #    domain.append(('traking_date', '<=', to_date))
 
         # ---------------------------------------------------------------------
         #                         Collect data:
@@ -89,6 +89,10 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
 
         report_data = {}
         for order in order_pool.browse(cr, uid, order_ids, context=context):
+            date = order.tracking_date or order.date_order
+            if date < from_date or date > to_date:
+                continue  # Order extra range
+
             carrier_name = order.carrier_supplier_id.name or ''
             if carrier_name not in report_data:
                 report_data[carrier_name] = []
@@ -172,7 +176,7 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
 
                 order_name = order.name
                 prime_order = order.delivery_mode == 'prime'
-                manual_label = order.manual_label
+                # manual_label = order.manual_label
                 master_tracking_id = order.master_tracking_id or ''
                 parcel_detail = order.parcel_detail or ''
                 manual_label = order.manual_label
@@ -219,7 +223,7 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
         return excel_pool.return_attachment(cr, uid, 'carrier_cost')
 
     _columns = {
-        'from_date': fields.boolean('Dalla data'),
-        'to_date': fields.boolean('Alla data'),
+        'from_date': fields.boolean('Dalla data', required=True),
+        'to_date': fields.boolean('Alla data', required=True),
         }
 
