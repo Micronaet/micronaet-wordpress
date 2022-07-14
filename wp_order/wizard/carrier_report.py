@@ -194,7 +194,7 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
                         # order.marketplace
                         order_name,
                         order.date_order or '',
-                        order.tracking_date or '',
+                        order.traking_date or '',
 
                         order.billing or '',
                         order.shipping or '',
