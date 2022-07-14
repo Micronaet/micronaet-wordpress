@@ -3,7 +3,7 @@
     <data>
        <!-- wordpress.sale.oder.carrier.report.wizard -->
        <record id="wordpress_sale_oder_carrier_report_wizard_view" model="ir.ui.view">
-            <field name="name">Stampa etichette</field>
+            <field name="name">Stampa consegne corriere</field>
             <field name="model">wordpress.sale.oder.carrier.report.wizard</field>
             <field name="arch" type="xml">
                 <form string="Wizard" version="7.0">
