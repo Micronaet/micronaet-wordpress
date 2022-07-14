@@ -89,7 +89,7 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
 
         report_data = {}
         for order in order_pool.browse(cr, uid, order_ids, context=context):
-            date = order.tracking_date or order.date_order
+            date = order.traking_date or order.date_order
             if date < from_date or date > to_date:
                 continue  # Order extra range
 
@@ -128,7 +128,6 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
 
         _logger.warning('Selected order: %s' % len(order_ids))
 
-        summary = {}
         excel_format = False
         for ws_name in report_data:
             excel_pool.create_worksheet(ws_name)
