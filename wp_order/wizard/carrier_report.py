@@ -180,13 +180,14 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
                 prime_order = order.delivery_mode == 'prime'
                 # manual_label = order.manual_label
                 master_tracking_id = order.master_tracking_id or ''
-                parcel_detail = order.parcel_detail or ''
-                manual_label = order.manual_label
+                # parcel_detail = order.parcel_detail or ''
+                # manual_label = order.manual_label
 
                 # Color:
                 # if not parcel_detail:
                 #    color_format = excel_format['yellow']
-                if master_tracking_id or prime_order:
+                if order.state == 'completed':
+                    # master_tracking_id or prime_order:
                     color_format = excel_format['black']
                 else:
                     color_format = excel_format['red']
