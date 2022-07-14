@@ -93,7 +93,10 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
             if date < from_date or date > to_date:
                 continue  # Order extra range
 
-            carrier_name = order.carrier_supplier_id.name or ''
+            if order.delivery_mode == 'prime':
+                carrier_name = 'Prime TNT'
+            else:
+                carrier_name = order.carrier_supplier_id.name or ''
             if carrier_name not in report_data:
                 report_data[carrier_name] = []
             report_data[carrier_name].append(order)
@@ -110,7 +113,7 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
         col_width = [
             15, 15, 15,
             35, 35,
-            5, 5, 5,
+            5, 5,
             12, 12, 15,
             10, 10,
             15, 15, 15, 15,
@@ -120,7 +123,7 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
         header = [
             'Ordine', 'Data', 'Spedito',
             'Cliente', 'Consegna',
-            'Prime', 'Colli', 'Peso',
+            'Colli', 'Peso',
             'Track ID', 'LDV ID', 'Stato',
             'Esposto', 'Costo',
             'Corriere', 'Tipo', 'Spedizioniere', 'Servizio',
@@ -201,7 +204,7 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
                         order.billing or '',
                         order.shipping or '',
 
-                        'X' if prime_order else '',
+                        # 'X' if prime_order else '',
                         parcels or '',
                         weight or '',
 
