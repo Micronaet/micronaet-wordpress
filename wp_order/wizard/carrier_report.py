@@ -199,27 +199,27 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
                     ws_name, row, [
                         # order.marketplace
                         order_name,
-                        order.date_order or '',
-                        order.traking_date or '',
+                        order.date_order or ' ',
+                        order.traking_date or ' ',
 
-                        order.billing or '',
-                        order.shipping or '',
+                        order.billing or ' ',
+                        order.shipping or ' ',
 
                         # 'X' if prime_order else '',
-                        parcels or '',
-                        weight or '',
+                        parcels or ' ',
+                        weight or ' ',
 
-                        order.carrier_track_id or '',
-                        order.master_tracking_id or '',
-                        order.state or '',
+                        order.carrier_track_id or ' ',
+                        order.master_tracking_id or ' ',
+                        order.state or ' ',
 
-                        order.carrier_cost or '',
-                        order.real_shipping_total or '',
+                        order.carrier_cost or ' ',
+                        order.real_shipping_total or ' ',
 
-                        order.carrier_supplier_id.name or '',
-                        order.carrier_mode_id.name or '',
-                        order.courier_supplier_id.name or '',
-                        order.courier_mode_id.name or '',
+                        order.carrier_supplier_id.name or ' ',
+                        order.carrier_mode_id.name or ' ',
+                        order.courier_supplier_id.name or ' ',
+                        order.courier_mode_id.name or ' ',
 
                         # order.delivery_detail or '',
                         # order.carrier_state or '',
