@@ -22,4 +22,4 @@
 ###############################################################################
 
 from . import print_label_wizard
-
+from . import carrier_report

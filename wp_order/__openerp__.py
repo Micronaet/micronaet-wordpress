@@ -54,7 +54,9 @@
         # 'order_view.xml',
         'order_view_wordpress.xml',
         'carrier_view.xml',
+        
         'wizard/print_label_view.xml',
+        'wizard/carrier_report_wizard.xml',
         ],
     'active': False,
     'installable': True,
