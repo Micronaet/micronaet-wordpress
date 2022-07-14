@@ -159,13 +159,7 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
                 }
 
             # Write Header:
-            row = 0
-            excel_pool.write_xls_line(
-                ws_name, row, ['Movimenti carrier: %s data %s' % (
-                    ws_name, today,
-                    )], default_format=excel_format['title'])
-
-            row += 1
+            row = 1  # Jump first line written after
             excel_pool.column_width(ws_name, col_width)
             excel_pool.write_xls_line(
                 ws_name, row, header, default_format=excel_format['header'])
@@ -173,6 +167,10 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
             excel_pool.freeze_panes(ws_name, row + 1, 4)
 
             orders = report_data[ws_name]
+            total = {
+                'counter': 0,
+                'total': 0.0,
+            }
             for order in sorted(orders, key=lambda o: o.name):  # todo name?
                 row += 1
 
@@ -186,9 +184,12 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
                 # Color:
                 # if not parcel_detail:
                 #    color_format = excel_format['yellow']
+                cost = order.real_shipping_total
                 if order.state == 'completed':
                     # master_tracking_id or prime_order:
                     color_format = excel_format['black']
+                    total['counter'] += 1
+                    total['total'] += cost
                 else:
                     color_format = excel_format['red']
 
@@ -214,7 +215,7 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
                         order.state or ' ',
 
                         order.carrier_cost or ' ',
-                        order.real_shipping_total or ' ',
+                        cost or ' ',
 
                         order.carrier_supplier_id.name or ' ',
                         order.carrier_mode_id.name or ' ',
@@ -224,6 +225,21 @@ class WordpressSaleOderCarrierReportWizard(orm.TransientModel):
                         # order.delivery_detail or '',
                         # order.carrier_state or '',
                     ], default_format=color_format['text'])
+
+            # Update title witn total:
+            row = 0
+            excel_pool.write_xls_line(
+                ws_name, row, [
+                    'Movimenti broker %s: '
+                    'Dalla data %s Alla data %s: '
+                    'Totale %s #%s (stampato %s)' % (
+                        ws_name,
+                        from_date,
+                        to_date,
+                        total['total'],
+                        total['counter'],
+                        today,
+                        )], default_format=excel_format['title'])
 
         return excel_pool.return_attachment(cr, uid, 'carrier_cost')
 
