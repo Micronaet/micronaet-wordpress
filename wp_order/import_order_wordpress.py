@@ -649,7 +649,7 @@ class WordpressSaleOrder(orm.Model):
         """
         res = {}
         for order in self.browse(cr, uid, ids, context=context):
-            wp_order = order.wp_record
+            wp_order = order.wp_record or ''
             # -----------------------------------------------------------------
             #                       Order type: (Fast way)
             # -----------------------------------------------------------------
