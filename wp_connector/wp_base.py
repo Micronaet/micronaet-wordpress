@@ -188,6 +188,7 @@ class ConnectorServer(orm.Model):
                             params=params,
                             data=image_data,
                             auth=auth,
+                            verify=False,  # Remove SSL check!
                         )
                         try:
                             reply_json = reply.json()
