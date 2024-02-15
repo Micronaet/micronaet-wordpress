@@ -113,7 +113,6 @@ class ConnectorServer(orm.Model):
         auth = (username, password)
         url = '%s/wp-json/wp/v2/media' % root_url
 
-        pdb.set_trace()
         for album in connector.album_ids:
             _logger.info('Seek album: %s' % album.name)
             # Read pickle file for album
@@ -198,6 +197,7 @@ class ConnectorServer(orm.Model):
                             _logger.error(reply.text)
                             continue
 
+                        pdb.set_trace()  # Debug
                         # Manage old media:
                         old_media_id = pickle_album[fullname]['media_id']
                         if old_media_id:
