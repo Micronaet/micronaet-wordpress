@@ -1485,6 +1485,7 @@ class ProductPublicCategory(orm.Model):
                     # ---------------------------------------------------------
                     image = False
                     if 'image' not in unpublished:
+                        # todo test publish image
                         image = web_product_pool.get_wp_image(
                             line, variant=True)
                     if image:
