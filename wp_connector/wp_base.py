@@ -198,7 +198,6 @@ class ConnectorServer(orm.Model):
                             _logger.error(reply.text)
                             continue
 
-                        pdb.set_trace()  # Debug
                         # Manage old media:
                         old_media_id = pickle_album[fullname]['media_id']
                         if old_media_id:
