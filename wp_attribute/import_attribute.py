@@ -743,7 +743,7 @@ class ProductPublicCategory(orm.Model):
                     web_pool.write(cr, uid, web_ids, {
                         field: wp_id,
                         }, context=context)
-            break # TODO remove
+            break  # todo remove
         return not_found
 
     def publish_attribute_now(self, cr, uid, ids, context=None):
