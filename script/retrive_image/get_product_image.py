@@ -40,12 +40,13 @@ wcapi = woocommerce.API(
     version='wc/v3',
     query_string_auth=False,
     timeout=600,
+    verify_ssl=False,
     )
 
 parameter = {'per_page': 50, 'page': 1}
 
 import pdb; pdb.set_trace()
-log_f = open(os.path.join(image_path, 'log.csv'), 'w')
+# log_f = open(os.path.join(image_path, 'log.csv'), 'w')
 while True:
     reply = wcapi.get('products', params=parameter)
     parameter['page'] += 1
