@@ -48,7 +48,7 @@ wcapi = woocommerce.API(
     timeout=600,
     verify_ssl=False,
     )
-parameter = {'per_page': 50, 'page': 1}
+parameter = {'per_page': 200, 'page': 1}
 variation_parameter = {'per_page': 100, 'page': 1}
 
 log_f = open(os.path.join(image_path, 'log.csv'), 'w')
