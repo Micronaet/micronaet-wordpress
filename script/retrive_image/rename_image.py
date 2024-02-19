@@ -39,11 +39,11 @@ for root, folders, files in os.walk(image_path):
 
         destination_file = '%s.jpg' % name_split[0]
 
-        if destination not in double:
+        if destination_file not in double:
             # shutil.move(origin, destination)
             origin = os.path.join(root, filename)
             destination = os.path.join(root, destination_file)
             print('Move %s in %s' % (
                 filename, destination_file
                 ))
-            double.append(destination)
+            double.append(destination_file)
