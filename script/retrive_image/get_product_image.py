@@ -94,7 +94,7 @@ while run:
         variations = wcapi.get(
             'products/%s/variations' % wp_id, params=variation_parameter)
         for variation in variations.json():
-            images = variation['image']
+            image = variation['image']
             images.append(image)
 
         print(images)
