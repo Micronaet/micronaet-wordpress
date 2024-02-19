@@ -21,6 +21,7 @@ config.read([cfg_file])
 image_path = config.get('wordpress', 'path')
 
 double = []
+pdb.set_trace()
 for root, folders, files in os.walk(image_path):
     for filename in files:
         if not filename.endswith('jpg'):
@@ -39,10 +40,10 @@ for root, folders, files in os.walk(image_path):
         destination_file = '%s.jpg' % name_split[0]
 
         if destination_file not in double:
-            # shutil.move(origin, destination)
             origin = os.path.join(root, filename)
             destination = os.path.join(root, destination_file)
             print('[INFO] Move %s in %s' % (
                 filename, destination_file
                 ))
             double.append(destination_file)
+            shutil.move(origin, destination)
