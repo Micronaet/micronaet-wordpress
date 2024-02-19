@@ -95,7 +95,6 @@ while run:
             filename = os.path.join(image_path, jpg_name)
 
             print('>> File %s' % filename)
-            pdb.set_trace()
 
             # Call as HTTP
             # url = 'http%s' % (url.replace('https', ''))
