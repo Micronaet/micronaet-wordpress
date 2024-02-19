@@ -9,7 +9,9 @@ import shutil
 import requests
 
 
-dryrun = True
+dryrun = False
+demo = True
+
 def clean(name):
     """ Clean file name
     """
@@ -47,6 +49,20 @@ parameter = {'per_page': 50, 'page': 1}
 
 import pdb; pdb.set_trace()
 # log_f = open(os.path.join(image_path, 'log.csv'), 'w')
+
+pickle_filename = './history.pickle'
+try:
+    history = pickle.load(open(pickle_filename, 'rb'))
+except:
+    history = {}
+
+if not history:
+    # Setup
+    history['product'] = {}
+    # history['product'] = {}
+
+if demo:
+    pdb.set_trace()
 while True:
     reply = wcapi.get('products', params=parameter)
     parameter['page'] += 1
@@ -70,6 +86,7 @@ while True:
         sku = record['sku']
         print('Reading %s' % sku)
         images = record['images']
+        history['product'][sku] = {}
         for image in images:
             url = urllib.quote(image['src'].encode('utf8'), ':/')
             # image_name = image['name']
@@ -79,6 +96,14 @@ while True:
             print('>> File ' % filename)
 
             response = requests.get(url, stream=True)
+            history['product'][sku][image_id] = image
             if not dryrun:
                 with open(filename, 'wb') as out_file:
                     shutil.copyfileobj(response.raw, out_file)
+                if demo:
+                    break
+
+try:
+    pickle.dump(history, open(pickle_filename, 'wb'))
+except:
+    history = {}
