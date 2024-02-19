@@ -87,6 +87,7 @@ while run:
         print('Reading %s' % sku)
         images = record['images']
         history['product'][sku] = {}
+        print(images)
         for image in images:
             url = urllib.quote(image['src'].encode('utf8'), ':/')
             # image_name = image['name']
