@@ -137,7 +137,7 @@ for company in company_list:
             # -----------------------------------------------------------------
             # Category:
             # -----------------------------------------------------------------
-            if update['category'] and wp_lang == 'it': # only Italy
+            if update['category'] and wp_lang == 'it':  # only Italy
                 data['categories'] = []
                 for category in web_product.wordpress_categ_ids:
                     wp_category_id = eval(

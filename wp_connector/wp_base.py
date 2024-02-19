@@ -200,7 +200,7 @@ class ConnectorServer(orm.Model):
 
                         # Manage old media:
                         old_media_id = pickle_album[fullname]['media_id']
-                        if old_media_id:
+                        if old_media_id:  # todo save old ID for delete after?
                             pickle_album[fullname]['remove'].append(
                                 old_media_id)
                         pickle_album[fullname]['media_id'] = wp_id
@@ -237,6 +237,78 @@ class ConnectorServer(orm.Model):
 
             # Store pickle file for every album:
             pickle.dump(pickle_album, open(pickle_file, 'wb'))
+        return True
+
+    def retrieve_image_on_wordpress(self, cr, uid, ids, context=None):
+        """ Scheduled action for publish image on web site and
+            NOT USED FOR NOW!
+        """
+        if context is None:
+            context = {}
+
+        # Media access:
+        connector = self.browse(cr, uid, ids, context=context)[0]
+        root_url = connector.wp_url
+        username = connector.wp_username
+        password = connector.wp_password
+        author_id = connector.wp_user_id
+        auth = (username, password)
+        url_list = '%s/wp-json/wp/v2/media' % root_url
+        url_image = '%s/wp-json/wp/v2/media/%%s' % root_url
+
+        params = {'per_page': 50, 'page': 1}
+
+        """
+        # Update web site:
+        headers = {
+            'Content-Type': 'image/jpg',
+            'Content-Disposition':
+                'attachment; filename="%s"' % fullname,
+        }
+        params = {
+            'lang': 'it',
+            'title': filename,
+            'status': 'publish',
+            'author': author_id,
+            'alt_text': filename,
+            'caption': filename,  # todo change some data?
+            'description': filename,
+        }
+        """
+
+        # file_handler = open(fullname, 'rb')  # handler
+        # image_data = file_handler.read()  # binary data
+
+        while True:
+            reply = requests.get(
+                url_list,
+                # headers=headers,
+                params=params,
+                # data=image_data,
+                auth=auth,
+                verify=False,  # Remove SSL check!
+            )
+
+            try:
+                reply_json = reply.json()
+                for record in reply_json:
+                    pdb.set_trace()
+                    wp_id = record['id']
+                    alt_text = record['alt_text']
+
+                    # Read Image:
+                    image_reply = requests.get(
+                        url_image % wp_id,
+                        # headers=headers,
+                        # params=params,
+                        # data=image_data,
+                        auth=auth,
+                        verify=False,  # Remove SSL check!
+                    )
+                    break
+            except:  # Error reply
+                _logger.error('Error reading')
+
         return True
 
     # -------------------------------------------------------------------------

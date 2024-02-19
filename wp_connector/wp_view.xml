@@ -209,6 +209,7 @@
                     <button name="extract_wordpress_published_report" string="Lista pubblicati" type="object" confirm="Extract all information published, could take time, confirm?" class="oe_highlight" icon="gtk-print" attrs="{'invisible': [('wordpress','=',False)]}"/>
                     <button name="extract_wordpress_accounting_report" string="Esporta per gest." type="object" confirm="Esportazione dati per il gestionale, confermi?" class="oe_highlight" icon="gtk-print" attrs="{'invisible': [('wordpress','=',False)]}"/>
                     <button name="publish_image_on_wordpress" string="Pubblica Media" type="object" confirm="Legge tutta la cartella dei media (album) e verifica quelli da pubblicare, può essere una operazione lenta, confermi?" class="oe_highlight" icon="gtk-execute" attrs="{'invisible': [('wordpress','=',False)]}"/>
+                    <!--<button name="retrieve_image_on_wordpress" string="Recupera Media" type="object" confirm="Legge e salva in locale i media?" class="oe_highlight" icon="gtk-execute" attrs="{'invisible': [('wordpress','=',False)]}"/>-->
                 </xpath>
 
                 <field name="name" position="before">
