@@ -95,8 +95,8 @@ while run:
                 image_name = '%s.jpg' % image_name
 
             log_f.write('%s|%s|%s\n' % (
+                image_name,
                 image['id'],
-                image['name'],
                 image['date_modified'],
                 ))
 
