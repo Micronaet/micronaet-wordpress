@@ -97,7 +97,7 @@ while True:
             print('>> File %s' % filename)
 
             # Call as HTTP
-            url = 'HTTP%s' % (url.replace('HTTPS', ''))
+            url = 'http%s' % (url.replace('https', ''))
             response = requests.get(url, stream=True)
 
             history['product'][sku][image_id] = image
