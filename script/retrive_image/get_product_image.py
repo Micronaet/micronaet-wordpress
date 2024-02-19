@@ -46,7 +46,7 @@ wcapi = woocommerce.API(
     timeout=600,
     verify_ssl=False,
     )
-parameter = {'per_page': 1, 'page': 1}
+parameter = {'per_page': 50, 'page': 1}
 
 # log_f = open(os.path.join(image_path, 'log.csv'), 'w')
 pickle_filename = './history.pickle'
@@ -94,8 +94,8 @@ while run:
             jpg_name = clean(os.path.join(image_path, '%s.jpg' % sku))
             filename = os.path.join(image_path, jpg_name)
 
-            pdb.set_trace()
             print('>> File %s' % filename)
+            pdb.set_trace()
 
             # Call as HTTP
             # url = 'http%s' % (url.replace('https', ''))
