@@ -28,7 +28,7 @@ for root, folders, files in os.walk(image_path):
             print('Not renamed: %s' % filename)
             continue
 
-        name_split = filename[-4:].split('-')
+        name_split = filename[:-4].split('-')
         if len(name_split) != 2:
             print('Mote -, jumped: %s' % filename)
             continue
