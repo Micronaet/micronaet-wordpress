@@ -6,6 +6,7 @@ import sys
 import erppeek
 import ConfigParser
 import shutil
+import pdb
 import requests
 
 
@@ -47,9 +48,7 @@ wcapi = woocommerce.API(
     )
 parameter = {'per_page': 50, 'page': 1}
 
-import pdb; pdb.set_trace()
 # log_f = open(os.path.join(image_path, 'log.csv'), 'w')
-
 pickle_filename = './history.pickle'
 try:
     history = pickle.load(open(pickle_filename, 'rb'))
