@@ -49,6 +49,7 @@ wcapi = woocommerce.API(
     verify_ssl=False,
     )
 parameter = {'per_page': 50, 'page': 1}
+variation_parameter = {'per_page': 100, 'page': 1}
 
 log_f = open(os.path.join(image_path, 'log.csv'), 'w')
 pickle_filename = './history.pickle'
@@ -87,6 +88,15 @@ while run:
         print('Reading %s' % sku)
         images = record['images']
         history['product'][sku] = {}
+
+        # Child:
+        images = []  # todo restore (Remove parent):
+        variations = wcapi.get(
+            'products/%s/variations' % wp_id, params=variation_parameter)
+        for variation in variations.json():
+            images = variation['image']
+            images.append(image)
+
         print(images)
         for image in images:
             url = urllib.quote(image['src'].encode('utf8'), ':/')
