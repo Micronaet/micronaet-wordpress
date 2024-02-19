@@ -104,15 +104,12 @@ while run:
             if image_name[-4:].upper() != '.JPG':
                 image_name = '%s.jpg' % image_name
 
-            image_id = image['id'] or 0
-            try:
-                log_f.write('%s|%s|%s\n' % (
-                    image_name,
-                    image_id,
-                    image['date_modified'],
-                    ))
-            except:
-                print('Error ID image')
+            image_id = image['id']
+            log_f.write('%s|%s|%s\n' % (
+                image_name,
+                image_id,
+                image['date_modified'],
+                ))
 
             filename = os.path.join(image_path, image_name)
             if os.path.isfile(filename):
