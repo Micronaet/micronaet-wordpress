@@ -25,16 +25,16 @@ pdb.set_trace()
 for root, folders, files in os.walk(image_path):
     for filename in files:
         if not filename.endswith('jpg'):
-            print('Not renamed: %s' % filename)
+            print('[ERROR] No JPG: %s' % filename)
             continue
 
         if '-' not in filename:
-            print('Not -: %s' % filename)
+            print('[ERROR] Not -: %s' % filename)
             continue
 
         name_split = filename[:-4].split('-')
         if len(name_split) != 2:
-            print('More -, jumped: %s' % filename)
+            print('[ERROR] More -, jumped: %s' % filename)
             continue
 
         destination_file = '%s.jpg' % name_split[0]
@@ -43,7 +43,7 @@ for root, folders, files in os.walk(image_path):
             # shutil.move(origin, destination)
             origin = os.path.join(root, filename)
             destination = os.path.join(root, destination_file)
-            print('Move %s in %s' % (
+            print('[INFO] Move %s in %s' % (
                 filename, destination_file
                 ))
             double.append(destination_file)
