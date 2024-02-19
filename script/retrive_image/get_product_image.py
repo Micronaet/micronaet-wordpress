@@ -46,7 +46,7 @@ wcapi = woocommerce.API(
     timeout=600,
     verify_ssl=False,
     )
-parameter = {'per_page': 10, 'page': 1}
+parameter = {'per_page': 1, 'page': 1}
 
 # log_f = open(os.path.join(image_path, 'log.csv'), 'w')
 pickle_filename = './history.pickle'
