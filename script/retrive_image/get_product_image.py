@@ -90,17 +90,14 @@ while run:
         print(images)
         for image in images:
             url = urllib.quote(image['src'].encode('utf8'), ':/')
-            # image_name = image['name']
+            image_name = clean(image['name'])
             image_id = image['id']
-            jpg_name = clean(os.path.join(image_path, '%s.jpg' % sku))
-            filename = os.path.join(image_path, jpg_name)
-
+            filename = os.path.join(image_path, image_name)
             print('>> File %s' % filename)
 
             # Call as HTTP
             # url = 'http%s' % (url.replace('https', ''))
             response = requests.get(url, stream=True)
-
             history['product'][sku][image_id] = image
             if not dryrun:
                 with open(filename, 'wb') as out_file:
