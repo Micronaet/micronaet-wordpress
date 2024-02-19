@@ -21,7 +21,6 @@ config.read([cfg_file])
 image_path = config.get('wordpress', 'path')
 
 double = []
-pdb.set_trace()
 for root, folders, files in os.walk(image_path):
     for filename in files:
         if not filename.endswith('jpg'):
