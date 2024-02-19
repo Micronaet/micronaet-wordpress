@@ -93,10 +93,14 @@ while True:
             image_id = image['id']
             jpg_name = clean(os.path.join(image_path, '%s.jpg' % sku))
             filename = os.path.join(image_path, jpg_name)
+
             pdb.set_trace()
             print('>> File %s' % filename)
 
+            # Call as HTTP
+            url = 'HTTP%s' % (url.replace('HTTPS', ''))
             response = requests.get(url, stream=True)
+
             history['product'][sku][image_id] = image
             if not dryrun:
                 with open(filename, 'wb') as out_file:
