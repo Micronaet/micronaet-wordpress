@@ -8,6 +8,8 @@ import ConfigParser
 import shutil
 import requests
 
+
+dryrun = True
 def clean(name):
     """ Clean file name
     """
@@ -43,6 +45,7 @@ wcapi = woocommerce.API(
 parameter = {'per_page': 50, 'page': 1}
 
 import pdb; pdb.set_trace()
+log_f = open(os.path.join(image_path, 'log.csv'), 'w')
 while True:
     reply = wcapi.get('products', params=parameter)
     parameter['page'] += 1
@@ -66,15 +69,15 @@ while True:
         sku = record['sku']
         print('Reading %s' % sku)
         images = record['images']
-
         for image in images:
-            import pdb; pdb.set_trace()
             url = urllib.quote(image['src'].encode('utf8'), ':/')
             # image_name = image['name']
             image_id = image['id']
             jpg_name = os.path.join(image_path, '%s.jpg' % sku)
             filename = clean(os.path.join(image_path, jpg_name))
+            print('>> File ' % filename)
 
             response = requests.get(url, stream=True)
-            with open(filename, 'wb') as out_file:
-                shutil.copyfileobj(response.raw, out_file)
+            if not dryrun:
+                with open(filename, 'wb') as out_file:
+                    shutil.copyfileobj(response.raw, out_file)
