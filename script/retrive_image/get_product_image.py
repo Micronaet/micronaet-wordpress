@@ -91,8 +91,9 @@ while True:
             url = urllib.quote(image['src'].encode('utf8'), ':/')
             # image_name = image['name']
             image_id = image['id']
-            jpg_name = os.path.join(image_path, '%s.jpg' % sku)
-            filename = clean(os.path.join(image_path, jpg_name))
+            jpg_name = clean(os.path.join(image_path, '%s.jpg' % sku))
+            filename = os.path.join(image_path, jpg_name)
+            pdb.set_trace()
             print('>> File ' % filename)
 
             response = requests.get(url, stream=True)
