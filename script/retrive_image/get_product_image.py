@@ -97,7 +97,8 @@ while run:
             'products/%s/variations' % wp_id, params=variation_parameter)
         for variation in variations.json():
             image = variation['image']
-            images.append(image)
+            if image:
+                images.append(image)
 
         print(images)
         for image in images:
