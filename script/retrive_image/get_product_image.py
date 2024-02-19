@@ -50,7 +50,7 @@ wcapi = woocommerce.API(
     )
 parameter = {'per_page': 50, 'page': 1}
 
-# log_f = open(os.path.join(image_path, 'log.csv'), 'w')
+log_f = open(os.path.join(image_path, 'log.csv'), 'w')
 pickle_filename = './history.pickle'
 try:
     history = pickle.load(open(pickle_filename, 'rb'))
@@ -62,8 +62,6 @@ if not history:
     history['product'] = {}
     # history['product'] = {}
 
-if demo:
-    pdb.set_trace()
 run = True
 while run:
     reply = wcapi.get('products', params=parameter)
@@ -95,6 +93,12 @@ while run:
             image_name = clean(image['name'])
             if image_name[-4:].upper() != '.JPG':
                 image_name = '%s.jpg' % image_name
+
+            log_f.write('%s|%s|%s\n' % (
+                image['id'],
+                image['name'],
+                image['date_modified'],
+                ))
 
             image_id = image['id']
             filename = os.path.join(image_path, image_name)
