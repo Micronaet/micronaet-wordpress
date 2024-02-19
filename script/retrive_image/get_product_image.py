@@ -64,6 +64,7 @@ if not history:
     # history['product'] = {}
 
 run = True
+pdb.set_trace()
 while run:
     reply = wcapi.get('products', params=parameter)
     parameter['page'] += 1
