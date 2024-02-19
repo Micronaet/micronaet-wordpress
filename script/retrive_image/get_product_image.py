@@ -11,7 +11,7 @@ import requests
 
 
 dryrun = False
-demo = True
+demo = False
 
 
 def clean(name):
