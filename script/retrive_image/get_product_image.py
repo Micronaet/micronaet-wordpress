@@ -46,7 +46,7 @@ wcapi = woocommerce.API(
     timeout=600,
     verify_ssl=False,
     )
-parameter = {'per_page': 50, 'page': 1}
+parameter = {'per_page': 10, 'page': 1}
 
 # log_f = open(os.path.join(image_path, 'log.csv'), 'w')
 pickle_filename = './history.pickle'
@@ -62,7 +62,8 @@ if not history:
 
 if demo:
     pdb.set_trace()
-while True:
+run = True
+while run:
     reply = wcapi.get('products', params=parameter)
     parameter['page'] += 1
 
@@ -97,7 +98,7 @@ while True:
             print('>> File %s' % filename)
 
             # Call as HTTP
-            url = 'http%s' % (url.replace('https', ''))
+            # url = 'http%s' % (url.replace('https', ''))
             response = requests.get(url, stream=True)
 
             history['product'][sku][image_id] = image
@@ -105,6 +106,7 @@ while True:
                 with open(filename, 'wb') as out_file:
                     shutil.copyfileobj(response.raw, out_file)
                 if demo:
+                    run = False
                     break
 
 try:
