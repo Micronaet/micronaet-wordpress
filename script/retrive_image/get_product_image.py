@@ -12,6 +12,7 @@ import requests
 dryrun = False
 demo = True
 
+
 def clean(name):
     """ Clean file name
     """
@@ -44,7 +45,6 @@ wcapi = woocommerce.API(
     timeout=600,
     verify_ssl=False,
     )
-
 parameter = {'per_page': 50, 'page': 1}
 
 import pdb; pdb.set_trace()
