@@ -87,8 +87,6 @@ while run:
         wp_id = record['id']
         sku = record['sku']
         print('Reading %s' % sku)
-        if sku == '405TX&nbsp;&nbsp;&nbsp;AK':
-            pdb.set_trace()
         images = []  # todo restore (Remove parent):  record['images']
         history['product'][sku] = {}
 
