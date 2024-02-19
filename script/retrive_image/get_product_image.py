@@ -88,7 +88,6 @@ while run:
         images = record['images']
         history['product'][sku] = {}
         print(images)
-        pdb.set_trace()
         for image in images:
             url = urllib.quote(image['src'].encode('utf8'), ':/')
             image_name = clean(image['name'])
