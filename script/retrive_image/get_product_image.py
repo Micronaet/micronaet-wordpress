@@ -91,6 +91,9 @@ while run:
         for image in images:
             url = urllib.quote(image['src'].encode('utf8'), ':/')
             image_name = clean(image['name'])
+            if image_name[-4: ].upper() != '.JPG':
+                image_name = '%s.jpg' % image_name
+
             image_id = image['id']
             filename = os.path.join(image_path, image_name)
             print('>> File %s' % filename)
