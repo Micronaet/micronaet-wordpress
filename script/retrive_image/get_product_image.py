@@ -86,11 +86,10 @@ while run:
         wp_id = record['id']
         sku = record['sku']
         print('Reading %s' % sku)
-        images = record['images']
+        images = []  # todo restore (Remove parent):  record['images']
         history['product'][sku] = {}
 
         # Child:
-        images = []  # todo restore (Remove parent):
         variations = wcapi.get(
             'products/%s/variations' % wp_id, params=variation_parameter)
         for variation in variations.json():
