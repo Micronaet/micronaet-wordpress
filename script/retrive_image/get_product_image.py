@@ -100,6 +100,7 @@ while run:
             filename = os.path.join(image_path, image_name)
             if os.path.isfile(filename):
                 print('>> File presente %s' % filename)
+                continue
             else:
                 print('>> File scaricato %s' % filename)
 
