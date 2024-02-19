@@ -17,7 +17,9 @@ demo = False
 def clean(name):
     """ Clean file name
     """
-    return name.replace('&nbsp;', ' ')
+    name = name.replace('&nbsp;', ' ')
+    name = name.replace('_', ' ')
+    return name
 
 
 # -----------------------------------------------------------------------------
@@ -96,7 +98,10 @@ while run:
 
             image_id = image['id']
             filename = os.path.join(image_path, image_name)
-            print('>> File %s' % filename)
+            if os.path.isfile(filename):
+                print('>> File presente %s' % filename)
+            else:
+                print('>> File scaricato %s' % filename)
 
             # Call as HTTP
             # url = 'http%s' % (url.replace('https', ''))
